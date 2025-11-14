@@ -3,6 +3,7 @@ import AuthForm from "./AuthForm";
 import "../styles/auth.css";
 
 export default function AuthTabs({ setIsAuth }) {
+  
   const [activeTab, setActiveTab] = useState("login");
 
   return (
