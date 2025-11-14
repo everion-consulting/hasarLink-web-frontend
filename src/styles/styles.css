@@ -1,0 +1,12 @@
+/* src/styles/style.css */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f6fa;
+  color: #222;
+}
+
+h1 {
+  color: #133E87;
+  text-align: center;
+}
