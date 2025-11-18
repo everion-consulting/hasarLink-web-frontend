@@ -1,3 +1,5 @@
+// src/components/AuthForm.jsx (veya neredeyse)
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleIcon from "../assets/icons/google.svg";
@@ -47,16 +49,16 @@ export default function AuthForm({ type, setIsAuth }) {
         // 🔹 Giriş isteği
         const result = await AuthAPI.login(form.username, form.password);
 
-        if (result.success) {
-          localStorage.setItem("auth_token", result.token);
+        console.log("🧪 Login result:", result);
+        console.log("🧪 localStorage token after login:", localStorage.getItem("authToken"));
+
+        if (result.success && localStorage.getItem("authToken")) {
           setMessage("✅ Giriş başarılı!");
 
-          // 🔹 App.js içindeki state'i güncelle
           if (typeof setIsAuth === "function") {
             setIsAuth(true);
           }
 
-          // 🔹 Ana sayfaya yönlendir
           navigate("/");
         } else {
           setMessage(result.message || "Giriş başarısız.");
@@ -64,7 +66,7 @@ export default function AuthForm({ type, setIsAuth }) {
       }
     } catch (err) {
       console.error("Auth Error:", err);
-      setMessage(err.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
+      setMessage(err.detail || err.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
     }
@@ -72,7 +74,6 @@ export default function AuthForm({ type, setIsAuth }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      {/* Kayıt Formu */}
       {type === "register" && (
         <>
           <input type="text" name="name" placeholder="Ad Soyad" onChange={handleChange} required />
@@ -86,30 +87,50 @@ export default function AuthForm({ type, setIsAuth }) {
         </>
       )}
 
-      {/* Giriş Formu */}
       {type === "login" && (
         <>
-          <input type="text" name="username" placeholder="Kullanıcı Adı veya E-Mail" onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Şifre" onChange={handleChange} required />
+          <input
+            type="text"
+            name="username"
+            placeholder="Kullanıcı Adı veya E-Mail"
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Şifre"
+            onChange={handleChange}
+            required
+          />
           <div className="login-options">
             <label>
               <input type="checkbox" /> Beni Hatırla
             </label>
-            <a href="#" className="forgot">Şifremi unuttum</a>
+            <a href="#" className="forgot">
+              Şifremi unuttum
+            </a>
           </div>
         </>
       )}
 
-      {/* Sosyal Login */}
       <div className="divider">
         <span>veya şununla devam et</span>
       </div>
 
       <div className="social-login">
-        <button type="button" className="google" onClick={() => alert("Google ile giriş yakında eklenecek")}>
+        <button
+          type="button"
+          className="google"
+          onClick={() => alert("Google ile giriş yakında eklenecek")}
+        >
           <img src={GoogleIcon} alt="Google Icon" className="icon" />
         </button>
-        <button type="button" className="apple" onClick={() => alert("Apple ile giriş yakında eklenecek")}>
+        <button
+          type="button"
+          className="apple"
+          onClick={() => alert("Apple ile giriş yakında eklenecek")}
+        >
           <img src={AppleIcon} alt="Apple Icon" className="icon" />
         </button>
       </div>

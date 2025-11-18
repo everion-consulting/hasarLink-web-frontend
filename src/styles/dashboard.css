@@ -1,0 +1,334 @@
+:root {
+  --blue-dark: #133e87;
+  --blue-mid: #214f9b;
+  --blue-light: #e5f0ff;
+  --white: #ffffff;
+  --accent: #f1b300;
+  --radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dashboard {
+  min-height: 100vh;
+  background: #f3f3f3;
+  font-family: 'Poppins';
+  color: #0e1a2b;
+}
+
+/* HEADER */
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dash-logo {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 20px;
+}
+
+.dash-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.dash-nav-item {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dash-nav-item--active {
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--blue-dark);
+  color: var(--blue-dark);
+}
+
+.dash-nav-item:hover {
+  background: var(--blue-light);
+}
+
+.dash-cta {
+  background-color: #CBDCEB;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* GRID */
+
+.dash-grid {
+  padding: 24px 40px 40px;
+  display: grid;
+  grid-template-columns: 335px 335px 335px;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "new approved pending amount"
+    "ongoing drafts drafts rejected"
+    "ongoing bottom-left bottom-right bottom-right";
+  gap: 16px;
+}
+
+/* CARD BASE */
+
+.card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 18px 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-heading {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.card-btn {
+  margin-top: auto;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--blue-dark);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.card-btn--light {
+  background: #fff;
+  color: var(--blue-dark);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+/* Özel kartlar */
+
+.card--new-file {
+  grid-area: new;
+  background-color: #CBDCEB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
+  height: 23vw;
+  max-height: 331px;
+  gap: 6px;
+}
+
+.card-title-sm {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.card-title-lg {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card-icon--clipboard {
+  width: 56px;
+  height: 70px;
+  border-radius: 16px;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+/* Devam edenler */
+
+.card--ongoing {
+  grid-area: ongoing;
+  background: linear-gradient(135deg, var(--blue-dark), #1c4a8f);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  height: 23vw;
+  max-height: 331px;
+}
+
+.ongoing-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  font-size: 13px;
+  flex: 1;
+}
+
+.ongoing-list li+li {
+  margin-top: 6px;
+}
+
+/* Onaylananlar / bekleyenler */
+
+.card--approved,
+.card--pending {
+  min-height: 100px;
+  height: 13vw;
+  max-height: 292px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #133E87;
+  max-width: 336px;
+}
+
+.card-count {
+  font-size: 13px;
+}
+
+.card-count-number {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.card-circle-icon {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Toplam tutar */
+
+.card--amount {
+  grid-area: amount;
+  max-width: 335px;
+  background-color: #CBDCEB;
+}
+
+.amount-main {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+
+.amount-sub {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Taslaklar */
+
+.card--drafts {
+  grid-area: drafts;
+  display: flex;
+  flex-direction: column;
+  min-height: 100px;
+  height: 20vw;
+  max-height: 422px;
+  top: -142px;
+  background-color: #CBDCEB;
+}
+
+.drafts-logos {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.draft-logo {
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Reddedilenler */
+
+.card--rejected {
+  grid-area: rejected;
+  background-color: #133E87;
+  color: #fff;
+  max-width: 335px;
+  max-height: 155px;
+}
+
+/* Alt bloklar */
+
+.card--bottom-left {
+  grid-area: bottom-left;
+  background-color: #CBDCEB;
+  height: 155px;
+  top: -140px;
+}
+
+.card--bottom-right {
+  grid-area: bottom-right;
+  background-color: #133E87;
+  height: 155px;
+  top: -140px;
+  max-width: 685px;
+}
+
+/* RESPONSIVE (tablet & altı) */
+
+@media (max-width: 992px) {
+  .dash-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "new amount"
+      "approved pending"
+      "ongoing ongoing"
+      "drafts drafts"
+      "rejected rejected"
+      "bottom-left bottom-right";
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .dash-nav {
+    flex-wrap: wrap;
+  }
+
+  .dash-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "new"
+      "amount"
+      "approved"
+      "pending"
+      "ongoing"
+      "drafts"
+      "rejected"
+      "bottom-left"
+      "bottom-right";
+  }
+}

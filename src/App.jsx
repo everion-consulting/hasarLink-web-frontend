@@ -2,18 +2,22 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import AuthTabs from "./components/AuthTabs";
 import Home from "./components/pages/Home";
+import TopBar from "./components/TopBar";
 
 export default function App() {
-  const [isAuth, setIsAuth] = useState(!!localStorage.getItem("auth_token"));
+  const savedToken = localStorage.getItem("authToken");
+  const validToken = savedToken && savedToken !== "undefined" && savedToken !== "null";
+  const [isAuth, setIsAuth] = useState(!!validToken);
 
   useEffect(() => {
-    const checkAuth = () => setIsAuth(!!localStorage.getItem("auth_token"));
+    const checkAuth = () => setIsAuth(!!localStorage.getItem("authToken"));
     window.addEventListener("storage", checkAuth);
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   return (
     <Router>
+      {isAuth && <TopBar />}
       <Routes>
         <Route
           path="/"
