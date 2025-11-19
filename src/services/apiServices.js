@@ -209,6 +209,8 @@ const apiService = {
   async getUserStatistics() {
     return await fetchData(`${PATH}/pending-progress-view/`, 'GET');
   },
+
+  
 };
 
 export default apiService;

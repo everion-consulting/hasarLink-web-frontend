@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import AuthTabs from "./components/AuthTabs";
 import Home from "./components/pages/Home";
 import TopBar from "./components/TopBar";
+import { ProfileProvider } from "./context/ProfileContext";
+import Profile from "./components/pages/Profile";
 
 export default function App() {
   const savedToken = localStorage.getItem("authToken");
@@ -17,18 +19,34 @@ export default function App() {
 
   return (
     <Router>
-      {isAuth && <TopBar />}
-      <Routes>
-        <Route
-          path="/"
-          element={isAuth ? <Home /> : <Navigate to="/auth" replace />}
-        />
-        <Route
-          path="/auth"
-          element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />}
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <ProfileProvider>
+        {isAuth && <TopBar />}
+
+        <Routes>
+          {/* Anasayfa */}
+          <Route
+            path="/"
+            element={isAuth ? <Home /> : <Navigate to="/auth" replace />}
+          />
+
+          {/* Profil sayfası */}
+          <Route
+            path="/profile"
+            element={isAuth ? <Profile/> : <Navigate to="/auth" replace />}
+          />
+
+          {/* Auth */}
+          <Route
+            path="/auth"
+            element={
+              isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />
+            }
+          />
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ProfileProvider>
     </Router>
   );
 }
