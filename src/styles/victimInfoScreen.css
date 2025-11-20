@@ -1,0 +1,258 @@
+/* Genel Ayarlar */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f4f8; /* Hafif arka plan rengi */
+}
+
+.screen-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Header Stili (HASARLİNK Kısmı) --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.nav-links span {
+    margin-left: 30px;
+    color: #666;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.contact-button {
+    background-color: #1a4d8c; /* Koyu Mavi */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.contact-button:hover {
+    background-color: #153c6e;
+}
+
+.arrow-icon {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+/* --- İçerik ve Form Alanı Stili --- */
+.content-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    flex-grow: 1;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.form-card {
+    background-color: white;
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 500px; /* Görseldeki gibi dar bir form alanı */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* --- Stepper Stili --- */
+.stepper-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex-grow: 0;
+}
+
+.step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    z-index: 10;
+    border: 3px solid #ccc;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.step-item.active .step-circle {
+    background-color: #1a4d8c; /* Aktif Mavi */
+    border-color: #1a4d8c;
+}
+
+.step-item.completed .step-circle {
+    background-color: #1a4d8c; /* Tamamlanmış Mavi */
+    border-color: #1a4d8c;
+}
+
+.step-label {
+    position: absolute;
+    top: 40px;
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+}
+
+.step-line {
+    height: 2px;
+    background-color: #ccc;
+    flex-grow: 1;
+    margin: 0 -15px; /* Adım dairelerinin altına denk gelmesi için */
+    width: 120px; 
+}
+
+
+/* --- Şahıs/Şirket Switch Stili --- */
+.switch-main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e6ed;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 30px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.switch-option {
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.switch-option.active-option {
+    background-color: white;
+    color: #1a4d8c; /* Aktif Mavi */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* --- Form Alanları Stili --- */
+.form-renderer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Alanlar arası boşluk */
+}
+
+.form-field-container {
+    margin-bottom: 10px;
+}
+
+.input-group {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 45px 15px 15px; /* Sağdan simge boşluğu */
+    border: 1px solid #e0e6ed;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #f7f9fc;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #1a4d8c;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(26, 77, 140, 0.1);
+    outline: none;
+}
+
+/* --- Footer Stili (Geri Dön / Devam Et Butonları) --- */
+.form-footer-web {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 20px;
+}
+
+.back-button-web {
+    background-color: #e0e6ed;
+    color: #1a4d8c;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    flex: 1;
+}
+
+.back-button-web:hover {
+    background-color: #cdd4df;
+}
+
+.arrow-icon-left {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.next-button-web {
+    background-color: #1a4d8c;
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    flex: 1;
+}
+
+.next-button-web:hover {
+    background-color: #153c6e;
+}

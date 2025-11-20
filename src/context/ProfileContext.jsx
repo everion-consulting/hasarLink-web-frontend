@@ -1,40 +1,106 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import apiService from "../services/apiServices";
-
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import apiService from '../services/apiServices';
 
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
-  const [profile, setProfile] = useState(null); 
-  const [profileDetail, setProfileDetail] = useState(null); 
+  const [profileData, setProfileData] = useState(null);
+  const [profileDetail, setProfileDetail] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [favoriteCompanies, setFavoriteCompanies] = useState([]);
-  const [allCompanies, setAllCompanies] = useState([]);
+  const [allCompaniesList, setAllCompaniesList] = useState([]);
 
   const fetchProfile = async () => {
     try {
-      setLoading(true);
-
       const res1 = await apiService.getProfile();
+      console.log('API:', res1.data);
       if (res1.success) {
-        setProfile(res1.data);
+        console.log('Profil verisi:', res1.data);
+        setProfileData(res1.data);
+      } else {
+        console.error('Profil alınamadı:', res1.message);
       }
 
       const res2 = await apiService.getProfileDetail();
       if (res2.success) {
+        console.log('Profil detay verisi:', res2.data);
         setProfileDetail(res2.data);
-
-        setFavoriteCompanies(
-          Array.isArray(res2.data.favorite_insurance_companies)
-            ? res2.data.favorite_insurance_companies
-            : []
-        );
+      } else {
+        console.error('Profil detay alınamadı:', res2.message);
       }
-    } catch (err) {
-      console.error("Profil verileri yüklenemedi:", err);
+    } catch (err) {q
+      console.error('Profil verileri yüklenemedi:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // const [notificationSettings, setNotificationSettings] = useState({
+  //   caseUpdates: true,
+  //   campaignAnnouncements: true,
+  //   smsNotifications: false,
+  //   emailNotifications: false,
+  // });
+
+  // const updateNotificationSettings = async (key, value) => {
+  //   const newSettings = { ...notificationSettings, [key]: value };
+  //   setNotificationSettings(newSettings);
+
+  //   try {
+  //     const res = await accountService.updateNotificationPreferences(
+  //       newSettings.caseUpdates,
+  //       newSettings.emailNotifications,
+  //       newSettings.campaignAnnouncements,
+  //       true, // reminder
+  //       false // marketing
+  //     );
+  //     if (res.success) {
+  //       Alert.alert(res?.message)
+  //     } else {
+  //       Alert.alert(res?.message)
+  //       console.error(' Güncelleme başarısız:', res.message);
+  //     }
+  //   } catch (err) {
+  //     console.log('Bildirim tercih güncelleme hatası:', err);
+  //   }
+  // };
+
+  // const toggleSetting = key => {
+  //   updateNotificationSettings(key, !notificationSettings[key]);
+  // };
+
+  const loadFavorites = async () => {
+    try {
+      const res = await apiService.getProfileDetail();
+      if (res.success) {
+        const data = res.data;
+        setFavoriteCompanies(
+          Array.isArray(data.favorite_insurance_companies)
+            ? data.favorite_insurance_companies
+            : [],
+        );
+      } else {
+        setFavoriteCompanies([]);
+        console.error('Favoriler alınamadı:', res.message);
+      }
+    } catch (err) {
+      console.error('Favoriler yüklenemedi:', err);
+      setFavoriteCompanies([]);
+    }
+  };
+
+  const fetchFavoriteCompanies = async () => {
+    try {
+      const res = await apiService.getProfileDetail();
+      if (res.success) {
+        setFavoriteCompanies(res.data.favorite_insurance_companies || []);
+      } else {
+        setFavoriteCompanies([]);
+        console.error('Favori şirketler alınamadı:', res.message);
+      }
+    } catch (err) {
+      console.error('Favori şirketler yüklenemedi:', err);
+      setFavoriteCompanies([]);
     }
   };
 
@@ -42,31 +108,42 @@ export const ProfileProvider = ({ children }) => {
     try {
       const res = await apiService.getAllInsuranceCompanies();
       if (res.success) {
-        setAllCompanies(res.data);
+        const data = res.data;
+        setAllCompaniesList(Array.isArray(data) ? data : data.results || []);
+      } else {
+        setAllCompaniesList([]);
+        console.error('Şirket listesi alınamadı:', res.message);
       }
     } catch (err) {
-      console.error("Şirket listesi alınamadı:", err);
+      console.error('Şirket listesi yüklenemedi:', err);
+      setAllCompaniesList([]);
     }
   };
 
   useEffect(() => {
     fetchProfile();
+    console.log('Profil yükleniyor...');
+    fetchFavoriteCompanies();
     fetchAllCompanies();
   }, []);
 
   return (
     <ProfileContext.Provider
       value={{
-        profile,
+        profileData,
+        setProfileData,
         profileDetail,
-        favoriteCompanies,
-        allCompanies,
-        loading,
-
-        fetchProfile,
-        fetchAllCompanies,
-        setFavoriteCompanies,
         setProfileDetail,
+        fetchProfile,
+        loading,
+        favoriteCompanies,
+        setFavoriteCompanies,
+        allCompaniesList,
+        setAllCompaniesList,
+        fetchFavoriteCompanies,
+        fetchAllCompanies,
+        loadFavorites,
+        
       }}
     >
       {children}

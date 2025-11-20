@@ -210,7 +210,25 @@ const apiService = {
     return await fetchData(`${PATH}/pending-progress-view/`, 'GET');
   },
 
-  
+  async toggleFavoriteCompanies(updatedList) {
+    const token = localStorage.getItem("auth_token");
+    const response = await fetch(`${API_URL}/profile/update/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Token ${token}`
+      },
+      body: JSON.stringify({
+        favorite_insurance_companies: updatedList
+      })
+    });
+
+    const data = await response.json();
+    return { success: response.ok, data };
+  }
+
+
+
 };
 
 export default apiService;
