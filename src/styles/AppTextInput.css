@@ -1,0 +1,144 @@
+.app-text-input {
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.input-label {
+  font-size: 13px;
+  color: #5A5A5A;
+  margin-bottom: 6px;
+  font-weight: 500;
+  display: block;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #E3E3E3;
+  border-radius: 12px;
+  padding: 0 12px;
+  background-color: #FFF;
+  transition: border-color 0.3s ease;
+  position: relative;
+}
+
+.input-container:hover {
+  border-color: #999;
+}
+
+.input-container:focus-within {
+  border-color: #1E88E5;
+  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.1);
+}
+
+.input-container.error {
+  border-color: #C62828;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.5;
+}
+
+.text-input {
+  flex: 1;
+  padding: 10px 0;
+  color: #222;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  resize: none; /* textarea için */
+}
+
+.text-input.with-icon {
+  margin-left: 0;
+}
+
+.text-input.multiline {
+  resize: vertical;
+  min-height: 40px;
+  padding: 12px 0;
+  line-height: 1.4;
+}
+
+.text-input::placeholder {
+  color: #9E9E9E;
+}
+
+.action-button {
+  padding-left: 8px;
+  font-weight: 700;
+  color: #1E88E5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.action-button:hover {
+  color: #1565C0;
+  text-decoration: underline;
+}
+
+.error-text {
+  color: #C62828;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.helper-text {
+  color: #8A8A8A;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* Dark theme */
+.app-text-input.dark .input-label {
+  color: #fff;
+}
+
+.app-text-input.dark .input-container {
+  background-color: #222;
+  border-color: #444;
+}
+
+.app-text-input.dark .text-input {
+  color: #fff;
+  background-color: #222;
+}
+
+.app-text-input.dark .text-input::placeholder {
+  color: #9E9E9E;
+}
+
+.app-text-input.dark .action-button {
+  color: #64B5F6;
+}
+
+.app-text-input.dark .action-button:hover {
+  color: #42A5F5;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .input-container {
+    padding: 0 8px;
+  }
+  
+  .text-input {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+}

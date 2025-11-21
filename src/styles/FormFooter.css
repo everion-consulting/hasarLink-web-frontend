@@ -1,0 +1,92 @@
+.form-footer {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: center;
+  width: 100%;
+}
+
+.form-footer .back-btn,
+.form-footer .next-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  width: 47%;
+  border-radius: 14px;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poppins-Medium", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.form-footer .back-btn {
+  background-color: #CBDCEB;
+}
+
+.form-footer .next-btn {
+  background-color: #133E87;
+}
+
+.form-footer .next-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.form-footer .back-btn:hover:not(:disabled),
+.form-footer .next-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-footer .back-text {
+  color: #000000;
+}
+
+.form-footer .next-text {
+  color: #ffffff;
+}
+
+.form-footer .icon-wrap {
+  background: rgba(255, 233, 233, 0.3);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark theme */
+.form-footer.dark .back-btn {
+  background-color: #CBDCEB;
+}
+
+.form-footer.dark .next-btn {
+  background-color: #608BC1;
+}
+
+.form-footer.dark .back-text {
+  color: #000000;
+}
+
+.form-footer.dark .next-text {
+  color: #ffffff;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .form-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .form-footer .back-btn,
+  .form-footer .next-btn {
+    width: 100%;
+  }
+}

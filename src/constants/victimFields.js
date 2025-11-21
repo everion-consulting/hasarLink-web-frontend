@@ -1,10 +1,5 @@
 // ===================================
 // victimFields.js
-import {
-  IdentificationIcon,
-  CheckBadgeIcon,
-} from 'react-native-heroicons/outline';
-import { formatPlate } from '../utils/formatter';
 
 /**
  * 📅 formatToISO

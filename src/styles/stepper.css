@@ -1,0 +1,135 @@
+/* Stepper.css */
+
+.stepper-container {
+  width: 100%;
+  padding: 20px 0;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.circle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.step-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.step-button:hover {
+  transform: scale(1.05);
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
+  border: 3px solid #ccc;
+  transition: all 0.3s ease;
+}
+
+.step-circle.active {
+  background-color: #1a4d8c;
+  border-color: #1a4d8c;
+  box-shadow: 0 4px 6px -1px rgba(26, 77, 140, 0.3);
+}
+
+.step-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 80px;
+  margin-top: 8px;
+}
+
+.line-between {
+  height: 3px;
+  background-color: #ccc;
+  flex: 1;
+  min-width: 60px;
+  max-width: 100px;
+  align-self: flex-start;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.line-between.completed {
+  background-color: #1a4d8c;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .step-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .step-number {
+    font-size: 14px;
+  }
+
+  .step-label {
+    font-size: 11px;
+    max-width: 70px;
+  }
+
+  .line-between {
+    min-width: 40px;
+    max-width: 80px;
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .step-number {
+    font-size: 13px;
+  }
+
+  .step-label {
+    font-size: 10px;
+    max-width: 60px;
+  }
+
+  .line-between {
+    min-width: 30px;
+    max-width: 60px;
+    margin-top: 16px;
+  }
+}
