@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './../../styles/victimInfoScreen.css'; 
 import FormRenderer from '../forms/FormRenderer';
 import { getVictimFields } from '../../constants/victimFields';
 import Stepper from '../stepper/Stepper';
 
 const VictimInfoStepper = ({ samePerson = false }) => {
+  const navigate = useNavigate();
   const [isCompany, setIsCompany] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
   const [formValues, setFormValues] = useState({});
 
-  // samePerson durumuna göre adımları belirle
   const steps = samePerson
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
-  // victimFields'dan form alanlarını al
   const victimFields = getVictimFields(isCompany);
 
-  // Şirket durumu değiştiğinde form değerlerini güncelle
   useEffect(() => {
     setFormValues(prev => ({
       ...prev,
@@ -25,25 +23,12 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     }));
   }, [isCompany]);
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      // Form gönderimi/tamamlandı
-      console.log('Form Tamamlandı!', formValues);
-    }
-  };
-
   const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else {
-      console.log('Geri Dön (Önceki Sayfaya)');
-    }
+    navigate(-1); // Bir önceki sayfaya dön
   };
 
   const handleFormSubmit = (values) => {
-    console.log('Form verileri:', values);
+    console.log('Mağdur Form verileri:', values);
     
     // Transform işlemlerini uygula
     const transformedValues = { ...values };
@@ -54,7 +39,15 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     });
     
     setFormValues(prev => ({ ...prev, ...transformedValues }));
-    handleNext();
+    
+    // Mağdur bilgileri tamamlandıktan sonra DriverInfoScreen'e yönlendir
+    console.log('Navigating to /driver-info');
+    navigate('/driver-info', { 
+      state: { 
+        victimData: transformedValues,
+        samePerson 
+      } 
+    });
   };
 
   const renderVictimTypeSwitch = () => (
@@ -97,53 +90,22 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   return (
     <div className="screen-container">
       <div className="content-area">
-        <Stepper steps={steps} currentStep={currentStep} />
+        <Stepper steps={steps} currentStep={1} />
 
-        <h2 className="section-title">
-          {currentStep === 1 ? 'Mağdur Bilgileri' : 
-           (samePerson && currentStep === 2) ? 'Araç Bilgileri' : 
-           (!samePerson && currentStep === 2) ? 'Sürücü Bilgileri' : 
-           'Araç Bilgileri'}
-        </h2>
+        <h2 className="section-title">Mağdur Bilgileri</h2>
         
         <div className="form-card">
-          {currentStep === 1 && (
-            <div className="form-section-content">
-              {renderVictimTypeSwitch()}
-              <FormRenderer
-                fields={victimFields}
-                values={formValues}
-                setValues={setFormValues}
-                onSubmit={handleFormSubmit}
-                submitLabel="DEVAM ET"
-                renderFooter={renderFormFooter}
-              />
-            </div>
-          )}
-          
-          {currentStep === 2 && !samePerson && (
-            <div className="form-renderer-container">
-              <p>Sürücü Bilgileri Formu - victimFields benzeri yapı ile genişletilebilir</p>
-            </div>
-          )}
-          
-          {((samePerson && currentStep === 2) || (!samePerson && currentStep === 3)) && (
-            <div className="form-renderer-container">
-              <p>Araç Bilgileri Formu - victimFields benzeri yapı ile genişletilebilir</p>
-            </div>
-          )}
-
-          {/* Sadece 1. adımda FormRenderer kullanılıyor, diğer adımlar için placeholder */}
-          {currentStep !== 1 && (
-            <div className="form-footer-web">
-              <button className="back-button-web" onClick={handleBack}>
-                <span className="arrow-icon-left">←</span> GERİ DÖN
-              </button>
-              <button className="next-button-web" onClick={handleNext}>
-                DEVAM ET <span className="arrow-icon">➔</span>
-              </button>
-            </div>
-          )}
+          <div className="form-section-content">
+            {renderVictimTypeSwitch()}
+            <FormRenderer
+              fields={victimFields}
+              values={formValues}
+              setValues={setFormValues}
+              onSubmit={handleFormSubmit}
+              submitLabel="DEVAM ET"
+              renderFooter={renderFormFooter}
+            />
+          </div>
         </div>
       </div>
     </div>

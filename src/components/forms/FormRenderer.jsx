@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   maskPhone,
   maskTCKN,
@@ -16,7 +16,6 @@ import {
 import FormFooter from "./FormFooter";
 import AppTextInput from "../input templates/AppTextInput";
 
-// Hero Icons import
 import {
   ChevronDownIcon,
   CalendarIcon,
@@ -46,9 +45,9 @@ export default function FormRenderer({
   const [errors, setErrors] = useState({});
   const [currentDropdown, setCurrentDropdown] = useState(null);
   const [searchText, setSearchText] = useState("");
-  
-  // 🔥 dateRefs tanımını ekleyin
+
   const dateRefs = useRef({});
+  const dropdownRef = useRef(null);
 
   function applyMask(type, v) {
     if (type === "phone") return maskPhone(v);
@@ -66,7 +65,16 @@ export default function FormRenderer({
   }
 
   function validateField(f, v) {
-    if (f.required && !String(v).trim()) return "Bu alan zorunludur";
+    const isEmpty = !String(v).trim();
+
+    if (f.required && isEmpty) {
+      return "Bu alan zorunludur";
+    }
+
+    if (isEmpty && !f.required) {
+      return null;
+    }
+
     if (f.type === "email" && v && !validateEmail(v)) return "Geçerli e-mail girin";
     if (f.type === "phone" && v && !validatePhone(v)) return "Telefon 0 (5xx) xxx xx xx olmalı";
     if (f.type === "tckn" && v && !validateTCKN(v)) return "TCKN 11 hane olmalı";
@@ -78,13 +86,55 @@ export default function FormRenderer({
     return null;
   }
 
-  function handleChange(name, type, v, formatter) {
-    let value = applyMask(type, v);
-    if (formatter && typeof formatter === "function") {
-      value = formatter(value);
+  function handleChange(name, type, value, formatter) {
+    let actualValue = value;
+    if (value && typeof value === 'object' && value.target) {
+      actualValue = value.target.value;
     }
-    setValues((p) => ({ ...p, [name]: value }));
+
+    let finalValue = applyMask(type, actualValue);
+
+    if (formatter && typeof formatter === "function") {
+      finalValue = formatter(finalValue);
+    }
+
+    setValues(prevValues => ({
+      ...prevValues,
+      [name]: finalValue
+    }));
   }
+
+  function handleDropdownSelect(name, value) {
+    console.log(`🎯 Dropdown SELECTED: ${name} = ${value}`);
+
+    setValues(prevValues => {
+      const newValues = {
+        ...prevValues,
+        [name]: value
+      };
+      console.log('📝 Updated values:', newValues);
+      return newValues;
+    });
+
+    setCurrentDropdown(null);
+    setSearchText("");
+  }
+
+  // 🔥 Click outside için useEffect
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        console.log('🖱️ Clicked outside dropdown');
+        setCurrentDropdown(null);
+        setSearchText("");
+      }
+    }
+
+    if (currentDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [currentDropdown]);
 
   function getFieldIcon(name, type) {
     if (type === "dropdown") return ChevronDownIcon;
@@ -109,20 +159,125 @@ export default function FormRenderer({
   function submit() {
     const nextErrors = {};
     for (const f of fields) {
+      if (f.type === "title" || f.type === "row") {
+        if (f.type === "row" && f.children) {
+          for (const child of f.children) {
+            const e = validateField(child, values[child.name] ?? "");
+            if (e) nextErrors[child.name] = e;
+          }
+        }
+        continue;
+      }
+
       const e = validateField(f, values[f.name] ?? "");
       if (e) nextErrors[f.name] = e;
     }
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) onSubmit(values);
+
+    console.log('Submit - Errors:', nextErrors);
+    console.log('Submit - Values:', values);
+
+    if (Object.keys(nextErrors).length === 0) {
+      onSubmit(values);
+    }
   }
 
-  const allValid = fields.every((f) => !validateField(f, values[f.name] ?? ""));
+  const allValid = fields.every((f) => {
+    if (f.type === "title") return true;
+    if (f.type === "row") {
+      return f.children.every(child => {
+        const error = validateField(child, values[child.name] ?? "");
+        return !error; // Hata yoksa true döner
+      });
+    }
+
+    // Diğer field türleri için
+    const error = validateField(f, values[f.name] ?? "");
+    return !error; // Hata yoksa true döner
+  });
+
+  const renderDropdown = (field) => {
+    const currentValue = values[field.name];
+    const isOpen = currentDropdown === field.name;
+
+    return (
+      <div
+        key={field.name}
+        className="form-field"
+        ref={isOpen ? dropdownRef : null}
+      >
+        {field.label && <label className="form-label">{field.label}</label>}
+
+        <div
+          className={`dropdown-trigger ${isOpen ? 'active' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log(`🖱️ Dropdown trigger clicked: ${field.name}`);
+            setCurrentDropdown(isOpen ? null : field.name);
+            setSearchText("");
+          }}
+        >
+          <span className={`dropdown-value ${!currentValue ? 'placeholder' : ''}`}>
+            {currentValue
+              ? field.options?.find(opt => opt.value === currentValue)?.label || currentValue
+              : field.placeholder || "Seçiniz"}
+          </span>
+          <ChevronDownIcon className="dropdown-icon" />
+        </div>
+
+        {isOpen && (
+          <div className="dropdown-menu open">
+            {field.options && field.options.length > 0 && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Ara..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="dropdown-search"
+                />
+                <div className="dropdown-options">
+                  {field.options
+                    .filter(opt =>
+                      opt.label.toLowerCase().includes(searchText.toLowerCase())
+                    )
+                    .map((item) => (
+                      <div
+                        key={item.value}
+                        className="dropdown-option"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log(`🖱️ Option clicked: ${field.name} = ${item.value}`);
+                          handleDropdownSelect(field.name, item.value);
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
+            <button
+              className="dropdown-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentDropdown(null);
+                setSearchText("");
+              }}
+            >
+              Kapat
+            </button>
+          </div>
+        )}
+        {errors[field.name] && <span className="error-text">{errors[field.name]}</span>}
+      </div>
+    );
+  };
 
   return (
     <div className="form-renderer">
       <div className="form-container">
         {fields.map((f) => {
-          // 🔹 Title alanı
           if (f.type === "title") {
             return (
               <h3 key={f.label} className="form-title">
@@ -131,14 +286,12 @@ export default function FormRenderer({
             );
           }
 
-          // 🔹 Row tipi
           if (f.type === "row") {
             return (
               <div key={f.name} className="form-row">
                 {f.children.map((childField) => {
                   const IconComponent = childField.icon ?? getFieldIcon(childField.name, childField.type);
 
-                  // 🔥 Date alanı - row içinde
                   if (childField.type === "date") {
                     const currentValue = values[childField.name] || "";
 
@@ -191,68 +344,10 @@ export default function FormRenderer({
                     );
                   }
 
-                  // Dropdown alanı - row içinde
                   if (childField.type === "dropdown") {
-                    return (
-                      <div key={childField.name} className="form-field">
-                        {childField.label && <label className="form-label">{childField.label}</label>}
-                        <div
-                          className={`dropdown-trigger ${currentDropdown === childField.name ? 'active' : ''}`}
-                          onClick={() => {
-                            setCurrentDropdown(currentDropdown === childField.name ? null : childField.name);
-                            setSearchText("");
-                          }}
-                        >
-                          <span className={`dropdown-value ${!values[childField.name] ? 'placeholder' : ''}`}>
-                            {values[childField.name]
-                              ? childField.options.find(opt => opt.value === values[childField.name])?.label
-                              : childField.placeholder || "Seçiniz"}
-                          </span>
-                          <ChevronDownIcon className="dropdown-icon" />
-                        </div>
-
-                        {currentDropdown === childField.name && (
-                          <div className="dropdown-menu open">
-                            <input
-                              type="text"
-                              placeholder="Ara..."
-                              value={searchText}
-                              onChange={(e) => setSearchText(e.target.value)}
-                              className="dropdown-search"
-                            />
-                            <div className="dropdown-options">
-                              {childField.options
-                                .filter(opt =>
-                                  opt.label.toLowerCase().includes(searchText.toLowerCase())
-                                )
-                                .map((item) => (
-                                  <div
-                                    key={item.value}
-                                    className="dropdown-option"
-                                    onClick={() => {
-                                      handleChange(childField.name, childField.type, item.value);
-                                      setCurrentDropdown(null);
-                                      setSearchText("");
-                                    }}
-                                  >
-                                    {item.label}
-                                  </div>
-                                ))}
-                            </div>
-                            <button
-                              className="dropdown-close"
-                              onClick={() => { setCurrentDropdown(null); setSearchText(""); }}
-                            >
-                              Kapat
-                            </button>
-                          </div>
-                        )}
-                        {errors[childField.name] && <span className="error-text">{errors[childField.name]}</span>}
-                      </div>
-                    );
+                    return renderDropdown(childField);
                   }
 
-                  // Diğer input türleri - row içinde
                   return (
                     <div key={childField.name} className="form-field">
                       <AppTextInput
@@ -275,69 +370,10 @@ export default function FormRenderer({
             );
           }
 
-          // 🔹 Dropdown - tek başına
           if (f.type === "dropdown") {
-            const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
-            return (
-              <div key={f.name} className="form-field">
-                {f.label && <label className="form-label">{f.label}</label>}
-                <div
-                  className={`dropdown-trigger ${currentDropdown === f.name ? 'active' : ''}`}
-                  onClick={() => {
-                    setCurrentDropdown(currentDropdown === f.name ? null : f.name);
-                    setSearchText("");
-                  }}
-                >
-                  <span className={`dropdown-value ${!values[f.name] ? 'placeholder' : ''}`}>
-                    {values[f.name]
-                      ? f.options.find(opt => opt.value === values[f.name])?.label
-                      : f.placeholder || "Seçiniz"}
-                  </span>
-                  <ChevronDownIcon className="dropdown-icon" />
-                </div>
-
-                {currentDropdown === f.name && (
-                  <div className="dropdown-menu open">
-                    <input
-                      type="text"
-                      placeholder="Ara..."
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                      className="dropdown-search"
-                    />
-                    <div className="dropdown-options">
-                      {f.options
-                        .filter(opt =>
-                          opt.label.toLowerCase().includes(searchText.toLowerCase())
-                        )
-                        .map((item) => (
-                          <div
-                            key={item.value}
-                            className="dropdown-option"
-                            onClick={() => {
-                              handleChange(f.name, f.type, item.value);
-                              setCurrentDropdown(null);
-                              setSearchText("");
-                            }}
-                          >
-                            {item.label}
-                          </div>
-                        ))}
-                    </div>
-                    <button
-                      className="dropdown-close"
-                      onClick={() => { setCurrentDropdown(null); setSearchText(""); }}
-                    >
-                      Kapat
-                    </button>
-                  </div>
-                )}
-                {errors[f.name] && <span className="error-text">{errors[f.name]}</span>}
-              </div>
-            );
+            return renderDropdown(f);
           }
 
-          // 🔥 Date alanı - tek başına
           if (f.type === "date") {
             const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
             const currentValue = values[f.name] || "";
@@ -389,7 +425,6 @@ export default function FormRenderer({
             );
           }
 
-          // 🔹 Default TextInput
           const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
           return (
             <AppTextInput
@@ -423,17 +458,7 @@ export default function FormRenderer({
           />
         )}
       </div>
-
-      {/* Backdrop - dışarı tıklayınca kapanma */}
-      {currentDropdown && (
-        <div
-          className="dropdown-backdrop"
-          onClick={() => {
-            setCurrentDropdown(null);
-            setSearchText("");
-          }}
-        />
-      )}
     </div>
   );
 }
+

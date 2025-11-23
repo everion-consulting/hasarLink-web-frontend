@@ -1,5 +1,5 @@
 import React from "react";
-
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import "../../styles/formFooter.css";
 
 const FormFooter = ({ 
@@ -11,14 +11,14 @@ const FormFooter = ({
 }) => {
   
   return (
-    <div className={`form-footer ${isDark ? 'dark' : ''}`}>
+    <div className="form-footer">
       <button
         className="back-btn"
         onClick={onBack}
         type="button"
       >
         <div className="icon-wrap">
-          <FaArrowLeft size={16} color="#000" />
+          <ArrowLeftIcon className="icon" />
         </div>
         <span className="back-text">{backLabel}</span>
       </button>
@@ -31,7 +31,7 @@ const FormFooter = ({
       >
         <span className="next-text">{nextLabel}</span>
         <div className="icon-wrap">
-          <FaArrowRight size={16} color="#ffffff" />
+          <ArrowRightIcon className="icon" />
         </div>
       </button>
     </div>

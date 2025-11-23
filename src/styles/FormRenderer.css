@@ -1,16 +1,16 @@
-/* styles/formRenderer.css */
-
 .form-renderer {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
+  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
 }
 
 .form-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
 }
 
 .form-title {
@@ -23,17 +23,21 @@
 }
 
 .form-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   width: 100%;
+  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
 }
 
+/* 🔥 Form field - Z-index hierarchy başlangıcı */
 .form-field {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
   position: relative;
+  z-index: 1;
+  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
 }
 
 .form-label {
@@ -43,7 +47,10 @@
   margin-bottom: 4px;
 }
 
-/* 🔥 Tarih alanı için özel stiller - DÜZELTİLDİ */
+/* ========================================
+   📅 TARİH ALANI STİLLERİ
+   ======================================== */
+
 .date-input-wrapper {
   position: relative;
   width: 100%;
@@ -58,20 +65,25 @@
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
   min-height: 48px;
   width: 100%;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .date-trigger:hover {
   border-color: #3b82f6;
 }
 
+.date-trigger:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .date-trigger .field-icon {
-  width: 20px !important;
-  height: 20px !important;
+  width: 20px;
+  height: 20px;
   color: #6b7280;
   flex-shrink: 0;
   pointer-events: none;
@@ -89,7 +101,7 @@
   color: #9ca3af;
 }
 
-/* 🔥 Native date input - üstte, şeffaf ama tıklanabilir */
+/* Native date input (gizli) */
 .native-date-input {
   position: absolute;
   top: 0;
@@ -103,7 +115,6 @@
   background: transparent;
 }
 
-/* Native input'un tarayıcı default stillerini kaldır */
 .native-date-input::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
@@ -122,20 +133,25 @@
   display: none;
 }
 
-/* Dropdown stilleri */
+/* ========================================
+   🔽 DROPDOWN STİLLERİ - TAM DÜZELTİLMİŞ
+   ======================================== */
+
+/* Dropdown trigger */
 .dropdown-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  position: relative;
   padding: 12px 16px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  background-color: white;
+  background: white;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   min-height: 48px;
-  position: relative;
+  transition: all 0.2s ease;
   width: 100%;
+  z-index: 2;
 }
 
 .dropdown-trigger:hover {
@@ -145,6 +161,7 @@
 .dropdown-trigger.active {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  z-index: 9998; /* 🔥 Aktif olduğunda yüksel */
 }
 
 .dropdown-value {
@@ -164,13 +181,14 @@
   color: #6b7280;
   transition: transform 0.2s ease;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .dropdown-trigger.active .dropdown-icon {
   transform: rotate(180deg);
 }
 
-/* Dropdown menu */
+/* 🔥 Dropdown menu - EN YÜKSEK Z-INDEX */
 .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -180,92 +198,260 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  z-index: 60;
-  margin-top: 4px;
-  max-height: 200px;
+  z-index: 9999;
+  margin-top: 0;
+  max-height: 300px;
   overflow: hidden;
   display: none;
+  animation: dropdownFadeIn 0.2s ease;
 }
 
 .dropdown-menu.open {
   display: block;
 }
 
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown search input */
 .dropdown-search {
   padding: 12px 16px;
   border: none;
   border-bottom: 1px solid #e5e7eb;
   width: 100%;
   font-size: 14px;
+  background: #f9fafb;
+  z-index: 10000;
+  position: relative;
 }
 
 .dropdown-search:focus {
   outline: none;
   border-color: #3b82f6;
+  background: white;
 }
 
+/* 🔥 Dropdown options container */
 .dropdown-options {
-  max-height: 150px;
+  max-height: 200px;
   overflow-y: auto;
+  position: relative;
+  z-index: 10000;
+  background: white;
 }
 
+/* 🔥 Dropdown option - EN ÖNEMLİ KISIM */
 .dropdown-option {
   padding: 12px 16px;
   cursor: pointer;
   font-size: 14px;
+  color: #374151;
   border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.2s ease;
+  transition: all 0.15s ease;
+  position: relative;
+  z-index: 10001;
+  background: white;
+  pointer-events: auto; /* 🔥 Tıklanabilir yap */
+  user-select: none;
 }
 
 .dropdown-option:hover {
-  background-color: #f3f4f6;
+  background-color: #3b82f6;
+  color: white;
+  z-index: 10002;
+}
+
+.dropdown-option:active {
+  background-color: #2563eb;
 }
 
 .dropdown-option:last-child {
   border-bottom: none;
 }
 
+/* Dropdown close button */
 .dropdown-close {
-  padding: 8px 16px;
+  padding: 12px 16px;
   background-color: #f8fafc;
   border: none;
   border-top: 1px solid #e5e7eb;
   width: 100%;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   color: #6b7280;
+  transition: background-color 0.2s ease;
+  z-index: 10000;
+  position: relative;
 }
 
 .dropdown-close:hover {
   background-color: #f1f5f9;
+  color: #374151;
 }
 
-/* Backdrop */
+/* 🔥 Backdrop - DEVRE DIŞI */
 .dropdown-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
-  background: transparent;
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
-/* Hata mesajları */
+/* ========================================
+   ❌ HATA MESAJLARI
+   ======================================== */
+
 .error-text {
   color: #dc2626;
   font-size: 12px;
   margin-top: 4px;
+  display: block;
 }
 
-/* Responsive tasarım */
+/* Form alanı hata durumu */
+.form-field.has-error .dropdown-trigger,
+.form-field.has-error .date-trigger {
+  border-color: #dc2626;
+}
+
+.form-field.has-error .dropdown-trigger:focus,
+.form-field.has-error .date-trigger:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* ========================================
+   📱 RESPONSİVE TASARIM
+   ======================================== */
+
 @media (max-width: 768px) {
   .form-row {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 12px;
   }
-
-  .form-field {
-    width: 100%;
+  
+  .form-renderer {
+    padding: 0 16px;
+  }
+  
+  /* Mobile'de dropdown tam ekran modal gibi */
+  .dropdown-menu {
+    position: fixed;
+    top: 50%;
+    left: 16px;
+    right: 16px;
+    transform: translateY(-50%);
+    max-height: 80vh;
+    margin-top: 0;
+    z-index: 99999; /* 🔥 Mobile'de çok yüksek */
+  }
+  
+  .dropdown-menu.open {
+    display: block;
   }
 }
+
+@media (max-width: 480px) {
+  .form-title {
+    font-size: 16px;
+  }
+  
+  .dropdown-trigger,
+  .date-trigger {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  
+  .dropdown-option {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+}
+
+/* ========================================
+   ⏳ LOADING STATE
+   ======================================== */
+
+.dropdown-trigger.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.dropdown-trigger.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* ========================================
+   🎨 EK İYİLEŞTİRMELER
+   ======================================== */
+
+/* Scrollbar styling */
+.dropdown-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-options::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.dropdown-options::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dropdown-options::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Focus states */
+.dropdown-trigger:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.dropdown-option:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+/* Disabled state */
+.dropdown-trigger.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+}
+
+.dropdown-trigger.disabled:hover {
+  border-color: #d1d5db;
+}
+
+/* Empty state */
+.dropdown-options:empty::after {
+  content: "Sonuç bulunamadı";
+  display: block;
+  padding: 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+} 

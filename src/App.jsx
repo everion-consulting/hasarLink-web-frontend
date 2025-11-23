@@ -7,6 +7,9 @@ import { ProfileProvider } from "./context/ProfileContext";
 import Profile from "./components/pages/Profile";
 import VictimInfoStepper from "./components/pages/VictimInfoStepper";
 import InsuranceSelect from "./components/pages/InsuranceSelect";
+import DriverInfoScreen from "./components/pages/DriverInfoScreen";
+import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
+import StepInfoScreen from "./components/pages/StepInfoScreen";
 
 export default function App() {
   const savedToken = localStorage.getItem("authToken");
@@ -38,6 +41,18 @@ export default function App() {
           <Route
             path="/victim-info"
             element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/driver-info"
+            element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/driver-victim-stepper"
+            element={isAuth ? <DriverVictimStepperScreen  /> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/step-info"
+            element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />}
           />
 
           <Route
