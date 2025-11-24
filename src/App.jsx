@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from "./config";
 import AuthTabs from "./components/AuthTabs";
+import ForgotPassword from "./components/ForgotPassword";
 import Home from "./components/pages/Home";
 import TopBar from "./components/TopBar";
 import { ProfileProvider } from "./context/ProfileContext";
@@ -33,7 +36,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/step-info" element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/insurance-select" element={isAuth ? <InsuranceSelect /> : <Navigate to="/auth" replace />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -47,17 +50,63 @@ export default function App() {
   const validToken = savedToken && savedToken !== "undefined" && savedToken !== "null";
   const [isAuth, setIsAuth] = useState(!!validToken);
 
+  // Token kontrolü - her 5 dakikada bir
   useEffect(() => {
-    const checkAuth = () => setIsAuth(!!localStorage.getItem("authToken"));
+    const checkTokenValidity = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token || token === "undefined" || token === "null") {
+        if (isAuth) {
+          setIsAuth(false);
+          localStorage.clear();
+        }
+        return;
+      }
+
+      // Token'in geçerliliğini kontrol et (API çağrısı ile)
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE || "https://dosya-bildirim-vrosq.ondigitalocean.app"}/api/profile/`, {
+          headers: {
+            "Authorization": `Token ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          // Token geçersiz
+          console.log("⚠️ Token geçersiz, oturum sonlandırılıyor");
+          localStorage.clear();
+          setIsAuth(false);
+        }
+      } catch (err) {
+        console.error("Token kontrol hatası:", err);
+      }
+    };
+
+    // İlk kontrol
+    if (isAuth) {
+      checkTokenValidity();
+    }
+
+    // Her 5 dakikada bir kontrol et
+    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [isAuth]);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("authToken");
+      setIsAuth(!!(token && token !== "undefined" && token !== "null"));
+    };
     window.addEventListener("storage", checkAuth);
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   return (
-    <Router>
-      <ProfileProvider>
-        <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
-      </ProfileProvider>
-    </Router>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Router>
+        <ProfileProvider>
+          <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
+        </ProfileProvider>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }

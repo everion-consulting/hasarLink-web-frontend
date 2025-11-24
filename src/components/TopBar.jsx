@@ -1,10 +1,29 @@
+// src/components/TopBar.jsx
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import AuthAPI from "../services/authAPI";
 import "../styles/topbar.css";
 
 export default function TopBar() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
+    const handleLogout = async () => {
+        const confirm = window.confirm("Çıkış yapmak istediğinizden emin misiniz?");
+        if (!confirm) return;
+
+        try {
+            await AuthAPI.logout();
+            // Storage event'ı tetiklemek için
+            window.dispatchEvent(new Event('storage'));
+            navigate("/auth");
+        } catch (err) {
+            console.error("Logout error:", err);
+            // Hata olsa bile çıkış yap
+            window.dispatchEvent(new Event('storage'));
+            navigate("/auth");
+        }
+    };
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     return (
         <header className="topbar">
             <div className="logo">HASARLİNK</div>
@@ -29,8 +48,8 @@ export default function TopBar() {
             </nav>
 
             {/* Desktop CTA */}
-            <button className="contact-btn desktop-menu">
-                İLETİŞİME GEÇ
+            <button className="contact-btn logout-btn" onClick={handleLogout}>
+                ÇIKIŞ YAP
                 <span className="contact-btn-icon">
                     <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
                 </span>
