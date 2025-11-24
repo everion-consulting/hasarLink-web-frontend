@@ -1,42 +1,20 @@
-import { usageTypeOptions, vehicleTypeOptions } from "../components/EmptyObject/EmptyObjects";
+import { vehicleTypeOptions, usageTypeOptions } from '../components/EmptyObject/EmptyObjects';
 import {
-  ChevronDownIcon,
   CalendarIcon,
-  UserIcon,
   IdentificationIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  CreditCardIcon,
-  TagIcon,
   TruckIcon,
   RectangleStackIcon,
   QrCodeIcon,
   Cog6ToothIcon,
-  ListBulletIcon,
-} from 'react-native-heroicons/outline';
-import { formatPlate } from "../utils/formatter";
+} from '@heroicons/react/24/outline';
+import { formatPlate } from '../components/utils/formatter';
 
 /**
  * vehicleFields
  * - Araç bilgileri formunda kullanılacak alan tanımlarını içerir.
- * - Her alan nesnesi, formda gösterilecek inputun özelliklerini belirler.
- * - FormRenderer gibi dinamik form bileşenlerinde kullanılır.
- * 
- * Her alan için:
- *   - name: Form state anahtarı ve inputun benzersiz adı
- *   - label: Input başlığı (kullanıcıya gösterilen metin)
- *   - placeholder: Inputun içinde gri açıklama metni
- *   - type: Alan tipi (örn: text, number, dropdown)
- *   - required: Zorunlu alan mı? (opsiyonel)
- *   - options: Dropdown için seçenekler (opsiyonel)
- *   - icon: Inputun solunda gösterilecek ikon (Ionicons veya FontAwesome)
- *   - maxLength: Maksimum karakter sayısı (opsiyonel)
  */
 
-// constants/vehicleFields.js
-// constants/vehicleFields.js
 export default [
-
   {
     name: "vehicle_brand",
     label: "Araç Markası",
@@ -44,7 +22,7 @@ export default [
     placeholder: "Araç markası giriniz",
     required: true,
     icon: TruckIcon,
-    formatter: formatPlate,
+    // ❌ formatter kaldırıldı - marka için gerekli değil
   },
   {
     type: "row",
@@ -54,10 +32,11 @@ export default [
         name: "vehicle_type",
         label: "Araç Türü",
         type: "dropdown",
-        placeholder: "Sedan",
+        placeholder: "Seçiniz",
         required: true,
         icon: TruckIcon,
-        options: vehicleTypeOptions
+        options: vehicleTypeOptions,
+        // ✅ formatter YOK - dropdown için gerekli değil
       },
       {
         name: "vehicle_model",
@@ -66,7 +45,7 @@ export default [
         placeholder: "Corolla",
         required: true,
         icon: RectangleStackIcon,
-        formatter: formatPlate,
+        // ❌ formatter kaldırıldı - model için gerekli değil
       }
     ]
   },
@@ -82,7 +61,7 @@ export default [
         placeholder: "AB123456",
         required: true,
         icon: IdentificationIcon,
-        formatter: formatPlate,
+        // ✅ formatter YOK - licenseSerialNo tipi zaten otomatik mask uygular
       },
       {
         name: "vehicle_chassis_no",
@@ -92,7 +71,7 @@ export default [
         placeholder: "Şasi no giriniz",
         required: true,
         icon: QrCodeIcon,
-        formatter: formatPlate,
+        // ✅ formatter YOK - chassisNo tipi zaten otomatik mask uygular
       }
     ]
   },
@@ -107,7 +86,7 @@ export default [
         placeholder: "Motor no giriniz",
         required: true,
         icon: Cog6ToothIcon,
-        formatter: formatPlate,
+        // ❌ formatter kaldırıldı - motor no için gerekli değil
       },
       {
         name: "vehicle_year",
@@ -118,13 +97,19 @@ export default [
         icon: CalendarIcon,
         maxLength: 4,
         keyboardType: "numeric",
-        validate: (value) => {
-          return /^\d{4}$/.test(value) ? null : "Yıl 4 haneli sayı olmalı";
+        validate: (value, values) => {
+          // ✅ values parametresi eklendi (FormRenderer validate'in 2. parametresi)
+          if (!value) return null;
+          const year = parseInt(value);
+          const currentYear = new Date().getFullYear();
+          if (!/^\d{4}$/.test(value)) return "Yıl 4 haneli sayı olmalı";
+          if (year < 1900 || year > currentYear + 1) return "Geçerli bir yıl giriniz";
+          return null;
         }
       }
     ]
   },
-    {
+  {
     type: "row",
     name: "vehicleRow4",
     children: [
@@ -132,19 +117,20 @@ export default [
         name: "vehicle_plate",
         label: "Mağdur Araç Plaka",
         type: "text",
-        placeholder: "34 ABC 123 formatında giriniz",
+        placeholder: "34 ABC 123",
         required: true,
         icon: TruckIcon,
-        formatter: formatPlate,
+        formatter: formatPlate, // ✅ Sadece plaka için formatter kullanılıyor
       },
       {
         name: "vehicle_usage_type",
         label: "Araç Kullanım Türü",
         type: "dropdown",
-        placeholder: "------",
+        placeholder: "Seçiniz",
         required: true,
         icon: TruckIcon,
-        options: usageTypeOptions
+        options: usageTypeOptions,
+        // ✅ formatter YOK - dropdown için gerekli değil
       },
     ]
   },

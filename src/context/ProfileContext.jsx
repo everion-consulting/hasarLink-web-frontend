@@ -107,16 +107,18 @@ export const ProfileProvider = ({ children }) => {
   
   const fetchAllCompanies = async () => {
     try {
-      const res = await apiService.getAllInsuranceCompanies();
+      const companies = await apiService.getPaginationInsuranceCompanies();
 
-      if (res.success) {
-        const data = res.data;
-        setAllCompaniesList(data.results || []);   
-      } else {
+      if (!Array.isArray(companies) || companies.length === 0) {
+        console.log("Şirketler yüklenemedi veya boş veri döndü");
         setAllCompaniesList([]);
+        return;
       }
+
+      console.log('Şirketler başarıyla yüklendi:', companies.length, 'adet');
+      setAllCompaniesList(companies);
     } catch (err) {
-      console.error("Şirket listesi yüklenemedi:", err);
+      console.error('Şirket listesi yüklenirken hata:', err);
       setAllCompaniesList([]);
     }
   };

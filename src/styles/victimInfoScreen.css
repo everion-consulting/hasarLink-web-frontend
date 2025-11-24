@@ -79,7 +79,7 @@ body {
     border-radius: 20px;
     padding: 40px;
     width: 100%;
-    max-width: 500px; /* Görseldeki gibi dar bir form alanı */
+    max-width: 400px; /* Görseldeki gibi dar bir form alanı */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 

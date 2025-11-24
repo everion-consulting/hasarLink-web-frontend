@@ -43,10 +43,13 @@ console.log("allCompaniesList:", allCompaniesList);
         }
     };
 
-    // Liste her zaman array olsun
-    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
+    // --------------------------------------------------
+    // 🔥 EN ÖNEMLİ KISIM → sonuçlar her zaman array olsun
+    // --------------------------------------------------
+    const list = Array.isArray(allCompaniesList?.results)
+        ? allCompaniesList.results
+        : [];
 
-    // Arama filtresi
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
     );
@@ -77,6 +80,13 @@ console.log("allCompaniesList:", allCompaniesList);
                 />
             </div>
 
+            {/* DEBUG BİLGİSİ - Geliştirme sırasında görmek için */}
+            {list.length === 0 && (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                    Şirketler yükleniyor veya veri bulunamadı...
+                </div>
+            )}
+
             {/* FAVORİLER */}
             {favoriteCompanyObjects.length > 0 && (
                 <section>
@@ -100,8 +110,15 @@ console.log("allCompaniesList:", allCompaniesList);
                                     <Star size={22} color="#FFD700" fill="#FFD700" />
                                 </button>
 
-                                <img src={company.photo} alt="" className="company-logo" />
-                                <p className="company-name">{company.name}</p>
+                                                                <img 
+                                    src={company.photo} 
+                                    alt={company.name || "Şirket logosu"} 
+                                    className="company-logo"
+                                    onError={(e) => {
+                                        console.error('Logo yüklenemedi:', company.photo);
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
                             </div>
                         ))}
                     </div>
@@ -113,6 +130,12 @@ console.log("allCompaniesList:", allCompaniesList);
                 <h2 className="section-title">Tüm Sigorta Şirketleri</h2>
 
                 <div className="grid">
+                    {normalCompanies.length === 0 && list.length > 0 && (
+                        <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#666' }}>
+                            {search ? 'Arama sonucu bulunamadı' : 'Tüm şirketler favorilerde'}
+                        </p>
+                    )}
+
                     {normalCompanies.map(company => (
                         <div
                             key={company.id}
@@ -132,8 +155,15 @@ console.log("allCompaniesList:", allCompaniesList);
                                 }
                             </button>
 
-                            <img src={company.photo} alt="" className="company-logo" />
-                            <p className="company-name">{company.name}</p>
+                            <img 
+                                src={company.photo} 
+                                alt={company.name || "Şirket logosu"} 
+                                className="company-logo"
+                                onError={(e) => {
+                                    console.error('Logo yüklenemedi:', company.photo);
+                                    e.target.style.display = 'none';
+                                }}
+                            />
                         </div>
                     ))}
                 </div>
