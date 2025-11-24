@@ -107,7 +107,7 @@ export default function Dashboard() {
           </div>
           <div className="card-dashboard-title-sm">YENİ</div>
           <div className="card-dashboard-title-lg">DOSYA</div>
-          <button className="card-dashboard-btn" onClick={() => navigate('/new-file')}>
+          <button className="card-dashboard-btn" onClick={() => navigate('/insurance-select')}>
             BİLDİR
           </button>
         </div>

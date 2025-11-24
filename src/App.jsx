@@ -10,6 +10,9 @@ import InsuranceSelect from "./components/pages/InsuranceSelect";
 import DriverInfoScreen from "./components/pages/DriverInfoScreen";
 import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
 import StepInfoScreen from "./components/pages/StepInfoScreen";
+import InsuranceStepper from "./components/pages/InsuranceStepper";
+import EditFavoritesScreen from "./components/pages/EditFavoriScreen";
+import AccidentTypeScreen from "./components/pages/AccidentTypeScreen";
 import Contact from "./components/pages/Contact";
 import "./styles/styles.css";
 
@@ -33,6 +36,9 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/step-info" element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/insurance-select" element={isAuth ? <InsuranceSelect /> : <Navigate to="/auth" replace />} />
+        <Route path="/edit-favorites" element={isAuth ? <EditFavoritesScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/insurance-stepper" element={isAuth ? <InsuranceStepper /> : <Navigate to="/auth" replace />} />
+        <Route path="/accident-type" element={isAuth ? <AccidentTypeScreen /> : <Navigate to="/auth" replace />} />
 
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
 

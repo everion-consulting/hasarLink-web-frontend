@@ -167,7 +167,7 @@ export default function InsuranceSelect() {
                 <button
                     className={`continue-btn ${!selectedCompany ? "disabled" : ""}`}
                     disabled={!selectedCompany}
-                    onClick={() => navigate("/step1", {
+                    onClick={() => navigate("/accident-type", {
                         state: { companyId: selectedCompany }
                     })}
                 >
