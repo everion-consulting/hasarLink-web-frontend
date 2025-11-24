@@ -10,13 +10,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
     const {
-        profile,
+        profileData: profile,
         profileDetail,
-        allCompanies,
+        allCompaniesList, // DÜZELTİLDİ: allCompanies yerine allCompaniesList
         loading,
         fetchProfile,
         fetchAllCompanies
     } = useProfile();
+    
     const favoriteCompanies = profileDetail?.favorite_insurance_companies || [];
     const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -37,14 +38,10 @@ export default function Profile() {
         service_tax_no: "",
     });
 
-
-
-
     const [statistics, setStatistics] = useState(null);
     const [loadingStats, setLoadingStats] = useState(true);
     const [fileNotifications, setFileNotifications] = useState([]);
     const navigate = useNavigate();
-
 
     useEffect(() => {
         fetchProfile();
@@ -158,8 +155,6 @@ export default function Profile() {
                         }}>
                             Düzenle
                         </a>
-
-
                     </div>
 
                     <p>{profileDetail?.repair_fullname}</p>
@@ -171,7 +166,7 @@ export default function Profile() {
                 <div className="card">
                     <div className="card-title-row">
                         <h3 className="card-title">FAVORİ SİGORTA ŞİRKETLERİM</h3>
-                        <a className="mini-link">Düzenle</a>
+                        <a className="mini-link" onClick={() => navigate("/edit-favorites")}>Düzenle</a>
                     </div>
 
                     <div className="insurer-logos">
@@ -180,13 +175,26 @@ export default function Profile() {
                         )}
 
                         {favoriteCompanies?.map((id) => {
-                            const comp = allCompanies?.find((c) => c.id === id);
+                            // DÜZELTİLDİ: allCompanies yerine allCompaniesList kullanıldı
+                            const comp = allCompaniesList?.find((c) => c.id === id);
+                            console.log('Aranan ID:', id, 'Bulunan Şirket:', comp);
+                            console.log('Tüm Şirketler:', allCompaniesList); // DEBUG için
+                            
+                            if (!comp) {
+                                console.warn(`ID ${id} için şirket bulunamadı!`);
+                                return null;
+                            }
+                            
                             return (
                                 <img
                                     key={id}
                                     src={comp?.photo}
-                                    alt={comp?.name}
+                                    alt={comp?.name || 'Şirket logosu'}
                                     className="insurer-logo"
+                                    onError={(e) => {
+                                        console.error('Resim yüklenemedi:', comp?.photo);
+                                        e.target.style.display = 'none';
+                                    }}
                                 />
                             );
                         })}
@@ -244,7 +252,6 @@ export default function Profile() {
 
                         <div className="modal-form">
 
-                            {/* Tek kolon */}
                             <label>Ad Soyad</label>
                             <input
                                 type="text"
@@ -252,7 +259,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, repair_fullname: e.target.value })}
                             />
 
-                            {/* İKİLİ GRID */}
                             <div className="form-row-2">
                                 <div>
                                     <label>Telefon</label>
@@ -273,7 +279,6 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* Tek kolon */}
                             <label>Doğum Tarihi</label>
                             <input
                                 type="date"
@@ -288,7 +293,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, repair_tc: e.target.value })}
                             />
 
-                            {/* Tek kolon */}
                             <label>Servis Adı</label>
                             <input
                                 type="text"
@@ -296,7 +300,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, service_name: e.target.value })}
                             />
 
-                            {/* İKİLİ GRID */}
                             <div className="form-row-2">
                                 <div>
                                     <label>Servis Şehir</label>
@@ -317,7 +320,6 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* Tek kolon */}
                             <label>Servis Adres</label>
                             <textarea
                                 value={form.service_address}
@@ -357,7 +359,6 @@ export default function Profile() {
                     </div>
                 </div>
             )}
-
 
         </div>
     );

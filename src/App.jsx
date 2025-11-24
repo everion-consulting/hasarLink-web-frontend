@@ -10,6 +10,8 @@ import InsuranceSelect from "./components/pages/InsuranceSelect";
 import DriverInfoScreen from "./components/pages/DriverInfoScreen";
 import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
 import StepInfoScreen from "./components/pages/StepInfoScreen";
+import InsuranceStepper from "./components/pages/InsuranceStepper";
+import EditFavoritesScreen from "./components/pages/EditFavoriScreen";
 
 export default function App() {
   const savedToken = localStorage.getItem("authToken");
@@ -53,6 +55,14 @@ export default function App() {
           <Route
             path="/step-info"
             element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/edit-favorites"
+            element={isAuth ? <EditFavoritesScreen /> : <Navigate to="/auth" replace />}
+          />
+          <Route
+            path="/insurance-stepper"
+            element={isAuth ? <InsuranceStepper /> : <Navigate to="/auth" replace />}
           />
 
           <Route

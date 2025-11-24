@@ -28,7 +28,8 @@ export const ProfileProvider = ({ children }) => {
       } else {
         console.error('Profil detay alınamadı:', res2.message);
       }
-    } catch (err) {q
+    } catch (err) {
+      q
       console.error('Profil verileri yüklenemedi:', err);
     } finally {
       setLoading(false);
@@ -106,16 +107,18 @@ export const ProfileProvider = ({ children }) => {
 
   const fetchAllCompanies = async () => {
     try {
-      const res = await apiService.getAllInsuranceCompanies();
-      if (res.success) {
-        const data = res.data;
-        setAllCompaniesList(Array.isArray(data) ? data : data.results || []);
-      } else {
+      const companies = await apiService.getPaginationInsuranceCompanies();
+
+      if (!Array.isArray(companies) || companies.length === 0) {
+        console.log("Şirketler yüklenemedi veya boş veri döndü");
         setAllCompaniesList([]);
-        console.error('Şirket listesi alınamadı:', res.message);
+        return;
       }
+
+      console.log('Şirketler başarıyla yüklendi:', companies.length, 'adet');
+      setAllCompaniesList(companies);
     } catch (err) {
-      console.error('Şirket listesi yüklenemedi:', err);
+      console.error('Şirket listesi yüklenirken hata:', err);
       setAllCompaniesList([]);
     }
   };
@@ -143,7 +146,7 @@ export const ProfileProvider = ({ children }) => {
         fetchFavoriteCompanies,
         fetchAllCompanies,
         loadFavorites,
-        
+
       }}
     >
       {children}
