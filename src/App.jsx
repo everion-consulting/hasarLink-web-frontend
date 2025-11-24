@@ -10,6 +10,7 @@ import InsuranceSelect from "./components/pages/InsuranceSelect";
 import DriverInfoScreen from "./components/pages/DriverInfoScreen";
 import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
 import StepInfoScreen from "./components/pages/StepInfoScreen";
+import Contact from "./components/pages/Contact";
 import "./styles/styles.css";
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -26,6 +27,7 @@ function AppContent({ isAuth, setIsAuth }) {
       <Routes>
         <Route path="/" element={isAuth ? <Home /> : <Navigate to="/auth" replace />} />
         <Route path="/profile" element={isAuth ? <Profile /> : <Navigate to="/auth" replace />} />
+        <Route path="/contact" element={isAuth ? <Contact /> : <Navigate to="/auth" replace />} />
         <Route path="/victim-info" element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-info" element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
