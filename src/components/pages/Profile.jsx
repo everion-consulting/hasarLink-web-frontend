@@ -10,15 +10,62 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
     const {
-        profile,
+        profileData: profile,
         profileDetail,
-        allCompanies,
+        allCompaniesList, // DÜZELTİLDİ: allCompanies yerine allCompaniesList
         loading,
         fetchProfile,
         fetchAllCompanies
     } = useProfile();
+    
     const favoriteCompanies = profileDetail?.favorite_insurance_companies || [];
+    console.log("favoriteCompanies:", favoriteCompanies);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordLoading, setPasswordLoading] = useState(false);
+
+    const handlePasswordChange = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert("Tüm alanları doldurun");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("Şifreler eşleşmiyor");
+            return;
+        }
+
+        const response = await apiService.changePassword(
+            currentPassword,
+            newPassword,
+            confirmPassword
+        );
+
+        console.log("🔍 BACKEND RESPONSE:", response);
+
+        // Hata mesajını yakalamak için geniş kapsamlı kontrol
+        const backendError =
+            response.data?.detail ||
+            response.data?.message ||
+            Object.values(response.data || {})[0]?.[0];
+
+        if (!response.success) {
+            alert(backendError || "Hata");
+            return;
+        }
+
+        alert("Şifre başarıyla değişti!");
+        setPasswordModalOpen(false);
+
+        // Eğer backend yeni token dönerse:
+        if (response.data?.token) {
+            localStorage.setItem("authToken", response.data.token);
+        }
+    };
+
 
     const [form, setForm] = useState({
         repair_fullname: "",
@@ -37,14 +84,10 @@ export default function Profile() {
         service_tax_no: "",
     });
 
-
-
-
     const [statistics, setStatistics] = useState(null);
     const [loadingStats, setLoadingStats] = useState(true);
     const [fileNotifications, setFileNotifications] = useState([]);
     const navigate = useNavigate();
-
 
     useEffect(() => {
         fetchProfile();
@@ -131,7 +174,10 @@ export default function Profile() {
                 <div className="card">
                     <h3 className="card-title">HESAP BİLGİLERİ</h3>
                     <p>{profile?.email}</p>
-                    <a className="mini-link">Şifreyi değiştir</a>
+                    <a className="mini-link" onClick={() => setPasswordModalOpen(true)}>
+                        Şifreyi değiştir
+                    </a>
+
                 </div>
 
                 <div className="card">
@@ -158,8 +204,6 @@ export default function Profile() {
                         }}>
                             Düzenle
                         </a>
-
-
                     </div>
 
                     <p>{profileDetail?.repair_fullname}</p>
@@ -171,7 +215,7 @@ export default function Profile() {
                 <div className="card">
                     <div className="card-title-row">
                         <h3 className="card-title">FAVORİ SİGORTA ŞİRKETLERİM</h3>
-                        <a className="mini-link">Düzenle</a>
+                        <a className="mini-link" onClick={() => navigate("/edit-favorites")}>Düzenle</a>
                     </div>
 
                     <div className="insurer-logos">
@@ -180,13 +224,26 @@ export default function Profile() {
                         )}
 
                         {favoriteCompanies?.map((id) => {
-                            const comp = allCompanies?.find((c) => c.id === id);
+                            // DÜZELTİLDİ: allCompanies yerine allCompaniesList kullanıldı
+                            const comp = allCompaniesList?.find((c) => c.id === id);
+                            console.log('Aranan ID:', id, 'Bulunan Şirket:', comp);
+                            console.log('Tüm Şirketler:', allCompaniesList); // DEBUG için
+                            
+                            if (!comp) {
+                                console.warn(`ID ${id} için şirket bulunamadı!`);
+                                return null;
+                            }
+                            
                             return (
                                 <img
                                     key={id}
                                     src={comp?.photo}
-                                    alt={comp?.name}
+                                    alt={comp?.name || 'Şirket logosu'}
                                     className="insurer-logo"
+                                    onError={(e) => {
+                                        console.error('Resim yüklenemedi:', comp?.photo);
+                                        e.target.style.display = 'none';
+                                    }}
                                 />
                             );
                         })}
@@ -244,7 +301,6 @@ export default function Profile() {
 
                         <div className="modal-form">
 
-                            {/* Tek kolon */}
                             <label>Ad Soyad</label>
                             <input
                                 type="text"
@@ -252,7 +308,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, repair_fullname: e.target.value })}
                             />
 
-                            {/* İKİLİ GRID */}
                             <div className="form-row-2">
                                 <div>
                                     <label>Telefon</label>
@@ -273,7 +328,6 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* Tek kolon */}
                             <label>Doğum Tarihi</label>
                             <input
                                 type="date"
@@ -288,7 +342,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, repair_tc: e.target.value })}
                             />
 
-                            {/* Tek kolon */}
                             <label>Servis Adı</label>
                             <input
                                 type="text"
@@ -296,7 +349,6 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, service_name: e.target.value })}
                             />
 
-                            {/* İKİLİ GRID */}
                             <div className="form-row-2">
                                 <div>
                                     <label>Servis Şehir</label>
@@ -317,7 +369,6 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* Tek kolon */}
                             <label>Servis Adres</label>
                             <textarea
                                 value={form.service_address}
@@ -358,6 +409,52 @@ export default function Profile() {
                 </div>
             )}
 
+            {passwordModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-card">
+
+                        <h2 className="modal-title">Şifre Değiştir</h2>
+
+                        <div className="modal-form">
+
+                            <label>Mevcut Şifre</label>
+                            <input
+                                type="password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+
+                            <label>Yeni Şifre</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+
+                            <label>Yeni Şifre (Tekrar)</label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+
+                            <div className="modal-buttons">
+                                <button className="btn-cancel" onClick={() => setPasswordModalOpen(false)}>
+                                    İptal
+                                </button>
+
+                                <button
+                                    className="btn-save"
+                                    onClick={handlePasswordChange}
+                                >
+                                    Kaydet
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
