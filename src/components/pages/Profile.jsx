@@ -19,7 +19,53 @@ export default function Profile() {
     } = useProfile();
     
     const favoriteCompanies = profileDetail?.favorite_insurance_companies || [];
+    console.log("favoriteCompanies:", favoriteCompanies);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordLoading, setPasswordLoading] = useState(false);
+
+    const handlePasswordChange = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert("Tüm alanları doldurun");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("Şifreler eşleşmiyor");
+            return;
+        }
+
+        const response = await apiService.changePassword(
+            currentPassword,
+            newPassword,
+            confirmPassword
+        );
+
+        console.log("🔍 BACKEND RESPONSE:", response);
+
+        // Hata mesajını yakalamak için geniş kapsamlı kontrol
+        const backendError =
+            response.data?.detail ||
+            response.data?.message ||
+            Object.values(response.data || {})[0]?.[0];
+
+        if (!response.success) {
+            alert(backendError || "Hata");
+            return;
+        }
+
+        alert("Şifre başarıyla değişti!");
+        setPasswordModalOpen(false);
+
+        // Eğer backend yeni token dönerse:
+        if (response.data?.token) {
+            localStorage.setItem("authToken", response.data.token);
+        }
+    };
+
 
     const [form, setForm] = useState({
         repair_fullname: "",
@@ -128,7 +174,10 @@ export default function Profile() {
                 <div className="card">
                     <h3 className="card-title">HESAP BİLGİLERİ</h3>
                     <p>{profile?.email}</p>
-                    <a className="mini-link">Şifreyi değiştir</a>
+                    <a className="mini-link" onClick={() => setPasswordModalOpen(true)}>
+                        Şifreyi değiştir
+                    </a>
+
                 </div>
 
                 <div className="card">
@@ -350,6 +399,53 @@ export default function Profile() {
                                             alert("Güncelleme başarısız!");
                                         }
                                     }}
+                                >
+                                    Kaydet
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {passwordModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-card">
+
+                        <h2 className="modal-title">Şifre Değiştir</h2>
+
+                        <div className="modal-form">
+
+                            <label>Mevcut Şifre</label>
+                            <input
+                                type="password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+
+                            <label>Yeni Şifre</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+
+                            <label>Yeni Şifre (Tekrar)</label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+
+                            <div className="modal-buttons">
+                                <button className="btn-cancel" onClick={() => setPasswordModalOpen(false)}>
+                                    İptal
+                                </button>
+
+                                <button
+                                    className="btn-save"
+                                    onClick={handlePasswordChange}
                                 >
                                     Kaydet
                                 </button>

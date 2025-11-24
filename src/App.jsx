@@ -7,6 +7,7 @@ import { ProfileProvider } from "./context/ProfileContext";
 import Profile from "./components/pages/Profile";
 import VictimInfoStepper from "./components/pages/VictimInfoStepper";
 import InsuranceSelect from "./components/pages/InsuranceSelect";
+import Contact from "./components/pages/Contact";
 import DriverInfoScreen from "./components/pages/DriverInfoScreen";
 import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
 import StepInfoScreen from "./components/pages/StepInfoScreen";
@@ -38,6 +39,11 @@ export default function App() {
           <Route
             path="/profile"
             element={isAuth ? <Profile /> : <Navigate to="/auth" replace />}
+          />
+
+          <Route
+            path="/contact"
+            element={isAuth ? <Contact /> : <Navigate to="/auth" replace />}
           />
 
           <Route

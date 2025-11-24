@@ -104,7 +104,7 @@ export const ProfileProvider = ({ children }) => {
       setFavoriteCompanies([]);
     }
   };
-
+  
   const fetchAllCompanies = async () => {
     try {
       const companies = await apiService.getPaginationInsuranceCompanies();
@@ -122,6 +122,7 @@ export const ProfileProvider = ({ children }) => {
       setAllCompaniesList([]);
     }
   };
+
 
   useEffect(() => {
     fetchProfile();

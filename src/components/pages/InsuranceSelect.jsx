@@ -1,63 +1,72 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/insurance.css";
-import { Star, StarOff, Search } from "lucide-react";
+import { Star, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import { useProfile } from "../../context/ProfileContext";
 
 export default function InsuranceSelect() {
     const {
-        allCompaniesList, // DÜZELTİLDİ: allCompanies yerine allCompaniesList
+        allCompaniesList,
         fetchAllCompanies,
-        profileDetail,
-        fetchProfile
+        favoriteCompanies,
+        fetchFavoriteCompanies,
     } = useProfile();
-
+console.log("allCompaniesList:", allCompaniesList);
     const navigate = useNavigate();
 
     const [search, setSearch] = useState("");
     const [selectedCompany, setSelectedCompany] = useState(null);
 
-    const favoriteList = profileDetail?.favorite_insurance_companies || [];
-
     useEffect(() => {
         fetchAllCompanies();
-        fetchProfile();
+        fetchFavoriteCompanies();
     }, []);
 
-    const toggleFavorite = async (id) => {
-        const updated = favoriteList.includes(id)
-            ? favoriteList.filter(f => f !== id)
-            : [...favoriteList, id];
+    const favList = favoriteCompanies || [];
 
-        const res = await apiService.toggleFavoriteCompanies(updated);
-        if (res.success) {
-            fetchProfile();
+    const addFavorite = async (companyId) => {
+        const res = await apiService.addFavoriteCompany(companyId);
+        if (res.success) fetchFavoriteCompanies();
+    };
+
+    const removeFavorite = async (companyId) => {
+        const res = await apiService.removeFavoriteCompany(companyId);
+        if (res.success) fetchFavoriteCompanies();
+    };
+
+    const toggleFavorite = async (id) => {
+        if (favList.includes(id)) {
+            await removeFavorite(id);
+        } else {
+            await addFavorite(id);
         }
     };
 
-    // DÜZELTİLDİ: allCompaniesList zaten array, results'a ihtiyaç yok
-    // Context'ten gelen veri direkt array formatında
-    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
-
-    console.log('allCompaniesList:', allCompaniesList); // DEBUG
-    console.log('list:', list); // DEBUG
-    console.log('favoriteList:', favoriteList); // DEBUG
+    // --------------------------------------------------
+    // 🔥 EN ÖNEMLİ KISIM → sonuçlar her zaman array olsun
+    // --------------------------------------------------
+    const list = Array.isArray(allCompaniesList?.results)
+        ? allCompaniesList.results
+        : [];
 
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const favoriteCompanies = filteredCompanies.filter(c =>
-        favoriteList.includes(c.id)
+    // FAVORİ şirket objeleri (sadece ID değil)
+    const favoriteCompanyObjects = filteredCompanies.filter(c =>
+        favList.includes(c.id)
     );
 
+    // Normal şirketler
     const normalCompanies = filteredCompanies.filter(c =>
-        !favoriteList.includes(c.id)
+        !favList.includes(c.id)
     );
 
     return (
         <div className="insurance-page">
+
             <h1 className="page-title">Aracın Sigorta Şirketini Seç</h1>
 
             {/* Search */}
@@ -79,17 +88,18 @@ export default function InsuranceSelect() {
             )}
 
             {/* FAVORİLER */}
-            {favoriteCompanies.length > 0 && (
+            {favoriteCompanyObjects.length > 0 && (
                 <section>
                     <h2 className="section-title">Favori Sigorta Şirketlerim</h2>
 
                     <div className="grid">
-                        {favoriteCompanies.map(company => (
+                        {favoriteCompanyObjects.map(company => (
                             <div
                                 key={company.id}
                                 className={`company-card ${selectedCompany === company.id ? "selected" : ""}`}
                                 onClick={() => setSelectedCompany(company.id)}
                             >
+                                {/* Yıldız */}
                                 <button
                                     className="star-btn"
                                     onClick={(e) => {
@@ -97,10 +107,10 @@ export default function InsuranceSelect() {
                                         toggleFavorite(company.id);
                                     }}
                                 >
-                                    <Star size={20} color="#FFD700" fill="#FFD700" />
+                                    <Star size={22} color="#FFD700" fill="#FFD700" />
                                 </button>
 
-                                <img 
+                                                                <img 
                                     src={company.photo} 
                                     alt={company.name || "Şirket logosu"} 
                                     className="company-logo"
@@ -139,9 +149,9 @@ export default function InsuranceSelect() {
                                     toggleFavorite(company.id);
                                 }}
                             >
-                                {favoriteList.includes(company.id)
-                                    ? <Star size={20} color="#FFD700" fill="#FFD700" />
-                                    : <StarOff size={20} color="#ccc" />
+                                {favList.includes(company.id)
+                                    ? <Star size={22} color="#FFD700" fill="#FFD700" />
+                                    : <Star size={22} color="#ccc" fill="none" />
                                 }
                             </button>
 
@@ -159,10 +169,9 @@ export default function InsuranceSelect() {
                 </div>
             </section>
 
+            {/* Alt butonlar */}
             <div className="bottom-buttons">
-                <button className="back-btn" onClick={() => navigate(-1)}>
-                    Geri Dön
-                </button>
+                <button className="back-btn" onClick={() => navigate(-1)}>Geri Dön</button>
 
                 <button
                     className={`continue-btn ${!selectedCompany ? "disabled" : ""}`}
