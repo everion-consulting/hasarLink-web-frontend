@@ -1,8 +1,7 @@
 /* Genel Ayarlar */
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f0f4f8; /* Hafif arka plan rengi */
+    font-family: 'Poppins', sans-serif;
 }
 
 .screen-container {

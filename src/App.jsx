@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AuthTabs from "./components/AuthTabs";
 import Home from "./components/pages/Home";
 import TopBar from "./components/TopBar";
@@ -10,6 +10,35 @@ import InsuranceSelect from "./components/pages/InsuranceSelect";
 import DriverInfoScreen from "./components/pages/DriverInfoScreen";
 import DriverVictimStepperScreen from "./components/pages/DriverVictimStepperScreen";
 import StepInfoScreen from "./components/pages/StepInfoScreen";
+import "./styles/styles.css";
+
+function AppContent({ isAuth, setIsAuth }) {
+  const location = useLocation();
+
+  // Dashboard mı?
+  const isDashboard = location.pathname === "/";
+
+  return (
+    <div className={isDashboard ? "page-wrapper dashboard" : "page-wrapper page-bg"}>
+
+      {isAuth && <TopBar />}
+
+      <Routes>
+        <Route path="/" element={isAuth ? <Home /> : <Navigate to="/auth" replace />} />
+        <Route path="/profile" element={isAuth ? <Profile /> : <Navigate to="/auth" replace />} />
+        <Route path="/victim-info" element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />} />
+        <Route path="/driver-info" element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/step-info" element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/insurance-select" element={isAuth ? <InsuranceSelect /> : <Navigate to="/auth" replace />} />
+
+        <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
+}
 
 export default function App() {
   const savedToken = localStorage.getItem("authToken");
@@ -25,50 +54,7 @@ export default function App() {
   return (
     <Router>
       <ProfileProvider>
-        {isAuth && <TopBar />}
-
-        <Routes>
-          <Route
-            path="/"
-            element={isAuth ? <Home /> : <Navigate to="/auth" replace />}
-          />
-
-          <Route
-            path="/profile"
-            element={isAuth ? <Profile /> : <Navigate to="/auth" replace />}
-          />
-
-          <Route
-            path="/victim-info"
-            element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/driver-info"
-            element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/driver-victim-stepper"
-            element={isAuth ? <DriverVictimStepperScreen  /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/step-info"
-            element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />}
-          />
-
-          <Route
-            path="/insurance-select"
-            element={isAuth ? <InsuranceSelect /> : <Navigate to="/auth" replace />}
-          />
-
-          <Route
-            path="/auth"
-            element={
-              isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />
-            }
-          />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
       </ProfileProvider>
     </Router>
   );

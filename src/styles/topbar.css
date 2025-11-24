@@ -6,7 +6,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #f3f3f3;
     font-family: 'Poppins';
 }
 
@@ -23,13 +22,12 @@
 
 /* Tabs container */
 .tabs {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.4);
     padding: 20px 24px;
     border-radius: 12px;
     display: flex;
     gap: 18px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
-
 }
 
 /* Each tab */
@@ -42,40 +40,76 @@
     font-weight: 400;
     font-size: 15px;
     line-height: 140%;
-    letter-spacing: 0%;
     text-align: center;
-
 }
 
+
 .tab.active {
-    font-weight: 600;
+    font-weight: 700;
+    color: #133E87;
 }
 
 /* Blue CTA button */
 .contact-btn {
-    border: none;
-    padding: 14px 19px;
-    border-radius: 12px;
     background: #133E87;
     color: #fff;
+    border: none;
+    padding: 0 24px;
+    height: 68px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
+    gap: 12px;
     font-weight: 500;
-    font-style: Medium;
     font-size: 20px;
-    line-height: 30px;
-    letter-spacing: 1px;
+    line-height: 28px;
+    letter-spacing: 0px;
 }
 
-.icon {
+.contact-btn-icon {
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    font-size: 11px;
+}
+
+.contact-btn-icon img {
+    width: 14px;
+    height: 14px;
+}
+
+/* Hamburger - default hidden */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu */
+.mobile-menu {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+
+/* --- BREAKPOINT --- */
+@media (max-width: 1024px) {
+    .desktop-menu {
+        display: none;
+    }
+
+    .hamburger {
+        display: block;
+    }
 }

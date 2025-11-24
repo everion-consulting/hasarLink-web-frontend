@@ -1,12 +1,16 @@
-/* src/styles/style.css */
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #f5f6fa;
-  color: #222;
+.page-wrapper {
+  min-height: 100vh;
 }
 
-h1 {
-  color: #133E87;
-  text-align: center;
+/* Dashboard = sade */
+.dashboard {
+  background: #f5f6fa !important;
+}
+
+/* Dashboard HARİÇ tüm sayfalarda SVG background */
+.page-bg {
+  background-image: url("/src/assets/images/background.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
