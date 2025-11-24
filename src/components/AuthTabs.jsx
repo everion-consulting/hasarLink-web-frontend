@@ -26,8 +26,7 @@ export default function AuthTabs({ setIsAuth }) {
         </div>
       </div>
 
-      {/* 🔹 setIsAuth prop’unu AuthForm’a geçiriyoruz */}
-      <AuthForm type={activeTab} setIsAuth={setIsAuth} />
+      <AuthForm type={activeTab} setIsAuth={setIsAuth} setActiveTab={setActiveTab} />
     </div>
   );
 }

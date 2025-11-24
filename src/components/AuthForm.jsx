@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
 
-export default function AuthForm({ type, setIsAuth }) {
+export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -15,9 +16,11 @@ export default function AuthForm({ type, setIsAuth }) {
     confirm: "",
     username: "",
   });
-
+  
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -55,6 +58,15 @@ export default function AuthForm({ type, setIsAuth }) {
         if (result.success && localStorage.getItem("authToken")) {
           setMessage("✅ Giriş başarılı!");
 
+          // Beni Hatırla seçeneği
+          if (rememberMe) {
+            localStorage.setItem("rememberMe", "true");
+            localStorage.setItem("savedUsername", form.username);
+          } else {
+            localStorage.removeItem("rememberMe");
+            localStorage.removeItem("savedUsername");
+          }
+
           if (typeof setIsAuth === "function") {
             setIsAuth(true);
           }
@@ -70,6 +82,59 @@ export default function AuthForm({ type, setIsAuth }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setGoogleLoading(true);
+    setMessage("");
+
+    try {
+      console.log("🔵 Google Login başarılı:", credentialResponse);
+
+      // JWT token'ı decode et
+      const token = credentialResponse.credential;
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      
+      const userData = JSON.parse(jsonPayload);
+      console.log("👤 Kullanıcı bilgileri:", userData);
+
+      // Backend'e gönder
+      const result = await AuthAPI.googleLogin({
+        idToken: token,
+        email: userData.email,
+        fullName: userData.name || userData.email.split('@')[0],
+      });
+
+      console.log("✅ Backend response:", result);
+
+      if (result.success && result.token) {
+        setMessage(result.created ? "✅ Hesap oluşturuldu! Hoş geldiniz." : "✅ Giriş başarılı!");
+
+        if (typeof setIsAuth === "function") {
+          setIsAuth(true);
+        }
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        setMessage(result.message || "Google ile giriş başarısız.");
+      }
+    } catch (err) {
+      console.error("Google Login Error:", err);
+      setMessage(err.detail || err.message || "Google ile giriş sırasında bir hata oluştu.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.error("Google Login başarısız");
+    setMessage("Google ile giriş başarısız oldu.");
   };
 
   return (
@@ -105,9 +170,20 @@ export default function AuthForm({ type, setIsAuth }) {
           />
           <div className="login-options">
             <label>
-              <input type="checkbox" /> Beni Hatırla
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              /> Beni Hatırla
             </label>
-            <a href="#" className="forgot">
+            <a 
+              href="#" 
+              className="forgot"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/forgot-password");
+              }}
+            >
               Şifremi unuttum
             </a>
           </div>
@@ -119,13 +195,21 @@ export default function AuthForm({ type, setIsAuth }) {
       </div>
 
       <div className="social-login">
-        <button
-          type="button"
-          className="google"
-          onClick={() => alert("Google ile giriş yakında eklenecek")}
-        >
-          <img src={GoogleIcon} alt="Google Icon" className="icon" />
-        </button>
+        {googleLoading ? (
+          <div className="google-loading">
+            <p>Google ile giriş yapılıyor...</p>
+          </div>
+        ) : (
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            useOneTap
+            text={type === "login" ? "signin_with" : "signup_with"}
+            shape="circle"
+            size="large"
+          />
+        )}
+        
         <button
           type="button"
           className="apple"
@@ -153,7 +237,12 @@ export default function AuthForm({ type, setIsAuth }) {
 
       <p className="switch-text">
         {type === "login" ? "Hesabın yok mu? " : "Zaten hesabın var mı? "}
-        <a href="#" onClick={(e) => e.preventDefault()}>
+        <a href="#" onClick={(e) => {
+          e.preventDefault();
+          if (setActiveTab) {
+            setActiveTab(type === "login" ? "register" : "login");
+          }
+        }}>
           {type === "login" ? "Kayıt Ol" : "Giriş Yap"}
         </a>
       </p>

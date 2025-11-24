@@ -1,6 +1,17 @@
 // src/services/authAPI.js
 import { API_ROOT, ACCOUNTS_BASE, API_BASE } from "../config";
 
+// Global error handler - 401 hatasında otomatik logout
+function handleUnauthorized() {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    console.warn("⚠️ Token geçersiz veya süresi dolmuş, oturum sonlandırılıyor");
+    localStorage.clear();
+    window.dispatchEvent(new Event('storage'));
+    window.location.href = "/auth";
+  }
+}
+
 // 🔹 Token kaydetme helper
 function storeTokenFromResponse(data) {
   let raw = "";
@@ -104,7 +115,12 @@ const AuthAPI = {
       const data = await response.json();
       console.log("📥 Login backend response:", data);
 
-      if (!response.ok) throw data;
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw { detail: "Kullanıcı adı veya şifre hatalı" };
+        }
+        throw data;
+      }
 
       const token = storeTokenFromResponse(data); // 🔥 Burada kesin kaydediyoruz
 
@@ -144,6 +160,36 @@ const AuthAPI = {
   },
 
   // -----------------------------------------
+  // LOGOUT
+  // -----------------------------------------
+  logout: async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch(`${ACCOUNTS_BASE}/auth/logout/`, {
+        method: "POST",
+        headers: AuthAPI.getHeaders(token),
+      });
+      const data = await response.json();
+
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("authToken_type");
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("savedUsername");
+
+      return data;
+    } catch (error) {
+      console.error("Logout API Error:", error);
+      // Hata olsa bile local storage'ı temizle
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("authToken_type");
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("savedUsername");
+      throw error;
+    }
+  },
+
+  // -----------------------------------------
   // PROFILE → mobildeki gibi /api/profile/
   // -----------------------------------------
   getProfile: async (tokenParam) => {
@@ -156,9 +202,118 @@ const AuthAPI = {
       headers: AuthAPI.getHeaders(token),
     });
 
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new Error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+    }
+
     const data = await response.json();
     if (!response.ok) throw data;
     return data;
+  },
+
+  // -----------------------------------------
+  // GOOGLE LOGIN - Web version
+  // -----------------------------------------
+  googleLogin: async ({ idToken, email, fullName }) => {
+    try {
+      const response = await fetch(`${ACCOUNTS_BASE}/auth/google-login/`, {
+        method: "POST",
+        headers: AuthAPI.getHeaders(),
+        body: JSON.stringify({
+          firebase_token: idToken,
+          firebase_uid: "", // Web'de Firebase uid yok, backend'de optional
+          email: email,
+          full_name: fullName,
+          device_token: "web_device",
+          platform: "web",
+        }),
+      });
+
+      const data = await response.json();
+      console.log("📥 Google Login backend response:", data);
+
+      if (!response.ok) throw data;
+
+      // Token'ı kaydet
+      const token = storeTokenFromResponse(data.data || data);
+
+      return {
+        success: data.success || true,
+        message: data.message,
+        user: data.data?.user || data.user || null,
+        token: token || data.data?.token || data.token,
+        created: data.data?.created || false,
+      };
+    } catch (error) {
+      console.error("Google Login API Error:", error);
+      throw error;
+    }
+  },
+
+  // -----------------------------------------
+  // PASSWORD RESET - EMAIL (3 Aşamalı)
+  // -----------------------------------------
+
+  // 1️⃣ Email ile kod gönder
+  requestPasswordResetEmail: async (email) => {
+    try {
+      const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/request/`, {
+        method: "POST",
+        headers: AuthAPI.getHeaders(),
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw data;
+
+      return { success: true, message: data.message };
+    } catch (error) {
+      console.error("Password Reset Request Error:", error);
+      throw error;
+    }
+  },
+
+  // 2️⃣ Kodu doğrula ve reset_token al
+  verifyPasswordResetCode: async (email, code) => {
+    try {
+      const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/verify-code/`, {
+        method: "POST",
+        headers: AuthAPI.getHeaders(),
+        body: JSON.stringify({ email, code }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw data;
+
+      return { success: true, reset_token: data.reset_token };
+    } catch (error) {
+      console.error("Code Verify Error:", error);
+      throw error;
+    }
+  },
+
+  // 3️⃣ Reset token ile yeni şifre belirle
+  resetPasswordWithToken: async (reset_token, new_password, confirm_password) => {
+    try {
+      const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/reset-password/`, {
+        method: "POST",
+        headers: AuthAPI.getHeaders(),
+        body: JSON.stringify({
+          reset_token,
+          new_password,
+          confirm_password,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw data;
+
+      return { success: true, message: data.message };
+    } catch (error) {
+      console.error("Password Reset Error:", error);
+      throw error;
+    }
   },
 };
 
