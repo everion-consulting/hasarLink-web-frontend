@@ -210,22 +210,28 @@ const apiService = {
     return await fetchData(`${PATH}/pending-progress-view/`, 'GET');
   },
 
-  async toggleFavoriteCompanies(updatedList) {
-    const token = localStorage.getItem("auth_token");
-    const response = await fetch(`${API_URL}/profile/update/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Token ${token}`
-      },
-      body: JSON.stringify({
-        favorite_insurance_companies: updatedList
-      })
-    });
+  changePassword: async (oldPassword, newPassword, confirmPassword) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch(`https://dosya-bildirim-vrosq.ondigitalocean.app/api/change-password/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`
+        },
+        body: JSON.stringify({
+          old_password: oldPassword,
+          new_password: newPassword,
+          confirm_password: confirmPassword
+        })
+      });
 
-    const data = await response.json();
-    return { success: response.ok, data };
-  }
+      const data = await res.json();
+      return { success: res.ok, data };
+    } catch (error) {
+      return { success: false, error };
+    }
+  },
 
 
 
