@@ -505,18 +505,36 @@ export default function StepInfoScreen() {
 
     switch (currentStep) {
       case 1:
-        navigate('/victim-info', { ...params });
+        navigate('/victim-info', { state: { ...params } });
         break;
       case 2:
+        console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
+        console.log('  params:', params);
+        console.log('  kazaNitelik (local):', kazaNitelik);
+        console.log('  insuranceSource (local):', insuranceSource);
+        console.log('  samePerson (local):', samePerson);
+        console.log('  karsiSamePerson (local):', karsiSamePerson);
+        console.log('  selectedCompany (local):', selectedCompany);
+        
         navigate('/insured-mechanic-stepper', {
-          ...params,
-          insuranceSource,
-          karsiSamePerson,
-          kazaNitelik,
+          state: {
+            kazaNitelik,
+            insuranceSource,
+            samePerson,
+            karsiSamePerson,
+            selectedCompany,
+            driverData,
+            victimData,
+            vehicleData,
+            insuredData,
+            serviceData,
+            damageData,
+            opposingDriverData,
+          }
         });
         break;
       case 3:
-        navigate('/file-damage-info-stepper', { ...params });
+        navigate('/file-damage-info-stepper', { state: { ...params } });
         break;
       case 4:
         handleFinalApprove();
@@ -697,11 +715,13 @@ export default function StepInfoScreen() {
       case 'driver_info':
       case 'vehicle_info':
         navigate('/victim-info', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       case 'insured_info':
@@ -709,29 +729,35 @@ export default function StepInfoScreen() {
       case 'karsi_driver_info':
       case 'service_info':
         navigate('/insured-mechanic-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
-        });
-        break;
-      case 'damage_info':
-        navigate('/file-damage-info-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       case 'documents':
         navigate('/file-damage-info-stepper', {
-          ...baseParams,
-          editMode: true,
-          directToDocuments: true,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      case 'documents':
+        navigate('/file-damage-info-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            directToDocuments: true,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       default:

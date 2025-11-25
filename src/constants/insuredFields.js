@@ -14,7 +14,11 @@
  * 
  * "type: title" olan alanlar, formda başlık/metin olarak gösterilir (input değildir).
  */
-import { formatPlate } from "../components/utils/formatter";
+import {
+  IdentificationIcon,
+  CheckBadgeIcon,
+} from 'react-native-heroicons/outline';
+import { formatPlate } from "../utils/formatter";
 
 const insuredField = [
 
@@ -64,6 +68,7 @@ const insuredField = [
     placeholder: "TEC-2025-000987",
     type: "text",
     required: false,
+    icon: IdentificationIcon,
     formatter: formatPlate,
   },
   {
@@ -71,6 +76,7 @@ const insuredField = [
     label: "Sigortalı Poliçe No",
     type: "text",
     placeholder: "AXA-2024-123456",
+    icon: CheckBadgeIcon,
     formatter: formatPlate,
     required: true
   },

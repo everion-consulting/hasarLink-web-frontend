@@ -11,6 +11,12 @@
   display: block;
 }
 
+.required-indicator {
+  color: #C62828;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
 .input-container {
   display: flex;
   align-items: center;

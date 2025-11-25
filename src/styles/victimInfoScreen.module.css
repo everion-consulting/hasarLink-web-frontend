@@ -77,7 +77,7 @@ body {
     border-radius: 20px;
     padding: 40px;
     width: 100%;
-    max-width: 400px; /* Görseldeki gibi dar bir form alanı */
+    max-width: 800px; /* Geniş formlar için artırıldı */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
@@ -87,7 +87,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 400px;
+    max-width: 640px; 
     margin-bottom: 20px;
 }
 
