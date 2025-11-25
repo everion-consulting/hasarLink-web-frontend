@@ -4,6 +4,8 @@ import { Star, StarOff, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import { useProfile } from "../../context/ProfileContext";
+import BackIcon from "../../components/images/back.svg";
+import ContinueIcon from "../../components/images/continue.svg";
 
 export default function InsuranceSelect() {
     const {
@@ -19,6 +21,8 @@ export default function InsuranceSelect() {
     const [selectedCompany, setSelectedCompany] = useState(null);
 
     const favoriteList = profileDetail?.favorite_insurance_companies || [];
+    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
+    const companyObj = list.find(c => c.id === selectedCompany);
 
     useEffect(() => {
         fetchAllCompanies();
@@ -34,7 +38,6 @@ export default function InsuranceSelect() {
         if (res.success) fetchProfile();
     };
 
-    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
 
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
@@ -52,7 +55,6 @@ export default function InsuranceSelect() {
         <div className={styles.insurancePage}>
             <h1 className={styles.pageTitle}>Aracın Sigorta Şirketini Seç</h1>
 
-            {/* Search */}
             <div className={styles.searchBox}>
                 <Search size={20} />
                 <input
@@ -69,7 +71,6 @@ export default function InsuranceSelect() {
                 </div>
             )}
 
-            {/* FAVORİLER */}
             {favoriteCompanies.length > 0 && (
                 <section>
                     <h2 className={styles.sectionTitle}>Favori Sigorta Şirketlerim</h2>
@@ -78,9 +79,8 @@ export default function InsuranceSelect() {
                         {favoriteCompanies.map(company => (
                             <div
                                 key={company.id}
-                                className={`${styles.companyCard} ${
-                                    selectedCompany === company.id ? styles.selected : ""
-                                }`}
+                                className={`${styles.companyCard} ${selectedCompany === company.id ? styles.selected : ""
+                                    }`}
                                 onClick={() => setSelectedCompany(company.id)}
                             >
                                 <button
@@ -93,8 +93,8 @@ export default function InsuranceSelect() {
                                     <Star size={20} color="#FFD700" fill="#FFD700" />
                                 </button>
 
-                                <img 
-                                    src={company.photo} 
+                                <img
+                                    src={company.photo}
                                     alt={company.name}
                                     className={styles.companyLogo}
                                     onError={(e) => (e.target.style.display = "none")}
@@ -105,7 +105,6 @@ export default function InsuranceSelect() {
                 </section>
             )}
 
-            {/* TÜM ŞİRKETLER */}
             <section>
                 <h2 className={styles.sectionTitle}>Tüm Sigorta Şirketleri</h2>
 
@@ -119,9 +118,8 @@ export default function InsuranceSelect() {
                     {normalCompanies.map(company => (
                         <div
                             key={company.id}
-                            className={`${styles.companyCard} ${
-                                selectedCompany === company.id ? styles.selected : ""
-                            }`}
+                            className={`${styles.companyCard} ${selectedCompany === company.id ? styles.selected : ""
+                                }`}
                             onClick={() => setSelectedCompany(company.id)}
                         >
                             <button
@@ -137,8 +135,8 @@ export default function InsuranceSelect() {
                                 }
                             </button>
 
-                            <img 
-                                src={company.photo} 
+                            <img
+                                src={company.photo}
                                 alt={company.name}
                                 className={styles.companyLogo}
                                 onError={(e) => (e.target.style.display = "none")}
@@ -149,25 +147,37 @@ export default function InsuranceSelect() {
             </section>
 
             <div className={styles.bottomButtons}>
-                <button
-                    className={styles.backBtn}
-                    onClick={() => navigate(-1)}
-                >
-                    Geri Dön
-                </button>
+                <div className={styles.buttonContainer}>
 
-                <button
-                    className={`${styles.continueBtn} ${
-                        !selectedCompany ? styles.disabled : ""
-                    }`}
-                    disabled={!selectedCompany}
-                    onClick={() =>
-                        navigate("/accident-type", { state: { companyId: selectedCompany } })
-                    }
-                >
-                    Devam Et →
-                </button>
+                    <button
+                        className={styles.backBtn}
+                        onClick={() => navigate(-1)}
+                    >
+                        <div className={styles.iconCircle}>
+                            <img src={BackIcon} alt="Geri" />
+                        </div>
+                        GERİ DÖN
+                    </button>
+
+                    <button
+                        className={`${styles.continueBtn} ${!selectedCompany ? styles.disabled : ""
+                            }`}
+                        disabled={!selectedCompany}
+                        onClick={() =>
+                            navigate("/accident-type", { state: { selectedCompany: companyObj } })
+
+                        }
+                    >
+                        <span>DEVAM ET</span>
+                        <div className={styles.iconCircle}>
+                            <img src={ContinueIcon} alt="Devam" />
+                        </div>
+                    </button>
+
+
+                </div>
             </div>
+
         </div>
     );
 }

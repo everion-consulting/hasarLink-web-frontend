@@ -9,9 +9,6 @@ export default function TopBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleLogout = async () => {
-        const confirm = window.confirm("Çıkış yapmak istediğinizden emin misiniz?");
-        if (!confirm) return;
-
         try {
             await AuthAPI.logout();
             window.dispatchEvent(new Event("storage"));
@@ -79,7 +76,10 @@ export default function TopBar() {
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>Ayarlar</NavLink>
 
                     <button
-                        className={styles.mobileLogout} onClick={handleLogout}
+                        className={styles.mobileLogout} onClick={() => {
+                            setIsMenuOpen(false);
+                            handleLogout();
+                        }}
                     >
                         ÇIKIŞ YAP
                         <span className={styles.contactBtnIcon}>

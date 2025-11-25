@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './../../styles/victimInfoScreen.css'; 
+import styles from './../../styles/victimInfoScreen.module.css'; 
 import FormRenderer from '../forms/FormRenderer';
 import { getVictimFields } from '../../constants/victimFields';
 import Stepper from '../stepper/Stepper';
@@ -51,15 +51,15 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   };
 
   const renderVictimTypeSwitch = () => (
-    <div className="switch-main-container">
+    <div className={styles.switchMainContainer}>
       <div 
-        className={`switch-option ${!isCompany ? 'active-option' : ''}`}
+        className={`${styles.switchOption} ${!isCompany ? styles.activeOption : ''}`}
         onClick={() => setIsCompany(false)}
       >
         Şahıs
       </div>
       <div 
-        className={`switch-option ${isCompany ? 'active-option' : ''}`}
+        className={`${styles.switchOption} ${isCompany ? styles.activeOption : ''}`}
         onClick={() => setIsCompany(true)}
       >
         Şirket
@@ -68,34 +68,34 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   );
 
   const renderFormFooter = ({ submit, allValid }) => (
-    <div className="form-footer-web">
+    <div className={styles.formFooterWeb}>
       <button 
-        className="back-button-web" 
+        className={styles.backButtonWeb} 
         onClick={handleBack}
         type="button"
       >
-        <span className="arrow-icon-left">←</span> GERİ DÖN
+        <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
       </button>
       <button 
-        className="next-button-web" 
+        className={styles.nextButtonWeb} 
         onClick={submit}
         disabled={!allValid}
         type="button"
       >
-        DEVAM ET <span className="arrow-icon">➔</span>
+        DEVAM ET <span className={styles.arrowIcon}>➔</span>
       </button>
     </div>
   );
 
   return (
-    <div className="screen-container">
-      <div className="content-area">
+    <div className={styles.screenContainer}>
+      <div className={styles.contentArea}>
         <Stepper steps={steps} currentStep={1} />
 
-        <h2 className="section-title">Mağdur Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
         
-        <div className="form-card">
-          <div className="form-section-content">
+        <div className={styles.formCard}>
+          <div className={styles.formSectionContent}>
             {renderVictimTypeSwitch()}
             <FormRenderer
               fields={victimFields}

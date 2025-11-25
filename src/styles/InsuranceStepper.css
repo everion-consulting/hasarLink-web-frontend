@@ -38,6 +38,65 @@
   padding: 20px 24px;
 }
 
+/* AccidentTypeScreen stili sigorta kartı */
+.company-card-accident-insurance {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e0e6ed;
+  margin-bottom: 24px;
+}
+
+.company-card-content-insurance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+ .company-text-content-insurance {
+  flex: 1;
+}
+
+ .company-type-wrapper-insurance {
+  position: relative;
+  display: inline-block;
+}
+
+
+
+ .company-type-insurance {
+  font-family: 'Poppins-Regular', 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 35px;
+  line-height: 45px;
+  letter-spacing: 1px;
+  color: #CBDCEB;
+  text-shadow:
+    -1px -1px 0 #608BC1,
+    1px -1px 0 #608BC1,
+    -1px 1px 0 #608BC1,
+    1px 1px 0 #608BC1;
+  text-align: left;
+}
+
+.company-name-accident-insurance {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 8px 0 0 0;
+}
+
+.company-logo-img {
+  width: 120px;
+  height: 100px;
+  object-fit: contain;
+  margin-left: 12px;
+}
+
 .company-text-content {
   flex: 1;
 }
@@ -59,10 +118,25 @@
   -webkit-text-stroke: 1px #000;
 }
 
-.company-type-outline:nth-child(1) { left: 1px; top: 0; }
-.company-type-outline:nth-child(2) { left: -1px; top: 0; }
-.company-type-outline:nth-child(3) { left: 0; top: 1px; }
-.company-type-outline:nth-child(4) { left: 0; top: -1px; }
+.company-type-outline:nth-child(1) {
+  left: 1px;
+  top: 0;
+}
+
+.company-type-outline:nth-child(2) {
+  left: -1px;
+  top: 0;
+}
+
+.company-type-outline:nth-child(3) {
+  left: 0;
+  top: 1px;
+}
+
+.company-type-outline:nth-child(4) {
+  left: 0;
+  top: -1px;
+}
 
 .company-type {
   font-family: 'Poppins', sans-serif;

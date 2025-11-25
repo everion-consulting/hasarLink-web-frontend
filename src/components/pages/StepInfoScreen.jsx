@@ -8,19 +8,22 @@ import UcIcon from '.././images/ucIcon.svg';
 import { formatPlate, maskPhone, toYYYYMMDD } from '../utils/formatter';
 import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon, ArrowUpLeftIcon } from '@heroicons/react/24/outline';
-import { ArrowUpLeft } from 'lucide-react';
 
 export default function StepInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = location.state || {};
 
-  const startStep = params?.startStep || 2;
+  const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
   const karsiSamePerson = params?.karsiSamePerson || null;
-  const insuranceSource = params?.insuranceSource || null;
+  const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
+
+  // EKRANDA KULLANACAĞIMIZ ASIL DEĞER
+  const insuranceSource =
+    kazaNitelik === "TEKLİ KAZA (BEYANLI)" ? "bizim kasko" : rawInsuranceSource;
 
   // Form verilerini doğru şekilde al
   const [driverData, setDriverData] = useState(params?.driverData || {});
@@ -37,21 +40,13 @@ export default function StepInfoScreen() {
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
 
-  // 🔥 YENİ: Step 2 için özel state
-  const [step2Data, setStep2Data] = useState({
-    victimData: params?.victimData || {},
-    driverData: params?.driverData || {},
-    vehicleData: params?.vehicleData || {}
-  });
+  const isTekliBizimKasko =
+    kazaNitelik === "TEKLİ KAZA (BEYANLI)" &&
+    insuranceSource === "bizim kasko";
 
-  useEffect(() => {
-    // Step 2 verilerini güncelle
-    setStep2Data({
-      victimData: victimData,
-      driverData: driverData,
-      vehicleData: vehicleData
-    });
-  }, [victimData, driverData, vehicleData]);
+  const isCokluKarsiKasko =
+    kazaNitelik === "ÇOKLU KAZA" &&
+    insuranceSource === "karsi kasko";
 
   const createSubmission = async () => {
     try {
@@ -104,17 +99,18 @@ export default function StepInfoScreen() {
       return;
     }
 
-    const formatDate = (dateStr) => {
-      if (!dateStr) return null;
-      const [day, month, year] = dateStr.split(/[./-]/);
-      return `${year}-${month}-${day}`;
-    };
-
     try {
       let payload = {};
 
-      // 🔥 SADECE STEP 2 VERİLERİNİ GÖNDER
-      if (currentStep === 2) {
+      if (currentStep === 1) {
+        payload = {
+          nature_new: kazaNitelik,
+          insurance_company: selectedCompany?.id || null,
+          is_driver_victim_same: samePerson,
+          insurance_source: insuranceSource,
+          is_completed: false,
+        };
+      } else if (currentStep === 2) {
         payload = {
           victim_fullname: victimData.victim_fullname,
           victim_tc: victimData.victim_tc,
@@ -122,17 +118,22 @@ export default function StepInfoScreen() {
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
+          is_completed: false,
+        };
 
-          // Sürücü bilgileri (eğer farklı kişi ise)
-          ...(!samePerson && {
+        if (!samePerson) {
+          payload = {
+            ...payload,
             driver_fullname: driverData.driver_fullname,
             driver_tc: driverData.driver_tc,
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
             driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
-          }),
+          };
+        }
 
-          // Araç bilgileri
+        payload = {
+          ...payload,
           vehicle_brand: vehicleData.vehicle_brand,
           vehicle_model: vehicleData.vehicle_model,
           vehicle_type: vehicleData.vehicle_type,
@@ -143,8 +144,61 @@ export default function StepInfoScreen() {
           vehicle_license_no: vehicleData.vehicle_license_no,
           vehicle_chassis_no: vehicleData.vehicle_chassis_no,
           vehicle_engine_no: vehicleData.vehicle_engine_no,
-
+        };
+      } else if (currentStep === 3) {
+        payload = {
+          insured_fullname: insuredData.insured_fullname,
+          insured_tc: insuredData.insured_tc,
+          insured_birth_date: insuredData.insured_birth_date,
+          insured_phone: insuredData.insured_phone,
+          insured_mail: insuredData.insured_mail,
+          insured_plate: insuredData.insured_plate,
+          insured_policy_no: insuredData.insured_policy_no,
+          insured_file_no: insuredData.insured_file_no,
+          repair_fullname: mechanicData.repair_fullname,
+          repair_birth_date: mechanicData.repair_birth_date,
+          repair_tc: mechanicData.repair_tc,
+          repair_phone: mechanicData.repair_phone,
+          service_name: serviceData.service_name,
+          service_tax_no: serviceData.service_tax_no,
+          service_phone: serviceData.service_phone,
+          service_state_city_city: serviceData.service_state_city_city,
+          service_city: serviceData.service_city,
+          service_address: serviceData.service_address,
+          service_iban: serviceData.service_iban,
+          service_iban_name: serviceData.service_iban_name,
           is_completed: false,
+        };
+
+        if (insuranceSource === "karsi trafik" && karsiSamePerson === false) {
+          payload = {
+            ...payload,
+            opposing_driver_fullname: opposingDriverData.opposing_driver_fullname || "",
+            opposing_driver_tc: opposingDriverData.opposing_driver_tc || "",
+            opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
+            opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
+            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
+          };
+        }
+      } else if (currentStep === 4) {
+        let accidentDate = null;
+        if (damageData.accident_datetime) {
+          const [datePart, timePart] = damageData.accident_datetime.split(" ");
+          if (datePart && timePart) {
+            const [dd, mm, yyyy] = datePart.split(".");
+            accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+          }
+        }
+        payload = {
+          damage_type: damageData.damage_type,
+          damage_description: damageData.damage_description,
+          accident_city: damageData.accident_city,
+          accident_district: damageData.accident_district,
+          accident_date: accidentDate,
+          policy_no: damageData.policy_no,
+          estimated_damage_amount: damageData.estimated_damage_amount,
+          official_report_type: damageData.official_report_type,
+          is_completed: true,
         };
       }
 
@@ -165,14 +219,26 @@ export default function StepInfoScreen() {
   };
 
   const handleStepApprove = async () => {
+    if (currentStep === 2 && isCokluKarsiKasko) {
+      const plate = vehicleData?.vehicle_plate?.trim?.();
+      if (!plate) {
+        alert("Eksik Bilgi", "Çoklu kaza ve karşı kasko durumunda mağdur araç plaka bilgisi zorunludur.");
+        return;
+      }
+    }
+
     const existingId = submissionId || localStorage.getItem("submissionId");
 
-    if (!existingId) {
-      console.log("🆕 Yeni submission oluşturuluyor...");
-      const newId = await createSubmission();
-      if (newId) setSubmissionId(newId);
+    if (currentStep === 1) {
+      if (existingId) {
+        console.log("🟡 Mevcut submission bulundu, güncelleme yapılıyor:", existingId);
+        await updateSubmission();
+      } else {
+        console.log("🆕 Yeni submission oluşturuluyor...");
+        const newId = await createSubmission();
+        if (newId) setSubmissionId(newId);
+      }
     } else {
-      console.log("🟡 Mevcut submission bulundu, güncelleme yapılıyor:", existingId);
       await updateSubmission();
     }
 
@@ -182,9 +248,9 @@ export default function StepInfoScreen() {
   const renderStepIcon = () => {
     switch (currentStep) {
       case 1:
-        return <img src={BirIcon} width={62} height={56} alt="Step 1" />
+        return <img src={BirIcon} width={62} height={56} alt="Step 1" />;
       case 2:
-        return <img src={IkiIcon} width={62} height={56} alt="Step 2" />
+        return <img src={IkiIcon} width={62} height={56} alt="Step 2" />;
       case 3:
         return <img src={UcIcon} width={62} height={56} alt="Step 3" />;
       default:
@@ -192,70 +258,242 @@ export default function StepInfoScreen() {
     }
   };
 
-  // 🔥 YENİ: Step 2 için özel içerik
-  const getStep2Content = () => {
-    return {
-      title: 'Kişi ve Araç Bilgileri',
-      sections: [
-        {
-          title: 'Mağdur Bilgileri',
-          editKey: 'victim_info',
-          data: [
-            { label: 'Ad Soyad', value: step2Data.victimData.victim_fullname || '' },
-            { label: 'Kimlik No', value: step2Data.victimData.victim_tc || '' },
-            { label: 'E-Mail', value: step2Data.victimData.victim_mail || '' },
-            { label: 'Telefon No', value: step2Data.victimData.victim_phone || '' },
-            { label: 'Doğum Tarihi', value: step2Data.victimData.victim_birth_date || '' },
-            { label: 'Sigortalı Poliçe No', value: step2Data.victimData.insured_policy_no || '' },
-            { label: 'Poliçe Tecdit No', value: step2Data.victimData.policy_no || '' },
-            { label: 'Tescil Belge Seri No', value: step2Data.victimData.registrationNo || '' }
-          ]
-        },
-        ...(!samePerson
-          ? [
+  const getStepContent = () => {
+    const hasKarsiTrafik = insuranceSource === 'karsi trafik';
+
+    switch (currentStep) {
+      case 1:
+        return {
+          title: 'Temel Bilgiler',
+          sections: [
             {
-              title: 'Sürücü Bilgileri',
-              editKey: 'driver_info',
+              title: 'Kaza Niteliği',
+              editKey: 'nature_new',
               data: [
-                { label: 'Ad Soyad', value: step2Data.driverData.driver_fullname || '' },
-                { label: 'Kimlik No', value: step2Data.driverData.driver_tc || '' },
-                { label: 'E-Mail', value: step2Data.driverData.driver_mail || '' },
-                { label: 'Telefon No', value: step2Data.driverData.driver_phone || '' },
-                { label: 'Doğum Tarihi', value: step2Data.driverData.driver_birth_date || '' }
+                {
+                  label: '', value:
+                    kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
+                      ? 'TEKLİ KAZA (BEYANLI)'
+                      : kazaNitelik === 'İKİLİ KAZA'
+                        ? 'İKİLİ KAZA'
+                        : kazaNitelik === 'ÇOKLU KAZA'
+                          ? 'ÇOKLU KAZA'
+                          : 'Seçiniz'
+                }
+              ]
+            },
+            {
+              title: 'Seçilen Sigorta Şirketi',
+              editKey: 'insurance_company',
+              data: [
+                { label: '', value: selectedCompany?.name || 'Seçiniz' },
+                { label: '', value: selectedCompany?.code || '' }
+              ]
+            },
+            {
+              title: 'Sürücü Bilgisi İle Mağdur Bilgisi Aynı Mı?',
+              editKey: 'same_person',
+              data: [
+                { label: '', value: samePerson ? 'Evet, aynı.' : 'Hayır, farklı.' }
+              ]
+            },
+            {
+              title: 'Sigorta Nereden Açılıyor?',
+              editKey: 'insurance_source',
+              data: [
+                {
+                  label: '',
+                  value:
+                    insuranceSource === 'karsi trafik'
+                      ? 'Karşı Trafik'
+                      : insuranceSource === 'bizim kasko'
+                        ? 'Bizim Kasko'
+                        : insuranceSource === 'karsi kasko'
+                          ? 'Karşı Kasko'
+                          : 'Seçiniz'
+                }
+              ]
+            },
+            ...(insuranceSource === 'karsi trafik'
+              ? [
+                {
+                  title: 'Karşı Ruhsat Sahibi ve Sürücü Bilgisi Aynı Mı?',
+                  editKey: 'is_insured_opposing_driver_same',
+                  data: [
+                    {
+                      label: '',
+                      value: karsiSamePerson
+                        ? 'Evet, aynı.'
+                        : karsiSamePerson === false
+                          ? 'Hayır, farklı.'
+                          : 'Seçiniz'
+                    }
+                  ]
+                }
+              ]
+              : [])
+          ]
+        };
+
+      case 2:
+        return {
+          title: 'Kişi ve Araç Bilgileri',
+          sections: [
+            {
+              title: 'Mağdur Bilgileri',
+              editKey: 'victim_info',
+              data: [
+                { label: 'Ad Soyad', value: victimData.victim_fullname || 'Seçiniz' },
+                { label: 'Kimlik No', value: victimData.victim_tc || 'Seçiniz' },
+                { label: 'E-Mail', value: victimData.victim_mail || 'Seçiniz' },
+                { label: 'Telefon No', value: victimData.victim_phone || 'Seçiniz' },
+                { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'Seçiniz' },
+                { label: 'Sigortalı Poliçe No', value: victimData.insured_policy_no || 'Seçiniz' },
+                { label: 'Poliçe Tecdit No', value: victimData.policy_no || 'Seçiniz' },
+                { label: 'Tescil Belge Seri No', value: victimData.registrationNo || 'Seçiniz' }
+              ]
+            },
+            ...(!samePerson
+              ? [
+                {
+                  title: 'Sürücü Bilgileri',
+                  editKey: 'driver_info',
+                  data: [
+                    { label: 'Ad Soyad', value: driverData.driver_fullname || 'Seçiniz' },
+                    { label: 'Kimlik No', value: driverData.driver_tc || 'Seçiniz' },
+                    { label: 'E-Mail', value: driverData.driver_mail || 'Seçiniz' },
+                    { label: 'Telefon No', value: driverData.driver_phone || 'Seçiniz' },
+                    { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'Seçiniz' }
+                  ]
+                }
+              ]
+              : []),
+            {
+              title: 'Mağdur Araç Bilgileri',
+              editKey: 'vehicle_info',
+              data: [
+                { label: 'Araç Markası', value: formatPlate(vehicleData.vehicle_brand) || 'Seçiniz' },
+                { label: 'Araç Türü', value: vehicleData.vehicle_type || 'Seçiniz' },
+                { label: 'Model', value: formatPlate(vehicleData.vehicle_model) || 'Seçiniz' },
+                { label: 'Ruhsat Seri No', value: formatPlate(vehicleData.vehicle_license_no) || 'Seçiniz' },
+                { label: 'Şasi No', value: formatPlate(vehicleData.vehicle_chassis_no) || 'Seçiniz' },
+                { label: 'Motor No', value: formatPlate(vehicleData.vehicle_engine_no) || 'Seçiniz' },
+                { label: 'Model Yılı', value: vehicleData.vehicle_year || 'Seçiniz' },
+                { label: 'Mağdur Araç Plaka', value: formatPlate(vehicleData.vehicle_plate) || 'Seçiniz' },
+                { label: 'Araç Kullanım Türü', value: vehicleData.vehicle_usage_type || 'Seçiniz' }
               ]
             }
           ]
-          : []),
-        {
-          title: 'Mağdur Araç Bilgileri',
-          editKey: 'vehicle_info',
-          data: [
-            { label: 'Araç Markası', value: step2Data.vehicleData.vehicle_brand || '' },
-            { label: 'Araç Türü', value: step2Data.vehicleData.vehicle_type || '' },
-            { label: 'Model', value: step2Data.vehicleData.vehicle_model || '' },
-            { label: 'Ruhsat Seri No', value: step2Data.vehicleData.vehicle_license_no || '' },
-            { label: 'Şasi No', value: step2Data.vehicleData.vehicle_chassis_no || '' },
-            { label: 'Motor No', value: step2Data.vehicleData.vehicle_engine_no || '' },
-            { label: 'Model Yılı', value: step2Data.vehicleData.vehicle_year || '' },
-            { label: 'Kullanım Tarzı', value: step2Data.vehicleData.vehicle_usage_type || '' },
-            { label: 'Mağdur Araç Plaka', value: formatPlate(step2Data.vehicleData.vehicle_plate) || '' }
+        };
+
+      case 3:
+        return {
+          title: 'Sigortalı ve Servis Bilgileri',
+          sections: [
+            {
+              title: 'Sigortalı Bilgileri',
+              editKey: 'insured_info',
+              data: [
+                { label: 'Ad Soyad', value: insuredData.insured_fullname || 'Seçiniz' },
+                { label: 'TC No', value: insuredData.insured_tc || 'Seçiniz' },
+                { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'Seçiniz' },
+                { label: 'Telefon', value: insuredData.insured_phone || 'Seçiniz' },
+                { label: 'E-Mail', value: insuredData.insured_mail || 'Seçiniz' },
+                { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'Seçiniz' },
+                { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'Seçiniz' },
+                { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'Seçiniz' },
+              ]
+            },
+            ...(hasKarsiTrafik
+              ? [
+                {
+                  title: 'Karşı Taraf Sürücü Bilgileri',
+                  editKey: 'karsi_driver_info',
+                  data: [
+                    { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'Seçiniz' },
+                    { label: 'TC No', value: opposingDriverData.opposing_driver_tc || 'Seçiniz' },
+                    { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'Seçiniz' },
+                    { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'Seçiniz' },
+                    { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'Seçiniz' },
+                  ]
+                }
+              ]
+              : []),
+            {
+              title: 'Servis Bilgileri',
+              editKey: 'service_info',
+              data: [
+                { label: 'Ad Soyad', value: mechanicData.repair_fullname || 'Seçiniz' },
+                { label: 'Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
+                { label: 'TC No', value: mechanicData.repair_tc || 'Seçiniz' },
+                { label: 'Telefon', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
+                { label: 'IBAN', value: serviceData.service_iban || 'Seçiniz' },
+                { label: 'IBAN Adı', value: serviceData.service_iban_name || 'Seçiniz' },
+                { label: 'Servis Adı', value: serviceData.service_name || 'Seçiniz' },
+                { label: 'İl', value: serviceData.service_city || 'Seçiniz' },
+                { label: 'İlçe', value: serviceData.service_state_city_city || 'Seçiniz' },
+                { label: 'Adres', value: serviceData.service_address || 'Seçiniz' },
+                { label: 'Servis No', value: serviceData.service_tax_no || 'Seçiniz' },
+              ]
+            }
           ]
-        }
-      ]
-    };
+        };
+
+      case 4:
+        return {
+          title: 'Hasar Bilgileri ve Evrak Yükleme',
+          sections: [
+            {
+              title: 'Hasar Bilgileri',
+              editKey: 'damage_info',
+              data: [
+                { label: 'Hasar Türü', value: damageData.damage_type || 'Seçiniz' },
+                { label: 'Hasar Bölgesi', value: damageData.damage_description || 'Seçiniz' },
+                {
+                  label: 'Kaza Yeri',
+                  value: damageData.accident_city && damageData.accident_district
+                    ? `${damageData.accident_city} / ${damageData.accident_district}`
+                    : 'Seçiniz'
+                },
+                { label: 'Kaza Tarihi', value: damageData.accident_date || 'Seçiniz' },
+                { label: 'Poliçe No', value: formatPlate(damageData.policy_no) || 'Seçiniz' },
+                { label: 'Tahmini Hasar Tutarı', value: damageData.estimated_damage_amount || 'Seçiniz' },
+                { label: 'Tutanak Türü', value: damageData.official_report_type || 'Seçiniz' },
+              ]
+            },
+            {
+              title: 'Evrak Yükleme Alanı',
+              editKey: 'documents',
+              data: [
+                { label: 'Tutanak', value: params?.documents?.olayYeri?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Anlaşmalı Tutanak', value: params?.documents?.tutanaklar?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Mağdur Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Mağdur Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Karşı Sigortalı Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Karşı Sigortalı Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Fotoğraflar', value: params?.documents?.fotograflar ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Diğer', value: params?.documents?.diger ? 'Yüklendi' : 'Seçiniz' },
+              ]
+            }
+          ]
+        };
+
+      default:
+        return { title: '', sections: [] };
+    }
   };
 
   const handleBackPress = () => {
+    if (currentStep === 1) {
+      navigate('/first-screen', { ...params });
+      return;
+    }
     if (isStepApproved) {
       setIsStepApproved(false);
+    } else if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     } else {
-      navigate('/driver-victim-stepper', {
-        state: {
-          ...params,
-          returnTo: 'StepInfoScreen',
-          vehicleData: step2Data.vehicleData
-        }
-      });
+      navigate(-1);
     }
   };
 
@@ -265,31 +503,58 @@ export default function StepInfoScreen() {
       return;
     }
 
-    // Step 2 onaylandıktan sonra Step 3'e geç
-    navigate('/insured-mechanic-stepper', {
-      state: {
-        ...params,
-        victimData: step2Data.victimData,
-        driverData: step2Data.driverData,
-        vehicleData: step2Data.vehicleData,
-        startStep: 3
-      }
-    });
+    switch (currentStep) {
+      case 1:
+        navigate('/victim-info', { ...params });
+        break;
+      case 2:
+        navigate('/insured-mechanic-stepper', {
+          ...params,
+          insuranceSource,
+          karsiSamePerson,
+          kazaNitelik,
+        });
+        break;
+      case 3:
+        navigate('/file-damage-info-stepper', { ...params });
+        break;
+      case 4:
+        handleFinalApprove();
+        break;
+      default:
+        break;
+    }
   };
 
   const handleFinalApprove = async () => {
     await updateSubmission();
+
     const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
 
+    const uploadedDocuments = params?.documents
+      ? Object.values(params.documents)
+        .flat()
+        .filter(item => item)
+        .length
+      : 0;
+
+    console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
+
     navigate('/success-screen', {
-      state: {
-        fileName: randomFileNumber,
-        companyName: selectedCompany?.name,
-        selectedCompany,
-        samePerson,
-        insuranceSource,
-        ...step2Data
-      }
+      fileName: randomFileNumber,
+      companyName: selectedCompany?.name || params?.companyName,
+      documentCount: uploadedDocuments,
+      selectedCompany,
+      samePerson,
+      insuranceSource,
+      driverData,
+      victimData,
+      vehicleData,
+      insuredData,
+      serviceData,
+      damageData,
+      mechanicData,
+      documents: params?.documents,
     });
   };
 
@@ -306,85 +571,171 @@ export default function StepInfoScreen() {
     </div>
   );
 
-  // 🔥 YENİ: Resimdeki tasarıma uygun form kartı
-  const FormCardComponent = () => {
-    const stepContent = getStep2Content();
+  const FormCardComponent = () => (
+    <div className="form-card">
+      {getStepContent().sections.map((section, sectionIndex) => (
+        <div key={sectionIndex} className="section-box">
+          <div className="content-box">
+            <div className="section-title-step">{section.title}</div>
 
-    return (
-      <div className="form-card three-column">
-        {stepContent.sections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="section-box">
-            <div className="content-box">
-              <div className="section-title">{section.title}</div>
-
-              <div className="data-container">
-                {section.data.map((item, itemIndex) => (
+            <div className="data-container">
+              {section.data.map((item, itemIndex) => (
+                (item.value !== undefined && item.value !== null) && (
                   <div key={itemIndex} className="data-row">
                     <div className="label-value-pair">
-                      <div className="data-label">{item.label}:</div>
-                      <div className={`data-value ${item.label === 'Mağdur Araç Plaka' ? 'red-text' : ''}`}>
+                      {item.label ? (
+                        <div className="data-label">
+                          {item.label}
+                          {item.label === 'Mağdur Araç Plaka' && isCokluKarsiKasko && (
+                            <span style={{ color: 'red' }}> *</span>
+                          )}:
+                        </div>
+                      ) : (
+                        <div className="data-label">{'\u00A0'}</div>
+                      )}
+                      <div
+                        className="data-value"
+                        style={item.label === 'Mağdur Araç Plaka' ? { color: 'red' } : {}}
+                      >
                         {item.value}
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                )
+              ))}
+            </div>
 
-              <div className="edit-button-container">
+            <div className="edit-button-container">
+              {kazaNitelik === "TEKLİ KAZA (BEYANLI)" && section.editKey === "insurance_source" ? (
+                <div className="disabled-edit-info">
+                  Tekli kaza seçtiğiniz için bu alan düzenlenemez.
+                </div>
+              ) : (
                 <button
-                  className="edit-link"
+                  className="edit-button"
                   onClick={() => handleEditPress(section)}
                 >
-                  Düzenle
+                  <span className="edit-button-text">Düzenle</span>
                 </button>
-              </div>
-
+              )}
             </div>
           </div>
-        ))}
-
-        {/* ONAYLA butonu */}
-        <div className="stepinfo-footer">
-          <button className="approve-button" onClick={handleStepApprove}>
-            <div className="approve-button-text">
-              ONAYLA
-              <span className="approve-icon-wrapper">
-                <ArrowUpRightIcon className="approve-icon" />
-              </span>
-            </div>
-          </button>
         </div>
+      ))}
 
-
-
-
+      <div className="approve-section">
+        <button
+          className="approve-button"
+          onClick={currentStep === 4 ? handleFinalApprove : handleStepApprove}
+        >
+          <span className="approve-button-text">ONAYLA</span>
+          <div className="approve-icon-wrapper">
+            <ArrowUpRightIcon className="approve-icon" />
+          </div>
+        </button>
       </div>
-    );
-  };
+    </div>
+  );
 
   const handleEditPress = (section) => {
     if (isStepApproved) return;
 
     const editKey = section.editKey;
+    const baseParams = {
+      kazaNitelik,
+      selectedCompany,
+      samePerson,
+      karsiSamePerson,
+      insuranceSource,
+      driverData,
+      victimData,
+      vehicleData,
+      insuredData,
+      serviceData,
+      damageData,
+      mechanicData,
+      documents: params?.documents
+    };
 
     switch (editKey) {
+      case 'nature_new':
+        navigate('/accident-type', {
+          ...baseParams,
+          kazaNitelik: kazaNitelik || null,
+        });
+        break;
+      case 'insurance_company':
+        navigate('/first-screen', { ...baseParams, returnTo: 'StepInfoScreen', returnStep: currentStep });
+        break;
+      case 'same_person':
+      case 'insurance_source':
+        if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
+          alert("Düzenleme Yapılamaz", "Tekli kaza seçtiğiniz için sigorta kaynağı otomatik olarak 'Bizim Kasko' olarak belirlenmiştir ve değiştirilemez.");
+          return;
+        }
+        navigate('/insurance-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusStep: 2,
+          preSelectedStep1: samePerson ? 'yes' : 'no',
+          preSelectedStep2: insuranceSource,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'is_insured_opposing_driver_same':
+        navigate('/insurance-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusStep: 3,
+          preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
       case 'victim_info':
       case 'driver_info':
       case 'vehicle_info':
-        navigate('/driver-victim-stepper', {
-          state: {
-            ...params,
-            editMode: true,
-            focusSection: editKey,
-            returnTo: 'StepInfoScreen',
-            victimData: step2Data.victimData,
-            driverData: step2Data.driverData,
-            vehicleData: step2Data.vehicleData
-          }
+        navigate('/victim-info', {
+          ...baseParams,
+          editMode: true,
+          focusSection: editKey,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'insured_info':
+      case 'mechanic_info':
+      case 'karsi_driver_info':
+      case 'service_info':
+        navigate('/insured-mechanic-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusSection: editKey,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'damage_info':
+        navigate('/file-damage-info-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusSection: editKey,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'documents':
+        navigate('/file-damage-info-stepper', {
+          ...baseParams,
+          editMode: true,
+          directToDocuments: true,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
         });
         break;
       default:
-        alert('Bu bölüm henüz düzenlenemiyor.');
+        alert('Bilgi', 'Bu bölüm henüz düzenlenemiyor.');
         break;
     }
   };
@@ -395,6 +746,10 @@ export default function StepInfoScreen() {
       if (params.driverData) setDriverData(params.driverData);
       if (params.victimData) setVictimData(params.victimData);
       if (params.vehicleData) setVehicleData(params.vehicleData);
+      if (params.insuredData) setInsuredData(params.insuredData);
+      if (params.mechanicData) setMechanicData(params.mechanicData);
+      if (params.serviceData) setServiceData(params.serviceData);
+      if (params.damageData) setDamageData(params.damageData);
     }
   }, [params]);
 
@@ -403,45 +758,60 @@ export default function StepInfoScreen() {
       <div className="scroll-view">
         <div className="page-title">Adım Adım Dosyanı Oluştur</div>
 
-        {/* Form kartı - ORTADA */}
         {isStepApproved ? <ApprovedStepComponent /> : <FormCardComponent />}
 
-        {/* ADIM [02] bölümü - RESİMDEKİ GİBİ FORMDAN SONRA ALTTA */}
-        <div className="step-bottom-section">
-          <div className="step-header">
-            <div className="step-title">ADIM</div>
-            <div className="step-icon-container">
+        <div className="step-info-section">
+          {currentStep !== 4 && (
+            <div className="step-header">
+              <div className="step-title">ADIM</div>
               {renderStepIcon()}
             </div>
-          </div>
+          )}
+
           <div className="step-info">
-            Bu adımda Sigortalı Kişi ve Araç ve Tamirci/Servis Bilgilerini dolduracaksınız.
+            {currentStep === 1 && (isStepApproved
+              ? 'Bu adımda Mağdur/Sürücü ve Araç Bilgilerini dolduracaksınız.'
+              : 'Bu adımda Mağdur/Sürücü ve Araç Bilgilerini dolduracaksınız.')}
+            {currentStep === 2 && (isStepApproved
+              ? 'Bu adımda Mağdur Bilgilerini dolduracaksınız.'
+              : 'Bu adımda Mağdur Bilgilerini dolduracaksınız.')}
+            {currentStep === 3 && (isStepApproved
+              ? 'Bu adımda Sigortalı Kişi ve Araç ve Tamirci/Servis Bilgilerini dolduracaksınız.'
+              : 'Bu adımda Sigortalı Kişi ve Araç ve Tamirci/Servis Bilgilerini dolduracaksınız.')}
+            {currentStep === 4 && (isStepApproved
+              ? 'Tüm bilgileri doldurdunuz onaylıyor musunuz?'
+              : 'Tüm bilgileri doldurdunuz onaylıyor musunuz?')}
           </div>
+        </div>
+      </div>
 
-          {/* KÜÇÜK BUTONLAR - ADIMIN ALTINDA */}
-          <div className="small-buttons-container">
-            <button className="small-back-button" onClick={handleBackPress}>
-              <div className="approve-button-text-back">
-                <span className="approve-icon-wrapper">
-                  <ArrowUpLeftIcon className="approve-icon-back" />
-                </span>
-                GERİ DÖN
-
+      <div className="footer">
+        <div className="button-container">
+          <button className="back-button" onClick={handleBackPress}>
+            <div className="back-button-content">
+              <div className="back-icon-wrapper">
+                <ArrowUpLeftIcon className="back-icon" />
               </div>
-            </button>
-            <button
-              className="small-continue-button"
-              onClick={handleContinuePress}
+              <span className="back-button-text">GERİ DÖN</span>
+            </div>
+          </button>
 
-            >
-              <div className="approve-button-text">
-                DEVAM ET
-                <span className="approve-icon-wrapper">
-                  <ArrowUpRightIcon className="approve-icon" />
-                </span>
+          <button
+            className={`continue-button ${!isAllChosen ? 'disabled' : ''}`}
+            onClick={handleContinuePress}
+            disabled={!isAllChosen}
+          >
+            <div className="continue-button-content">
+              <span className={`continue-button-text ${!isAllChosen ? 'disabled' : ''}`}>
+                {isStepApproved
+                  ? (currentStep === 4 ? 'TAMAMLA' : 'DEVAM ET')
+                  : (currentStep === 4 ? 'ONAYLA' : 'DEVAM ET')}
+              </span>
+              <div className="continue-icon-wrapper">
+                <ArrowUpRightIcon className="continue-icon" />
               </div>
-            </button>
-          </div>
+            </div>
+          </button>
         </div>
       </div>
     </div>

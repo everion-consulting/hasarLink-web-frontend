@@ -187,7 +187,6 @@ body {
   height: 56px;
   border-radius: 50%;
   border: 1px solid #e0e0e0;
-  font-size: 24px;
   cursor: pointer;
   background: white;
   transition: all 0.3s ease;
@@ -195,6 +194,7 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 0;
 }
 
 .social-login button:hover {
@@ -203,14 +203,24 @@ body {
   border-color: #133E87;
 }
 
-.social-login button.google {
-  color: #DB4437;
-  font-weight: 600;
+.social-login button:active {
+  transform: scale(0.98);
 }
 
-.social-login button.apple {
-  color: #000;
-  font-size: 28px;
+.social-login button .icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.social-login button.google .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.social-login button.apple .icon {
+  width: 26px;
+  height: 26px;
 }
 
 .submit-btn {
