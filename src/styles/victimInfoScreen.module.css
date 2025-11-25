@@ -87,7 +87,8 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 600px;
+    max-width: 400px;
+    margin-bottom: 20px;
 }
 
 .stepItem {

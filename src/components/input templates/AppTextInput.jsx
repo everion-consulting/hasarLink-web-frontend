@@ -19,6 +19,7 @@ export default function AppTextInput({
   isDark,
   multiline = false,
   rows = 1,
+  required = false,
   secureTextEntry,
   ...rest
 }) {
@@ -78,6 +79,7 @@ export default function AppTextInput({
       {label ? (
         <label className="input-label">
           {label}
+          {required && <span className="required-indicator"> *</span>}
         </label>
       ) : null}
 
