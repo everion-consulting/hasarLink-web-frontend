@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/dashboard.css";
+import styles from "../../styles/dashboard.module.css";
 import apiService from "../../services/apiServices";
 import dosyaBildirIcon from "../../assets/images/dosyaBildir.svg";
 import TaslakBildirimlerIcon from "../../assets/images/taslakBildirimler.svg";
@@ -95,103 +95,84 @@ export default function Dashboard() {
     counts,
     total_estimated_amount,
     monthly_estimated_amount,
-    pending_files,
     favourite_insurance_companies
   } = dashboardData;
 
-  const formatAmount = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }).format(amount);
-  };
+  const formatAmount = (amount) =>
+    new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(amount);
 
   return (
-    <div className="dashboard">
+    <div className={styles.dashboard}>
+      <div className={styles.dashGrid}>
 
-      <div className="dash-grid">
         {/* YENİ DOSYA */}
-        <div className="card-dashboard card--new-file">
-          <div>
-            <img src={dosyaBildirIcon} alt="Dosya Bildir İkon" />
-          </div>
-          <div className="card-dashboard-title-sm">YENİ</div>
-          <div className="card-dashboard-title-lg">DOSYA</div>
-          <button 
-            className="card-dashboard-btn" 
-            onClick={handleNewFileClick} // 🔥 Değiştirildi
-          >
+        <div className={`${styles.cardDashboard} ${styles.cardNewFile}`}>
+          <img src={dosyaBildirIcon} alt="Dosya Bildir İkon" className={styles.dosyaBildirIcon}/>
+          <div className={styles.cardDashboardTitleSm}>YENİ</div>
+          <div className={styles.cardDashboardTitleLg}>DOSYA</div>
+          <button className={styles.cardDashboardBtn} onClick={handleNewFileClick}>
             BİLDİR
           </button>
         </div>
 
         {/* ONAYLANANLAR */}
-        <div className="card-dashboard card--approved">
-          <h3 className="card-dashboard-heading">ONAYLANANLAR</h3>
-          <p className="card-dashboard-count">
-            <span className="card-dashboard-count-number">{counts.completed}</span> Dosya
+        <div className={`${styles.cardDashboard} ${styles.cardApproved}`}>
+          <h3 className={styles.cardDashboardHeading}>ONAYLANANLAR</h3>
+          <p className={styles.cardDashboardCount}>
+            <span className={styles.cardDashboardCountNumber}>{counts.completed}</span> Dosya
           </p>
-          <div>
-            <img src={onaylananlarIcon} alt="Onaylananlar İkon" className="card-status-icon"/>
-          </div>
+          <img src={onaylananlarIcon} className={styles.cardStatusIcon} alt="İkon" />
         </div>
 
         {/* ONAY BEKLEYENLER */}
-        <div className="card-dashboard card--pending">
-          <h3 className="card-dashboard-heading">ONAY BEKLEYENLER</h3>
-          <p className="card-dashboard-count">
-            <span className="card-dashboard-count-number">{counts.pending}</span> Dosya
+        <div className={`${styles.cardDashboard} ${styles.cardPending}`}>
+          <h3 className={styles.cardDashboardHeading}>ONAY BEKLEYENLER</h3>
+          <p className={styles.cardDashboardCount}>
+            <span className={styles.cardDashboardCountNumber}>{counts.pending}</span> Dosya
           </p>
-          <div>
-            <img src={onayBekleyenlerIcon} alt="Onay Bekleyenler İkon" className="card-status-icon"/>
-          </div>
+          <img src={onayBekleyenlerIcon} className={styles.cardStatusIcon} alt="İkon" />
         </div>
 
         {/* TALEP EDİLEN TOPLAM TUTAR */}
-        <div className="card-dashboard card--amount">
-          <h3 className="card-dashboard-heading">TALEP EDİLEN TOPLAM TUTAR</h3>
-          <p className="amount-main">{formatAmount(total_estimated_amount)} TL</p>
-          <p className="amount-sub">
-            Bu Ay {formatAmount(monthly_estimated_amount)} TL
-          </p>
-          <div>
-            <img src={TalepEdilenIcon} alt="Talep Edilen Toplam İkon" className="card-requested-icon"/>
-          </div>
+        <div className={`${styles.cardDashboard} ${styles.cardAmount}`}>
+          <h3 className={styles.cardDashboardHeading}>TALEP EDİLEN TOPLAM TUTAR</h3>
+
+          <p className={styles.amountMain}>{formatAmount(total_estimated_amount)} TL</p>
+          <p className={styles.amountSub}>Bu Ay {formatAmount(monthly_estimated_amount)} TL</p>
+
+          <img src={TalepEdilenIcon} className={styles.cardRequestedIcon} alt="İkon" />
         </div>
 
         {/* TASLAK BİLDİRİMLERİM */}
-        <div className="card-dashboard card--drafts">
-          <h3 className="card-dashboard-heading">
+        <div className={`${styles.cardDashboard} ${styles.cardDrafts}`}>
+          <h3 className={styles.cardDashboardHeading}>
             TASLAK BİLDİRİMLERİM ({favourite_insurance_companies.length})
           </h3>
 
-          <div className="inner-card">
-            <div className="drafts-logos">
-              {/* Her zaman 3 kutu gözüksün */}
-              {[1, 2, 3].map((box, index) => (
-                <div key={index} className="draft-logo">
-                  {/* Şimdilik içerik yok, sadece boş kutu */}
-                </div>
+          <div className={styles.innerCard}>
+            <div className={styles.draftsLogos}>
+              {[1, 2, 3].map((_, i) => (
+                <div key={i} className={styles.draftLogo} />
               ))}
             </div>
 
             <img
               src={TaslakBildirimlerIcon}
-              alt="Taslak Bildirimlerim İkon"
-              className="drafts-illustration"
+              alt="Taslak Bildirimlerim"
+              className={styles.draftsIllustration}
             />
           </div>
         </div>
 
-
         {/* REDDEDİLEN DOSYALAR */}
-        <div className="card-dashboard card--rejected">
-          <h3 className="card-dashboard-heading">Reddedilen Dosyalar</h3>
-          <p className="card-dashboard-count">
-            <span className="card-dashboard-count-number">{counts.rejected}</span> Dosya
+        <div className={`${styles.cardDashboard} ${styles.cardRejected}`}>
+          <h3 className={styles.cardDashboardHeading}>Reddedilen Dosyalar</h3>
+          <p className={styles.cardDashboardCount}>
+            <span className={styles.cardDashboardCountNumber}>{counts.rejected}</span> Dosya
           </p>
+
           <button
-            className="card-dashboard-btn card-dashboard-btn--light"
+            className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight}`}
             onClick={() => navigate('/rejected')}
           >
             TÜMÜNÜ GÖR
@@ -199,9 +180,10 @@ export default function Dashboard() {
         </div>
 
         {/* DEVAM EDENLER */}
-        <div className="card-dashboard card--ongoing">
-          <h3 className="card-dashboard-heading">DEVAM EDENLER</h3>
-          <ul className="ongoing-list">
+        <div className={`${styles.cardDashboard} ${styles.cardOngoing}`}>
+          <h3 className={styles.cardDashboardHeading}>DEVAM EDENLER</h3>
+
+          <ul className={styles.ongoingList}>
             {counts.in_progress > 0 ? (
               <>
                 <li>Devam eden dosya sayısı: {counts.in_progress}</li>
@@ -212,18 +194,23 @@ export default function Dashboard() {
               <li>Devam eden dosya bulunmuyor</li>
             )}
           </ul>
-          <button className="card-dashboard-btn card-dashboard-btn--light" onClick={() => navigate('/upload')}>
+
+          <button
+            className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight}`}
+            onClick={() => navigate('/upload')}
+          >
             YÜKLE
           </button>
         </div>
 
         {/* ALT SAĞ BÜYÜK KART */}
-        <div className="card-dashboard card--bottom-right">
-          <h3 className="card-dashboard-heading">TOPLAM İŞLEM</h3>
-          <p className="card-dashboard-count">
-            <span className="card-dashboard-count-number">{counts.total}</span> Dosya
+        <div className={`${styles.cardDashboard} ${styles.cardBottomRight}`}>
+          <h3 className={styles.cardDashboardHeading}>TOPLAM İŞLEM</h3>
+          <p className={styles.cardDashboardCount}>
+            <span className={styles.cardDashboardCountNumber}>{counts.total}</span> Dosya
           </p>
         </div>
+
       </div>
     </div>
   );

@@ -60,7 +60,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
     flex-grow: 1;
 }
 
@@ -77,8 +76,9 @@ body {
     border-radius: 20px;
     padding: 40px;
     width: 100%;
-    max-width: 400px; /* Görseldeki gibi dar bir form alanı */
+    max-width: 627px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
 }
 
 /* --- Stepper Stili --- */

@@ -1,5 +1,4 @@
 import React from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import BackIcon from "../../components/images/back.svg";
 import ContinueIcon from "../../components/images/continue.svg";
 import styles from "../../styles/formFooter.module.css";
@@ -9,35 +8,40 @@ const FormFooter = ({
   onNext,
   nextLabel = "DEVAM ET",
   backLabel = "GERİ DÖN",
-  disabled = false
+  disabled = false,
+  dark = false,
 }) => {
-
   return (
-    <div className="form-footer">
+    <div className={`${styles.formFooter} ${dark ? styles.dark : ""}`}>
+      
+      {/* GERİ DÖN */}
       <button
-        className="back-btn"
+        className={styles.backBtn}
         onClick={onBack}
         type="button"
       >
-        <div className="icon-wrap">
+        <div className={styles.iconWrap}>
           <div className={styles.iconCircle}>
             <img src={BackIcon} alt="Geri" />
           </div>
         </div>
-        <span className="back-text">{backLabel}</span>
+        <span className={styles.backText}>{backLabel}</span>
       </button>
 
+      {/* DEVAM ET */}
       <button
-        className={`next-btn ${disabled ? 'disabled' : ''}`}
+        className={`${styles.nextBtn} ${disabled ? styles.disabled : ""}`}
         disabled={disabled}
         onClick={onNext}
         type="button"
       >
-        <span className="next-text">{nextLabel}</span>
+        <span className={styles.nextText}>{nextLabel}</span>
+
         <div className={styles.iconCircle}>
           <img src={ContinueIcon} alt="Devam" />
         </div>
       </button>
+
     </div>
   );
 };

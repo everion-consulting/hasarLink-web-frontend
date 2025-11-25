@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './../../styles/victimInfoScreen.module.css'; 
+import styles from './../../styles/victimInfoScreen.module.css';
 import FormRenderer from '../forms/FormRenderer';
 import { getVictimFields } from '../../constants/victimFields';
 import Stepper from '../stepper/Stepper';
+import FormFooter from '../forms/FormFooter';
 
 const VictimInfoStepper = ({ samePerson = false }) => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
   const handleFormSubmit = (values) => {
     console.log('Mağdur Form verileri:', values);
-    
+
     // Transform işlemlerini uygula
     const transformedValues = { ...values };
     victimFields.forEach(field => {
@@ -37,28 +38,28 @@ const VictimInfoStepper = ({ samePerson = false }) => {
         transformedValues[field.name] = field.transform(values[field.name]);
       }
     });
-    
+
     setFormValues(prev => ({ ...prev, ...transformedValues }));
-    
+
     // Mağdur bilgileri tamamlandıktan sonra DriverInfoScreen'e yönlendir
     console.log('Navigating to /driver-info');
-    navigate('/driver-info', { 
-      state: { 
+    navigate('/driver-info', {
+      state: {
         victimData: transformedValues,
-        samePerson 
-      } 
+        samePerson
+      }
     });
   };
 
   const renderVictimTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
-      <div 
+      <div
         className={`${styles.switchOption} ${!isCompany ? styles.activeOption : ''}`}
         onClick={() => setIsCompany(false)}
       >
         Şahıs
       </div>
-      <div 
+      <div
         className={`${styles.switchOption} ${isCompany ? styles.activeOption : ''}`}
         onClick={() => setIsCompany(true)}
       >
@@ -66,34 +67,14 @@ const VictimInfoStepper = ({ samePerson = false }) => {
       </div>
     </div>
   );
-
-  const renderFormFooter = ({ submit, allValid }) => (
-    <div className={styles.formFooterWeb}>
-      <button 
-        className={styles.backButtonWeb} 
-        onClick={handleBack}
-        type="button"
-      >
-        <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
-      </button>
-      <button 
-        className={styles.nextButtonWeb} 
-        onClick={submit}
-        disabled={!allValid}
-        type="button"
-      >
-        DEVAM ET <span className={styles.arrowIcon}>➔</span>
-      </button>
-    </div>
-  );
-
+  
   return (
     <div className={styles.screenContainer}>
       <div className={styles.contentArea}>
         <Stepper steps={steps} currentStep={1} />
 
         <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
-        
+
         <div className={styles.formCard}>
           <div className={styles.formSectionContent}>
             {renderVictimTypeSwitch()}
@@ -103,8 +84,15 @@ const VictimInfoStepper = ({ samePerson = false }) => {
               setValues={setFormValues}
               onSubmit={handleFormSubmit}
               submitLabel="DEVAM ET"
-              renderFooter={renderFormFooter}
+              renderFooter={({ submit, allValid }) => (
+                <FormFooter
+                  onBack={handleBack}
+                  onNext={submit}
+                  disabled={!allValid}
+                />
+              )}
             />
+
           </div>
         </div>
       </div>

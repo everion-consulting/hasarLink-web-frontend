@@ -1,5 +1,4 @@
 .app-text-input {
-  margin-bottom: 14px;
   width: 100%;
 }
 
@@ -9,6 +8,12 @@
   margin-bottom: 6px;
   font-weight: 500;
   display: block;
+}
+
+.required-indicator {
+  color: #C62828;
+  font-weight: 700;
+  margin-left: 2px;
 }
 
 .input-container {

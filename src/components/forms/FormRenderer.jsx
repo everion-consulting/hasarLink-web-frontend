@@ -39,7 +39,7 @@ export default function FormRenderer({
   values,
   setValues,
   onSubmit,
-  submitLabel = "Devam Et",
+  submitLabel,
   renderFooter,
 }) {
   const [errors, setErrors] = useState({});
@@ -206,7 +206,12 @@ export default function FormRenderer({
         className="form-field"
         ref={isOpen ? dropdownRef : null}
       >
-        {field.label && <label className="form-label">{field.label}</label>}
+        {field.label && (
+          <label className="form-label">
+            {field.label}
+            {field.required && <span className="required-indicator"> *</span>}
+          </label>
+        )}
 
         <div
           className={`dropdown-trigger ${isOpen ? 'active' : ''}`}
@@ -297,7 +302,10 @@ export default function FormRenderer({
 
                     return (
                       <div key={childField.name} className="form-field">
-                        <label className="form-label">{childField.label}</label>
+                        <label className="form-label">
+                          {childField.label}
+                          {childField.required && <span className="required-indicator"> *</span>}
+                        </label>
 
                         <div className="date-input-wrapper">
                           <input
@@ -362,6 +370,7 @@ export default function FormRenderer({
                         helperText={childField.helperText}
                         maxLength={childField.maxLength}
                         type={getInputType(childField.type)}
+                        required={childField.required}
                       />
                     </div>
                   );
@@ -380,7 +389,10 @@ export default function FormRenderer({
 
             return (
               <div key={f.name} className="form-field">
-                <label className="form-label">{f.label}</label>
+                <label className="form-label">
+                  {f.label}
+                  {f.required && <span className="required-indicator"> *</span>}
+                </label>
 
                 <div className="date-input-wrapper">
                   <input
@@ -443,6 +455,7 @@ export default function FormRenderer({
               secureTextEntry={f.type === "password" || f.secureTextEntry}
               error={errors[f.name]}
               helperText={f.helperText}
+              required={f.required}
             />
           );
         })}

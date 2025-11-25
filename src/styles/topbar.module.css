@@ -1,6 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* src/styles/topbar.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-.topbar {
+.topBar {
     width: 100%;
     padding: 16px 40px;
     display: flex;
@@ -11,16 +12,14 @@
 
 /* Logo */
 .logo {
-    font-style: Medium;
     font-size: 36px;
     letter-spacing: 5px;
     font-weight: 500;
     color: #222;
-    text-align: center;
     line-height: 50px;
 }
 
-/* Tabs container */
+/* Tabs */
 .tabs {
     background: rgba(255, 255, 255, 0.4);
     padding: 20px 24px;
@@ -30,9 +29,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
 }
 
-/* Each tab */
 .tab {
-    border: none;
     background: none;
     color: #444;
     cursor: pointer;
@@ -43,14 +40,13 @@
     text-align: center;
 }
 
-
-.tab.active {
+.active {
     font-weight: 700;
     color: #133E87;
 }
 
-/* Blue CTA button */
-.contact-btn {
+/* CTA (Desktop) */
+.contactBtn {
     background: #133E87;
     color: #fff;
     border: none;
@@ -63,20 +59,9 @@
     font-weight: 500;
     font-size: 20px;
     line-height: 28px;
-    letter-spacing: 0px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.1s;
 }
 
-.contact-btn:hover {
-    background: #0f2f6b;
-}
-
-.contact-btn:active {
-    transform: scale(0.98);
-}
-
-.contact-btn-icon {
+.contactBtnIcon {
     width: 36px;
     height: 36px;
     display: flex;
@@ -86,76 +71,105 @@
     border-radius: 50%;
 }
 
-.contact-btn-icon img {
+.contactBtnIcon img {
     width: 14px;
     height: 14px;
 }
 
-/* Hamburger - default hidden */
+/************** HAMBURGER **************/
 .hamburger {
     display: none;
-    font-size: 28px;
+    font-size: 32px;
     cursor: pointer;
+    padding: 4px;
+    line-height: 20px;
+    user-select: none;
 }
 
-/* Mobile menu */
-.mobile-menu {
+/*************** MOBILE MENU ***************/
+.mobileMenu {
     position: absolute;
     top: 80px;
     right: 20px;
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
+    width: 220px;
+    padding: 18px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    z-index: 100;
+    z-index: 200;
 }
 
-.mobile-menu a {
+.mobileMenu a {
     text-decoration: none;
     color: #444;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: background 0.2s;
+    font-size: 18px;
 }
 
-.mobile-menu a:hover,
-.mobile-menu a.active {
-    background: #f0f0f0;
-    color: #133E87;
-    font-weight: 600;
+.mobileMenu a:hover {
+    opacity: 0.7;
 }
 
-.mobile-logout-btn {
+/* Mobile Logout Button */
+.mobileLogout {
     background: #133E87;
-    color: white;
+    color: #fff;
+    padding: 8px;
+    border-radius: 10px;
     border: none;
-    padding: 10px 12px;
-    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 4px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 14px;
-    margin-top: 8px;
-    transition: background 0.2s;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
 }
 
-.mobile-logout-btn:hover {
-    background: #0f2f6b;
+.desktopMenu {
+    display: flex;
 }
 
-/* --- BREAKPOINT --- */
 @media (max-width: 1024px) {
-    .desktop-menu {
+
+    /* Desktop tab menü gizle */
+    .desktopMenu {
         display: none;
     }
 
-    .contact-btn {
+    /* Hamburger göster */
+    .hamburger {
+        display: block;
+    }
+
+    /* Masaüstü çıkış butonu gizle */
+    .contactBtn {
         display: none;
+    }
+
+    /* Logo küçült */
+    .logo {
+        font-size: 28px;
+        letter-spacing: 3px;
+    }
+
+    /* Daha sıkı spacing */
+    .topBar {
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 24px;
+        letter-spacing: 2px;
     }
 
     .hamburger {
-        display: block;
+        font-size: 28px;
     }
 }
