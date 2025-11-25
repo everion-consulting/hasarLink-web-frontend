@@ -254,3 +254,8 @@ body {
 .nextButtonWeb:hover {
     background-color: #153c6e;
 }
+
+.formSectionContent {
+    display: flex;
+    flex-direction: column;
+}
