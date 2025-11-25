@@ -1,23 +1,6 @@
 import React from "react";
 import "../../styles/appTextInput.css";
 
-// Hero Icons import
-import {
-  ChevronDownIcon,
-  CalendarIcon,
-  UserIcon,
-  IdentificationIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  CreditCardIcon,
-  TagIcon,
-  TruckIcon,
-  RectangleStackIcon,
-  QrCodeIcon,
-  Cog6ToothIcon,
-  ListBulletIcon,
-} from '@heroicons/react/24/outline';
-
 export default function AppTextInput({
   label,
   error,
@@ -36,6 +19,7 @@ export default function AppTextInput({
   isDark,
   multiline = false,
   rows = 1,
+  secureTextEntry,
   ...rest
 }) {
 
@@ -80,11 +64,15 @@ export default function AppTextInput({
 
   // Input type'ını belirle
   let inputType = "text";
-  if (type === 'email') inputType = "email";
-  if (type === 'number' || type === 'tckn') inputType = "number";
-  if (type === 'password') inputType = "password";
-  if (type === 'tel') inputType = "tel";
-
+  if (secureTextEntry) {
+    inputType = "password";
+  } else {
+    if (type === 'email') inputType = "email";
+    if (type === 'number' || type === 'tckn') inputType = "number";
+    if (type === 'password') inputType = "password";
+    if (type === 'tel') inputType = "tel";
+  }
+  
   return (
     <div className={`app-text-input ${isDark ? 'dark' : ''}`} style={style}>
       {label ? (
@@ -125,8 +113,8 @@ export default function AppTextInput({
         )}
 
         {rightAction ? (
-          <button 
-            className="action-button" 
+          <button
+            className="action-button"
             onClick={rightAction.onPress}
             type="button"
           >

@@ -39,7 +39,7 @@ export default function FormRenderer({
   values,
   setValues,
   onSubmit,
-  submitLabel = "Devam Et",
+  submitLabel,
   renderFooter,
 }) {
   const [errors, setErrors] = useState({});

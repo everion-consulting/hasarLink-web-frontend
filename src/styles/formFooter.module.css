@@ -1,4 +1,4 @@
-.form-footer {
+.formFooter {
   display: flex;
   flex-direction: row;
   gap: 12px;
@@ -7,8 +7,8 @@
   width: 100%;
 }
 
-.form-footer .back-btn,
-.form-footer .next-btn {
+.backBtn,
+.nextBtn {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -25,68 +25,80 @@
   font-size: 16px;
 }
 
-.form-footer .back-btn {
+.backBtn {
   background-color: #CBDCEB;
 }
 
-.form-footer .next-btn {
+.nextBtn {
   background-color: #133E87;
 }
 
-.form-footer .next-btn.disabled {
+.disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.form-footer .back-btn:hover:not(:disabled),
-.form-footer .next-btn:hover:not(:disabled) {
+.backBtn:hover:not(.disabled),
+.nextBtn:hover:not(.disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.form-footer .back-text {
+.backText {
   color: #000000;
 }
 
-.form-footer .next-text {
+.nextText {
   color: #ffffff;
 }
 
-.form-footer .icon-wrap {
-  background: rgba(255, 233, 233, 0.3);
-  padding: 6px;
-  border-radius: 50%;
+.iconWrap {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Dark theme */
-.form-footer.dark .back-btn {
+.iconCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconCircle img {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dark */
+.dark .backBtn {
   background-color: #CBDCEB;
 }
 
-.form-footer.dark .next-btn {
+.dark .nextBtn {
   background-color: #608BC1;
 }
 
-.form-footer.dark .back-text {
+.dark .backText {
   color: #000000;
 }
 
-.form-footer.dark .next-text {
+.dark .nextText {
   color: #ffffff;
 }
 
-/* Responsive tasarım */
+/* Responsive */
 @media (max-width: 768px) {
-  .form-footer {
+  .formFooter {
     flex-direction: column;
     gap: 8px;
   }
-  
-  .form-footer .back-btn,
-  .form-footer .next-btn {
+
+  .backBtn,
+  .nextBtn {
     width: 100%;
   }
 }
