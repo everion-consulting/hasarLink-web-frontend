@@ -26,25 +26,25 @@
 }
 
 /* ADIM Stili - İKONLU VERSİYON */
-.step-bottom-section {
+.step-info-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
   margin-bottom: 20px;
-  order: 3;
+  order: 3; /* 🔥 HER ZAMAN 3. SIRADA OLSUN */
 }
 
 .step-header {
   display: flex;
-  flex-direction: row;
   align-items: center;
+  justify-content: center;
   margin-bottom: 10px;
   gap: 10px;
 }
 
 .step-title {
-  font-size: 24px;
+  font-size: 48px;
   font-weight: 700;
   color: #133E87;
   font-family: 'Poppins', sans-serif;
@@ -66,121 +66,164 @@
   margin: 0 20px 20px 20px;
 }
 
-/* KÜÇÜK BUTONLAR - RESİMDEKİ GİBİ */
-.small-buttons-container {
+/* BUTON CONTAINER - ALT KISIM */
+.footer {
+  background-color: #fff;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  margin-top: auto;
+  order: 4; /* 🔥 EN ALTTA OLSUN */
+}
+
+.button-container {
   display: flex;
   gap: 15px;
-  justify-content: center;
-  margin-top: 10px;
+  width: 100%;
 }
 
-.small-back-button {
+/* GERİ DÖN BUTONU */
+.back-button {
+  flex: 1;
   background-color: #CBDCEB;
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #000000;
-  font-family: 'Poppins', sans-serif;
-  min-width: 120px;
-}
-
-.small-continue-button {
-  background-color: #133E87;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
   font-family: 'Poppins', sans-serif;
-  min-width: 120px;
+  transition: all 0.2s ease;
 }
 
-.small-continue-button:disabled {
+.back-button:hover {
+  background-color: #b8cce0;
+  transform: translateY(-1px);
+}
+
+.back-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.back-icon-wrapper {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+  color: #000000;
+}
+
+.back-button-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* DEVAM ET BUTONU */
+.continue-button {
+  flex: 1;
+  background-color: #133E87;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.continue-button:hover:not(.disabled) {
+  background-color: #0d2c5e;
+  transform: translateY(-1px);
+}
+
+.continue-button.disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* 3 KOLON DÜZENİ - RESİMDEKİ GİBİ */
-.form-card.three-column {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  order: 2;
-  max-width: 1000px;
-  /* 🔥 MAKSİMUM GENİŞLİK */
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* HER KART - RESİMDEKİ GİBİ */
-.section-box {
-  padding: 20px;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* 🔥 HAFİF GÖLGE */
+.continue-button-content {
   display: flex;
-  flex-direction: column;
-  height: fit-content;
-  min-height: 350px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* ONAYLA butonu 3 kolonun tamamını kaplasın */
-.approve-section {
-  grid-column: span 3;
-  margin-top: 20px;
+.continue-icon-wrapper {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.continue-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+  color: #ffffff;
+}
+
+.continue-button-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.continue-button-text.disabled {
+  color: #666;
 }
 
 /* FORM KARTI - RESİMDEKİ GİBİ */
 .form-card {
   background-color: #ffffff;
-  /* 🔥 BEYAZ ARKA PLAN */
   border-radius: 10px;
   padding: 20px;
   border: 1px solid #E0E0E0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   width: 100%;
-  max-width: 1000px;
-  /* 🔥 MAKSİMUM GENİŞLİK */
+  max-width: 700px;
   margin: 0 auto;
+  order: 2; /* 🔥 2. SIRADA OLSUN (onay kartından önce) */
 }
 
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
+/* HER KART - RESİMDEKİ GİBİ */
+.section-box {
+  padding: 10px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  min-height: 50px;
+  margin-bottom: 15px;
+}
+
+.section-title-step {
+  font-size: 20px;
+  font-weight: 500;
   color: #000;
   font-family: 'Poppins', sans-serif;
   margin-bottom: 15px;
   padding-bottom: 10px;
-
-
-  /* 🔥 MAVİ ÇİZGİ */
-}
-
-.edit-link {
-  background: none;
-  border: none;
-  padding: 0;
-  margin-top: 10px;
-  color: #133E87;
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.edit-link:hover {
-  opacity: 0.7;
 }
 
 .content-box {
   background-color: #ffffff;
-  /* 🔥 BEYAZ ARKA PLAN */
   border-radius: 8px;
   border-bottom: none !important;
   box-shadow: none !important;
@@ -197,10 +240,7 @@
 
 .data-row {
   margin-bottom: 12px;
-  /* 🔥 DAHA FAZLA BOŞLUK */
   padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-  /* 🔥 AYIRICI ÇİZGİ */
 }
 
 .data-row:last-child {
@@ -211,7 +251,6 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  /* 🔥 LABEL VE DEĞER ARASI BOŞLUK */
 }
 
 .data-label {
@@ -220,7 +259,6 @@
   color: #000000;
   font-family: 'Poppins', sans-serif;
   min-width: 140px;
-  /* 🔥 DAHA GENİŞ LABEL */
   margin-right: 15px;
 }
 
@@ -234,9 +272,7 @@
   font-family: 'Poppins', sans-serif;
   flex: 1;
   text-align: right;
-  /* 🔥 SAĞA HİZALI */
   word-break: break-word;
-  /* 🔥 EKLE */
   white-space: normal;
 }
 
@@ -251,7 +287,6 @@
   justify-content: flex-end;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #e0e0e0;
 }
 
 .edit-button {
@@ -284,14 +319,52 @@
 .approve-section {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 2px solid #e0e0e0;
 }
 
+.approve-button {
+  background-color: #133E87;
+  border-radius: 8px;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+  transition: background-color 0.3s ease;
+}
 
+.approve-button:hover {
+  background-color: #0d2c5e;
+}
 
+.approve-button-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+}
 
+.approve-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-
+.approve-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+  color: #ffffff;
+}
 
 /* ONAYLANMIŞ STEP BİLEŞENİ */
 .approved-container {
@@ -299,7 +372,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  order: 2;
+  order: 2; /* 🔥 FORM KARTIYLA AYNI SIRADA */
   margin: 30px 0;
 }
 
@@ -325,46 +398,41 @@
   margin-bottom: 40px;
 }
 
+.approved-message {
+  background-color: #fff;
+  border: 2px solid #133E87;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-top: 50px;
+}
+
 .approved-message-text {
   font-size: 18px;
   font-weight: 600;
-  color: #000;
+  color: #133E87;
   font-family: 'Poppins', sans-serif;
+  text-align: center;
 }
 
-
-
-
-
-/* ONAYLA butonunu 3 kolonun tam ortasına yerleştirir */
-.full-width {
-  grid-column: span 2;       /* 3 kolonluk alanı kapla */
-  display: flex;
-  justify-content: center;   /* Ortala */
-  align-items: center;
-  
-  margin-top: 20px;
+/* DEVRE DIŞI DÜZENLEME BİLGİSİ */
+.disabled-edit-info {
+  padding: 8px 12px;
+  background-color: #F0F0F0;
+  border-radius: 8px;
+  color: #555;
+  font-size: 13px;
+  width: 100%;
+  text-align: center;
 }
-
 
 /* RESPONSIVE DÜZENLEMELER */
 @media (max-width: 992px) {
-  .form-card.three-column {
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-
   .form-card {
     padding: 15px;
   }
 }
 
 @media (max-width: 768px) {
-  .form-card.three-column {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
   .scroll-view {
     padding: 0 15px;
   }
@@ -388,31 +456,37 @@
   }
 
   .step-title {
-    font-size: 20px;
+    font-size: 36px;
   }
 
-  .small-buttons-container {
+  .button-container {
     flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    max-width: 200px;
   }
 
-  .small-back-button,
-  .small-continue-button {
+  .back-button,
+  .continue-button {
     width: 100%;
-    min-width: auto;
   }
 
   .label-value-pair {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
-    flex-wrap: wrap;
   }
 
   .data-value {
     text-align: left;
+  }
+
+  .approved-card {
+    padding: 40px 20px;
+    min-height: 250px;
+  }
+
+  .onay-icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 30px;
   }
 }
 
@@ -421,7 +495,7 @@
     padding: 15px;
   }
 
-  .section-title {
+  .section-title-step {
     font-size: 16px;
   }
 
@@ -437,75 +511,28 @@
   .approve-button {
     padding: 12px 20px;
   }
-}
 
+  .step-title {
+    font-size: 28px;
+  }
 
-.stepinfo-footer {
-  grid-column: span 3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  width: 100%;
-}
+  .step-info {
+    font-size: 14px;
+    margin: 0 10px 15px 10px;
+  }
 
-.approve-button {
-  background-color: #133E87;
-  border-radius: 8px;
-  padding: 15px 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  cursor: pointer;
-  width: 400px;
-  max-width: 90%;
-  transition: background-color 0.3s ease;
-}
+  .approved-card {
+    padding: 30px 15px;
+    min-height: 200px;
+  }
 
-.approve-button:hover {
-  background-color: #0d2c5e;
-}
+  .onay-icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+  }
 
-.approve-button-text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #ffffff;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif;
-}
-.approve-button-text-back {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #000000;
-
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif;
-}
-
-.approve-icon-wrapper {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.approve-icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.5;
-  color: #ffffff;
-}
-.approve-icon-back{
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.5;
-  color: #000000;
+  .approved-message-text {
+    font-size: 16px;
+  }
 }
