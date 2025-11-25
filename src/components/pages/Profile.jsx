@@ -1,31 +1,56 @@
 // src/components/pages/Profile.jsx
 import React, { useEffect, useState } from "react";
-import "../../styles/profile.css";
-import { Bell, Clock, CheckCircle, XCircle, FileText } from "lucide-react";
+import styles from "../../styles/profile.module.css";
+import { Clock, CheckCircle, XCircle, FileText } from "lucide-react";
 import apiService from "../../services/apiServices";
 import { useProfile } from "../../context/ProfileContext";
 import userIcon from "../../assets/images/kullanıcı.svg";
-import userBackground from "../../assets/images/userBackground.svg";
+import userBackground from "../../assets/images/profile-ellipse.svg";
 import { useNavigate } from "react-router-dom";
+import {
+    Mail, KeyRound, User, Phone, MapPin, Building2
+} from "lucide-react";
+
 
 export default function Profile() {
     const {
         profileData: profile,
         profileDetail,
-        allCompaniesList, // DÜZELTİLDİ: allCompanies yerine allCompaniesList
+        allCompaniesList,
         loading,
         fetchProfile,
         fetchAllCompanies
     } = useProfile();
-    
+
     const favoriteCompanies = profileDetail?.favorite_insurance_companies || [];
-    console.log("favoriteCompanies:", favoriteCompanies);
+
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [passwordLoading, setPasswordLoading] = useState(false);
+
+    const [form, setForm] = useState({
+        repair_fullname: "",
+        repair_phone: "",
+        repair_city: "",
+        repair_state: "",
+        repair_address: "",
+        repair_birth_date: "",
+        repair_tc: "",
+        repair_area_code: "",
+        service_name: "",
+        service_city: "",
+        service_state: "",
+        service_address: "",
+        service_tax_no: "",
+    });
+
+    const [statistics, setStatistics] = useState(null);
+    const [loadingStats, setLoadingStats] = useState(true);
+    const [fileNotifications, setFileNotifications] = useState([]);
+    const navigate = useNavigate();
 
     const handlePasswordChange = async () => {
         if (!currentPassword || !newPassword || !confirmPassword) {
@@ -44,9 +69,6 @@ export default function Profile() {
             confirmPassword
         );
 
-        console.log("🔍 BACKEND RESPONSE:", response);
-
-        // Hata mesajını yakalamak için geniş kapsamlı kontrol
         const backendError =
             response.data?.detail ||
             response.data?.message ||
@@ -60,34 +82,10 @@ export default function Profile() {
         alert("Şifre başarıyla değişti!");
         setPasswordModalOpen(false);
 
-        // Eğer backend yeni token dönerse:
         if (response.data?.token) {
             localStorage.setItem("authToken", response.data.token);
         }
     };
-
-
-    const [form, setForm] = useState({
-        repair_fullname: "",
-        repair_phone: "",
-        repair_city: "",
-        repair_state: "",
-        repair_address: "",
-        repair_birth_date: "",
-        repair_tc: "",
-        repair_area_code: "",
-
-        service_name: "",
-        service_city: "",
-        service_state: "",
-        service_address: "",
-        service_tax_no: "",
-    });
-
-    const [statistics, setStatistics] = useState(null);
-    const [loadingStats, setLoadingStats] = useState(true);
-    const [fileNotifications, setFileNotifications] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProfile();
@@ -119,11 +117,10 @@ export default function Profile() {
     const handleUploadAvatar = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        const formData = new FormData();
+        formData.append("avatar", file);
 
-        const form = new FormData();
-        form.append("avatar", file);
-
-        const res = await apiService.uploadAvatar(form);
+        const res = await apiService.uploadAvatar(formData);
         if (res.success) {
             fetchProfile();
             alert("Profil fotoğrafı güncellendi!");
@@ -143,47 +140,64 @@ export default function Profile() {
         }
     };
 
-    if (loading) return <div className="loading">Yükleniyor...</div>;
+    if (loading) return <div className={styles.loading}>Yükleniyor...</div>;
 
     return (
-        <div className="profile-page">
+        <div className={styles.profilePage}>
 
-            <div className="profile-bg"></div>
+            <div className={styles.profileBackground}></div>
 
-            <div className="profile-main-card fade-in">
-                <label className="avatar-circle">
+            {/* ÜST PROFİL KARTI */}
+            <div className={`${styles.profileMainCard} ${styles.fadeIn}`}>
+                <label className={styles.avatarCircle}>
                     {profileDetail?.avatar ? (
-                        <img src={profileDetail.avatar} alt="avatar" className="avatar-img" />
+                        <img src={profileDetail.avatar} alt="avatar" className={styles.avatarImg} />
                     ) : (
-                        <div className="avatar-upload-text">
-                            <img className="userBg" src={userBackground} alt="User arkaplan" />
-                            <img className="userIcon" src={userIcon} alt="Kullanıcı resim" />
+                        <div className={styles.avatarUploadText}>
+                            <img className={styles.userBg} src={userBackground} alt="BG" />
+                            <img className={styles.userIcon} src={userIcon} alt="User" />
                         </div>
                     )}
                     <input type="file" accept="image/*" onChange={handleUploadAvatar} />
                 </label>
 
-                <div className="profile-info">
+                <div className={styles.profileInfo}>
                     <h2>{profileDetail?.repair_fullname || "Kullanıcı"}</h2>
-                    <p className="email">{profile?.email}</p>
+                    <p className={styles.email}>{profile?.email}</p>
                 </div>
             </div>
 
-            <div className="profile-grid">
+            {/* GRID */}
+            <div className={styles.profileGrid}>
+                {/* HESAP BİLGİLERİ */}
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>HESAP BİLGİLERİ</h3>
 
-                <div className="card">
-                    <h3 className="card-title">HESAP BİLGİLERİ</h3>
-                    <p>{profile?.email}</p>
-                    <a className="mini-link" onClick={() => setPasswordModalOpen(true)}>
-                        Şifreyi değiştir
-                    </a>
+                    <div className={styles.infoRow}>
+                        <Mail size={22} strokeWidth={1.75} className={styles.infoIcon} />
+                        <p className={styles.infoText}>{profile?.email}</p>
+                    </div>
 
+                    <div className={styles.rowDivider}></div>
+
+                    <div className={styles.infoRow}>
+                        <KeyRound size={22} strokeWidth={1.75} className={styles.infoIcon} />
+                        <span className={styles.infoText}>Şifreyi Gör</span>
+
+                        <a
+                            className={styles.editLink}
+                            onClick={() => setPasswordModalOpen(true)}
+                        >
+                            Şifreyi değiştir
+                        </a>
+                    </div>
                 </div>
 
-                <div className="card">
-                    <div className="card-title-row">
-                        <h3 className="card-title">SERVİS BİLGİLERİ</h3>
-                        <a className="mini-link" onClick={() => {
+                {/* SERVİS BİLGİLERİ */}
+                <div className={styles.card}>
+                    <div className={styles.cardTitleRow}>
+                        <h3 className={styles.cardTitle}>SERVİS BİLGİLERİ</h3>
+                        <a className={styles.editLink} onClick={() => {
                             setForm({
                                 repair_fullname: profileDetail?.repair_fullname || "",
                                 repair_phone: profileDetail?.repair_phone || "",
@@ -193,7 +207,6 @@ export default function Profile() {
                                 repair_birth_date: profileDetail?.repair_birth_date || "",
                                 repair_tc: profileDetail?.repair_tc || "",
                                 repair_area_code: profileDetail?.repair_area_code || "",
-
                                 service_name: profileDetail?.service_name || "",
                                 service_city: profileDetail?.service_city || "",
                                 service_state: profileDetail?.service_state || "",
@@ -206,76 +219,71 @@ export default function Profile() {
                         </a>
                     </div>
 
-                    <p>{profileDetail?.repair_fullname}</p>
-                    <p>{profileDetail?.repair_phone}</p>
-                    <p>{profileDetail?.repair_city} / {profileDetail?.repair_state}</p>
-                    <p>{profileDetail?.repair_address}</p>
+                    <div className={styles.row}><User size={20} /><p>{profileDetail?.repair_fullname}</p></div>
+                    <div className={styles.row}><Phone size={20} /><p>{profileDetail?.repair_phone}</p></div>
+                    <div className={styles.row}><MapPin size={20} /><p>{profileDetail?.service_city} / {profileDetail?.service_state}</p></div>
+                    <div className={styles.row}><Building2 size={20} /><p>{profileDetail?.service_address}</p></div>
                 </div>
 
-                <div className="card">
-                    <div className="card-title-row">
-                        <h3 className="card-title">FAVORİ SİGORTA ŞİRKETLERİM</h3>
-                        <a className="mini-link" onClick={() => navigate("/edit-favorites")}>Düzenle</a>
+
+                {/* FAVORİ ŞİRKETLER */}
+                <div className={styles.card}>
+                    <div className={styles.cardTitleRow}>
+                        <h3 className={styles.cardTitle}>FAVORİ SİGORTA ŞİRKETLERİM</h3>
+                        <a className={styles.editLink} onClick={() => navigate("/edit-favorites")}>Düzenle</a>
                     </div>
 
-                    <div className="insurer-logos">
-                        {favoriteCompanies?.length === 0 && (
-                            <p className="no-favorites">Favori şirket yok</p>
+                    <div className={styles.insurerLogos}>
+                        {favoriteCompanies.length === 0 && (
+                            <p className={styles.noFavorites}>Favori şirket yok</p>
                         )}
 
-                        {favoriteCompanies?.map((id) => {
-                            // DÜZELTİLDİ: allCompanies yerine allCompaniesList kullanıldı
-                            const comp = allCompaniesList?.find((c) => c.id === id);
-                            console.log('Aranan ID:', id, 'Bulunan Şirket:', comp);
-                            console.log('Tüm Şirketler:', allCompaniesList); // DEBUG için
-                            
-                            if (!comp) {
-                                console.warn(`ID ${id} için şirket bulunamadı!`);
-                                return null;
-                            }
-                            
+                        {favoriteCompanies.map((id) => {
+                            const comp = allCompaniesList?.find(c => c.id === id);
+                            if (!comp) return null;
+
                             return (
                                 <img
                                     key={id}
-                                    src={comp?.photo}
-                                    alt={comp?.name || 'Şirket logosu'}
-                                    className="insurer-logo"
-                                    onError={(e) => {
-                                        console.error('Resim yüklenemedi:', comp?.photo);
-                                        e.target.style.display = 'none';
-                                    }}
+                                    src={comp.photo}
+                                    alt={comp.name}
+                                    className={styles.insurerLogo}
                                 />
                             );
                         })}
                     </div>
                 </div>
 
-                <div className="card">
-                    <div className="card-title-row">
-                        <h3 className="card-title">DOSYA BİLDİRİMLERİM</h3>
-                        <a className="mini-link">Hepsini Gör</a>
+
+                {/* DOSYA BİLDİRİMLERİ */}
+                <div className={styles.card}>
+                    <div className={styles.cardTitleRow}>
+                        <h3 className={styles.cardTitle}>DOSYA BİLDİRİMLERİM</h3>
+                        <a className={styles.editLink}>Hepsini Gör</a>
                     </div>
 
-                    <div className="file-status-row">
+                    <div className={styles.fileStatusRow}>
                         {fileNotifications.slice(0, 4).map((item) => (
-                            <div key={item.id} className="file-status-box">
+                            <div key={item.id} className={styles.fileStatusBox}>
                                 {getStatusIcon(item.status)}
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="card">
-                    <h3 className="card-title">İSTATİSTİKLER</h3>
+
+                {/* İSTATİSTİKLER */}
+                <div className={styles.card}>
+                    <h3 className={styles.cardTitle}>İSTATİSTİKLER</h3>
 
                     {loadingStats ? (
                         <p>Yükleniyor...</p>
                     ) : statistics ? (
-                        <div className="stats">
-                            <p><strong>{statistics.counts.total}</strong> Toplam Dosya</p>
-                            <p><strong>{statistics.counts.pending}</strong> Onay Bekleyen</p>
-                            <p><strong>{statistics.counts.in_progress}</strong> Onaylanan</p>
-                            <p><strong>{statistics.counts.rejected}</strong> Reddedilen</p>
+                        <div className={styles.stats}>
+                            <p><strong>{statistics?.counts?.total}</strong> Toplam Dosya</p>
+                            <p><strong>{statistics?.counts?.pending}</strong> Onay Bekleyen</p>
+                            <p><strong>{statistics?.counts?.in_progress}</strong> Onaylanan</p>
+                            <p><strong>{statistics?.counts?.rejected}</strong> Reddedilen</p>
                         </div>
                     ) : (
                         <p>Veri bulunamadı</p>
@@ -284,22 +292,20 @@ export default function Profile() {
 
             </div>
 
-            <div className="bottom-button-container">
-                <button
-                    className="back-home-btn"
-                    onClick={() => navigate("/")}
-                >
+            {/* Geri dön butonu */}
+            <div className={styles.bottomButtonContainer}>
+                <button className={styles.backHomeBtn} onClick={() => navigate("/")}>
                     ANASAYFAYA DÖN →
                 </button>
             </div>
 
+            {/* Modal 1 */}
             {editModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-card">
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalCard}>
+                        <h2 className={styles.modalTitle}>Servis Bilgilerini Düzenle</h2>
 
-                        <h2 className="modal-title">Servis Bilgilerini Düzenle</h2>
-
-                        <div className="modal-form">
+                        <div className={styles.modalForm}>
 
                             <label>Ad Soyad</label>
                             <input
@@ -308,7 +314,7 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, repair_fullname: e.target.value })}
                             />
 
-                            <div className="form-row-2">
+                            <div className={styles.formRow2}>
                                 <div>
                                     <label>Telefon</label>
                                     <input
@@ -349,7 +355,7 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, service_name: e.target.value })}
                             />
 
-                            <div className="form-row-2">
+                            <div className={styles.formRow2}>
                                 <div>
                                     <label>Servis Şehir</label>
                                     <input
@@ -382,13 +388,13 @@ export default function Profile() {
                                 onChange={(e) => setForm({ ...form, service_tax_no: e.target.value })}
                             />
 
-                            <div className="modal-buttons">
-                                <button className="btn-cancel" onClick={() => setEditModalOpen(false)}>
+                            <div className={styles.modalButtons}>
+                                <button className={styles.btnCancel} onClick={() => setEditModalOpen(false)}>
                                     İptal
                                 </button>
 
                                 <button
-                                    className="btn-save"
+                                    className={styles.btnSave}
                                     onClick={async () => {
                                         const res = await apiService.updateProfileDetail(form);
                                         if (res.success) {
@@ -409,14 +415,13 @@ export default function Profile() {
                 </div>
             )}
 
+            {/* Modal 2 */}
             {passwordModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-card">
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalCard}>
+                        <h2 className={styles.modalTitle}>Şifre Değiştir</h2>
 
-                        <h2 className="modal-title">Şifre Değiştir</h2>
-
-                        <div className="modal-form">
-
+                        <div className={styles.modalForm}>
                             <label>Mevcut Şifre</label>
                             <input
                                 type="password"
@@ -438,13 +443,13 @@ export default function Profile() {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                             />
 
-                            <div className="modal-buttons">
-                                <button className="btn-cancel" onClick={() => setPasswordModalOpen(false)}>
+                            <div className={styles.modalButtons}>
+                                <button className={styles.btnCancel} onClick={() => setPasswordModalOpen(false)}>
                                     İptal
                                 </button>
 
                                 <button
-                                    className="btn-save"
+                                    className={styles.btnSave}
                                     onClick={handlePasswordChange}
                                 >
                                     Kaydet
