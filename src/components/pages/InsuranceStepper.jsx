@@ -264,19 +264,15 @@ export default function InsuranceStepper() {
       <div className="stepper-scroll-container">
         <div className="stepper-cards-container">
 
-          {/* Sigorta Kartı */}
+          {/* === GÜNCELLENMİŞ SİGORTA KARTI - AccidentTypeScreen stili === */}
           {selectedCompany && (
-            <div className="company-display-card">
-              <div className="company-card-content">
-                <div className="company-text-content">
-                  <div className="company-type-wrapper">
-                    <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                    <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                    <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                    <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                    <span className="company-type">Sigorta<br/>Şirketi</span>
+            <div className="company-card-accident-insurance">
+              <div className="company-card-content-insurance">
+                <div className="company-text-content-insurance">
+                  <div className="company-type-wrapper-insurance">
+                    <span className="company-type-insurance">Sigorta<br/>Şirketi</span>
                   </div>
-                  <h2 className="company-name">
+                  <h2 className="company-name-accident-insurance">
                     {selectedCompany.name}
                   </h2>
                 </div>
