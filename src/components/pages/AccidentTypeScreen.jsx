@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import '../../styles/AccidentType.css';
+import styles from '../../styles/accidentType.module.css';
 
 const OPTIONS = [
     {
@@ -44,27 +44,27 @@ export default function AccidentTypeScreen() {
     };
 
     return (
-        <div className="accident-type-page">
-            <div className="scroll-container">
-                <div className="cards-container">
+        <div className={styles.accidentTypePage}>
+            <div className={styles.scrollContainer}>
+                <div className={styles.cardsContainer}>
                     {selectedCompany && (
-                        <div className="company-card">
-                            <div className="company-card-content">
-                                <div className="company-text-content">
-                                    <div className="company-type-wrapper">
-                                        <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                                        <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                                        <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                                        <span className="company-type-outline">Sigorta<br/>Şirketi</span>
-                                        <span className="company-type">Sigorta<br/>Şirketi</span>
+                        <div className={styles.companyCardAccident}>
+                            <div className={styles.companyCardContent}>
+                                <div className={styles.companyTextContent}>
+                                    <div className={styles.companyTypeWrapper}>
+                                        <span className={styles.companyTypeOutline}>Sigorta<br/>Şirketi</span>
+                                        <span className={styles.companyTypeOutline}>Sigorta<br/>Şirketi</span>
+                                        <span className={styles.companyTypeOutline}>Sigorta<br/>Şirketi</span>
+                                        <span className={styles.companyTypeOutline}>Sigorta<br/>Şirketi</span>
+                                        <span className={styles.companyType}>Sigorta<br/>Şirketi</span>
                                     </div>
-                                    <h2 className="company-name-accident">{selectedCompany.name}</h2>
+                                    <h2 className={styles.companyNameAccident}>{selectedCompany.name}</h2>
                                 </div>
                                 {selectedCompany.photo && (
                                     <img
                                         src={selectedCompany.photo}
                                         alt={selectedCompany.name}
-                                        className="company-logo-img"
+                                        className={styles.companyLogoImg}
                                     />
                                 )}
                             </div>
@@ -72,21 +72,21 @@ export default function AccidentTypeScreen() {
                     )}
 
                     {/* === KAZA TİPİ SEÇİMİ === */}
-                    <div className="stepper-card">
-                        <h1 className="main-title">Kaza Niteliği</h1>
+                    <div className={styles.stepperCard}>
+                        <h1 className={styles.mainTitle}>Kaza Niteliği</h1>
 
-                        <div className="option-container">
+                        <div className={styles.optionContainer}>
                             {OPTIONS.map((opt) => (
                                 <div
                                     key={opt.value}
-                                    className={`option-card ${selected === opt.value ? 'selected' : ''}`}
+                                    className={`${styles.optionCard} ${selected === opt.value ? styles.selected : ''}`}
                                     onClick={() => setSelected(opt.value)}
                                 >
-                                    <div className="option-content">
-                                        <h3 className={`option-label ${selected === opt.value ? 'selected' : ''}`}>
+                                    <div className={styles.optionContent}>
+                                        <h3 className={`${styles.optionLabel} ${selected === opt.value ? styles.selected : ''}`}>
                                             {opt.label}
                                         </h3>
-                                        <p className={`option-subtitle ${selected === opt.value ? 'selected' : ''}`}>
+                                        <p className={`${styles.optionSubtitle} ${selected === opt.value ? styles.selected : ''}`}>
                                             {opt.subtitle}
                                         </p>
                                     </div>
@@ -97,20 +97,20 @@ export default function AccidentTypeScreen() {
                 </div>
 
                 {/* === BUTONLAR === */}
-                <div className="button-row">
-                    <button className="cancel-button" onClick={() => navigate(-1)}>
-                        <div className="button-content">
+                <div className={styles.buttonRow}>
+                    <button className={styles.cancelButton} onClick={() => navigate(-1)}>
+                        <div className={styles.buttonContent}>
                             <ArrowLeft size={20} />
                             <span>GERİ DÖN</span>
                         </div>
                     </button>
 
                     <button
-                        className={`save-button ${!selected ? 'disabled' : ''}`}
+                        className={`${styles.saveButton} ${!selected ? styles.disabled : ''}`}
                         onClick={onSave}
                         disabled={!selected}
                     >
-                        <div className="button-content">
+                        <div className={styles.buttonContent}>
                             <span>DEVAM ET</span>
                             <ArrowRight size={20} color="#fff" />
                         </div>

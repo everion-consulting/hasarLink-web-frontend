@@ -64,6 +64,16 @@
     font-size: 20px;
     line-height: 28px;
     letter-spacing: 0px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+.contact-btn:hover {
+    background: #0f2f6b;
+}
+
+.contact-btn:active {
+    transform: scale(0.98);
 }
 
 .contact-btn-icon {
@@ -103,9 +113,45 @@
     z-index: 100;
 }
 
+.mobile-menu a {
+    text-decoration: none;
+    color: #444;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.mobile-menu a:hover,
+.mobile-menu a.active {
+    background: #f0f0f0;
+    color: #133E87;
+    font-weight: 600;
+}
+
+.mobile-logout-btn {
+    background: #133E87;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+
+.mobile-logout-btn:hover {
+    background: #0f2f6b;
+}
+
 /* --- BREAKPOINT --- */
 @media (max-width: 1024px) {
     .desktop-menu {
+        display: none;
+    }
+
+    .contact-btn {
         display: none;
     }
 
