@@ -1,0 +1,175 @@
+/* src/styles/topbar.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.topBar {
+    width: 100%;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Poppins';
+}
+
+/* Logo */
+.logo {
+    font-size: 36px;
+    letter-spacing: 5px;
+    font-weight: 500;
+    color: #222;
+    line-height: 50px;
+}
+
+/* Tabs */
+.tabs {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 20px 24px;
+    border-radius: 12px;
+    display: flex;
+    gap: 18px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
+}
+
+.tab {
+    background: none;
+    color: #444;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 140%;
+    text-align: center;
+}
+
+.active {
+    font-weight: 700;
+    color: #133E87;
+}
+
+/* CTA (Desktop) */
+.contactBtn {
+    background: #133E87;
+    color: #fff;
+    border: none;
+    padding: 0 24px;
+    height: 68px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+}
+
+.contactBtnIcon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.contactBtnIcon img {
+    width: 14px;
+    height: 14px;
+}
+
+/************** HAMBURGER **************/
+.hamburger {
+    display: none;
+    font-size: 32px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 20px;
+    user-select: none;
+}
+
+/*************** MOBILE MENU ***************/
+.mobileMenu {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 220px;
+    padding: 18px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 200;
+}
+
+.mobileMenu a {
+    text-decoration: none;
+    color: #444;
+    font-size: 18px;
+}
+
+.mobileMenu a:hover {
+    opacity: 0.7;
+}
+
+/* Mobile Logout Button */
+.mobileLogout {
+    background: #133E87;
+    color: #fff;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    margin-top: 4px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.desktopMenu {
+    display: flex;
+}
+
+@media (max-width: 1024px) {
+
+    /* Desktop tab menü gizle */
+    .desktopMenu {
+        display: none;
+    }
+
+    /* Hamburger göster */
+    .hamburger {
+        display: block;
+    }
+
+    /* Masaüstü çıkış butonu gizle */
+    .contactBtn {
+        display: none;
+    }
+
+    /* Logo küçült */
+    .logo {
+        font-size: 28px;
+        letter-spacing: 3px;
+    }
+
+    /* Daha sıkı spacing */
+    .topBar {
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+
+    .hamburger {
+        font-size: 28px;
+    }
+}

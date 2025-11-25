@@ -10,43 +10,18 @@
   --radius-md: 12px;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
 .dashboard {
   min-height: 100vh;
-  background: var(--gray-bg);
-  color: #0e1a2b;
+  color: #333;
 }
 
-/* ==================== HEADER ==================== */
+/* ==================== GRID ==================== */
 
-.dash-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 40px;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-/* ==================== GRID LAYOUT ==================== */
-
-.dash-grid {
+.dashGrid {
   padding: 30px 40px 40px;
   display: grid;
   grid-template-columns: 300px repeat(3, 1fr);
-  grid-template-rows: repeat(3, 225px);
+  grid-template-rows: repeat(3, 250px);
   gap: 20px;
   max-width: 1600px;
   margin: 0 auto;
@@ -54,32 +29,30 @@ body {
 
 /* ==================== CARD BASE ==================== */
 
-.card-dashboard {
+.cardDashboard {
   position: relative;
   background: #ffffff;
   border-radius: var(--radius-lg);
   padding: 24px;
-  position: relative;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card-dashboard:hover {
+.cardDashboard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-.card-dashboard-heading {
+.cardDashboardHeading {
   font-size: 32px;
   line-height: 40px;
   font-weight: 400;
-  letter-spacing: 0.48px;
   margin-bottom: 12px;
-  color: inherit;
+  letter-spacing: 0.48px;
 }
 
-.card-dashboard-btn {
+.cardDashboardBtn {
   margin-top: auto;
   padding: 15px 24px;
   border-radius: 11px;
@@ -91,78 +64,67 @@ body {
   font-weight: 700;
   cursor: pointer;
   width: 100%;
-  font-family: inherit;
   transition: 0.2s;
   letter-spacing: 0.05em;
 }
 
-.card-dashboard-btn:hover {
+.cardDashboardBtn:hover {
   background: var(--blue-mid);
   transform: scale(1.02);
 }
 
-.card-dashboard-btn--light {
+.cardDashboardBtnLight {
   background: #fff;
   color: var(--blue-dark);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
-.card-dashboard-btn--light:hover {
+.cardDashboardBtnLight:hover {
   background: rgba(255, 255, 255, 0.95);
 }
 
-.card-status-icon {
+.cardStatusIcon {
   position: absolute;
   right: 24px;
   bottom: 24px;
   width: 56px;
-  height: auto;
   opacity: 0.95;
 }
 
-.card-requested-icon {
+.cardRequestedIcon {
   position: absolute;
   right: 24px;
   bottom: 24px;
   width: 140px;
-  height: auto;
   opacity: 0.95;
 }
 
-/* ==================== YENİ DOSYA KART (Sol Üst) ==================== */
+/* ==================== CARD TYPES ==================== */
 
-.card--new-file {
+/* --- NEW FILE --- */
+.cardNewFile {
   grid-column: 1 / 2;
   grid-row: 1 / 3;
   background: #CBDCEB;
+  padding: 40px 24px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 40px 24px 24px;
   background-image: url('../assets/images/ellips-1.svg');
   background-repeat: no-repeat;
   background-size: 420px 420px;
   background-position: -50px -50px;
 }
 
-.card-icon--clipboard {
-  width: 64px;
-  height: 72px;
-  border-radius: 12px;
-  background: #fff;
-  margin-bottom: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.card-dashboard-title-sm {
+.cardDashboardTitleSm {
   font-size: 32px;
   line-height: 40px;
   letter-spacing: 0.15em;
 }
 
-.card-dashboard-title-lg {
+.cardDashboardTitleLg {
   font-size: 48px;
   line-height: 50px;
   font-weight: 700;
@@ -170,9 +132,8 @@ body {
   margin-bottom: 8px;
 }
 
-/* ==================== ONAYLANANLAR KART (Üst Satır) ==================== */
-
-.card--approved {
+/* --- APPROVED --- */
+.cardApproved {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   background: #133E87;
@@ -185,41 +146,21 @@ body {
   background-position: -10px -10px;
 }
 
-.card-dashboard-count {
+.cardDashboardCount {
   font-size: 28px;
   line-height: 35px;
   display: flex;
-  align-items: center;
   gap: 10px;
+  margin-bottom: 8px;
 }
 
-.card-count-number {
-  display: block;
+.cardDashboardCountNumber {
   font-size: 28px;
   line-height: 35px;
-  font-weight: 400;
-  line-height: 1.1;
 }
 
-.card-circle-icon {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: #fff;
-}
-
-/* ==================== ONAY BEKLEYENLER KART (Üst Satır) ==================== */
-
-.card--pending {
+/* --- PENDING --- */
+.cardPending {
   grid-column: 3 / 4;
   grid-row: 1 / 2;
   background: #133E87;
@@ -232,9 +173,8 @@ body {
   background-position: -40px -200px;
 }
 
-/* ==================== TOPLAM TUTAR KART (Sağ Üst) ==================== */
-
-.card--amount {
+/* --- TOTAL AMOUNT --- */
+.cardAmount {
   grid-column: 4 / 5;
   grid-row: 1 / 3;
   background: #CBDCEB;
@@ -246,47 +186,31 @@ body {
   background-position: -40px 155px;
 }
 
-.amount-main {
+.amountMain {
   font-size: 40px;
   line-height: 48px;
   font-weight: 700;
   margin: 16px 0 8px;
-  color: #333333;
 }
 
-.amount-sub {
+.amountSub {
   font-size: 24px;
   line-height: 30px;
-  color: #333333;
 }
 
-.amount-chart-icon {
-  margin-top: auto;
-  height: 140px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.card--drafts {
+/* --- DRAFTS --- */
+.cardDrafts {
   grid-column: 2 / 4;
   grid-row: 2 / 4;
   background: #CBDCEB;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 24px;
   border-radius: 16px;
 }
 
-/* Logo kutuları */
-.drafts-logos {
-  display: flex;
-  gap: 24px;
-  margin: 32px 0;
-}
-
-.inner-card {
+.innerCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -294,13 +218,12 @@ body {
   margin-top: auto;
 }
 
-.drafts-logos {
+.draftsLogos {
   display: flex;
   gap: 16px;
 }
 
-/* Boş sigorta kutuları */
-.draft-logo {
+.draftLogo {
   background: #F0F0F0;
   width: 120px;
   height: 120px;
@@ -308,21 +231,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.drafts-illustration {
+.draftsIllustration {
   width: 165px;
-  height: auto;
 }
 
-/* ==================== REDDEDİLEN DOSYALAR (Sağ Orta) ==================== */
-
-.card--rejected {
+/* --- REJECTED --- */
+.cardRejected {
   grid-column: 4 / 5;
   grid-row: 3 / 4;
   background: #133E87;
   color: #fff;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -332,9 +253,8 @@ body {
   background-position: 135px -35px;
 }
 
-/* ==================== DEVAM EDENLER (Sol Alt) ==================== */
-
-.card--ongoing {
+/* --- ONGOING --- */
+.cardOngoing {
   grid-column: 1 / 2;
   grid-row: 3 / 5;
   background: #133E87;
@@ -346,152 +266,341 @@ body {
   background-size: 300px 300px;
 }
 
-.ongoing-list {
+.ongoingList {
   list-style: none;
   margin: 12px 0;
-  padding: 0;
   font-size: 13px;
   flex: 1;
-  font-weight: 500;
-  color: #fff;
 }
 
-.ongoing-list li {
-  margin-bottom: 8px;
-  padding-left: 16px;
-  position: relative;
+.ongoingList li {
   font-size: 24px;
-  line-height: 30px;
-  padding-left: 0;
+  margin-bottom: 8px;
 }
 
-/* ==================== TOPLAM İŞLEM (Alt Geniş) ==================== */
-
-.card--bottom-right {
+/* --- BOTTOM RIGHT --- */
+.cardBottomRight {
   grid-column: 2 / 5;
   grid-row: 4 / 5;
   background: #133E87;
   color: #fff;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 /* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 1400px) {
-  .dash-grid {
+  .dashGrid {
     grid-template-columns: 200px repeat(3, 1fr);
     padding: 24px 24px 40px;
+  }
+
+  .cardDashboardBtn {
+    padding: 10px 15px;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .draftsLogos {
+    gap: 14px;
+  }
+
+  .draftLogo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .draftsIllustration {
+    width: 150px;
   }
 }
 
 @media (max-width: 1200px) {
-  .dash-grid {
+  .dashGrid {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
   }
 
-  .card--new-file {
+  .cardNewFile {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
   }
 
-  .card--approved {
+  .cardApproved {
     grid-column: 2 / 3;
     grid-row: 1 / 2;
-    background-position: -10px 25px;
+    background-position: -10px 22px;
   }
 
-  .card--pending {
+  .cardPending {
     grid-column: 3 / 4;
     grid-row: 1 / 2;
   }
 
-  .card--amount {
+  .cardAmount {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
   }
 
-  .card--drafts {
+  .cardDrafts {
     grid-column: 2 / 4;
     grid-row: 2 / 3;
   }
 
-  .card--ongoing {
+  .cardOngoing {
     grid-column: 1 / 2;
     grid-row: 3 / 4;
     background-size: 400px 400px;
   }
 
-  .card--bottom-right {
+  .cardBottomRight {
     grid-column: 2 / 3;
     grid-row: 3 / 4;
   }
 
-  .card--rejected {
+  .cardRejected {
     grid-column: 3 / 4;
     grid-row: 3 / 4;
+  }
+
+  .cardDashboard {
+    padding: 20px;
+  }
+
+  .cardDashboardHeading {
+    font-size: 24px;
+    line-height: 26px;
+  }
+
+  .ongoingList li {
+    font-size: 20px;
+  }
+
+  .cardRequestedIcon {
+    width: 100px !important;
+  }
+
+  .draftsIllustration {
+    width: 120px;
+  }
+
+  .cardPending {
+    background-position: -40px -125px;
+  }
+
+  .cardDashboardTitleSm {
+    font-size: 30px;
+    line-height: 35px;
+  }
+
+  .cardDashboardTitleLg {
+    font-size: 45px;
+    line-height: 48px;
   }
 }
 
 @media (max-width: 768px) {
-  .dash-header {
-    flex-direction: column;
-    align-items: flex-start;
+
+  .dashGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 kolonlu layout */
     gap: 16px;
-    padding: 16px 20px;
-  }
-
-  .dash-nav {
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
-  .dash-nav-item {
-    font-size: 13px;
-    padding: 8px 16px;
-  }
-
-  .dash-cta {
-    width: 100%;
-    text-align: center;
-  }
-
-  .dash-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
     padding: 20px;
-    gap: 16px;
   }
 
-  .card--new-file,
-  .card--approved,
-  .card--pending,
-  .card--amount,
-  .card--drafts,
-  .card--ongoing,
-  .card--rejected,
-  .card--bottom-right {
+  /* 1. Satır */
+  .cardNewFile {
+    grid-column: 1 / 2; /* sol */
+    grid-row: 1;
+  }
+
+  .cardAmount {
+    grid-column: 2 / 3; /* sağ */
+    grid-row: 1;
+  }
+
+  /* 2. Satır */
+  .cardApproved {
     grid-column: 1 / 2;
-    grid-row: auto;
+    grid-row: 2;
+    background-position: -95px -30px;
+  }
+
+  .cardPending {
+    grid-column: 2 / 3;
+    grid-row: 2;
+    background-position: -18px -205px;
+    background-size: 380px 380px;
+  }
+
+  /* 3. Satır */
+  .cardDrafts {
+    grid-column: 1 / 3; /* full width */
+    grid-row: 3;
+  }
+
+  /* 4. Satır */
+  .cardRejected {
+    grid-column: 1 / 2;
+    grid-row: 4;
+  }
+
+  .cardOngoing {
+    grid-column: 2 / 3;
+    grid-row: 4;
+  }
+
+  /* 5. Satır */
+  .cardBottomRight {
+    grid-column: 1 / 3; /* full width */
+    grid-row: 5;
+  }
+
+  /* Kart yükseklikleri */
+  .cardNewFile,
+  .cardApproved,
+  .cardPending,
+  .cardAmount,
+  .cardDrafts,
+  .cardRejected,
+  .cardOngoing,
+  .cardBottomRight {
     min-height: 180px;
   }
 
-  .card--amount {
-    min-height: 200px;
+  .cardDrafts {
+    min-height: 220px;
   }
 
-  .card--drafts {
-    min-height: 240px;
+  .cardDashboardHeading {
+    font-size: 19px;
+    line-height: 24px;
+    margin-bottom: 8px;
   }
 
-  .amount-main {
+  .cardDashboardBtn {
+    padding: 10px 15px;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .cardDashboard {
+    padding: 18px;
+  }
+
+  .draftsLogos {
+    gap: 10px;
+  }
+
+  .draftLogo {
+    width: 70px;
+    height: 70px;
+  }
+
+  .draftsIllustration {
+    width: 100px;
+  }
+
+  .dosyaBildirIcon {
+    width: 150px;
+    height: 150px;
+  }
+
+  .cardStatusIcon {
+    right: 24px;
+    bottom: 24px;
+    width: 40px;
+  }
+
+  .cardDashboardTitleSm {
     font-size: 28px;
+    line-height: 33px;
+  }
+  
+  .cardDashboardTitleLg {
+    font-size: 40px;
+    line-height: 45px;
+  }
+}
+
+/* ==================== EXTRA SMALL (375px ve altı) ==================== */
+@media (max-width: 425px) {
+  .dashGrid {
+    grid-template-columns: 1fr !important;
+    padding: 16px;
+    gap: 14px;
   }
 
-  .card-count-number {
-    font-size: 40px;
+  .cardNewFile,
+  .cardAmount,
+  .cardApproved,
+  .cardPending,
+  .cardDrafts,
+  .cardRejected,
+  .cardOngoing,
+  .cardBottomRight {
+    grid-column: 1 / 2 !important;
+    grid-row: auto !important;
+    width: 100% !important;
+    min-height: 180px;
+  }
+
+  .cardOngoing {
+    background-position: -18px -245px;
+    background-size: 390px 390px;
+  }
+
+  .cardRequestedIcon {
+    width: 90px !important;
+  }
+
+  .cardDashboardHeading {
+    font-size: 26px !important;
+    line-height: 32px !important;
+  }
+
+  .amountMain {
+    font-size: 30px !important;
+  }
+
+  .cardDashboardHeading {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .cardApproved {
+    background-position: -10px -50px;
+  }
+
+  
+  .draftsLogos {
+    gap: 8px;
+  }
+
+  .draftLogo {
+    width: 55px;
+    height: 55px;
+  }
+
+  .draftsIllustration {
+    width: 90px;
+  }
+
+  .dosyaBildirIcon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cardDashboardTitleSm {
+    font-size: 25px;
+    line-height: 30px;
+  }
+
+  .cardDashboardTitleLg {
+    font-size: 38px;
+    line-height: 40px;
   }
 }
