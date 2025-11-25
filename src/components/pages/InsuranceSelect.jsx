@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/insurance.css";
+import styles from "../../styles/insurance.module.css";
 import { Star, StarOff, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
@@ -7,7 +7,7 @@ import { useProfile } from "../../context/ProfileContext";
 
 export default function InsuranceSelect() {
     const {
-        allCompaniesList, // DÜZELTİLDİ: allCompanies yerine allCompaniesList
+        allCompaniesList,
         fetchAllCompanies,
         profileDetail,
         fetchProfile
@@ -31,18 +31,10 @@ export default function InsuranceSelect() {
             : [...favoriteList, id];
 
         const res = await apiService.toggleFavoriteCompanies(updated);
-        if (res.success) {
-            fetchProfile();
-        }
+        if (res.success) fetchProfile();
     };
 
-    // DÜZELTİLDİ: allCompaniesList zaten array, results'a ihtiyaç yok
-    // Context'ten gelen veri direkt array formatında
     const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
-
-    console.log('allCompaniesList:', allCompaniesList); // DEBUG
-    console.log('list:', list); // DEBUG
-    console.log('favoriteList:', favoriteList); // DEBUG
 
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
@@ -57,11 +49,11 @@ export default function InsuranceSelect() {
     );
 
     return (
-        <div className="insurance-page">
-            <h1 className="page-title">Aracın Sigorta Şirketini Seç</h1>
+        <div className={styles.insurancePage}>
+            <h1 className={styles.pageTitle}>Aracın Sigorta Şirketini Seç</h1>
 
             {/* Search */}
-            <div className="search-box">
+            <div className={styles.searchBox}>
                 <Search size={20} />
                 <input
                     type="text"
@@ -71,9 +63,8 @@ export default function InsuranceSelect() {
                 />
             </div>
 
-            {/* DEBUG BİLGİSİ - Geliştirme sırasında görmek için */}
             {list.length === 0 && (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                <div className={styles.loadingText}>
                     Şirketler yükleniyor veya veri bulunamadı...
                 </div>
             )}
@@ -81,17 +72,19 @@ export default function InsuranceSelect() {
             {/* FAVORİLER */}
             {favoriteCompanies.length > 0 && (
                 <section>
-                    <h2 className="section-title">Favori Sigorta Şirketlerim</h2>
+                    <h2 className={styles.sectionTitle}>Favori Sigorta Şirketlerim</h2>
 
-                    <div className="grid">
+                    <div className={styles.grid}>
                         {favoriteCompanies.map(company => (
                             <div
                                 key={company.id}
-                                className={`company-card ${selectedCompany === company.id ? "selected" : ""}`}
+                                className={`${styles.companyCard} ${
+                                    selectedCompany === company.id ? styles.selected : ""
+                                }`}
                                 onClick={() => setSelectedCompany(company.id)}
                             >
                                 <button
-                                    className="star-btn"
+                                    className={styles.starBtn}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         toggleFavorite(company.id);
@@ -102,12 +95,9 @@ export default function InsuranceSelect() {
 
                                 <img 
                                     src={company.photo} 
-                                    alt={company.name || "Şirket logosu"} 
-                                    className="company-logo"
-                                    onError={(e) => {
-                                        console.error('Logo yüklenemedi:', company.photo);
-                                        e.target.style.display = 'none';
-                                    }}
+                                    alt={company.name}
+                                    className={styles.companyLogo}
+                                    onError={(e) => (e.target.style.display = "none")}
                                 />
                             </div>
                         ))}
@@ -117,23 +107,25 @@ export default function InsuranceSelect() {
 
             {/* TÜM ŞİRKETLER */}
             <section>
-                <h2 className="section-title">Tüm Sigorta Şirketleri</h2>
+                <h2 className={styles.sectionTitle}>Tüm Sigorta Şirketleri</h2>
 
-                <div className="grid">
+                <div className={styles.grid}>
                     {normalCompanies.length === 0 && list.length > 0 && (
-                        <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#666' }}>
-                            {search ? 'Arama sonucu bulunamadı' : 'Tüm şirketler favorilerde'}
+                        <p className={styles.noResultText}>
+                            {search ? "Arama sonucu bulunamadı" : "Tüm şirketler favorilerde"}
                         </p>
                     )}
 
                     {normalCompanies.map(company => (
                         <div
                             key={company.id}
-                            className={`company-card ${selectedCompany === company.id ? "selected" : ""}`}
+                            className={`${styles.companyCard} ${
+                                selectedCompany === company.id ? styles.selected : ""
+                            }`}
                             onClick={() => setSelectedCompany(company.id)}
                         >
                             <button
-                                className="star-btn"
+                                className={styles.starBtn}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     toggleFavorite(company.id);
@@ -147,29 +139,31 @@ export default function InsuranceSelect() {
 
                             <img 
                                 src={company.photo} 
-                                alt={company.name || "Şirket logosu"} 
-                                className="company-logo"
-                                onError={(e) => {
-                                    console.error('Logo yüklenemedi:', company.photo);
-                                    e.target.style.display = 'none';
-                                }}
+                                alt={company.name}
+                                className={styles.companyLogo}
+                                onError={(e) => (e.target.style.display = "none")}
                             />
                         </div>
                     ))}
                 </div>
             </section>
 
-            <div className="bottom-buttons">
-                <button className="back-btn" onClick={() => navigate(-1)}>
+            <div className={styles.bottomButtons}>
+                <button
+                    className={styles.backBtn}
+                    onClick={() => navigate(-1)}
+                >
                     Geri Dön
                 </button>
 
                 <button
-                    className={`continue-btn ${!selectedCompany ? "disabled" : ""}`}
+                    className={`${styles.continueBtn} ${
+                        !selectedCompany ? styles.disabled : ""
+                    }`}
                     disabled={!selectedCompany}
-                    onClick={() => navigate("/accident-type", {
-                        state: { companyId: selectedCompany }
-                    })}
+                    onClick={() =>
+                        navigate("/accident-type", { state: { companyId: selectedCompany } })
+                    }
                 >
                     Devam Et →
                 </button>
