@@ -1,15 +1,17 @@
 import React from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import "../../styles/formFooter.css";
+import BackIcon from "../../components/images/back.svg";
+import ContinueIcon from "../../components/images/continue.svg";
+import styles from "../../styles/formFooter.module.css";
 
-const FormFooter = ({ 
-  onBack, 
-  onNext, 
-  nextLabel = "DEVAM ET", 
-  backLabel = "GERİ DÖN", 
-  disabled = false 
+const FormFooter = ({
+  onBack,
+  onNext,
+  nextLabel = "DEVAM ET",
+  backLabel = "GERİ DÖN",
+  disabled = false
 }) => {
-  
+
   return (
     <div className="form-footer">
       <button
@@ -18,7 +20,9 @@ const FormFooter = ({
         type="button"
       >
         <div className="icon-wrap">
-          <ArrowLeftIcon className="icon" />
+          <div className={styles.iconCircle}>
+            <img src={BackIcon} alt="Geri" />
+          </div>
         </div>
         <span className="back-text">{backLabel}</span>
       </button>
@@ -30,8 +34,8 @@ const FormFooter = ({
         type="button"
       >
         <span className="next-text">{nextLabel}</span>
-        <div className="icon-wrap">
-          <ArrowRightIcon className="icon" />
+        <div className={styles.iconCircle}>
+          <img src={ContinueIcon} alt="Devam" />
         </div>
       </button>
     </div>
