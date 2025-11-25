@@ -81,6 +81,16 @@ export default function Dashboard() {
     fetchProfile();
   }, []);
 
+  // 🔥 YENİ: Bildir butonuna tıklanınca submissionId'yi sil
+  const handleNewFileClick = () => {
+    // localStorage'dan submissionId'yi sil
+    localStorage.removeItem("submissionId");
+    console.log("🗑️ Dashboard: submissionId silindi");
+    
+    // InsuranceSelect sayfasına yönlendir
+    navigate('/insurance-select');
+  };
+
   const {
     counts,
     total_estimated_amount,
@@ -107,7 +117,10 @@ export default function Dashboard() {
           </div>
           <div className="card-dashboard-title-sm">YENİ</div>
           <div className="card-dashboard-title-lg">DOSYA</div>
-          <button className="card-dashboard-btn" onClick={() => navigate('/insurance-select')}>
+          <button 
+            className="card-dashboard-btn" 
+            onClick={handleNewFileClick} // 🔥 Değiştirildi
+          >
             BİLDİR
           </button>
         </div>

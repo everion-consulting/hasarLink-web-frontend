@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  User, 
-  Users, 
-  Navigation, 
-  Shield, 
+import {
+  User,
+  Users,
+  Navigation,
+  Shield,
   ArrowRight,
   Info,
   ArrowLeft
@@ -15,7 +15,7 @@ import '../../styles/insuranceStepper.css';
 export default function InsuranceStepper() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Route state'den gelen değerler
   const selectedCompany = location.state?.selectedCompany || null;
   const editMode = location.state?.editMode || false;
@@ -36,12 +36,18 @@ export default function InsuranceStepper() {
   );
 
   const [step2Selection, setStep2Selection] = useState(
-    () => (editMode && preSelectedStep2) ? preSelectedStep2 : null
+    () => {
+      // 🔥 TEKLİ KAZA İSE OTOMATİK "bizim kasko" SET ET
+      if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
+        return "bizim kasko";
+      }
+      return (editMode && preSelectedStep2) ? preSelectedStep2 : null;
+    }
   );
 
   const [step3Selection, setStep3Selection] = useState(null);
 
-  // ❗ TEKLİ KAZA İSE ADIM 2 YOK — STEPPER SADECE 1 AŞAMA
+  
   const stepNames =
     kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
       ? ['Adım 1']
@@ -96,12 +102,12 @@ export default function InsuranceStepper() {
     const IconComponent = iconComponents[iconName] || User;
 
     return (
-      <div 
+      <div
         className={`option-card ${selected ? 'selected' : ''}`}
         onClick={onPress}
       >
         <div className="option-content-wrapper">
-          <IconComponent 
+          <IconComponent
             size={35}
             className={`option-icon ${selected ? 'selected' : ''}`}
           />
@@ -230,8 +236,9 @@ export default function InsuranceStepper() {
   };
 
   // DEVAM ET BUTONU İÇİN KONTROL
-  const isAllChosen = !!step1Selection && !!step2Selection;
-
+  const isAllChosen = kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
+    ? !!step1Selection
+    : !!step1Selection && !!step2Selection;
   const handleContinue = () => {
     if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') return;
 
@@ -270,7 +277,7 @@ export default function InsuranceStepper() {
               <div className="company-card-content-insurance">
                 <div className="company-text-content-insurance">
                   <div className="company-type-wrapper-insurance">
-                    <span className="company-type-insurance">Sigorta<br/>Şirketi</span>
+                    <span className="company-type-insurance">Sigorta<br />Şirketi</span>
                   </div>
                   <h2 className="company-name-accident-insurance">
                     {selectedCompany.name}
@@ -310,8 +317,8 @@ export default function InsuranceStepper() {
               {currentStep === 1
                 ? 'Sürücü Bilgisi ile Mağdur Bilgisi Aynı Mı?'
                 : currentStep === 2
-                ? 'Sigorta Nereden Açılıyor?'
-                : 'Karşı Ruhsat Sahibi ve Sürücü Aynı Kişi Mi?'}
+                  ? 'Sigorta Nereden Açılıyor?'
+                  : 'Karşı Ruhsat Sahibi ve Sürücü Aynı Kişi Mi?'}
             </h2>
 
             {/* Seçenekler */}

@@ -24,6 +24,8 @@ export default function StepInfoScreen() {
   // EKRANDA KULLANACAĞIMIZ ASIL DEĞER
   const insuranceSource =
     kazaNitelik === "TEKLİ KAZA (BEYANLI)" ? "bizim kasko" : rawInsuranceSource;
+  console.log("🔍 Hesaplanan insuranceSource:", insuranceSource);
+  console.log("🔍 rawInsuranceSource:", rawInsuranceSource);
 
   // Form verilerini doğru şekilde al
   const [driverData, setDriverData] = useState(params?.driverData || {});
