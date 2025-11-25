@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import styles from '../../styles/accidentType.module.css';
+import { useProfile } from "../../context/ProfileContext";
+
 
 const OPTIONS = [
     {
@@ -22,10 +24,14 @@ const OPTIONS = [
 ];
 
 export default function AccidentTypeScreen() {
+    const{
+        allCompaniesList
+    }=useProfile();
     const navigate = useNavigate();
     const location = useLocation();
     
     const selectedCompany = location.state?.selectedCompany || null;
+    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
     const [selected, setSelected] = useState(null);
 
     const onSave = () => {
@@ -38,7 +44,8 @@ export default function AccidentTypeScreen() {
             state: {
                 ...location.state,
                 kazaNitelik: selected,
-                startStep: 1
+                startStep: 1,
+                selectedCompany: selectedCompany,
             }
         });
     };
