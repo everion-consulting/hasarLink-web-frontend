@@ -13,7 +13,9 @@
  *   - maxLength: Maksimum karakter sayısı (opsiyonel)
  *   - options: Seçmeli alanlar için seçenekler (label, value)
  */
-import { maskPhone } from "../utils/formatter";
+
+import { maskPhone } from "../components/utils/formatter";
+
 
 const serviceField = [
    { name: "repair_fullname", label: "Ad Soyad", type: "text", placeholder: "Adınızı ve soyadınızı giriniz", required: true },

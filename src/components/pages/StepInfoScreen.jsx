@@ -7,7 +7,8 @@ import IkiIcon from '.././images/ikiIcon.svg';
 import UcIcon from '.././images/ucIcon.svg';
 import { formatPlate, maskPhone, toYYYYMMDD } from '../utils/formatter';
 import apiService from '../../services/apiServices';
-import { ArrowUpRightIcon, ArrowUpLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
+import FormFooter from '../forms/FormFooter';
 
 export default function StepInfoScreen() {
   const navigate = useNavigate();
@@ -287,7 +288,6 @@ export default function StepInfoScreen() {
               editKey: 'insurance_company',
               data: [
                 { label: '', value: selectedCompany?.name || 'Seçiniz' },
-                { label: '', value: selectedCompany?.code || '' }
               ]
             },
             {
@@ -505,18 +505,36 @@ export default function StepInfoScreen() {
 
     switch (currentStep) {
       case 1:
-        navigate('/victim-info', { ...params });
+        navigate('/victim-info', { state: { ...params } });
         break;
       case 2:
+        console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
+        console.log('  params:', params);
+        console.log('  kazaNitelik (local):', kazaNitelik);
+        console.log('  insuranceSource (local):', insuranceSource);
+        console.log('  samePerson (local):', samePerson);
+        console.log('  karsiSamePerson (local):', karsiSamePerson);
+        console.log('  selectedCompany (local):', selectedCompany);
+        
         navigate('/insured-mechanic-stepper', {
-          ...params,
-          insuranceSource,
-          karsiSamePerson,
-          kazaNitelik,
+          state: {
+            kazaNitelik,
+            insuranceSource,
+            samePerson,
+            karsiSamePerson,
+            selectedCompany,
+            driverData,
+            victimData,
+            vehicleData,
+            insuredData,
+            serviceData,
+            damageData,
+            opposingDriverData,
+          }
         });
         break;
       case 3:
-        navigate('/file-damage-info-stepper', { ...params });
+        navigate('/file-damage-info-stepper', { state: { ...params } });
         break;
       case 4:
         handleFinalApprove();
@@ -697,11 +715,13 @@ export default function StepInfoScreen() {
       case 'driver_info':
       case 'vehicle_info':
         navigate('/victim-info', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       case 'insured_info':
@@ -709,29 +729,35 @@ export default function StepInfoScreen() {
       case 'karsi_driver_info':
       case 'service_info':
         navigate('/insured-mechanic-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
-        });
-        break;
-      case 'damage_info':
-        navigate('/file-damage-info-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusSection: editKey,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       case 'documents':
         navigate('/file-damage-info-stepper', {
-          ...baseParams,
-          editMode: true,
-          directToDocuments: true,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      case 'documents':
+        navigate('/file-damage-info-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            directToDocuments: true,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
         });
         break;
       default:
@@ -785,35 +811,17 @@ export default function StepInfoScreen() {
         </div>
       </div>
 
-      <div className="footer">
-        <div className="button-container">
-          <button className="back-button" onClick={handleBackPress}>
-            <div className="back-button-content">
-              <div className="back-icon-wrapper">
-                <ArrowUpLeftIcon className="back-icon" />
-              </div>
-              <span className="back-button-text">GERİ DÖN</span>
-            </div>
-          </button>
+      <FormFooter
+        onBack={handleBackPress}
+        onNext={handleContinuePress}
+        nextLabel={isStepApproved
+          ? (currentStep === 4 ? "TAMAMLA" : "DEVAM ET")
+          : (currentStep === 4 ? "ONAYLA" : "DEVAM ET")
+        }
+        backLabel="GERİ DÖN"
+        disabled={!isAllChosen}
+      />
 
-          <button
-            className={`continue-button ${!isAllChosen ? 'disabled' : ''}`}
-            onClick={handleContinuePress}
-            disabled={!isAllChosen}
-          >
-            <div className="continue-button-content">
-              <span className={`continue-button-text ${!isAllChosen ? 'disabled' : ''}`}>
-                {isStepApproved
-                  ? (currentStep === 4 ? 'TAMAMLA' : 'DEVAM ET')
-                  : (currentStep === 4 ? 'ONAYLA' : 'DEVAM ET')}
-              </span>
-              <div className="continue-icon-wrapper">
-                <ArrowUpRightIcon className="continue-icon" />
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
