@@ -149,42 +149,29 @@ const AuthAPI = {
       });
       const data = await response.json();
 
+      // "Beni Hatırla" seçili değilse tüm bilgileri temizle
+      const rememberMe = localStorage.getItem("rememberMe");
+      
       localStorage.removeItem("authToken");
       localStorage.removeItem("authToken_type");
-
-      return data;
-    } catch (error) {
-      console.error("Logout API Error:", error);
-      throw error;
-    }
-  },
-
-  // -----------------------------------------
-  // LOGOUT
-  // -----------------------------------------
-  logout: async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-
-      const response = await fetch(`${ACCOUNTS_BASE}/auth/logout/`, {
-        method: "POST",
-        headers: AuthAPI.getHeaders(token),
-      });
-      const data = await response.json();
-
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("authToken_type");
-      localStorage.removeItem("rememberMe");
-      localStorage.removeItem("savedUsername");
+      
+      // Sadece "Beni Hatırla" seçili DEĞİLSE kullanıcı adını sil
+      if (rememberMe !== "true") {
+        localStorage.removeItem("savedUsername");
+      }
 
       return data;
     } catch (error) {
       console.error("Logout API Error:", error);
       // Hata olsa bile local storage'ı temizle
+      const rememberMe = localStorage.getItem("rememberMe");
+      
       localStorage.removeItem("authToken");
       localStorage.removeItem("authToken_type");
-      localStorage.removeItem("rememberMe");
-      localStorage.removeItem("savedUsername");
+      
+      if (rememberMe !== "true") {
+        localStorage.removeItem("savedUsername");
+      }
       throw error;
     }
   },

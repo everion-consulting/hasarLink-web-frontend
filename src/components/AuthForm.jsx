@@ -1,8 +1,6 @@
-// src/components/AuthForm.jsx (veya neredeyse)
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
@@ -22,6 +20,18 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [message, setMessage] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (type === "login") {
+      const savedRememberMe = localStorage.getItem("rememberMe");
+      const savedUsername = localStorage.getItem("savedUsername");
+      
+      if (savedRememberMe === "true" && savedUsername) {
+        setRememberMe(true);
+        setForm(prev => ({ ...prev, username: savedUsername }));
+      }
+    }
+  }, [type]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,7 +59,6 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
           setMessage(result.message || "Kayıt başarısız.");
         }
       } else {
-        // 🔹 Giriş isteği
         const result = await AuthAPI.login(form.username, form.password);
 
         console.log("🧪 Login result:", result);
@@ -58,7 +67,6 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
         if (result.success && localStorage.getItem("authToken")) {
           setMessage("✅ Giriş başarılı!");
 
-          // Beni Hatırla seçeneği
           if (rememberMe) {
             localStorage.setItem("rememberMe", "true");
             localStorage.setItem("savedUsername", form.username);
@@ -84,58 +92,57 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    setGoogleLoading(true);
-    setMessage("");
-
-    try {
-      console.log("🔵 Google Login başarılı:", credentialResponse);
-
-      // JWT token'ı decode et
-      const token = credentialResponse.credential;
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      
-      const userData = JSON.parse(jsonPayload);
-      console.log("👤 Kullanıcı bilgileri:", userData);
-
-      // Backend'e gönder
-      const result = await AuthAPI.googleLogin({
-        idToken: token,
-        email: userData.email,
-        fullName: userData.name || userData.email.split('@')[0],
-      });
-
-      console.log("✅ Backend response:", result);
-
-      if (result.success && result.token) {
-        setMessage(result.created ? "✅ Hesap oluşturuldu! Hoş geldiniz." : "✅ Giriş başarılı!");
-
-        if (typeof setIsAuth === "function") {
-          setIsAuth(true);
-        }
-
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-      } else {
-        setMessage(result.message || "Google ile giriş başarısız.");
-      }
-    } catch (err) {
-      console.error("Google Login Error:", err);
-      setMessage(err.detail || err.message || "Google ile giriş sırasında bir hata oluştu.");
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
   const handleGoogleError = () => {
     console.error("Google Login başarısız");
     setMessage("Google ile giriş başarısız oldu.");
   };
+
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setGoogleLoading(true);
+      setMessage("");
+
+      try {
+        console.log("🔵 Google tokenResponse:", tokenResponse);
+        
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        
+        const userData = await userInfoResponse.json();
+        console.log("👤 Kullanıcı bilgileri:", userData);
+
+        const result = await AuthAPI.googleLogin({
+          idToken: tokenResponse.access_token,
+          email: userData.email,
+          fullName: userData.name || userData.email.split('@')[0],
+        });
+
+        console.log("✅ Backend response:", result);
+
+        if (result.success && result.token) {
+          setMessage(result.created ? "✅ Hesap oluşturuldu! Hoş geldiniz." : "✅ Giriş başarılı!");
+
+          if (typeof setIsAuth === "function") {
+            setIsAuth(true);
+          }
+
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        } else {
+          setMessage(result.message || "Google ile giriş başarısız.");
+        }
+      } catch (err) {
+        console.error("Google Login Error:", err);
+        setMessage(err.detail || err.message || "Google ile giriş sırasında bir hata oluştu.");
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: handleGoogleError,
+  });
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
@@ -158,6 +165,7 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
             type="text"
             name="username"
             placeholder="Kullanıcı Adı veya E-Mail"
+            value={form.username}
             onChange={handleChange}
             required
           />
@@ -165,6 +173,7 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
             type="password"
             name="password"
             placeholder="Şifre"
+            value={form.password}
             onChange={handleChange}
             required
           />
@@ -195,20 +204,14 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
       </div>
 
       <div className="social-login">
-        {googleLoading ? (
-          <div className="google-loading">
-            <p>Google ile giriş yapılıyor...</p>
-          </div>
-        ) : (
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            useOneTap
-            text={type === "login" ? "signin_with" : "signup_with"}
-            shape="circle"
-            size="large"
-          />
-        )}
+        <button
+          type="button"
+          className="google"
+          onClick={() => googleLogin()}
+          disabled={googleLoading}
+        >
+          <img src={GoogleIcon} alt="Google Icon" className="icon" />
+        </button>
         
         <button
           type="button"

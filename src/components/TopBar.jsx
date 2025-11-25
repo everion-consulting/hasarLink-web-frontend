@@ -8,9 +8,6 @@ export default function TopBar() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        const confirm = window.confirm("Çıkış yapmak istediğinizden emin misiniz?");
-        if (!confirm) return;
-
         try {
             await AuthAPI.logout();
             // Storage event'ı tetiklemek için
@@ -68,6 +65,15 @@ export default function TopBar() {
                     <NavLink to="/profile" onClick={() => setIsMenuOpen(false)}>Profilim</NavLink>
                     <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>İletişim</NavLink>
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>Ayarlar</NavLink>
+                    <button 
+                        className="mobile-logout-btn" 
+                        onClick={() => {
+                            setIsMenuOpen(false);
+                            handleLogout();
+                        }}
+                    >
+                        Çıkış Yap
+                    </button>
                 </div>
             )}
         </header>

@@ -1,18 +1,16 @@
-/* Genel Ayarlar */
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #F0F0F0;
 }
 
-.screen-container {
+.screenContainer {
     width: 100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* --- Header Stili (HASARLİNK Kısmı) --- */
 .header {
     display: flex;
     justify-content: space-between;
@@ -28,14 +26,14 @@ body {
     color: #333;
 }
 
-.nav-links span {
+.navLinks span {
     margin-left: 30px;
     color: #666;
     cursor: pointer;
     font-size: 16px;
 }
 
-.contact-button {
+.contactButton {
     background-color: #1a4d8c; /* Koyu Mavi */
     color: white;
     padding: 10px 20px;
@@ -48,17 +46,17 @@ body {
     transition: background-color 0.3s;
 }
 
-.contact-button:hover {
+.contactButton:hover {
     background-color: #153c6e;
 }
 
-.arrow-icon {
+.arrowIcon {
     margin-left: 8px;
     font-size: 14px;
 }
 
 /* --- İçerik ve Form Alanı Stili --- */
-.content-area {
+.contentArea {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -66,7 +64,7 @@ body {
     flex-grow: 1;
 }
 
-.section-title {
+.sectionTitle {
     font-size: 28px;
     font-weight: 600;
     color: #333;
@@ -74,7 +72,7 @@ body {
     margin-bottom: 30px;
 }
 
-.form-card {
+.formCard {
     background-color: white;
     border-radius: 20px;
     padding: 40px;
@@ -84,7 +82,7 @@ body {
 }
 
 /* --- Stepper Stili --- */
-.stepper-container {
+.stepperContainer {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,7 +91,7 @@ body {
     margin-bottom: 20px;
 }
 
-.step-item {
+.stepItem {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -101,7 +99,7 @@ body {
     flex-grow: 0;
 }
 
-.step-circle {
+.stepCircle {
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -116,17 +114,17 @@ body {
     transition: background-color 0.3s, border-color 0.3s;
 }
 
-.step-item.active .step-circle {
+.stepItem.active .stepCircle {
     background-color: #1a4d8c; /* Aktif Mavi */
     border-color: #1a4d8c;
 }
 
-.step-item.completed .step-circle {
+.stepItem.completed .stepCircle {
     background-color: #1a4d8c; /* Tamamlanmış Mavi */
     border-color: #1a4d8c;
 }
 
-.step-label {
+.stepLabel {
     position: absolute;
     top: 40px;
     font-size: 12px;
@@ -134,7 +132,7 @@ body {
     white-space: nowrap;
 }
 
-.step-line {
+.stepLine {
     height: 2px;
     background-color: #ccc;
     flex-grow: 1;
@@ -144,7 +142,7 @@ body {
 
 
 /* --- Şahıs/Şirket Switch Stili --- */
-.switch-main-container {
+.switchMainContainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -157,7 +155,7 @@ body {
     margin-right: auto;
 }
 
-.switch-option {
+.switchOption {
     padding: 8px 20px;
     border-radius: 8px;
     cursor: pointer;
@@ -166,28 +164,28 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.switch-option.active-option {
+.switchOption.activeOption {
     background-color: white;
     color: #1a4d8c; /* Aktif Mavi */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* --- Form Alanları Stili --- */
-.form-renderer-container {
+.formRendererContainer {
     display: flex;
     flex-direction: column;
     gap: 15px; /* Alanlar arası boşluk */
 }
 
-.form-field-container {
+.formFieldContainer {
     margin-bottom: 10px;
 }
 
-.input-group {
+.inputGroup {
     position: relative;
 }
 
-.form-input {
+.formInput {
     width: 100%;
     padding: 15px 45px 15px 15px; /* Sağdan simge boşluğu */
     border: 1px solid #e0e6ed;
@@ -199,7 +197,7 @@ body {
     box-sizing: border-box;
 }
 
-.form-input:focus {
+.formInput:focus {
     border-color: #1a4d8c;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(26, 77, 140, 0.1);
@@ -207,14 +205,14 @@ body {
 }
 
 /* --- Footer Stili (Geri Dön / Devam Et Butonları) --- */
-.form-footer-web {
+.formFooterWeb {
     display: flex;
     justify-content: space-between;
     margin-top: 30px;
     gap: 20px;
 }
 
-.back-button-web {
+.backButtonWeb {
     background-color: #e0e6ed;
     color: #1a4d8c;
     padding: 15px 25px;
@@ -229,16 +227,16 @@ body {
     flex: 1;
 }
 
-.back-button-web:hover {
+.backButtonWeb:hover {
     background-color: #cdd4df;
 }
 
-.arrow-icon-left {
+.arrowIconLeft {
     margin-right: 8px;
     font-size: 14px;
 }
 
-.next-button-web {
+.nextButtonWeb {
     background-color: #1a4d8c;
     color: white;
     padding: 15px 25px;
@@ -253,6 +251,6 @@ body {
     flex: 1;
 }
 
-.next-button-web:hover {
+.nextButtonWeb:hover {
     background-color: #153c6e;
 }
