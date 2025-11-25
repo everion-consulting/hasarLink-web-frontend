@@ -19,6 +19,8 @@ export default function InsuranceSelect() {
     const [selectedCompany, setSelectedCompany] = useState(null);
 
     const favoriteList = profileDetail?.favorite_insurance_companies || [];
+    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
+    const companyObj = list.find(c => c.id === selectedCompany);
 
     useEffect(() => {
         fetchAllCompanies();
@@ -34,7 +36,6 @@ export default function InsuranceSelect() {
         if (res.success) fetchProfile();
     };
 
-    const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];
 
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
@@ -162,7 +163,7 @@ export default function InsuranceSelect() {
                     }`}
                     disabled={!selectedCompany}
                     onClick={() =>
-                        navigate("/accident-type", { state: { companyId: selectedCompany } })
+                        navigate("/accident-type", { state: { selectedCompany: companyObj } })
                     }
                 >
                     Devam Et →
