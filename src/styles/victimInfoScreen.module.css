@@ -78,6 +78,7 @@ body {
     width: 100%;
     max-width: 627px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
 }
 
 /* --- Stepper Stili --- */

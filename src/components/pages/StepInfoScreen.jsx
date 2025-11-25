@@ -7,7 +7,8 @@ import IkiIcon from '.././images/ikiIcon.svg';
 import UcIcon from '.././images/ucIcon.svg';
 import { formatPlate, maskPhone, toYYYYMMDD } from '../utils/formatter';
 import apiService from '../../services/apiServices';
-import { ArrowUpRightIcon, ArrowUpLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
+import FormFooter from '../forms/FormFooter';
 
 export default function StepInfoScreen() {
   const navigate = useNavigate();
@@ -287,7 +288,6 @@ export default function StepInfoScreen() {
               editKey: 'insurance_company',
               data: [
                 { label: '', value: selectedCompany?.name || 'Seçiniz' },
-                { label: '', value: selectedCompany?.code || '' }
               ]
             },
             {
@@ -785,35 +785,17 @@ export default function StepInfoScreen() {
         </div>
       </div>
 
-      <div className="footer">
-        <div className="button-container">
-          <button className="back-button" onClick={handleBackPress}>
-            <div className="back-button-content">
-              <div className="back-icon-wrapper">
-                <ArrowUpLeftIcon className="back-icon" />
-              </div>
-              <span className="back-button-text">GERİ DÖN</span>
-            </div>
-          </button>
+      <FormFooter
+        onBack={handleBackPress}
+        onNext={handleContinuePress}
+        nextLabel={isStepApproved
+          ? (currentStep === 4 ? "TAMAMLA" : "DEVAM ET")
+          : (currentStep === 4 ? "ONAYLA" : "DEVAM ET")
+        }
+        backLabel="GERİ DÖN"
+        disabled={!isAllChosen}
+      />
 
-          <button
-            className={`continue-button ${!isAllChosen ? 'disabled' : ''}`}
-            onClick={handleContinuePress}
-            disabled={!isAllChosen}
-          >
-            <div className="continue-button-content">
-              <span className={`continue-button-text ${!isAllChosen ? 'disabled' : ''}`}>
-                {isStepApproved
-                  ? (currentStep === 4 ? 'TAMAMLA' : 'DEVAM ET')
-                  : (currentStep === 4 ? 'ONAYLA' : 'DEVAM ET')}
-              </span>
-              <div className="continue-icon-wrapper">
-                <ArrowUpRightIcon className="continue-icon" />
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
