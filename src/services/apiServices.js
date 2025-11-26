@@ -232,8 +232,15 @@ const apiService = {
       return { success: false, error };
     }
   },
-
-
+  // CONTACT FORM — WEB
+  async sendContactForm(payload) {
+    return await fetchData(
+      `/accounts/contact-forms/`,
+      "POST",
+      payload,
+      "application/json"
+    );
+  },
 
 };
 

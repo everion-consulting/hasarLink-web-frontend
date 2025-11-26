@@ -19,6 +19,7 @@ import EditFavoritesScreen from "./components/pages/EditFavoriScreen";
 import AccidentTypeScreen from "./components/pages/AccidentTypeScreen";
 import Contact from "./components/pages/Contact";
 import "./styles/styles.css";
+import Settings from "./components/pages/Setting";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -35,6 +36,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/" element={isAuth ? <Home /> : <Navigate to="/auth" replace />} />
         <Route path="/profile" element={isAuth ? <Profile /> : <Navigate to="/auth" replace />} />
         <Route path="/contact" element={isAuth ? <Contact /> : <Navigate to="/auth" replace />} />
+        <Route path="/settings" element={isAuth ? <Settings /> : <Navigate to="/auth" replace />} />
         <Route path="/victim-info" element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-info" element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
