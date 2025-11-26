@@ -350,9 +350,9 @@ export default function StepInfoScreen() {
                 { label: 'E-Mail', value: victimData.victim_mail || 'Seçiniz' },
                 { label: 'Telefon No', value: victimData.victim_phone || 'Seçiniz' },
                 { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'Seçiniz' },
-                { label: 'Sigortalı Poliçe No', value: victimData.insured_policy_no || 'Seçiniz' },
-                { label: 'Poliçe Tecdit No', value: victimData.policy_no || 'Seçiniz' },
-                { label: 'Tescil Belge Seri No', value: victimData.registrationNo || 'Seçiniz' }
+                // { label: 'Sigortalı Poliçe No', value: victimData.insured_policy_no || 'Seçiniz' },
+                // { label: 'Poliçe Tecdit No', value: victimData.policy_no || 'Seçiniz' },
+                // { label: 'Tescil Belge Seri No', value: victimData.registrationNo || 'Seçiniz' }
               ]
             },
             ...(!samePerson
@@ -363,7 +363,6 @@ export default function StepInfoScreen() {
                   data: [
                     { label: 'Ad Soyad', value: driverData.driver_fullname || 'Seçiniz' },
                     { label: 'Kimlik No', value: driverData.driver_tc || 'Seçiniz' },
-                    { label: 'E-Mail', value: driverData.driver_mail || 'Seçiniz' },
                     { label: 'Telefon No', value: driverData.driver_phone || 'Seçiniz' },
                     { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'Seçiniz' }
                   ]

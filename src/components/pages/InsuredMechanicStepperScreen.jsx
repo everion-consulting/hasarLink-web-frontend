@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../stepper/Stepper';
 import FormRenderer from '../forms/FormRenderer';
@@ -15,15 +15,15 @@ export default function InsuredMechanicStepperScreen() {
     const location = useLocation();
     const { profileDetail } = useProfile();
 
-    // Debug: Tam location.state objesini görelim
+
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
-    const { 
-        insuranceSource, 
+    const {
+        insuranceSource,
         karsiSamePerson,
         kazaNitelik,
         selectedCompany,
-        samePerson 
+        samePerson
     } = location.state || {};
 
     const [currentStep, setCurrentStep] = useState(1);
@@ -31,6 +31,25 @@ export default function InsuredMechanicStepperScreen() {
     const [serviceData, setServiceData] = useState({});
     const [opposingDriverData, setOpposingDriverData] = useState({});
     const [cityOptions, setCityOptions] = useState([]);
+
+    const serviceFields = useMemo(() => {
+        return serviceField.map(f => {
+            if (f.type === 'row') {
+                return {
+                    ...f,
+                    children: f.children.map(child =>
+                        child.name === 'service_city'
+                            ? { ...child, options: cityOptions }
+                            : child
+                    ),
+                };
+            }
+
+            return f.name === 'service_city'
+                ? { ...f, options: cityOptions }
+                : f;
+        });
+    }, [cityOptions]);
 
     // Debug log
     console.log('🔍 InsuredMechanicStepperScreen MOUNTED');
@@ -80,9 +99,9 @@ export default function InsuredMechanicStepperScreen() {
 
     // Zorunlu alan kontrolü - Senaryo 3 için
     const isPlateOnlyRequired = () => {
-        return kazaNitelik === 'ÇOKLU KAZA' && 
-               insuranceSource === 'karsi kasko' && 
-               samePerson;
+        return kazaNitelik === 'ÇOKLU KAZA' &&
+            insuranceSource === 'karsi kasko' &&
+            samePerson;
     };
 
     // Profile verilerini yükle
@@ -106,18 +125,22 @@ export default function InsuredMechanicStepperScreen() {
         }
     }, [profileDetail]);
 
-    // Şehir listesini yükle
     useEffect(() => {
         const fetchAllCities = async () => {
             try {
                 const res = await apiService.getCities();
-                if (res.success && res.data) {
-                    const options = res.data.map((city) => ({
-                        label: city.name,
-                        value: city.name,
-                    }));
-                    setCityOptions(options);
-                }
+                console.log("🌍 raw city response:", res);
+
+                // axios ise:
+                const cities = res?.data?.results || res?.data || [];
+
+                const options = cities.map((city) => ({
+                    label: city.name,
+                    value: city.name,
+                }));
+
+                setCityOptions(options);
+                console.log("🌍 cityOptions (mapped):", options);
             } catch (err) {
                 console.error('❌ Şehir verileri alınamadı:', err);
                 setCityOptions([]);
@@ -126,6 +149,7 @@ export default function InsuredMechanicStepperScreen() {
 
         fetchAllCities();
     }, []);
+
 
     // Route parametrelerinden verileri yükle
     useEffect(() => {
@@ -162,7 +186,7 @@ export default function InsuredMechanicStepperScreen() {
     // Form submit handlers
     const handleInsuredSubmit = (values) => {
         setInsuredData(values);
-        
+
         // Senaryo 4: Karşı sürücü bilgisi gerekiyorsa step 2'ye git
         if (kazaNitelik === 'ÇOKLU KAZA' && insuranceSource === 'karsi trafik' && !samePerson) {
             setCurrentStep(2);
@@ -235,22 +259,22 @@ export default function InsuredMechanicStepperScreen() {
                 };
             });
         }
-        
+
         // Diğer senaryolar: Tüm alanlar zorunlu (veya field'da tanımlı olduğu gibi)
         return fields;
     };
 
     const renderFormFooter = ({ submit, allValid }) => (
         <div className={styles.formFooterWeb}>
-            <button 
-                className={styles.backButtonWeb} 
+            <button
+                className={styles.backButtonWeb}
                 onClick={handleBack}
                 type="button"
             >
                 <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
             </button>
-            <button 
-                className={styles.nextButtonWeb} 
+            <button
+                className={styles.nextButtonWeb}
                 onClick={submit}
                 disabled={!allValid}
                 type="button"
@@ -272,32 +296,18 @@ export default function InsuredMechanicStepperScreen() {
                 <div className={styles.formCard}>
                     <div className={styles.formSectionContent}>
                         {console.log('🎨 RENDER - currentStep:', currentStep, 'kazaNitelik:', kazaNitelik)}
-                        
+
                         {/* Senaryo 1: Tekli Kaza - Sadece Servis */}
                         {kazaNitelik === 'TEKLİ KAZA (BEYANLI)' && currentStep === 1 && (
                             <>
-                            {console.log('✅ Rendering TEKLI KAZA form')}
-                            <FormRenderer
-                                fields={serviceField.map(f => {
-                                    if (f.type === 'row') {
-                                        return {
-                                            ...f,
-                                            children: f.children.map(child =>
-                                                child.name === 'service_city' 
-                                                    ? { ...child, options: cityOptions } 
-                                                    : child
-                                            ),
-                                        };
-                                    }
-                                    return f.name === 'service_city' 
-                                        ? { ...f, options: cityOptions } 
-                                        : f;
-                                })}
-                                values={serviceData}
-                                setValues={setServiceData}
-                                onSubmit={handleServiceSubmit}
-                                renderFooter={renderFormFooter}
-                            />
+                                {console.log('✅ Rendering TEKLI KAZA form')}
+                                <FormRenderer
+                                    fields={serviceFields}
+                                    values={serviceData}
+                                    setValues={setServiceData}
+                                    onSubmit={handleServiceSubmit}
+                                    renderFooter={renderFormFooter}
+                                />
                             </>
                         )}
 
@@ -313,37 +323,23 @@ export default function InsuredMechanicStepperScreen() {
                         )}
 
                         {/* Senaryo 4: Karşı Sürücü Bilgileri (Step 2) */}
-                        {kazaNitelik === 'ÇOKLU KAZA' && 
-                         insuranceSource === 'karsi trafik' && 
-                         !samePerson && 
-                         currentStep === 2 && (
-                            <FormRenderer
-                                fields={opposingDriverFields}
-                                values={opposingDriverData}
-                                setValues={setOpposingDriverData}
-                                onSubmit={handleOpposingDriverSubmit}
-                                renderFooter={renderFormFooter}
-                            />
-                        )}
+                        {kazaNitelik === 'ÇOKLU KAZA' &&
+                            insuranceSource === 'karsi trafik' &&
+                            !samePerson &&
+                            currentStep === 2 && (
+                                <FormRenderer
+                                    fields={opposingDriverFields}
+                                    values={opposingDriverData}
+                                    setValues={setOpposingDriverData}
+                                    onSubmit={handleOpposingDriverSubmit}
+                                    renderFooter={renderFormFooter}
+                                />
+                            )}
 
                         {/* Servis Bilgileri - Tüm senaryolarda son adım */}
                         {currentStep === steps.length && kazaNitelik !== 'TEKLİ KAZA (BEYANLI)' && (
                             <FormRenderer
-                                fields={serviceField.map(f => {
-                                    if (f.type === 'row') {
-                                        return {
-                                            ...f,
-                                            children: f.children.map(child =>
-                                                child.name === 'service_city' 
-                                                    ? { ...child, options: cityOptions } 
-                                                    : child
-                                            ),
-                                        };
-                                    }
-                                    return f.name === 'service_city' 
-                                        ? { ...f, options: cityOptions } 
-                                        : f;
-                                })}
+                                fields={serviceFields}
                                 values={serviceData}
                                 setValues={setServiceData}
                                 onSubmit={handleServiceSubmit}
