@@ -1,0 +1,321 @@
+/* ====================================================
+   CONTACT PAGE
+==================================================== */
+.contactPage {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: "Poppins", sans-serif;
+}
+
+.contactHeader {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.contactHeader h1 {
+    font-size: 50px;
+    line-height: 60px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.contactHeader p {
+    font-size: 20px;
+    line-height: 25px;
+    letter-spacing: 1px;
+}
+
+/* Tüm input, textarea, dropdown yazıları */
+.contactCard input,
+.contactCard textarea,
+.contactCard .dropdown,
+.contactCard .dropdownMenu div {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* Placeholder'lar */
+.contactCard input::placeholder,
+.contactCard textarea::placeholder {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* Dropdown placeholder */
+.placeholder {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Dropdown seçilmiş yazı */
+.selected {
+    font-family: 'Poppins', sans-serif;
+}
+
+
+/* ============================================
+   BUTTON WRAPPER
+============================================ */
+.contactButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+/* ============================================
+   SHARED BUTTON STYLE (CTA ile aynı)
+============================================ */
+.contactButtons button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ============================================
+   GERİ DÖN BUTTON
+============================================ */
+.backBtn {
+    background: #CBDCEB;
+    color: #1E293B;
+}
+
+.backBtn:hover {
+    background: #b9cee4;
+}
+
+/* ============================================
+   DEVAM ET BUTTON
+============================================ */
+.nextBtn {
+    background: #133E87;
+    color: #ffffff;
+}
+
+.nextBtn:hover {
+    background: #0f3470;
+}
+
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.contactBtnIcon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.nextBtn .contactBtnIcon,
+.backBtn .contactBtnIcon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* ====================================================
+   FORM CARD
+==================================================== */
+.contactCard {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contactCard label {
+    font-size: 24px;
+    line-height: 25px;
+    font-weight: 200;
+    margin-bottom: 6px;
+}
+
+/* Input Box */
+.inputBox {
+    position: relative;
+}
+
+.inputBox input {
+    width: 100%;
+    padding: 14px 14px 14px 42px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    background: #f8f9fc;
+    font-size: 16px;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+/* ====================================================
+   CUSTOM DROPDOWN
+==================================================== */
+.dropdown {
+    position: relative;
+    padding: 14px 42px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    background: #f8f9fc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+
+.dropdownWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    z-index: 999;
+}
+
+.dropdownMenu div {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #1E293B;
+}
+
+.dropdownMenu div:hover {
+    background: #f1f5f9;
+}
+
+
+
+.placeholder {
+    color: #94a3b8;
+}
+
+.selected {
+    color: #111827;
+}
+
+.chevron {
+    margin-left: auto;
+    color: #94a3b8;
+}
+
+.dropdownMenu {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-top: 6px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.dropdownMenu div {
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.dropdownMenu div:hover {
+    background: #f1f5f9;
+}
+
+/* ====================================================
+   TEXTAREA
+==================================================== */
+.textareaBox {
+    position: relative;
+}
+
+.textareaBox textarea {
+    width: 100%;
+    padding: 14px 14px 14px 42px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    background: #f8f9fc;
+    font-size: 16px;
+    height: 160px;
+}
+
+.textareaIcon {
+    position: absolute;
+    top: 16px;
+    left: 12px;
+    color: #94a3b8;
+}
+
+/* ====================================================
+   BUTTONS
+==================================================== */
+.contactButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.backBtn {
+    background: #CBDCEB;
+    padding: 12px 26px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    color: #1E293B;
+    cursor: pointer;
+}
+
+.nextBtn {
+    background: #133E87;
+    padding: 12px 26px;
+    border-radius: 12px;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Mobile */
+@media (max-width: 425px) {
+    .contactButtons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .contactButtons button {
+        justify-content: center;
+    }
+
+    .backBtn,
+    .nextBtn {
+        width: 100%;
+    }
+}
