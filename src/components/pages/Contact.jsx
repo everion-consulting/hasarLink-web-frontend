@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/contact.css";
+import styles from "../../styles/contact.module.css";
 
 export default function Contact() {
     const [fullName, setFullName] = useState("");
@@ -21,8 +21,8 @@ export default function Contact() {
     };
 
     return (
-        <div className="contact-page">
-            <div className="contact-header">
+        <div className={styles.contactPage}>
+            <div className={styles.contactHeader}>
                 <h1>İletişime Geç</h1>
                 <p>
                     Aşağıdaki formu doldurarak bize istek, dilek, şikayet veya yardım
@@ -30,8 +30,7 @@ export default function Contact() {
                 </p>
             </div>
 
-            <div className="contact-card">
-                {/* Ad Soyad */}
+            <div className={styles.contactCard}>
                 <label>Ad Soyad</label>
                 <input
                     type="text"
@@ -40,7 +39,6 @@ export default function Contact() {
                     onChange={(e) => setFullName(e.target.value)}
                 />
 
-                {/* Konu */}
                 <label>Konu</label>
                 <select value={subject} onChange={(e) => setSubject(e.target.value)}>
                     <option value="">Konu seçiniz</option>
@@ -49,7 +47,6 @@ export default function Contact() {
                     <option value="yardim">Yardım</option>
                 </select>
 
-                {/* Mesaj */}
                 <label>Mesaj</label>
                 <textarea
                     placeholder="İletmek istediğiniz mesajınızı yazınız."
@@ -58,9 +55,9 @@ export default function Contact() {
                 ></textarea>
             </div>
 
-            <div className="contact-buttons">
-                <button className="back-btn">← Geri Dön</button>
-                <button className="next-btn" onClick={handleSend}>
+            <div className={styles.contactButtons}>
+                <button className={styles.backBtn}>← Geri Dön</button>
+                <button className={styles.nextBtn} onClick={handleSend}>
                     Devam Et →
                 </button>
             </div>
