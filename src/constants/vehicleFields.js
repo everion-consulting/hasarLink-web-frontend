@@ -22,7 +22,7 @@ export default [
     placeholder: "Araç markası giriniz",
     required: true,
     icon: TruckIcon,
-    // ❌ formatter kaldırıldı - marka için gerekli değil
+    formatter: formatPlate,
   },
   {
     type: "row",
@@ -36,7 +36,7 @@ export default [
         required: true,
         icon: TruckIcon,
         options: vehicleTypeOptions,
-        // ✅ formatter YOK - dropdown için gerekli değil
+        formatter: formatPlate,
       },
       {
         name: "vehicle_model",
@@ -45,7 +45,7 @@ export default [
         placeholder: "Corolla",
         required: true,
         icon: RectangleStackIcon,
-        // ❌ formatter kaldırıldı - model için gerekli değil
+        formatter: formatPlate,
       }
     ]
   },
@@ -61,7 +61,7 @@ export default [
         placeholder: "AB123456",
         required: true,
         icon: IdentificationIcon,
-        // ✅ formatter YOK - licenseSerialNo tipi zaten otomatik mask uygular
+        formatter: formatPlate,
       },
       {
         name: "vehicle_chassis_no",
@@ -71,7 +71,7 @@ export default [
         placeholder: "Şasi no giriniz",
         required: true,
         icon: QrCodeIcon,
-        // ✅ formatter YOK - chassisNo tipi zaten otomatik mask uygular
+        formatter: formatPlate,
       }
     ]
   },
@@ -86,7 +86,7 @@ export default [
         placeholder: "Motor no giriniz",
         required: true,
         icon: Cog6ToothIcon,
-        // ❌ formatter kaldırıldı - motor no için gerekli değil
+        
       },
       {
         name: "vehicle_year",
@@ -98,7 +98,7 @@ export default [
         maxLength: 4,
         keyboardType: "numeric",
         validate: (value, values) => {
-          // ✅ values parametresi eklendi (FormRenderer validate'in 2. parametresi)
+          
           if (!value) return null;
           const year = parseInt(value);
           const currentYear = new Date().getFullYear();
@@ -120,7 +120,7 @@ export default [
         placeholder: "34 ABC 123",
         required: true,
         icon: TruckIcon,
-        formatter: formatPlate, // ✅ Sadece plaka için formatter kullanılıyor
+        formatter: formatPlate,
       },
       {
         name: "vehicle_usage_type",

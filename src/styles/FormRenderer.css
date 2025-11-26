@@ -27,17 +27,16 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   width: 100%;
-  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
+  overflow: visible; 
 }
 
-/* 🔥 Form field - Z-index hierarchy başlangıcı */
+
 .form-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
   position: relative;
-  z-index: 1;
-  overflow: visible; /* 🔥 Dropdown'ın taşmasına izin ver */
+  overflow: visible; 
 }
 
 .form-label {
