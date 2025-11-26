@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "./config";
 import AuthTabs from "./components/AuthTabs";
@@ -18,15 +18,38 @@ import InsuredMechanicStepperScreen from "./components/pages/InsuredMechanicStep
 import EditFavoritesScreen from "./components/pages/EditFavoriScreen";
 import AccidentTypeScreen from "./components/pages/AccidentTypeScreen";
 import Contact from "./components/pages/Contact";
-import FileDamageInfoStepperScreen from "./components/pages/FileDamageInfoStepperScreen";
 import "./styles/styles.css";
+import DraftNotifications from "./components/pages/DraftNotifications";
+import FileDamageInfoStepperScreen from "./components/pages/FileDamageInfoStepperScreen";
+
+import apiService from "./services/apiServices";
 import Settings from "./components/pages/Setting";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Dashboard mı?
   const isDashboard = location.pathname === "/";
+
+  const [draftCount, setDraftCount] = useState(0);
+
+  useEffect(() => {
+    const fetchDraftCount = async () => {
+      try {
+        const drafts = await apiService.getDrafts();
+        setDraftCount(drafts.length);
+      } catch (error) {
+        console.error("Error fetching draft count:", error);
+      }
+    };
+
+    fetchDraftCount();
+  }, []);
+
+  const navigateToDrafts = () => {
+    navigate('/draft-notifications');
+  };
 
   return (
     <div className={isDashboard ? "page-wrapper dashboard" : "page-wrapper page-bg"}>
@@ -48,10 +71,9 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/insurance-stepper" element={isAuth ? <InsuranceStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/insured-mechanic-stepper" element={isAuth ? <InsuredMechanicStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/accident-type" element={isAuth ? <AccidentTypeScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/draft-notifications" element={isAuth ? <DraftNotifications /> : <Navigate to="/auth" replace />} />
         <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
-
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

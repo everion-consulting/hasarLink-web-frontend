@@ -739,7 +739,7 @@ export default function StepInfoScreen() {
           }
         });
         break;
-      case 'documents':
+      case 'damage_info':
         navigate('/file-damage-info-stepper', {
           state: {
             ...baseParams,
