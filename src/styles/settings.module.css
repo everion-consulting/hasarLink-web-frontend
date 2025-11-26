@@ -1,0 +1,191 @@
+/* ===========================================
+   PAGE WRAPPER
+=========================================== */
+.settingsPage {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 24px;
+    font-family: "Poppins", sans-serif;
+}
+
+/* ===========================================
+   HEADER
+=========================================== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+}
+
+.notificationIcon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.notificationBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 11px;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    background: #f97316;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* PAGE TITLE */
+.pageTitle {
+    font-size: 50px;
+    line-height: 60px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+/* ===========================================
+   SETTINGS CARD WRAPPER
+=========================================== */
+.settingsCard {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    width: 100%;
+}
+
+.settingsCardArea {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===========================================
+   SECTION
+=========================================== */
+
+.sectionTitle {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.sectionDescription {
+    font-size: 16px;
+    font-weight: 400;
+    color: #444;
+    line-height: 22px;
+    margin-bottom: 20px;
+}
+
+/* ===========================================
+   LIST CARD (Notification Preferences)
+=========================================== */
+.listCard {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee;
+
+    /* ✔️ Mobilde daha iyi hizalanma */
+    gap: 12px;
+}
+
+.listItem span {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+
+    /* ✔️ Mobilde kaymayı engeller */
+    word-break: break-word;
+}
+
+.listItem:last-child {
+    border-bottom: none;
+}
+
+.listItem label {
+    flex-shrink: 0;  /* ✔️ Switch asla küçülmez, sağda sabit durur */
+}
+
+/* ===========================================
+   DARK MODE CARD
+=========================================== */
+.darkModeCard {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.darkModeRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.darkModeRow span {
+    font-size: 17px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* ===========================================
+   RESPONSIVE
+=========================================== */
+@media (max-width: 768px) {
+    .pageTitle {
+        font-size: 32px;
+    }
+
+    .settingsCard {
+        padding: 22px;
+    }
+
+    .sectionTitle {
+        font-size: 24px;
+    }
+
+    .listItem {
+        padding: 16px 18px;
+    }
+
+    .darkModeCard {
+        padding: 16px;
+    }
+}

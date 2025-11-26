@@ -1,43 +1,64 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "../../styles/contact.module.css";
-import { ChevronDown, MessageSquare, User, HelpCircle } from "lucide-react";
+import { ChevronDown, MessageSquare, Mail, HelpCircle } from "lucide-react";
+import apiService from "../../services/apiServices";
+import toast from "react-hot-toast";
 
 export default function Contact() {
-    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
     const [subject, setSubject] = useState("");
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [message, setMessage] = useState("");
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const dropdownRef = useRef(null);
 
     useEffect(() => {
-        const name = localStorage.getItem("userName");
-        if (name) setFullName(name);
+        const storedEmail = localStorage.getItem("userEmail");
+        if (storedEmail) setEmail(storedEmail);
     }, []);
 
-    // Dropdown dışına tıklanınca kapat
+    // Dropdown dışına tıklayınca kapansın
     useEffect(() => {
-        function handleClickOutside(e) {
+        const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setDropdownOpen(false);
             }
-        }
+        };
 
         if (dropdownOpen) {
             document.addEventListener("mousedown", handleClickOutside);
         }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
     }, [dropdownOpen]);
 
-    const handleSend = () => {
-        if (!fullName || !subject || !message) {
-            alert("Lütfen tüm alanları doldurunuz.");
+    // FORM GÖNDER — BACKEND'E POST + TOAST
+    const handleSend = async () => {
+        if (!email.trim() || !subject.trim() || !message.trim()) {
+            toast.error("Lütfen tüm alanları doldurunuz.");
             return;
         }
-        alert("Mesajınız gönderildi!");
+
+        const payload = {
+            email,
+            title: subject,
+            message,
+        };
+
+        const loadingToast = toast.loading("Gönderiliyor...");
+
+        const res = await apiService.sendContactForm(payload);
+
+        toast.dismiss(loadingToast);
+
+        if (res?.success) {
+            toast.success("Mesajınız başarıyla gönderildi!");
+            setSubject("");
+            setMessage("");
+            setDropdownOpen(false);
+        } else {
+            toast.error(res?.error || res?.message || "Mesaj gönderilemedi!");
+        }
     };
 
     return (
@@ -45,26 +66,25 @@ export default function Contact() {
             <div className={styles.contactHeader}>
                 <h1>İletişime Geç</h1>
                 <p>
-                    Aşağıdaki formu doldurarak bize istek, dilek, şikayet veya yardım
-                    taleplerinizi iletebilirsiniz.
+                    Aşağıdaki formu doldurarak bize istek, dilek, şikayet veya yardım taleplerinizi iletebilirsiniz.
                 </p>
             </div>
 
             <div className={styles.contactCard}>
 
-                {/* Ad Soyad */}
-                <label>Ad Soyad</label>
+                {/* Mail */}
+                <label>Mail</label>
                 <div className={styles.inputBox}>
-                    <User className={styles.inputIcon} size={18} />
+                    <Mail className={styles.inputIcon} size={18} />
                     <input
-                        type="text"
-                        placeholder="Ahmet Yılmaz"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        type="email"
+                        placeholder="E-posta adresiniz"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
-                {/* Konu (Custom Dropdown) */}
+                {/* Konu */}
                 <label>Konu</label>
 
                 <div className={styles.dropdownWrapper} ref={dropdownRef}>
@@ -86,15 +106,9 @@ export default function Contact() {
 
                     {dropdownOpen && (
                         <div className={styles.dropdownMenu}>
-                            <div onClick={() => { setSubject("İstek"); setDropdownOpen(false); }}>
-                                İstek
-                            </div>
-                            <div onClick={() => { setSubject("Şikayet"); setDropdownOpen(false); }}>
-                                Şikayet
-                            </div>
-                            <div onClick={() => { setSubject("Yardım"); setDropdownOpen(false); }}>
-                                Yardım
-                            </div>
+                            <div onClick={() => { setSubject("İstek"); setDropdownOpen(false); }}>İstek</div>
+                            <div onClick={() => { setSubject("Şikayet"); setDropdownOpen(false); }}>Şikayet</div>
+                            <div onClick={() => { setSubject("Yardım"); setDropdownOpen(false); }}>Yardım</div>
                         </div>
                     )}
                 </div>
@@ -112,21 +126,20 @@ export default function Contact() {
 
             </div>
 
+            {/* Butonlar */}
             <div className={styles.contactButtons}>
 
-                {/* Geri Dön */}
                 <button className={styles.backBtn}>
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/left-icon-black.svg" alt="Geri Dön Ok" />
+                        <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
                     </span>
                     GERİ DÖN
                 </button>
 
-                {/* Devam Et */}
                 <button className={styles.nextBtn} onClick={handleSend}>
-                    DEVAM ET
+                    GÖNDER
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/right-icon-white.svg" alt="Devam Et Ok" />
+                        <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
                     </span>
                 </button>
 

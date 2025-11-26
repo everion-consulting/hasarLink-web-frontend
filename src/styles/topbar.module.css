@@ -76,6 +76,82 @@
     height: 14px;
 }
 
+.headerRight {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+}
+
+/* --- SAĞ GRUP (Bildirim + Çıkış Yap) --- */
+.rightGroup {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* Bildirim ile buton arasında boşluk */
+}
+
+/* Bildirim ikonu */
+.notificationIconDesktop, .notificationIconMobile {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.notificationIconDesktop svg, .notificationIconMobile svg {
+    width: 24px;
+    height: 24px;
+    stroke: #1a1a1a;
+}
+
+/* Bildirim rozeti */
+.notificationBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 11px;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    background: #f97316;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- MOBILE RIGHT GROUP (Bildirim + Hamburger) --- */
+.mobileRightGroup {
+    display: none; /* Desktop’ta gizli */
+    align-items: center;
+    gap: 18px;
+    position: absolute;
+    right: 20px;
+}
+
+/* Mobil hamburger */
+.hamburger {
+    font-size: 28px;
+    cursor: pointer;
+    display: none;
+}
+
+/* Mobil bildirim ikonu */
+.mobileRightGroup .notificationIconDesktop svg, .notificationIconMobile svg {
+    width: 22px;
+    height: 22px;
+    stroke: #1a1a1a;
+}
+
+/* Mobil rozet */
+.mobileRightGroup .notificationBadge {
+    font-size: 11px;
+    width: 16px;
+    height: 16px;
+    top: -5px;
+    right: -5px;
+}
+
 /************** HAMBURGER **************/
 .hamburger {
     display: none;
@@ -160,6 +236,29 @@
     /* Daha sıkı spacing */
     .topBar {
         padding: 16px 20px;
+    }
+
+    /* Sol menu + tabs gizlensin */
+    .tabs {
+        display: none;
+    }
+
+    /* Sağdaki logout butonu gizlensin */
+    .logoutBtn {
+        display: none;
+    }
+
+    /* Mobil bildirim + hamburger aktif olsun */
+    .mobileRightGroup {
+        display: flex;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .notificationIconDesktop {
+        display: none;
     }
 }
 
