@@ -18,6 +18,7 @@ import InsuredMechanicStepperScreen from "./components/pages/InsuredMechanicStep
 import EditFavoritesScreen from "./components/pages/EditFavoriScreen";
 import AccidentTypeScreen from "./components/pages/AccidentTypeScreen";
 import Contact from "./components/pages/Contact";
+import FileDamageInfoStepperScreen from "./components/pages/FileDamageInfoStepperScreen";
 import "./styles/styles.css";
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -45,6 +46,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/insurance-stepper" element={isAuth ? <InsuranceStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/insured-mechanic-stepper" element={isAuth ? <InsuredMechanicStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/accident-type" element={isAuth ? <AccidentTypeScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
 
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
 

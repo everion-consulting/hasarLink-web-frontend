@@ -46,8 +46,12 @@ export default function FormRenderer({
   const [currentDropdown, setCurrentDropdown] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+
+
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
+  const timeRefs = useRef({});
+
 
   function applyMask(type, v) {
     if (type === "phone") return maskPhone(v);
@@ -80,6 +84,14 @@ export default function FormRenderer({
     if (f.type === "tckn" && v && !validateTCKN(v)) return "TCKN 11 hane olmalı";
     if (f.type === "iban" && v && !validateIBAN(v)) return "IBAN 'TR' + 24 hane olmalı";
     if (f.type === "date" && v && !validateDateYMD(v)) return "Tarih DD.MM.YYYY olmalı";
+    if (f.type === "datetime" && v) {
+      const [datePart, timePart] = String(v).split(" ");
+      const isTimeValid = timePart && /^\d{2}:\d{2}$/.test(timePart);
+      if (!validateDateYMD(datePart) || !isTimeValid) {
+        return "Tarih ve saat DD.MM.YYYY SS:DD olmalı";
+      }
+    }
+
     if (f.type === "chassisNo" && v && !validateChassisNo(v)) return "Şasi No 17 karakter, harf/rakam olmalı";
     if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
     if (f.validate) return f.validate(v, values);
@@ -351,6 +363,87 @@ export default function FormRenderer({
                       </div>
                     );
                   }
+                  if (childField.type === "datetime") {
+                    const currentValue = values[childField.name] || "";
+                    const [datePart = "", timePart = ""] = currentValue.split(" ");
+
+                    return (
+                      <div key={childField.name} className="form-field">
+                        <label className="form-label">
+                          {childField.label}
+                          {childField.required && <span className="required-indicator"> *</span>}
+                        </label>
+
+                        <div className="date-input-wrapper">
+                          {/* Gizli tarih inputu */}
+                          <input
+                            type="date"
+                            ref={(el) => (dateRefs.current[childField.name] = el)}
+                            name={`${childField.name}_date`}
+                            value={datePart ? toYYYYMMDD(datePart) : ""}
+                            onChange={(e) => {
+                              const selectedDate = e.target.value; // YYYY-MM-DD
+                              let final = "";
+                              if (selectedDate) {
+                                const formattedDate = toDDMMYYYY(selectedDate); // DD.MM.YYYY
+                                final = timePart ? `${formattedDate} ${timePart}` : formattedDate;
+                              }
+                              handleChange(childField.name, childField.type, final);
+
+                              // Tarihi seçince saat picker'ını otomatik aç
+                              const timeInput = timeRefs.current[childField.name];
+                              if (timeInput) {
+                                if (timeInput.showPicker) timeInput.showPicker();
+                                else timeInput.focus();
+                              }
+                            }}
+                            className="native-date-input"
+                          />
+
+                          {/* Gizli saat inputu */}
+                          <input
+                            type="time"
+                            ref={(el) => (timeRefs.current[childField.name] = el)}
+                            name={`${childField.name}_time`}
+                            value={timePart}
+                            onChange={(e) => {
+                              const selectedTime = e.target.value; // HH:MM
+                              let final = "";
+                              if (selectedTime) {
+                                final = datePart ? `${datePart} ${selectedTime}` : ` ${selectedTime}`;
+                              } else {
+                                final = datePart || "";
+                              }
+                              handleChange(childField.name, childField.type, final);
+                            }}
+                            className="native-date-input"
+                          />
+
+                          {/* Kullanıcının gördüğü trigger */}
+                          <div
+                            className="date-trigger"
+                            onClick={() => {
+                              const input = dateRefs.current[childField.name];
+                              if (input) {
+                                if (input.showPicker) input.showPicker();
+                                else input.focus();
+                              }
+                            }}
+                          >
+                            {ClockIcon && <ClockIcon className="field-icon" />}
+                            <span className={`date-value ${!currentValue ? "placeholder" : ""}`}>
+                              {currentValue || "Tarih ve saat seçiniz"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {errors[childField.name] && (
+                          <span className="error-text">{errors[childField.name]}</span>
+                        )}
+                      </div>
+                    );
+                  }
+
 
                   if (childField.type === "dropdown") {
                     return renderDropdown(childField);
@@ -436,6 +529,89 @@ export default function FormRenderer({
               </div>
             );
           }
+          if (f.type === "datetime") {
+            const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
+            const currentValue = values[f.name] || "";
+            const [datePart = "", timePart = ""] = currentValue.split(" ");
+
+            return (
+              <div key={f.name} className="form-field">
+                <label className="form-label">
+                  {f.label}
+                  {f.required && <span className="required-indicator">*</span>}
+                </label>
+
+                <div className="date-input-wrapper">
+
+                  {/* GİZLİ TARİH INPUTU */}
+                  <input
+                    type="date"
+                    ref={(el) => (dateRefs.current[f.name] = el)}
+                    value={datePart ? toYYYYMMDD(datePart) : ""}
+                    onChange={(e) => {
+                      const selectedDate = e.target.value; // YYYY-MM-DD
+
+                      let final = "";
+                      if (selectedDate) {
+                        const formatted = toDDMMYYYY(selectedDate);
+                        final = timePart ? `${formatted} ${timePart}` : formatted;
+                      }
+
+                      handleChange(f.name, f.type, final);
+
+                      // ⭐ DATE PICKER KAPANDIKTAN SONRA TIME PICKER AÇ
+                      setTimeout(() => {
+                        const timeInput = timeRefs.current[f.name];
+                        if (timeInput) {
+                          if (timeInput.showPicker) timeInput.showPicker();
+                          else timeInput.focus();
+                        }
+                      }, 200); // ← kritik gecikme
+                    }}
+                    className="native-date-input"
+                  />
+
+                  {/* GİZLİ SAAT INPUTU */}
+                  <input
+                    type="time"
+                    ref={(el) => (timeRefs.current[f.name] = el)}
+                    value={timePart}
+                    onChange={(e) => {
+                      const selected = e.target.value;
+
+                      let final = "";
+                      if (selected) {
+                        final = datePart ? `${datePart} ${selected}` : selected;
+                      } else {
+                        final = datePart || "";
+                      }
+
+                      handleChange(f.name, f.type, final);
+                    }}
+                    className="native-time-input"
+                  />
+
+                  {/* GÖRÜNEN TRIGGER */}
+                  <div
+                    className="date-trigger"
+                    onClick={() => {
+                      const di = dateRefs.current[f.name];
+                      if (di) di.showPicker ? di.showPicker() : di.focus();
+                    }}
+                  >
+                    {IconComponent && <IconComponent className="field-icon" />}
+                    <span className={`date-value ${!currentValue ? "placeholder" : ""}`}>
+                      {currentValue || "Tarih ve saat seçiniz"}
+                    </span>
+                  </div>
+                </div>
+
+                {errors[f.name] && <span className="error-text">{errors[f.name]}</span>}
+              </div>
+            );
+          }
+
+
 
           const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
           return (
