@@ -109,7 +109,7 @@ const DriverVictimStepperScreen = () => {
   );
 
   return (
-    <div className="screen-container">
+    <div className="screen-container-drive">
       <div className="content-area">
         <Stepper steps={steps} currentStep={currentStep} />
 

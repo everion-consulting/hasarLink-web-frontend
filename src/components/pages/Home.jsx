@@ -86,7 +86,7 @@ export default function Dashboard() {
     // localStorage'dan submissionId'yi sil
     localStorage.removeItem("submissionId");
     console.log("🗑️ Dashboard: submissionId silindi");
-    
+
     // InsuranceSelect sayfasına yönlendir
     navigate('/insurance-select');
   };
@@ -106,14 +106,31 @@ export default function Dashboard() {
       <div className={styles.dashGrid}>
 
         {/* YENİ DOSYA */}
-        <div className={`${styles.cardDashboard} ${styles.cardNewFile}`}>
-          <img src={dosyaBildirIcon} alt="Dosya Bildir İkon" className={styles.dosyaBildirIcon}/>
+        <div
+          className={`${styles.cardDashboard} ${styles.cardNewFile}`}
+          onClick={handleNewFileClick}     
+          style={{ cursor: "pointer" }}
+        >
+          <img
+            src={dosyaBildirIcon}
+            alt="Dosya Bildir İkon"
+            className={styles.dosyaBildirIcon}
+          />
+
           <div className={styles.cardDashboardTitleSm}>YENİ</div>
           <div className={styles.cardDashboardTitleLg}>DOSYA</div>
-          <button className={styles.cardDashboardBtn} onClick={handleNewFileClick}>
+
+          <button
+            className={styles.cardDashboardBtn}
+            onClick={(e) => {
+              e.stopPropagation();          
+              handleNewFileClick();         
+            }}
+          >
             BİLDİR
           </button>
         </div>
+
 
         {/* ONAYLANANLAR */}
         <div className={`${styles.cardDashboard} ${styles.cardApproved}`}>

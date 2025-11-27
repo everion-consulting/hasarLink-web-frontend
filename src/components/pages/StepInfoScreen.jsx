@@ -23,12 +23,24 @@ export default function StepInfoScreen() {
   const kazaNitelik = params?.kazaNitelik || null;
 
   // EKRANDA KULLANACAĞIMIZ ASIL DEĞER
-  const insuranceSource =
-    kazaNitelik === "TEKLİ KAZA (BEYANLI)" ? "bizim kasko" : rawInsuranceSource;
-  console.log("🔍 Hesaplanan insuranceSource:", insuranceSource);
-  console.log("🔍 rawInsuranceSource:", rawInsuranceSource);
+  const insuranceSource = (() => {
+    // 1. Önce TEKLİ KAZA kontrolü
+    if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
+      return "bizim kasko";
+    }
+    // 2. Sonra gelen değeri kontrol et
+    if (rawInsuranceSource && ["karsi trafik", "bizim kasko", "karsi kasko"].includes(rawInsuranceSource)) {
+      return rawInsuranceSource;
+    }
+    // 3. Fallback değer
+    return "bizim kasko";
+  })();
 
-  // Form verilerini doğru şekilde al
+  console.log("🔍 Hesaplanan insuranceSource:", insuranceSource);
+  console.log("🔍 Gelen rawInsuranceSource:", rawInsuranceSource);
+  console.log("🔍 kazaNitelik:", kazaNitelik);
+
+  // Form verilerini doğru şekilde al - BURASI FONKSİYON İÇİNDE OLMALI
   const [driverData, setDriverData] = useState(params?.driverData || {});
   const [victimData, setVictimData] = useState(params?.victimData || {});
   const [vehicleData, setVehicleData] = useState(params?.vehicleData || {});
@@ -53,14 +65,25 @@ export default function StepInfoScreen() {
 
   const createSubmission = async () => {
     try {
+      // 🔥 API için geçerli insurance_source değerleri
+      const validInsuranceSources = {
+        'karsi trafik': 'karsi trafik',
+        'bizim kasko': 'bizim kasko', 
+        'karsi kasko': 'karsi kasko'
+      };
+
+      const apiInsuranceSource = validInsuranceSources[insuranceSource] ;
+
       const payload = {
         nature_new: kazaNitelik,
         insurance_company: selectedCompany?.id || null,
         is_driver_victim_same: samePerson,
         is_insured_opposing_driver_same: !!karsiSamePerson,
-        insurance_source: insuranceSource,
+        insurance_source: apiInsuranceSource, 
         is_completed: false,
       };
+
+      console.log("📡 CREATE payload:", payload);
 
       const res = await apiService.createSubmission(payload);
       console.log("📡 CREATE yanıtı:", res);
@@ -83,6 +106,7 @@ export default function StepInfoScreen() {
       }
     } catch (err) {
       console.error("❌ CREATE Error:", err.message);
+      alert("Submission oluşturulurken hata: " + err.message);
       return null;
     }
   };
@@ -225,7 +249,7 @@ export default function StepInfoScreen() {
     if (currentStep === 2 && isCokluKarsiKasko) {
       const plate = vehicleData?.vehicle_plate?.trim?.();
       if (!plate) {
-        alert("Eksik Bilgi", "Çoklu kaza ve karşı kasko durumunda mağdur araç plaka bilgisi zorunludur.");
+        alert("Eksik Bilgi: Çoklu kaza ve karşı kasko durumunda mağdur araç plaka bilgisi zorunludur.");
         return;
       }
     }
@@ -350,9 +374,6 @@ export default function StepInfoScreen() {
                 { label: 'E-Mail', value: victimData.victim_mail || 'Seçiniz' },
                 { label: 'Telefon No', value: victimData.victim_phone || 'Seçiniz' },
                 { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'Seçiniz' },
-                // { label: 'Sigortalı Poliçe No', value: victimData.insured_policy_no || 'Seçiniz' },
-                // { label: 'Poliçe Tecdit No', value: victimData.policy_no || 'Seçiniz' },
-                // { label: 'Tescil Belge Seri No', value: victimData.registrationNo || 'Seçiniz' }
               ]
             },
             ...(!samePerson
@@ -516,7 +537,7 @@ export default function StepInfoScreen() {
         console.log('  samePerson (local):', samePerson);
         console.log('  karsiSamePerson (local):', karsiSamePerson);
         console.log('  selectedCompany (local):', selectedCompany);
-        
+
         navigate('/insured-mechanic-stepper', {
           state: {
             kazaNitelik,
@@ -576,6 +597,130 @@ export default function StepInfoScreen() {
       documents: params?.documents,
     });
   };
+
+  const handleEditPress = (section) => {
+    if (isStepApproved) return;
+
+    const editKey = section.editKey;
+    const baseParams = {
+      kazaNitelik,
+      selectedCompany,
+      samePerson,
+      karsiSamePerson,
+      insuranceSource,
+      driverData,
+      victimData,
+      vehicleData,
+      insuredData,
+      serviceData,
+      damageData,
+      mechanicData,
+      documents: params?.documents
+    };
+
+    switch (editKey) {
+      case 'nature_new':
+        navigate('/accident-type', {
+          ...baseParams,
+          kazaNitelik: kazaNitelik || null,
+        });
+        break;
+      case 'insurance_company':
+        navigate('/first-screen', { ...baseParams, returnTo: 'StepInfoScreen', returnStep: currentStep });
+        break;
+      case 'same_person':
+      case 'insurance_source':
+        if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
+          alert("Düzenleme Yapılamaz: Tekli kaza seçtiğiniz için sigorta kaynağı otomatik olarak 'Bizim Kasko' olarak belirlenmiştir ve değiştirilemez.");
+          return;
+        }
+        navigate('/insurance-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusStep: 2,
+          preSelectedStep1: samePerson ? 'yes' : 'no',
+          preSelectedStep2: insuranceSource,
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'is_insured_opposing_driver_same':
+        navigate('/insurance-stepper', {
+          ...baseParams,
+          editMode: true,
+          focusStep: 3,
+          preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
+          returnTo: 'StepInfoScreen',
+          returnStep: currentStep
+        });
+        break;
+      case 'victim_info':
+      case 'driver_info':
+      case 'vehicle_info':
+        navigate('/victim-info', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      case 'insured_info':
+      case 'mechanic_info':
+      case 'karsi_driver_info':
+      case 'service_info':
+        navigate('/insured-mechanic-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      case 'damage_info':
+        navigate('/file-damage-info-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: editKey,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      case 'documents':
+        navigate('/file-damage-info-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            directToDocuments: true,
+            returnTo: 'StepInfoScreen',
+            returnStep: currentStep
+          }
+        });
+        break;
+      default:
+        alert('Bilgi: Bu bölüm henüz düzenlenemiyor.');
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (params) {
+      console.log("🔁 StepInfoScreen parametreleri yenilendi:", params);
+      if (params.driverData) setDriverData(params.driverData);
+      if (params.victimData) setVictimData(params.victimData);
+      if (params.vehicleData) setVehicleData(params.vehicleData);
+      if (params.insuredData) setInsuredData(params.insuredData);
+      if (params.mechanicData) setMechanicData(params.mechanicData);
+      if (params.serviceData) setServiceData(params.serviceData);
+      if (params.damageData) setDamageData(params.damageData);
+    }
+  }, [params]);
 
   const ApprovedStepComponent = () => (
     <div className="approved-container">
@@ -656,130 +801,6 @@ export default function StepInfoScreen() {
     </div>
   );
 
-  const handleEditPress = (section) => {
-    if (isStepApproved) return;
-
-    const editKey = section.editKey;
-    const baseParams = {
-      kazaNitelik,
-      selectedCompany,
-      samePerson,
-      karsiSamePerson,
-      insuranceSource,
-      driverData,
-      victimData,
-      vehicleData,
-      insuredData,
-      serviceData,
-      damageData,
-      mechanicData,
-      documents: params?.documents
-    };
-
-    switch (editKey) {
-      case 'nature_new':
-        navigate('/accident-type', {
-          ...baseParams,
-          kazaNitelik: kazaNitelik || null,
-        });
-        break;
-      case 'insurance_company':
-        navigate('/first-screen', { ...baseParams, returnTo: 'StepInfoScreen', returnStep: currentStep });
-        break;
-      case 'same_person':
-      case 'insurance_source':
-        if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
-          alert("Düzenleme Yapılamaz", "Tekli kaza seçtiğiniz için sigorta kaynağı otomatik olarak 'Bizim Kasko' olarak belirlenmiştir ve değiştirilemez.");
-          return;
-        }
-        navigate('/insurance-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusStep: 2,
-          preSelectedStep1: samePerson ? 'yes' : 'no',
-          preSelectedStep2: insuranceSource,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
-        });
-        break;
-      case 'is_insured_opposing_driver_same':
-        navigate('/insurance-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusStep: 3,
-          preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
-        });
-        break;
-      case 'victim_info':
-      case 'driver_info':
-      case 'vehicle_info':
-        navigate('/victim-info', {
-          state: {
-            ...baseParams,
-            editMode: true,
-            focusSection: editKey,
-            returnTo: 'StepInfoScreen',
-            returnStep: currentStep
-          }
-        });
-        break;
-      case 'insured_info':
-      case 'mechanic_info':
-      case 'karsi_driver_info':
-      case 'service_info':
-        navigate('/insured-mechanic-stepper', {
-          state: {
-            ...baseParams,
-            editMode: true,
-            focusSection: editKey,
-            returnTo: 'StepInfoScreen',
-            returnStep: currentStep
-          }
-        });
-        break;
-      case 'damage_info':
-        navigate('/file-damage-info-stepper', {
-          state: {
-            ...baseParams,
-            editMode: true,
-            focusSection: editKey,
-            returnTo: 'StepInfoScreen',
-            returnStep: currentStep
-          }
-        });
-        break;
-      case 'documents':
-        navigate('/file-damage-info-stepper', {
-          state: {
-            ...baseParams,
-            editMode: true,
-            directToDocuments: true,
-            returnTo: 'StepInfoScreen',
-            returnStep: currentStep
-          }
-        });
-        break;
-      default:
-        alert('Bilgi', 'Bu bölüm henüz düzenlenemiyor.');
-        break;
-    }
-  };
-
-  useEffect(() => {
-    if (params) {
-      console.log("🔁 StepInfoScreen parametreleri yenilendi:", params);
-      if (params.driverData) setDriverData(params.driverData);
-      if (params.victimData) setVictimData(params.victimData);
-      if (params.vehicleData) setVehicleData(params.vehicleData);
-      if (params.insuredData) setInsuredData(params.insuredData);
-      if (params.mechanicData) setMechanicData(params.mechanicData);
-      if (params.serviceData) setServiceData(params.serviceData);
-      if (params.damageData) setDamageData(params.damageData);
-    }
-  }, [params]);
-
   return (
     <div className="step-info-container">
       <div className="scroll-view">
@@ -822,7 +843,6 @@ export default function StepInfoScreen() {
         backLabel="GERİ DÖN"
         disabled={!isAllChosen}
       />
-
     </div>
   );
 }

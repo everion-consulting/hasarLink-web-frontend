@@ -47,7 +47,6 @@ export default function InsuranceStepper() {
 
   const [step3Selection, setStep3Selection] = useState(null);
 
-  
   const stepNames =
     kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
       ? ['Adım 1']
@@ -174,20 +173,25 @@ export default function InsuranceStepper() {
     }
   };
 
-  // ADIM 2 NORMAL (TEKLİ KAZA HARİÇ)
+  // ADIM 2 NORMAL (TEKLİ KAZA HARİÇ) - DÜZELTİLDİ!
   const handleStep2Select = (option) => {
+    console.log("🔄 Step2 seçildi:", option);
     setStep2Selection(option);
 
+    // 🔥 KRİTİK DÜZELTME: Karşı trafik seçilirse Step 3'e git, diğerleri StepInfo'ya
     if (option === 'karsi trafik') {
+      console.log("➡️ Karşı trafik -> Step 3'e geçiliyor");
       setCurrentStep(3);
-      return;
+      return; // Burada return yapıyoruz, navigation YAPMIYORUZ
     }
 
+    // Diğer seçenekler (bizim kasko, karşı kasko) direkt StepInfo'ya gider
+    console.log("➡️ Diğer seçenek -> StepInfo'ya gidiliyor");
     const safeParams = {
       selectedCompany,
       kazaNitelik,
       samePerson: step1Selection === 'yes',
-      insuranceSource: step2Selection,
+      insuranceSource: option, // 🔥 step2Selection yerine option kullan
       karsiSamePerson: step3Selection === 'yes',
       startStep: 1,
       driverData: location.state?.driverData || {},
@@ -200,6 +204,8 @@ export default function InsuranceStepper() {
       documents: location.state?.documents,
     };
 
+    console.log("🚀 StepInfoScreen'e gönderilen insuranceSource:", option);
+
     if (editMode && returnTo) {
       navigate(returnTo, { state: safeParams });
     } else {
@@ -207,15 +213,16 @@ export default function InsuranceStepper() {
     }
   };
 
-  // ADIM 3 - KARŞI TRAFİK İÇİN
+  // ADIM 3 - KARŞI TRAFİK İÇİN - DÜZELTİLDİ!
   const handleStep3Select = (option) => {
+    console.log("🔄 Step3 seçildi:", option);
     setStep3Selection(option);
 
     const safeParams = {
       selectedCompany,
       kazaNitelik,
       samePerson: step1Selection === 'yes',
-      insuranceSource: step2Selection,
+      insuranceSource: step2Selection, // 🔥 Burada step2Selection doğru
       karsiSamePerson: option === 'yes',
       startStep: 1,
       driverData: location.state?.driverData || {},
@@ -228,6 +235,8 @@ export default function InsuranceStepper() {
       documents: location.state?.documents,
     };
 
+    console.log("🚀 StepInfoScreen'e gönderilen insuranceSource:", step2Selection);
+
     if (editMode && returnTo) {
       navigate(returnTo, { state: safeParams });
     } else {
@@ -239,6 +248,7 @@ export default function InsuranceStepper() {
   const isAllChosen = kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
     ? !!step1Selection
     : !!step1Selection && !!step2Selection;
+
   const handleContinue = () => {
     if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') return;
 
@@ -258,6 +268,8 @@ export default function InsuranceStepper() {
       damageData: location.state?.damageData || {},
       documents: location.state?.documents,
     };
+
+    console.log("🚀 Continue butonu - StepInfoScreen'e gönderilen insuranceSource:", step2Selection);
 
     if (editMode && returnTo) {
       navigate(returnTo, { state: safeParams });
