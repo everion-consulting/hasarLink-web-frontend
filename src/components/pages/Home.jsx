@@ -8,9 +8,9 @@ import TalepEdilenIcon from "../../assets/images/talepEdilen.svg";
 import onaylananlarIcon from "../../assets/images/onaylananlar.svg";
 import onayBekleyenlerIcon from "../../assets/images/onayBekleyenler.svg";
 
+
 export default function Dashboard() {
   const navigate = useNavigate();
-
   const [dashboardData, setDashboardData] = useState({
     counts: {
       not_completed: 0,
@@ -222,7 +222,7 @@ export default function Dashboard() {
 
           <button
             className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight}`}
-            onClick={() => navigate('/rejected')}
+            onClick={() => navigate('/reddedilen-dosyalar')}
           >
             TÜMÜNÜ GÖR
           </button>

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import coreService from "../../services/coreService";
-
-// Araç formundaki ile aynı layout’u kullanmak için:
-import "../../styles/DriveVictimStepper.css";
 import "../../styles/notificationScreen.css";
 
 const NotificationsScreen = () => {

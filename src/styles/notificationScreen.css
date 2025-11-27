@@ -1,4 +1,4 @@
-/* Sayfa iskeleti */
+
 .notif-page {
   position: relative;
   min-height: 100vh;
@@ -7,14 +7,14 @@
     "Segoe UI", sans-serif;
 }
 
-/* Arka plan şekli (istersen kaldırabilirsin) */
+
 .notif-bg {
   position: absolute;
   inset: 0; 
   z-index: 0;
 }
 
-/* Header */
+
 .notif-header {
   position: relative;
   z-index: 1;

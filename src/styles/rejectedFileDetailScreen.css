@@ -1,0 +1,402 @@
+/* Genel layout */
+.frd-screen {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.frd-content-area {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.rejected-back {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+
+  /* 🔹 KAÇ PIXEL OLMASINI İSTERSEN BURADAN AYARLARSIN */
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  /* 🔹 DAİREYİ KALDIR – KARE YAP */
+  border-radius: 8px; /* istersen 4px yap daha köşeli olur */
+
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.rejected-back:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+
+
+.frd-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Kart */
+.frd-card {
+  margin-top: 8px;
+  border-radius: 16px;
+  padding: 18px 16px;
+}
+
+/* Loading ekranları */
+.frd-loading-screen {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.frd-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #133e87;
+  animation: frd-spin 0.7s linear infinite;
+}
+
+@keyframes frd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hata kutusu */
+.frd-error-box {
+  background-color: #fee2e2;
+  border-left: 4px solid #dc2626;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.frd-error-title {
+  color: #dc2626;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.frd-error-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.frd-error-list li {
+  color: #991b1b;
+  font-size: 13px;
+}
+
+/* Kart header */
+.frd-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.frd-card-header-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Düzenle butonu */
+.frd-edit-btn {
+  border-radius: 999px;
+  border: 1px solid #133e87;
+  background-color: #f9fafb;
+  color: #133e87;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.frd-edit-btn:hover {
+  background-color: #133e87;
+  color: #fff;
+}
+
+/* Bilgi grupları */
+.frd-group {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.frd-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 10px 0 6px;
+}
+
+/* Tek satır field */
+.frd-info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.frd-info-row--error {
+  background-color: #fee2e2;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.frd-info-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  min-width: 105px;
+}
+
+.frd-info-value {
+  font-size: 13px;
+  color: #133e87;
+  font-weight: 500;
+  flex: 1;
+  word-break: break-word;
+}
+
+.frd-info-value--error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Input & Select */
+.frd-input {
+  flex: 1;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  background-color: #f3f4f6;
+}
+
+.frd-input--error {
+  border-color: #dc2626;
+  background-color: #fff0f0;
+}
+
+/* Dosya kartı */
+.frd-files-card {
+  margin-top: 12px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.frd-files-card--empty {
+  background-color: #fee2e2;
+  border-left: 4px solid #dc2626;
+}
+
+.frd-files-header {
+  margin-bottom: 8px;
+}
+
+/* Dosya listesi (view mod) */
+.frd-file-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 8px;
+}
+
+.frd-file-row:last-child {
+  border-bottom: none;
+}
+
+.frd-file-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.frd-file-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #133e87;
+}
+
+.frd-file-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.frd-file-link {
+  font-size: 13px;
+  color: #2563eb;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.frd-no-files {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #991b1b;
+}
+
+/* Dosya bölümleri (edit mod) */
+.frd-file-section {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+}
+
+.frd-file-section--empty {
+  background-color: #fff8f8;
+}
+
+.frd-file-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.frd-file-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fee2e2;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.frd-file-current {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+/* Dosya aksiyon butonları */
+.frd-file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* Butonlar */
+.frd-btn {
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.frd-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.frd-btn:not(:disabled):hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.frd-btn-primary {
+  background-color: #133e87;
+  color: #ffffff;
+}
+
+.frd-btn-warning {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+.frd-btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.frd-btn-light {
+  background-color: #cbdceb;
+  color: #000000;
+}
+
+.frd-btn-full {
+  width: 100%;
+}
+
+/* Footer butonları */
+.frd-footer-buttons {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .frd-card {
+    padding: 14px 12px;
+  }
+
+  .frd-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .frd-info-label {
+    min-width: 0;
+  }
+
+  .frd-file-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .frd-file-link {
+    margin-top: 4px;
+  }
+
+  .frd-back-btn {
+    margin-left: -2px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .frd-content-area {
+    padding: 24px 0 32px;
+  }
+
+  .frd-card {
+    padding: 22px 20px;
+  }
+}
