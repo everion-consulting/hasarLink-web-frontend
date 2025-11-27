@@ -34,7 +34,7 @@ export default function TopBar() {
                     `${styles.tab} ${isActive ? styles.active : ""}`
                 }>Anasayfa</NavLink>
 
-                <NavLink to="/dosya-bildirimlerim" className={({ isActive }) =>
+                <NavLink to="/file-notifications" className={({ isActive }) =>
                     `${styles.tab} ${isActive ? styles.active : ""}`
                 }>Dosya Bildirimlerim</NavLink>
 
@@ -98,7 +98,7 @@ export default function TopBar() {
             {isMenuOpen && (
                 <div className={styles.mobileMenu}>
                     <NavLink to="/" end onClick={() => setIsMenuOpen(false)}>Anasayfa</NavLink>
-                    <NavLink to="/dosya-bildirimlerim" onClick={() => setIsMenuOpen(false)}>Dosya Bildirimlerim</NavLink>
+                    <NavLink to="/file-notifications" onClick={() => setIsMenuOpen(false)}>Dosya Bildirimlerim</NavLink>
                     <NavLink to="/profile" onClick={() => setIsMenuOpen(false)}>Profilim</NavLink>
                     <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>İletişim</NavLink>
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>Ayarlar</NavLink>

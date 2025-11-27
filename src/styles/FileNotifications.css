@@ -1,0 +1,129 @@
+.file-notifications {
+  min-height: 100vh;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.file-notifications::before {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #608BC1 0%, #133E87 100%);
+  opacity: 0.1;
+  top: -100px;
+  left: -100px;
+  z-index: 0;
+}
+
+.file-notifications::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #608BC1 0%, #133E87 100%);
+  opacity: 0.08;
+  bottom: -80px;
+  right: -80px;
+  z-index: 0;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.file-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 24px; /* Add spacing between cards */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px; /* Set maximum width for cards */
+}
+
+.file-details {
+  text-align: left;
+  margin-bottom: 12px;
+  padding-right: 20px;
+}
+
+.file-details p {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.file-details p strong {
+  font-weight: bold;
+  min-width: 100px;
+  display: inline-block;
+}
+
+.file-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.file-status {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.status-pending {
+  background-color: #fbc02d;
+  color: #fff;
+}
+
+.status-in-progress {
+  background-color: #0288d1;
+  color: #fff;
+}
+
+.status-rejected {
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+.status-completed {
+  background-color: #388e3c;
+  color: #fff;
+}
+
+.status-error {
+  background-color: #ff5722;
+  color: #fff;
+}
+
+.file-detail-button {
+  color: #133E87;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.file-detail-button:hover {
+  opacity: 0.8;
+}
