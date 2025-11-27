@@ -1,68 +1,72 @@
+/* ============================================================
+   FORM FOOTER (GERİ – DEVAM)
+   (accident type button tasarımıyla birebir uyumlu)
+=============================================================== */
+
 .formFooter {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  margin-block: 20px;
-  justify-content: center;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 40px;
   max-width: 800px;
   margin-inline: auto;
 }
 
+/* === BUTTON === */
 .backBtn,
 .nextBtn {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 10px;
-  height: 48px;
-  width: 400px;
-  border-radius: 14px;
   justify-content: center;
+  gap: 12px;
+
+  padding: 15px 50px; /* accidentType ile aynı */
+  border-radius: 12px;
   border: none;
+
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Poppins-Medium", sans-serif;
-  font-weight: 700;
-  font-size: 16px;
+  transition: 0.2s ease;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 20px;   /* accidentType ile aynı */
+  line-height: 28px; /* accidentType ile aynı */
 }
 
+/* === BACK BUTTON === */
 .backBtn {
-  background-color: #CBDCEB;
+  background: #CBDCEB;
+  color: #1E293B;
 }
 
+.backBtn:hover:not(.disabled) {
+  background: #b9cee4;
+}
+
+/* === NEXT BUTTON === */
 .nextBtn {
-  background-color: #133E87;
-}
-
-.disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.backBtn:hover:not(.disabled),
-.nextBtn:hover:not(.disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.backText {
-  color: #000000;
-}
-
-.nextText {
+  background: #133E87;
   color: #ffffff;
 }
 
-.iconWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.nextBtn:hover:not(.disabled) {
+  background: #0f3470;
 }
 
+/* === DISABLED STATE === */
+.disabled {
+  background: #DDD !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* === ICON CIRCLE (DAİRE) === */
 .iconCircle {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   display: flex;
@@ -70,12 +74,13 @@
   justify-content: center;
 }
 
+/* === ICON IMAGE === */
 .iconCircle img {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
 }
 
-/* Dark */
+/* === DARK MODE (İstersen kullanılır) === */
 .dark .backBtn {
   background-color: #CBDCEB;
 }
@@ -92,7 +97,7 @@
   color: #ffffff;
 }
 
-/* Responsive */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .formFooter {
     flex-direction: column;
