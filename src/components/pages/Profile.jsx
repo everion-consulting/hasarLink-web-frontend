@@ -307,7 +307,7 @@ export default function Profile() {
 
                         <div className={styles.modalForm}>
 
-                            <label>Ad Soyad</label>
+                            <label>Usta Adı Soyadı</label>
                             <input
                                 type="text"
                                 value={form.repair_fullname}
@@ -316,7 +316,7 @@ export default function Profile() {
 
                             <div className={styles.formRow2}>
                                 <div>
-                                    <label>Telefon</label>
+                                    <label>Usta Telefon No</label>
                                     <input
                                         type="text"
                                         value={form.repair_phone}
@@ -334,14 +334,14 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            <label>Doğum Tarihi</label>
+                            <label>Usta Doğum Tarihi</label>
                             <input
                                 type="date"
                                 value={form.repair_birth_date}
                                 onChange={(e) => setForm({ ...form, repair_birth_date: e.target.value })}
                             />
 
-                            <label>T.C. Kimlik No</label>
+                            <label>Usta Kimlik No</label>
                             <input
                                 type="text"
                                 value={form.repair_tc}

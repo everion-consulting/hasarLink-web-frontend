@@ -8,6 +8,10 @@ export default function TopBar() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const handleNotificationsClick = () => {
+        navigate("/notifications"); 
+    };
+
     const handleLogout = async () => {
         try {
             await AuthAPI.logout();
@@ -30,7 +34,7 @@ export default function TopBar() {
                     `${styles.tab} ${isActive ? styles.active : ""}`
                 }>Anasayfa</NavLink>
 
-                <NavLink to="/dosya-bildirimlerim" className={({ isActive }) =>
+                <NavLink to="/file-notifications" className={({ isActive }) =>
                     `${styles.tab} ${isActive ? styles.active : ""}`
                 }>Dosya Bildirimlerim</NavLink>
 
@@ -51,10 +55,16 @@ export default function TopBar() {
             <div className={styles.rightGroup}>
 
                 {/* NOTIFICATION ICON */}
-                <div className={styles.notificationIconDesktop}>
+                <div
+                    className={styles.notificationIconDesktop}
+                    onClick={handleNotificationsClick}
+                    role="button"
+                    style={{ cursor: "pointer" }}
+                >
                     <Bell size={22} />
                     <span className={styles.notificationBadge}>3</span>
                 </div>
+
 
                 {/* ÇIKIŞ YAP BUTTON */}
                 <button
@@ -88,7 +98,7 @@ export default function TopBar() {
             {isMenuOpen && (
                 <div className={styles.mobileMenu}>
                     <NavLink to="/" end onClick={() => setIsMenuOpen(false)}>Anasayfa</NavLink>
-                    <NavLink to="/dosya-bildirimlerim" onClick={() => setIsMenuOpen(false)}>Dosya Bildirimlerim</NavLink>
+                    <NavLink to="/file-notifications" onClick={() => setIsMenuOpen(false)}>Dosya Bildirimlerim</NavLink>
                     <NavLink to="/profile" onClick={() => setIsMenuOpen(false)}>Profilim</NavLink>
                     <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>İletişim</NavLink>
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>Ayarlar</NavLink>

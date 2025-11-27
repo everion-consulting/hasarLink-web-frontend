@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Stepper from "../../components/Stepper/Stepper";
+
 import FormRenderer from '../forms/FormRenderer';
 
 import damageInforFields from '../../constants/damageInfoFields';
@@ -12,6 +12,7 @@ import apiService from '../../services/apiServices';
 import DocumentUploaderScreen from "./DocumentUploadScreen";
 
 import "../../styles/fileDamageStepperScreen.css";
+import Stepper from "../stepper/Stepper";
 
 const FileDamageInfoStepperScreen = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -20,6 +21,7 @@ const FileDamageInfoStepperScreen = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const submissionId = localStorage.getItem("submissionId");
 
 
     // RN'deki route.params yerine
@@ -126,30 +128,26 @@ const FileDamageInfoStepperScreen = () => {
     });
 
     return (
-        <div >
+        <div>   {/* <<< BURADA className YOK */}
             {/* arka plan daireleri */}
             <div className="bg-circle bg-circle-1" />
             <div className="bg-circle bg-circle-2" />
             <div className="bg-circle bg-circle-3" />
 
             <div className="content-area">
+                {/* ✅ Stepper önce */}
+                <Stepper
+                    steps={steps}
+                    currentStep={currentStep}
+                    onStepPress={handleStepClick}
+                />
+
                 <h1 className="page-title">
                     {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
                 </h1>
 
                 <div className="vehicle-form-card">
                     <div className="vehicle-form-section-content">
-                        {/* Stepper sadece 1. adımda */}
-                       
-                            <div style={{ marginBottom: 20 }}>
-                                <Stepper
-                                    steps={steps}
-                                    currentStep={currentStep}
-                                    onStepPress={handleStepClick}
-                                />
-                            </div>
-                        
-
                         {currentStep === 1 && (
                             <FormRenderer
                                 fields={damageFieldsWithCities}
@@ -180,22 +178,25 @@ const FileDamageInfoStepperScreen = () => {
                                 )}
                             />
                         )}
+
                         {currentStep === 2 && (
                             <DocumentUploaderScreen
                                 damageData={damageData}
                                 onBack={handleBackPress}
                                 onContinue={handleDocumentsCompleted}
-                                routeState={routeState}
+                                routeState={{
+                                    ...routeState,
+                                    submissionId: localStorage.getItem("submissionId")
+                                }}
                             />
                         )}
-
-
-
                     </div>
                 </div>
             </div>
         </div>
     );
+
+
 };
 
 export default FileDamageInfoStepperScreen;
