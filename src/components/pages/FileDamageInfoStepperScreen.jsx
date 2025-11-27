@@ -21,6 +21,7 @@ const FileDamageInfoStepperScreen = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const submissionId = localStorage.getItem("submissionId");
 
 
     // RN'deki route.params yerine
@@ -183,7 +184,10 @@ const FileDamageInfoStepperScreen = () => {
                                 damageData={damageData}
                                 onBack={handleBackPress}
                                 onContinue={handleDocumentsCompleted}
-                                routeState={routeState}
+                                routeState={{
+                                    ...routeState,
+                                    submissionId: localStorage.getItem("submissionId")
+                                }}
                             />
                         )}
                     </div>

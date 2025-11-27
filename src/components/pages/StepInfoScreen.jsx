@@ -445,10 +445,10 @@ export default function StepInfoScreen() {
               title: 'Servis Bilgileri',
               editKey: 'service_info',
               data: [
-                { label: 'Ad Soyad', value: mechanicData.repair_fullname || 'Seçiniz' },
-                { label: 'Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
-                { label: 'TC No', value: mechanicData.repair_tc || 'Seçiniz' },
-                { label: 'Telefon', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
+                { label: 'Usta Adı Soyadı', value: mechanicData.repair_fullname || 'Seçiniz' },
+                { label: 'Usta Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
+                { label: 'Usta Kimlik No', value: mechanicData.repair_tc || 'Seçiniz' },
+                { label: 'Usta Telefon No', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
                 { label: 'IBAN', value: serviceData.service_iban || 'Seçiniz' },
                 { label: 'IBAN Adı', value: serviceData.service_iban_name || 'Seçiniz' },
                 { label: 'Servis Adı', value: serviceData.service_name || 'Seçiniz' },
@@ -556,7 +556,7 @@ export default function StepInfoScreen() {
         });
         break;
       case 3:
-        navigate('/file-damage-info-stepper', { state: { ...params } });
+        navigate('/hasar-bilgileri', { state: { ...params } });
         break;
       case 4:
         handleFinalApprove();
