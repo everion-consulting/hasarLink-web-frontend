@@ -48,10 +48,18 @@ export const validateIBAN = (s = "") => /^TR\d{24}$/i.test(s.replace(/\s/g, ""))
 // -------------------
 // Araç doğrulama fonksiyonları
 // -------------------
-export const validateChassisNo = (s = "") => {
-  const clean = String(s).toUpperCase().replace(/[^A-Z0-9]/g, "");
-  return clean.length === 17 && /^[A-HJ-NPR-Z0-9]{17}$/.test(clean);
-};
+
+export function validateChassisNo(value) {
+  if (!value) return false;
+
+  // Boşlukları kaldır, büyük harfe çevir
+  const vin = String(value).toUpperCase().replace(/\s+/g, "");
+
+  // 17 karakter, I O Q yok, sadece A-H J-N P R-Z ve 0-9
+  const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/;
+
+  return vinRegex.test(vin);
+}
 
 export const validateLicenseSerialNo = (s = "") => {
   return /^[A-Z]{2}\d{6}$/.test(String(s).toUpperCase());
