@@ -21,6 +21,7 @@ import Contact from "./components/pages/Contact";
 import "./styles/styles.css";
 import DraftNotifications from "./components/pages/DraftNotifications";
 import FileDamageInfoStepperScreen from "./components/pages/FileDamageInfoStepperScreen";
+import NotificationScreen from "./components/pages/NotificationScreen";
 
 import apiService from "./services/apiServices";
 import Settings from "./components/pages/Setting";
@@ -73,6 +74,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/accident-type" element={isAuth ? <AccidentTypeScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/draft-notifications" element={isAuth ? <DraftNotifications /> : <Navigate to="/auth" replace />} />
         <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/notifications" element={isAuth ? <NotificationScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

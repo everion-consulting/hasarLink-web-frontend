@@ -8,6 +8,10 @@ export default function TopBar() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const handleNotificationsClick = () => {
+        navigate("/notifications"); 
+    };
+
     const handleLogout = async () => {
         try {
             await AuthAPI.logout();
@@ -51,10 +55,16 @@ export default function TopBar() {
             <div className={styles.rightGroup}>
 
                 {/* NOTIFICATION ICON */}
-                <div className={styles.notificationIconDesktop}>
+                <div
+                    className={styles.notificationIconDesktop}
+                    onClick={handleNotificationsClick}
+                    role="button"
+                    style={{ cursor: "pointer" }}
+                >
                     <Bell size={22} />
                     <span className={styles.notificationBadge}>3</span>
                 </div>
+
 
                 {/* ÇIKIŞ YAP BUTTON */}
                 <button
