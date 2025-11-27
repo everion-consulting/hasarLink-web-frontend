@@ -15,6 +15,16 @@ export default function StepInfoScreen() {
   const location = useLocation();
   const params = location.state || {};
 
+  console.log("🔍 StepInfoScreen'e GELEN TÜM parametreler:", params);
+  console.log("🔍 Gelen kazaNitelik:", params.kazaNitelik);
+  console.log("🔍 Gelen insuranceSource:", params.insuranceSource);
+  console.log("🔍 Gelen selectedCompany:", params.selectedCompany);
+  console.log("🔍 Gelen samePerson:", params.samePerson);
+  console.log("🔍 Gelen karsiSamePerson:", params.karsiSamePerson);
+  console.log("🔍 Gelen victimData:", params.victimData);
+  console.log("🔍 Gelen driverData:", params.driverData);
+  console.log("🔍 Gelen vehicleData:", params.vehicleData);
+
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
@@ -22,7 +32,8 @@ export default function StepInfoScreen() {
   const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
 
-  // EKRANDA KULLANACAĞIMIZ ASIL DEĞER
+
+
   const insuranceSource = (() => {
     // 1. Önce TEKLİ KAZA kontrolü
     if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
@@ -65,21 +76,21 @@ export default function StepInfoScreen() {
 
   const createSubmission = async () => {
     try {
-      // 🔥 API için geçerli insurance_source değerleri
+     
       const validInsuranceSources = {
         'karsi trafik': 'karsi trafik',
-        'bizim kasko': 'bizim kasko', 
+        'bizim kasko': 'bizim kasko',
         'karsi kasko': 'karsi kasko'
       };
 
-      const apiInsuranceSource = validInsuranceSources[insuranceSource] ;
+      const apiInsuranceSource = validInsuranceSources[insuranceSource];
 
       const payload = {
         nature_new: kazaNitelik,
         insurance_company: selectedCompany?.id || null,
         is_driver_victim_same: samePerson,
         is_insured_opposing_driver_same: !!karsiSamePerson,
-        insurance_source: apiInsuranceSource, 
+        insurance_source: apiInsuranceSource,
         is_completed: false,
       };
 
@@ -445,10 +456,10 @@ export default function StepInfoScreen() {
               title: 'Servis Bilgileri',
               editKey: 'service_info',
               data: [
-                { label: 'Usta Adı Soyadı', value: mechanicData.repair_fullname || 'Seçiniz' },
-                { label: 'Usta Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
-                { label: 'Usta Kimlik No', value: mechanicData.repair_tc || 'Seçiniz' },
-                { label: 'Usta Telefon No', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
+                { label: 'Ad Soyad', value: mechanicData.repair_fullname || 'Seçiniz' },
+                { label: 'Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
+                { label: 'TC No', value: mechanicData.repair_tc || 'Seçiniz' },
+                { label: 'Telefon', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
                 { label: 'IBAN', value: serviceData.service_iban || 'Seçiniz' },
                 { label: 'IBAN Adı', value: serviceData.service_iban_name || 'Seçiniz' },
                 { label: 'Servis Adı', value: serviceData.service_name || 'Seçiniz' },
@@ -507,7 +518,24 @@ export default function StepInfoScreen() {
 
   const handleBackPress = () => {
     if (currentStep === 1) {
-      navigate('/first-screen', { ...params });
+      navigate('/first-screen', {
+        state: {
+          kazaNitelik,
+          selectedCompany,
+          samePerson,
+          karsiSamePerson,
+          insuranceSource,
+          driverData,
+          victimData,
+          vehicleData,
+          insuredData,
+          serviceData,
+          damageData,
+          mechanicData,
+          opposingDriverData,
+          documents: params?.documents
+        }
+      });
       return;
     }
     if (isStepApproved) {
@@ -519,6 +547,8 @@ export default function StepInfoScreen() {
     }
   };
 
+  // handleContinuePress fonksiyonunun düzeltilmiş case 2 bölümü:
+
   const handleContinuePress = async () => {
     if (!isStepApproved) {
       await handleStepApprove();
@@ -527,40 +557,84 @@ export default function StepInfoScreen() {
 
     switch (currentStep) {
       case 1:
-        navigate('/victim-info', { state: { ...params } });
-        break;
-      case 2:
-        console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
-        console.log('  params:', params);
-        console.log('  kazaNitelik (local):', kazaNitelik);
-        console.log('  insuranceSource (local):', insuranceSource);
-        console.log('  samePerson (local):', samePerson);
-        console.log('  karsiSamePerson (local):', karsiSamePerson);
-        console.log('  selectedCompany (local):', selectedCompany);
-
-        navigate('/insured-mechanic-stepper', {
+        navigate('/victim-info', {
           state: {
             kazaNitelik,
             insuranceSource,
+            selectedCompany,
             samePerson,
             karsiSamePerson,
-            selectedCompany,
             driverData,
             victimData,
             vehicleData,
             insuredData,
             serviceData,
             damageData,
+            mechanicData,
             opposingDriverData,
+            documents: params?.documents,
           }
         });
         break;
-      case 3:
-        navigate('/hasar-bilgileri', { state: { ...params } });
+
+      case 2:
+        console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
+        console.log('  kazaNitelik (local):', kazaNitelik);
+        console.log('  insuranceSource (local):', insuranceSource);
+        console.log('  samePerson (local):', samePerson);
+        console.log('  karsiSamePerson (local):', karsiSamePerson);
+        console.log('  selectedCompany (local):', selectedCompany);
+
+        // 🔥 KRİTİK: Tüm değerleri açıkça belirt
+        const insuredNavigationState = {
+          kazaNitelik,           // 🔥 Local const
+          insuranceSource,       // 🔥 Hesaplanmış değer
+          samePerson,            // 🔥 Local const
+          karsiSamePerson,       // 🔥 Local const
+          selectedCompany,       // 🔥 Local const
+          driverData,
+          victimData,
+          vehicleData,
+          insuredData,
+          serviceData,
+          damageData,
+          opposingDriverData,
+          mechanicData,
+          documents: params?.documents,
+        };
+
+        console.log('📦 Navigation state:', insuredNavigationState);
+
+        navigate('/insured-mechanic-stepper', {
+          state: insuredNavigationState
+        });
         break;
+
+      case 3:
+        navigate('/file-damage-info-stepper', {
+          state: {
+            kazaNitelik,
+            insuranceSource,
+            selectedCompany,
+            samePerson,
+            karsiSamePerson,
+            driverData,
+            victimData,
+            vehicleData,
+            insuredData,
+            serviceData,
+            damageData,
+            mechanicData,
+            opposingDriverData,
+            documents: params?.documents,
+          }
+        });
+        break;
+
       case 4:
         handleFinalApprove();
         break;
+
       default:
         break;
     }
@@ -581,33 +655,39 @@ export default function StepInfoScreen() {
     console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
 
     navigate('/success-screen', {
-      fileName: randomFileNumber,
-      companyName: selectedCompany?.name || params?.companyName,
-      documentCount: uploadedDocuments,
-      selectedCompany,
-      samePerson,
-      insuranceSource,
-      driverData,
-      victimData,
-      vehicleData,
-      insuredData,
-      serviceData,
-      damageData,
-      mechanicData,
-      documents: params?.documents,
+      state: {
+        fileName: randomFileNumber,
+        companyName: selectedCompany?.name || params?.companyName,
+        documentCount: uploadedDocuments,
+        kazaNitelik, 
+        selectedCompany,
+        samePerson,
+        karsiSamePerson, 
+        insuranceSource,
+        driverData,
+        victimData,
+        vehicleData,
+        insuredData,
+        serviceData,
+        damageData,
+        mechanicData,
+        opposingDriverData,
+        documents: params?.documents,
+      }
     });
   };
-
   const handleEditPress = (section) => {
     if (isStepApproved) return;
 
     const editKey = section.editKey;
+
+  
     const baseParams = {
-      kazaNitelik,
-      selectedCompany,
-      samePerson,
-      karsiSamePerson,
-      insuranceSource,
+      kazaNitelik, 
+      selectedCompany, 
+      samePerson, 
+      karsiSamePerson, 
+      insuranceSource, 
       driverData,
       victimData,
       vehicleData,
@@ -615,18 +695,29 @@ export default function StepInfoScreen() {
       serviceData,
       damageData,
       mechanicData,
+      opposingDriverData,
       documents: params?.documents
     };
+
+    console.log('🔧 EDIT baseParams:', baseParams);
 
     switch (editKey) {
       case 'nature_new':
         navigate('/accident-type', {
-          ...baseParams,
-          kazaNitelik: kazaNitelik || null,
+          state: {
+            ...baseParams,
+            kazaNitelik: kazaNitelik || null,
+          }
         });
         break;
       case 'insurance_company':
-        navigate('/first-screen', { ...baseParams, returnTo: 'StepInfoScreen', returnStep: currentStep });
+        navigate('/first-screen', {
+          state: {
+            ...baseParams,
+            returnTo: 'step-info',
+            returnStep: currentStep
+          }
+        });
         break;
       case 'same_person':
       case 'insurance_source':
@@ -635,23 +726,27 @@ export default function StepInfoScreen() {
           return;
         }
         navigate('/insurance-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusStep: 2,
-          preSelectedStep1: samePerson ? 'yes' : 'no',
-          preSelectedStep2: insuranceSource,
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusStep: 2,
+            preSelectedStep1: samePerson ? 'yes' : 'no',
+            preSelectedStep2: insuranceSource,
+            returnTo: 'step-info',
+            returnStep: currentStep
+          }
         });
         break;
       case 'is_insured_opposing_driver_same':
         navigate('/insurance-stepper', {
-          ...baseParams,
-          editMode: true,
-          focusStep: 3,
-          preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
-          returnTo: 'StepInfoScreen',
-          returnStep: currentStep
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusStep: 3,
+            preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
+            returnTo: 'step-info',
+            returnStep: currentStep
+          }
         });
         break;
       case 'victim_info':
@@ -662,7 +757,7 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusSection: editKey,
-            returnTo: 'StepInfoScreen',
+            returnTo: 'step-info',
             returnStep: currentStep
           }
         });
@@ -671,12 +766,13 @@ export default function StepInfoScreen() {
       case 'mechanic_info':
       case 'karsi_driver_info':
       case 'service_info':
+        console.log('🔧 EDIT -> insured-mechanic-stepper:', baseParams);
         navigate('/insured-mechanic-stepper', {
           state: {
             ...baseParams,
             editMode: true,
             focusSection: editKey,
-            returnTo: 'StepInfoScreen',
+            returnTo: 'step-info',
             returnStep: currentStep
           }
         });
@@ -687,7 +783,7 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusSection: editKey,
-            returnTo: 'StepInfoScreen',
+            returnTo: 'step-info',
             returnStep: currentStep
           }
         });
@@ -698,7 +794,7 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             directToDocuments: true,
-            returnTo: 'StepInfoScreen',
+            returnTo: 'step-info',
             returnStep: currentStep
           }
         });
