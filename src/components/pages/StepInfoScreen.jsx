@@ -611,24 +611,7 @@ export default function StepInfoScreen() {
         break;
 
       case 3:
-        navigate('/file-damage-info-stepper', {
-          state: {
-            kazaNitelik,
-            insuranceSource,
-            selectedCompany,
-            samePerson,
-            karsiSamePerson,
-            driverData,
-            victimData,
-            vehicleData,
-            insuredData,
-            serviceData,
-            damageData,
-            mechanicData,
-            opposingDriverData,
-            documents: params?.documents,
-          }
-        });
+        navigate('/hasar-bilgileri', { state: { ...params } });
         break;
 
       case 4:
