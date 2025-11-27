@@ -129,6 +129,18 @@ export const toDDMMYYYY = (dateLike) => {
   return `${dd}.${mm}.${yyyy}`;
 };
 
+//Plaka Validasyonu
+export function validatePlate(value) {
+  if (!value) return false;
+
+  const v = String(value).toUpperCase().replace(/\s+/g, "");
+
+  // En fazla 9 karakter, en az 1 rakam olmalı
+  const regex = /^(?=.*\d)[A-Z0-9]{1,9}$/;
+
+  return regex.test(v);
+}
+
 // -------------------
 // Diğer formatlayıcılar
 // -------------------

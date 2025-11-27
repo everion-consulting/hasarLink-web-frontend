@@ -8,6 +8,7 @@ import {
   validateTCKN,
   validateIBAN,
   validateDateYMD,
+  validatePlate,
   validateChassisNo,
   validateLicenseSerialNo,
   toDDMMYYYY,
@@ -15,6 +16,7 @@ import {
 } from "../utils/formatter";
 import FormFooter from "./FormFooter";
 import AppTextInput from "../input templates/AppTextInput";
+
 
 import {
   ChevronDownIcon,
@@ -64,6 +66,10 @@ export default function FormRenderer({
 
       return String(v).toUpperCase().replace(/\s+/g, "");
     }
+    if (type === "vehicle_plate") {
+      return String(v).toUpperCase().replace(/\s+/g, "");
+    }
+
 
     return v;
   }
@@ -106,6 +112,11 @@ export default function FormRenderer({
     }
 
     if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
+    if (f.type === "vehicle_plate" && v && !validatePlate(v)) {
+      return "Plaka en fazla 9 karakter olmalı ve en az 1 rakam içermeli";
+    }
+
+
     if (f.validate) return f.validate(v, values);
     return null;
   }
