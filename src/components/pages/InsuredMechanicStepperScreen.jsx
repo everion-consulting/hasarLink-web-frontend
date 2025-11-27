@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../stepper/Stepper';
 import FormRenderer from '../forms/FormRenderer';
 import FormFooter from '../forms/FormFooter';
-import insuredField from '../../constants/insuredField';
+import insuredField from '../../constants/insuredFields';
 import serviceField from '../../constants/serviceField';
 import opposingDriverFields from '../../constants/opposingDriverFields';
 import { useProfile } from '../../context/ProfileContext';

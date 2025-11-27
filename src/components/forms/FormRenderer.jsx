@@ -78,8 +78,16 @@ export default function FormRenderer({
   function getInputType(type) {
     if (type === "email") return "email";
     if (type === "phone") return "tel";
-    if (type === "number" || type === "tckn") return "number";
+    if (type === "number") return "number";
+    if (type === "tckn") return "text";
     if (type === "password") return "password";
+    return "text";
+  }
+
+  function getInputMode(type) {
+    if (type === "tckn" || type === "number") return "numeric";
+    if (type === "email") return "email";
+    if (type === "phone") return "tel";
     return "text";
   }
 
@@ -125,6 +133,14 @@ export default function FormRenderer({
     let actualValue = value;
     if (value && typeof value === 'object' && value.target) {
       actualValue = value.target.value;
+    }
+
+    // Sayısal alanlar için filtreleme
+    if (type === 'tckn' || type === 'number') {
+      actualValue = String(actualValue).replace(/[^0-9]/g, '');
+      if (type === 'tckn') {
+        actualValue = actualValue.slice(0, 11);
+      }
     }
 
     let finalValue = applyMask(type, actualValue);
@@ -486,6 +502,7 @@ export default function FormRenderer({
                         helperText={childField.helperText}
                         maxLength={childField.maxLength}
                         type={getInputType(childField.type)}
+                        inputMode={getInputMode(childField.type)}
                         required={childField.required}
                       />
                     </div>
@@ -651,6 +668,7 @@ export default function FormRenderer({
               multiline={f.type === "multiline"}
               rows={f.type === "multiline" ? 4 : 1}
               type={f.keyboardType ?? getInputType(f.type)}
+              inputMode={getInputMode(f.type)}
               secureTextEntry={f.type === "password" || f.secureTextEntry}
               error={errors[f.name]}
               helperText={f.helperText}

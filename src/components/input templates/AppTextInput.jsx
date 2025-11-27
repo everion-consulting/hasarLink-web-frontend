@@ -15,6 +15,7 @@ export default function AppTextInput({
   placeholderTextColor,
   maxLength,
   type,
+  inputMode,
   iconComponent: IconComponent,
   isDark,
   multiline = false,
@@ -45,6 +46,15 @@ export default function AppTextInput({
     }
   };
 
+  // TC Kimlik No: Sadece rakam, en fazla 11 karakter
+  const handleTCKNChange = (e) => {
+    let text = e.target.value;
+    let filtered = text.replace(/[^0-9]/g, '').slice(0, 11);
+    if (onChange) {
+      onChange({ target: { value: filtered } });
+    }
+  };
+
   let inputProps = {
     value,
     placeholder,
@@ -58,6 +68,9 @@ export default function AppTextInput({
   } else if (type === 'licenseSerialNo') {
     inputProps.onChange = handleLicenseSerialChange;
     inputProps.maxLength = 8;
+  } else if (type === 'tckn') {
+    inputProps.onChange = handleTCKNChange;
+    inputProps.maxLength = 11;
   } else {
     inputProps.onChange = onChange;
     inputProps.maxLength = maxLength;
@@ -69,7 +82,8 @@ export default function AppTextInput({
     inputType = "password";
   } else {
     if (type === 'email') inputType = "email";
-    if (type === 'number' || type === 'tckn') inputType = "number";
+    if (type === 'number') inputType = "number";
+    if (type === 'tckn') inputType = "text";
     if (type === 'password') inputType = "password";
     if (type === 'tel') inputType = "tel";
   }
@@ -104,6 +118,7 @@ export default function AppTextInput({
         ) : (
           <input
             type={inputType}
+            inputMode={inputMode}
             className={`text-input ${IconComponent ? 'with-icon' : ''}`}
             placeholder={placeholder}
             value={value}

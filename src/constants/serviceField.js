@@ -23,7 +23,7 @@ const serviceField = [
     {
       name: "repair_tc",
       label: "Kimlik No",
-      type: "text",
+      type: "tckn",
       placeholder: "Kimlik numaranızı giriniz",
       required: true,
       maxLength: 11,

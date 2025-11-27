@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../styles/insurance.module.css";
 import { Star, StarOff, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import { useProfile } from "../../context/ProfileContext";
 import BackIcon from "../../components/images/back.svg";
@@ -16,6 +16,8 @@ export default function InsuranceSelect() {
     } = useProfile();
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const params = location.state || {};
 
     const [search, setSearch] = useState("");
     const [selectedCompany, setSelectedCompany] = useState(null);
@@ -163,10 +165,21 @@ export default function InsuranceSelect() {
                         className={`${styles.continueBtn} ${!selectedCompany ? styles.disabled : ""
                             }`}
                         disabled={!selectedCompany}
-                        onClick={() =>
-                            navigate("/accident-type", { state: { selectedCompany: companyObj } })
-
-                        }
+                        onClick={() => {
+                            // Eğer StepInfoScreen'den geldiyse, oraya geri dön
+                            if (params.returnTo === 'StepInfoScreen') {
+                                navigate('/step-info', { 
+                                    state: { 
+                                        ...params, 
+                                        selectedCompany: companyObj,
+                                        startStep: params.returnStep || 1
+                                    } 
+                                });
+                            } else {
+                                // Normal akış: AccidentTypeScreen'e git
+                                navigate("/accident-type", { state: { selectedCompany: companyObj } });
+                            }
+                        }}
                     >
                         <span>DEVAM ET</span>
                         <div className={styles.iconCircle}>

@@ -6,6 +6,7 @@ import { useProfile } from "../../context/ProfileContext";
 import tekliKazaIcon from "../../assets/images/tekli-kaza.svg";
 import ikiliKazaIcon from "../../assets/images/ikili-kaza.svg";
 import cokluKazaIcon from "../../assets/images/coklu-kaza.svg";
+import FormFooter from '../forms/FormFooter';
 
 const OPTIONS = [
     {
@@ -110,29 +111,13 @@ export default function AccidentTypeScreen() {
                 </div>
 
                 {/* --- BUTONLAR --- */}
-                <div className={styles.buttonRow}>
-                    <button className={styles.cancelButton} onClick={() => navigate(-1)}>
-                        <div className={styles.buttonContent}>
-                            <span className={styles.accidentBtnIcon}>
-                                <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
-                            </span>
-                            <span>GERİ DÖN</span>
-                        </div>
-                    </button>
-
-                    <button
-                        className={`${styles.saveButton} ${!selected ? styles.disabled : ''}`}
-                        onClick={onSave}
-                        disabled={!selected}
-                    >
-                        <div className={styles.buttonContent}>
-                            <span>DEVAM ET</span>
-                            <span className={styles.accidentBtnIcon}>
-                                <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
-                            </span>
-                        </div>
-                    </button>
-                </div>
+                <FormFooter
+                    onBack={() => navigate(-1)}
+                    onNext={onSave}
+                    nextLabel="DEVAM ET"
+                    backLabel="GERİ DÖN"
+                    disabled={!selected}
+                />
 
             </div>
         </div>

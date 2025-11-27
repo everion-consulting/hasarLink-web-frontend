@@ -76,7 +76,7 @@ export default function StepInfoScreen() {
 
   const createSubmission = async () => {
     try {
-     
+
       const validInsuranceSources = {
         'karsi trafik': 'karsi trafik',
         'bizim kasko': 'bizim kasko',
@@ -152,7 +152,7 @@ export default function StepInfoScreen() {
         payload = {
           victim_fullname: victimData.victim_fullname,
           victim_tc: victimData.victim_tc,
-          victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
+          victim_birth_date: toDDMMYYYY(victimData.victim_birth_date),
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
@@ -166,7 +166,7 @@ export default function StepInfoScreen() {
             driver_tc: driverData.driver_tc,
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
-            driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
+            driver_birth_date: toDDMMYYYY(driverData.driver_birth_date),
           };
         }
 
@@ -215,7 +215,7 @@ export default function StepInfoScreen() {
             opposing_driver_tc: opposingDriverData.opposing_driver_tc || "",
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
-            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
+            opposing_driver_birth_date: toDDMMYYYY(opposingDriverData.opposing_driver_birth_date) || "",
           };
         }
       } else if (currentStep === 4) {
@@ -659,10 +659,10 @@ export default function StepInfoScreen() {
         fileName: randomFileNumber,
         companyName: selectedCompany?.name || params?.companyName,
         documentCount: uploadedDocuments,
-        kazaNitelik, 
+        kazaNitelik,
         selectedCompany,
         samePerson,
-        karsiSamePerson, 
+        karsiSamePerson,
         insuranceSource,
         driverData,
         victimData,
@@ -681,13 +681,13 @@ export default function StepInfoScreen() {
 
     const editKey = section.editKey;
 
-  
+
     const baseParams = {
-      kazaNitelik, 
-      selectedCompany, 
-      samePerson, 
-      karsiSamePerson, 
-      insuranceSource, 
+      kazaNitelik,
+      selectedCompany,
+      samePerson,
+      karsiSamePerson,
+      insuranceSource,
       driverData,
       victimData,
       vehicleData,
@@ -711,10 +711,10 @@ export default function StepInfoScreen() {
         });
         break;
       case 'insurance_company':
-        navigate('/first-screen', {
+        navigate('/insurance-select', {
           state: {
             ...baseParams,
-            returnTo: 'step-info',
+            returnTo: 'StepInfoScreen',
             returnStep: currentStep
           }
         });
@@ -732,7 +732,7 @@ export default function StepInfoScreen() {
             focusStep: 2,
             preSelectedStep1: samePerson ? 'yes' : 'no',
             preSelectedStep2: insuranceSource,
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
@@ -743,8 +743,10 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusStep: 3,
+            preSelectedStep1: samePerson ? 'yes' : 'no',
+            preSelectedStep2: insuranceSource,
             preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
