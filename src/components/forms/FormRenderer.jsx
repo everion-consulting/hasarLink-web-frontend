@@ -54,11 +54,20 @@ export default function FormRenderer({
 
 
   function applyMask(type, v) {
+    if (!v) return v;
+
     if (type === "phone") return maskPhone(v);
     if (type === "tckn") return maskTCKN(v);
     if (type === "iban") return normalizeIBAN(v);
+
+    if (type === "chassisNo") {
+
+      return String(v).toUpperCase().replace(/\s+/g, "");
+    }
+
     return v;
   }
+
 
   function getInputType(type) {
     if (type === "email") return "email";
@@ -92,7 +101,10 @@ export default function FormRenderer({
       }
     }
 
-    if (f.type === "chassisNo" && v && !validateChassisNo(v)) return "Şasi No 17 karakter, harf/rakam olmalı";
+    if (f.type === "chassisNo" && v && !validateChassisNo(v)) {
+      return "Şasi No 17 karakter olmalı ve I, O, Q harflerini içeremez";
+    }
+
     if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
     if (f.validate) return f.validate(v, values);
     return null;
