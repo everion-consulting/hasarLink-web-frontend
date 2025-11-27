@@ -1,0 +1,182 @@
+
+.rejected-back {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.rejected-back:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* 📦 Kart ve liste genel */
+.rejected-card {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rejected-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 🔁 Tek bir reddedilen dosya kartı */
+.rejected-item {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 16px 14px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rejected-item__row {
+  display: flex;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.rejected-item__label {
+  font-weight: 600;
+  color: #111827;
+}
+
+.rejected-item__value {
+  color: #111827;
+}
+
+/* ❌ Kırmızı “Red Nedeni” alanı */
+.rejected-item__badge {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: rgba(198, 40, 40, 0.08);
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Eksik / Hatalı alanlar */
+.rejected-item__fields {
+  margin-top: 6px;
+}
+
+.rejected-item__fields-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.rejected-item__fields-value {
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* “Dosya Detayı Gör” linki */
+.rejected-item__link {
+  margin-top: 8px;
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  color: #133e87;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ⏳ Loading / boş durumlar */
+.rejected-loading,
+.rejected-empty {
+  padding: 32px 8px;
+  text-align: center;
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.rejected-spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #133e87;
+  animation: rejected-spin 0.7s linear infinite;
+}
+
+@keyframes rejected-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 📱 Responsive */
+@media (max-width: 1024px) {
+  .rejected-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .rejected-card {
+    padding: 16px 14px;
+    margin-top: 8px;
+  }
+
+  .rejected-item {
+    padding: 14px 12px;
+  }
+
+  .rejected-item__row {
+    flex-direction: column;
+    font-size: 13px;
+  }
+
+  .rejected-item__badge,
+  .rejected-item__fields-title,
+  .rejected-item__fields-value {
+    font-size: 12px;
+  }
+
+  .rejected-item__link {
+    font-size: 13px;
+  }
+
+  .rejected-back-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rejected-card {
+    padding: 14px 10px;
+  }
+
+  .rejected-item {
+    padding: 12px 10px;
+    border-radius: 10px;
+  }
+}
