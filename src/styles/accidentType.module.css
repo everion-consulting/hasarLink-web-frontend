@@ -1,8 +1,9 @@
+/* ANA SAYFA YAPISI */
 .accidentTypePage {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 .scrollContainer {
@@ -19,7 +20,10 @@
     gap: 24px;
 }
 
-/* Company Card */
+
+/* ============================== */
+/*     ŞİRKET KARTI - SAME        */
+/* ============================== */
 .companyCardAccident {
     width: 100%;
     background: #fff;
@@ -28,7 +32,6 @@
     padding: 0;
     overflow: hidden;
     border-bottom: 33px solid #133E87;
-    margin-bottom: 52px;
 }
 
 .companyCardContent {
@@ -49,38 +52,48 @@
 
 .companyTypeOutline {
     position: absolute;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-weight: 400;
     font-size: 35px;
     line-height: 45px;
-    letter-spacing: 1px;
     color: transparent;
     -webkit-text-stroke: 1px #608BC1;
 }
 
-.companyTypeOutline:nth-child(1) { left: 1px; top: 0; }
-.companyTypeOutline:nth-child(2) { left: -1px; top: 0; }
-.companyTypeOutline:nth-child(3) { left: 0; top: 1px; }
-.companyTypeOutline:nth-child(4) { left: 0; top: -1px; }
+.companyTypeOutline:nth-child(1) {
+    left: 1px;
+    top: 0;
+}
+
+.companyTypeOutline:nth-child(2) {
+    left: -1px;
+    top: 0;
+}
+
+.companyTypeOutline:nth-child(3) {
+    left: 0;
+    top: 1px;
+}
+
+.companyTypeOutline:nth-child(4) {
+    left: 0;
+    top: -1px;
+}
 
 .companyType {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-weight: 400;
     font-size: 35px;
     line-height: 45px;
-    letter-spacing: 1px;
     color: #CBDCEB;
     text-shadow: -1px -1px 0 #608BC1;
     position: relative;
 }
 
 .companyNameAccident {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
+    font-family: 'Poppins';
     font-size: 16px;
-    line-height: 18px;
-    letter-spacing: 1px;
-    color: #FFFFFF;
+    color: #fff;
     margin-top: 12px;
     margin-left: 15px;
 }
@@ -92,89 +105,116 @@
     margin-left: 12px;
 }
 
-/* Stepper Card */
+
+/* ============================== */
+/*       KAZA NİTELİĞİ KARTI       */
+/* ============================== */
+
 .stepperCard {
     background: #fff;
-    margin: 16px 0;
     padding: 24px;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mainTitle {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a1a1a;
+    font-size: 25px;
+    line-height: 30px;
+    font-weight: 400;
     text-align: center;
-    line-height: 28px;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
+    color: #1a1a1a;
 }
 
+
+/* === OPTIONS CONTAINER === */
 .optionContainer {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
 }
 
+/* === EACH CARD === */
 .optionCard {
     display: flex;
     align-items: center;
-    background: #f8f9fb;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 20px;
+    border: 1px solid #E5E7EB;
+    padding: 24px 22px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 .optionCard:hover {
-    border-color: #cbd5e1;
+    border-color: #CBD5E1;
+    background: #F3F6FA;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Selected */
 .optionCard.selected {
-    border-color: #003d82;
-    background: #f0f4ff;
+    border-color: #133E87;
+    background: #EBF2FF;
 }
 
+/* === ICON === */
+.optionIcon {
+    width: 46px;
+    height: 46px;
+    margin-right: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* === TEXT BLOCK === */
 .optionContent {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .optionLabel {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-    transition: color 0.3s ease;
-}
-
-.optionLabel.selected {
-    color: #003d82;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 6px;
 }
 
 .optionSubtitle {
-    font-size: 13px;
-    color: #666;
-    margin: 0;
-    transition: color 0.3s ease;
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #A0A0A0;
 }
 
-.optionSubtitle.selected {
-    color: #003d82;
-}
+/* ============================== */
+/*            BUTTONS             */
+/* ============================== */
 
-/* Buttons */
 .buttonRow {
+    width: 100%;
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 12px;
-    padding: 0 16px;
-    margin-top: 16px;
-    margin-bottom: 32px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.buttonRow button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: none;
+    padding: 15px 50px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .buttonContent {
@@ -182,68 +222,88 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 16px 0;
 }
 
+/* Geri Dön */
 .cancelButton {
-    flex: 1;
-    border: 2px solid #ddd;
-    border-radius: 12px;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    background: #CBDCEB;
+    color: #1E293B;
 }
 
 .cancelButton:hover {
-    background: #f1f5f9;
-    border-color: #9ca3af;
+    background: #b9cee4;
 }
 
+/* Devam Et */
 .saveButton {
-    flex: 1;
-    border-radius: 12px;
-    background: #003d82;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
+    background: #133E87;
+    color: #ffffff;
 }
 
-.saveButton:hover:not(.disabled) {
-    transform: translateY(-1px);
+.saveButton:hover {
+    background: #0f3470;
 }
 
 .saveButton.disabled {
-    background: #ddd;
-    color: #999;
+    background: #DDD;
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .scrollContainer {
-        padding: 16px;
+.saveButton .accidentBtnIcon,
+.cancelButton .accidentBtnIcon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.accidentBtnIcon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.nextBtn .accidentBtnIcon,
+.backBtn .accidentBtnIcon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.accidentBtnIcon img {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* ============================== */
+/*            RESPONSIVE          */
+/* ============================== */
+
+@media (max-width: 525px) {
+    .optionCard {
+        padding: 18px 16px;
     }
 
-    .companyCardContent {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
+    .optionIcon {
+        width: 40px;
+        height: 40px;
+        margin-right: 14px;
     }
 
-    .companyLogoImg {
-        margin-left: 0;
-        align-self: center;
+    .optionLabel {
+        font-size: 18px;
     }
 
-    .stepperCard {
-        padding: 20px;
-        margin: 0;
+    .optionSubtitle {
+        font-size: 14px;
     }
 
     .mainTitle {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 30px;
     }
 
@@ -254,53 +314,5 @@
     .cancelButton,
     .saveButton {
         width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .companyCardAccident {
-        margin-bottom: 32px;
-        border-bottom-width: 25px;
-    }
-
-    .companyCardContent {
-        padding: 16px;
-    }
-
-    .companyNameAccident {
-        font-size: 14px;
-        margin-left: 0;
-    }
-
-    .companyType,
-    .companyTypeOutline {
-        font-size: 28px;
-        line-height: 35px;
-    }
-
-    .stepperCard {
-        padding: 16px;
-    }
-
-    .mainTitle {
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    .optionCard {
-        padding: 14px;
-    }
-
-    .optionLabel {
-        font-size: 14px;
-    }
-
-    .optionSubtitle {
-        font-size: 12px;
-    }
-
-    .buttonContent {
-        padding: 12px 0;
-        font-size: 14px;
     }
 }
