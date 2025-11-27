@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Stepper from "../../components/Stepper/Stepper";
+
 import FormRenderer from '../forms/FormRenderer';
 
 import damageInforFields from '../../constants/damageInfoFields';
@@ -12,6 +12,7 @@ import apiService from '../../services/apiServices';
 import DocumentUploaderScreen from "./DocumentUploadScreen";
 
 import "../../styles/fileDamageStepperScreen.css";
+import Stepper from "../stepper/Stepper";
 
 const FileDamageInfoStepperScreen = () => {
     const [currentStep, setCurrentStep] = useState(1);
