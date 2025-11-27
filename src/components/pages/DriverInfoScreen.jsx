@@ -18,22 +18,24 @@ export default function DriverInfoScreen() {
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
   const currentStep = 2; // Sürücü bilgileri 2. adım
-  
+
   const handleSubmit = (driverData) => {
-    const payload = { 
-      victim: victimData, 
-      driver: driverData 
+    const payload = {
+      victim: victimData,
+      driver: driverData
     };
     console.log("Driver Info:", payload);
-    
+
     // Sonraki adıma geçiş (Araç Bilgileri)
-    navigate('/driver-victim-stepper', { 
-      state: { 
+    navigate('/driver-victim-stepper', {
+      state: {
+        ...location.state,   
         victimData,
         driverData,
-        samePerson 
-      } 
+        samePerson
+      }
     });
+
   };
 
   const handleBack = () => {
@@ -42,15 +44,15 @@ export default function DriverInfoScreen() {
 
   const renderFormFooter = ({ submit, allValid }) => (
     <div className={styles.formFooterWeb}>
-      <button 
-        className={styles.backButtonWeb} 
+      <button
+        className={styles.backButtonWeb}
         onClick={handleBack}
         type="button"
       >
         <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
       </button>
-      <button 
-        className={styles.nextButtonWeb} 
+      <button
+        className={styles.nextButtonWeb}
         onClick={submit}
         disabled={!allValid}
         type="button"
@@ -66,7 +68,7 @@ export default function DriverInfoScreen() {
         <Stepper steps={steps} currentStep={currentStep} />
 
         <h2 className={styles.sectionTitle}>Sürücü Bilgileri</h2>
-        
+
         <div className={styles.formCard}>
           <div className={styles.formSectionContent}>
             <FormRenderer
