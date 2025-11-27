@@ -231,8 +231,8 @@ export default function InsuredMechanicStepperScreen() {
             const returnTo = location.state?.returnTo || 'step-info';
             navigate(`/${returnTo}`, { state: navigationState });
         } else {
-            // Normal akış: StepInfoScreen'e git
-            navigate('/step-info', { state: navigationState });
+            // 🔥 DEĞİŞİKLİK BURADA: Normal akışta hasar bilgileri sayfasına git
+            navigate('/hasar-bilgileri', { state: navigationState });
         }
     };
 
