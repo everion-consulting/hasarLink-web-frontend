@@ -1,6 +1,5 @@
 // src/screens/file/DocumentUploaderScreen.jsx
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import "../../styles/documentUploaderScreen.css";
 
@@ -15,11 +14,8 @@ const FILE_TYPES = [
   { id: "diger", title: "Diğer Evraklar" },
 ];
 
-const DocumentUploaderScreen = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const routeState = location.state || {};
-
+// ✅ PROPS EKLEDİK
+const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   const [sections, setSections] = useState(
     FILE_TYPES.map((f) => ({ id: f.id, title: f.title, files: [] }))
   );
@@ -41,8 +37,9 @@ const DocumentUploaderScreen = () => {
                 ...files.map((f) => ({
                   id: `${sectionId}-${Date.now()}-${Math.random()}`,
                   file: f,
-                  preview:
-                    f.type.includes("image") ? URL.createObjectURL(f) : null,
+                  preview: f.type.includes("image")
+                    ? URL.createObjectURL(f)
+                    : null,
                   name: f.name,
                   type: f.type,
                 })),
@@ -74,7 +71,6 @@ const DocumentUploaderScreen = () => {
       setProgress({ current: 0, total: allFiles.length });
       setUploading(true);
 
-      // Tüm dosyaları sırayla gönder
       for (const section of sections) {
         for (const item of section.files) {
           const formData = new FormData();
@@ -95,13 +91,10 @@ const DocumentUploaderScreen = () => {
         sections.map((s) => [s.id, s.files])
       );
 
-      navigate("/step-info", {
-        state: {
-          ...routeState,
-          documents: docs,
-          startStep: 4,
-        },
-      });
+      // ❗ Artık burada navigate ETMİYORUZ
+      if (onContinue) {
+        onContinue({ documents: docs });
+      }
     } catch (e) {
       console.error(e);
       alert("Yükleme sırasında hata oluştu");
@@ -112,8 +105,6 @@ const DocumentUploaderScreen = () => {
 
   return (
     <div className="upload-container">
-     
-
       {sections.map((section) => (
         <div key={section.id} className="upload-card">
           <div className="upload-card-header">
@@ -130,7 +121,6 @@ const DocumentUploaderScreen = () => {
             </label>
           </div>
 
-          {/* İçerik */}
           <div className="upload-preview-area">
             {section.files.length === 0 && (
               <div className="upload-empty">Dosya yok</div>
@@ -140,14 +130,16 @@ const DocumentUploaderScreen = () => {
               <div className="preview-list">
                 {section.files.map((item) => (
                   <div key={item.id} className="preview-item">
-                    {/* PDF */}
                     {item.type.includes("pdf") ? (
                       <div className="pdf-preview">
                         📄 <span>{item.name}</span>
                       </div>
                     ) : (
-                      // Image
-                      <img src={item.preview} className="image-preview" alt="" />
+                      <img
+                        src={item.preview}
+                        className="image-preview"
+                        alt=""
+                      />
                     )}
 
                     <button
@@ -166,7 +158,8 @@ const DocumentUploaderScreen = () => {
 
       {/* Footer */}
       <div className="upload-footer">
-        <button className="back-btn" onClick={() => navigate(-1)}>
+        {/* ✅ GERİ BUTONU PARENT'IN onBack’ini çağırıyor */}
+        <button className="back-btn" onClick={onBack}>
           ← GERİ DÖN
         </button>
 
@@ -175,12 +168,13 @@ const DocumentUploaderScreen = () => {
         </button>
       </div>
 
-      {/* Upload modal */}
       {uploading && (
         <div className="upload-overlay">
           <div className="upload-modal">
             <div>Dosyalar Yükleniyor...</div>
-            <div>{progress.current} / {progress.total}</div>
+            <div>
+              {progress.current} / {progress.total}
+            </div>
           </div>
         </div>
       )}
