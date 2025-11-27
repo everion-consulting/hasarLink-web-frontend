@@ -29,7 +29,6 @@ export const ProfileProvider = ({ children }) => {
         console.error('Profil detay alınamadı:', res2.message);
       }
     } catch (err) {
-      q
       console.error('Profil verileri yüklenemedi:', err);
     } finally {
       setLoading(false);

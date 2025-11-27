@@ -17,8 +17,9 @@
 import {
   IdentificationIcon,
   CheckBadgeIcon,
-} from 'react-native-heroicons/outline';
-import { formatPlate } from "../utils/formatter";
+} from '@heroicons/react/24/outline';
+import { formatPlate } from '../components/utils/formatter';
+
 
 const insuredField = [
 
@@ -27,11 +28,10 @@ const insuredField = [
   {
     name: "insured_tc",
     label: "Kimlik No",
-    type: "text",
+    type: "tckn",
     placeholder: "Kimlik numaranızı giriniz",
     required: true,
     maxLength: 11,
-    keyboardType: "numeric",
     validate: (value) => {
       return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
     }

@@ -6,6 +6,7 @@ import { useProfile } from "../../context/ProfileContext";
 import tekliKazaIcon from "../../assets/images/tekli-kaza.svg";
 import ikiliKazaIcon from "../../assets/images/ikili-kaza.svg";
 import cokluKazaIcon from "../../assets/images/coklu-kaza.svg";
+import FormFooter from '../forms/FormFooter';
 
 const OPTIONS = [
     {
@@ -54,31 +55,33 @@ export default function AccidentTypeScreen() {
             <div className={styles.scrollContainer}>
                 <div className={styles.cardsContainer}>
 
-                    {/* --- ŞİRKET KARTI --- */}
                     {selectedCompany && (
-                        <div className={styles.companyCardAccident}>
-                            <div className={styles.companyCardContent}>
-                                <div className={styles.companyTextContent}>
-                                    <div className={styles.companyTypeWrapper}>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyType}>Sigorta<br />Şirketi</span>
+                                // Şirket Kartı
+                                <div className={styles.companyCardAccidentInsurance}>
+                                  <div className={styles.companyCardContentInsurance}>
+                                    <div className={styles.companyTextContentInsurance}>
+                                      <div className={styles.companyTypeWrapperInsurance}>
+                                        <span className={styles.companyTypeInsurance}>Sigorta<br />Şirketi</span>
+                                      </div>
                                     </div>
-                                    <h2 className={styles.companyNameAccident}>{selectedCompany.name}</h2>
-                                </div>
-
-                                {selectedCompany.photo && (
-                                    <img
+                    
+                                    {selectedCompany.photo && (
+                                      <img
                                         src={selectedCompany.photo}
                                         alt={selectedCompany.name}
                                         className={styles.companyLogoImg}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    )}
+                                      />
+                                    )}
+                                  </div>
+                    
+                                  {/* Koyu Mavi Alt Şerit */}
+                                  <div className={styles.companyNameFooter}>
+                                    <h2 className={styles.companyNameAccidentInsuranceFooter}>
+                                      {selectedCompany.name}
+                                    </h2>
+                                  </div>
+                                </div>
+                              )}
 
                     {/* --- KAZA SEÇİM KARTI --- */}
                     <div className={styles.stepperCard}>
@@ -110,29 +113,13 @@ export default function AccidentTypeScreen() {
                 </div>
 
                 {/* --- BUTONLAR --- */}
-                <div className={styles.buttonRow}>
-                    <button className={styles.cancelButton} onClick={() => navigate(-1)}>
-                        <div className={styles.buttonContent}>
-                            <span className={styles.accidentBtnIcon}>
-                                <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
-                            </span>
-                            <span>GERİ DÖN</span>
-                        </div>
-                    </button>
-
-                    <button
-                        className={`${styles.saveButton} ${!selected ? styles.disabled : ''}`}
-                        onClick={onSave}
-                        disabled={!selected}
-                    >
-                        <div className={styles.buttonContent}>
-                            <span>DEVAM ET</span>
-                            <span className={styles.accidentBtnIcon}>
-                                <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
-                            </span>
-                        </div>
-                    </button>
-                </div>
+                <FormFooter
+                    onBack={() => navigate(-1)}
+                    onNext={onSave}
+                    nextLabel="DEVAM ET"
+                    backLabel="GERİ DÖN"
+                    disabled={!selected}
+                />
 
             </div>
         </div>

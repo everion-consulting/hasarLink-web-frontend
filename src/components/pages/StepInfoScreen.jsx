@@ -76,7 +76,7 @@ export default function StepInfoScreen() {
 
   const createSubmission = async () => {
     try {
-     
+
       const validInsuranceSources = {
         'karsi trafik': 'karsi trafik',
         'bizim kasko': 'bizim kasko',
@@ -611,24 +611,7 @@ export default function StepInfoScreen() {
         break;
 
       case 3:
-        navigate('/file-damage-info-stepper', {
-          state: {
-            kazaNitelik,
-            insuranceSource,
-            selectedCompany,
-            samePerson,
-            karsiSamePerson,
-            driverData,
-            victimData,
-            vehicleData,
-            insuredData,
-            serviceData,
-            damageData,
-            mechanicData,
-            opposingDriverData,
-            documents: params?.documents,
-          }
-        });
+        navigate('/hasar-bilgileri', { state: { ...params } });
         break;
 
       case 4:
@@ -659,10 +642,10 @@ export default function StepInfoScreen() {
         fileName: randomFileNumber,
         companyName: selectedCompany?.name || params?.companyName,
         documentCount: uploadedDocuments,
-        kazaNitelik, 
+        kazaNitelik,
         selectedCompany,
         samePerson,
-        karsiSamePerson, 
+        karsiSamePerson,
         insuranceSource,
         driverData,
         victimData,
@@ -681,13 +664,13 @@ export default function StepInfoScreen() {
 
     const editKey = section.editKey;
 
-  
+
     const baseParams = {
-      kazaNitelik, 
-      selectedCompany, 
-      samePerson, 
-      karsiSamePerson, 
-      insuranceSource, 
+      kazaNitelik,
+      selectedCompany,
+      samePerson,
+      karsiSamePerson,
+      insuranceSource,
       driverData,
       victimData,
       vehicleData,
@@ -711,10 +694,10 @@ export default function StepInfoScreen() {
         });
         break;
       case 'insurance_company':
-        navigate('/first-screen', {
+        navigate('/insurance-select', {
           state: {
             ...baseParams,
-            returnTo: 'step-info',
+            returnTo: 'StepInfoScreen',
             returnStep: currentStep
           }
         });
@@ -732,7 +715,7 @@ export default function StepInfoScreen() {
             focusStep: 2,
             preSelectedStep1: samePerson ? 'yes' : 'no',
             preSelectedStep2: insuranceSource,
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
@@ -743,8 +726,10 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusStep: 3,
+            preSelectedStep1: samePerson ? 'yes' : 'no',
+            preSelectedStep2: insuranceSource,
             preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
