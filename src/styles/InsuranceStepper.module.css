@@ -1,0 +1,444 @@
+.insuranceStepperPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.stepperScrollContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+.stepperCardsContainer {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Company Display Card (Genel Kart Stilleri) */
+.companyDisplayCard {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e0e6ed;
+  margin-bottom: 52px;
+}
+
+.companyCardContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+/* SİGORTA KARTI STİLLERİ */
+.companyCardAccidentInsurance {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e0e6ed;
+  border-bottom: none; 
+  margin-bottom: 24px;
+}
+
+.companyCardContentInsurance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+.companyTextContentInsurance {
+  flex: 1;
+}
+
+.companyTypeWrapperInsurance {
+  position: relative;
+  display: inline-block;
+}
+
+.companyTypeInsurance {
+  font-family: 'Poppins-Regular', 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 35px;
+  line-height: 45px;
+  letter-spacing: 1px;
+  color: #CBDCEB;
+  text-shadow:
+    -1px -1px 0 #608BC1,
+    1px -1px 0 #608BC1,
+    -1px 1px 0 #608BC1,
+    1px 1px 0 #608BC1;
+  text-align: left;
+}
+
+/* Koyu Mavi Alt Şerit */
+.companyNameFooter {
+  background-color: #133E87;
+  padding: 12px 24px;
+  width: 100%;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-top: -1px; 
+}
+
+/* Alt Şeritteki Şirket Adı */
+.companyNameAccidentInsuranceFooter {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-align: left;
+}
+
+.companyNameAccidentInsurance {
+  display: none; 
+}
+
+
+.companyLogoImg {
+  width: 120px;
+  height: 100px;
+  object-fit: contain;
+  margin-left: 12px;
+}
+
+.companyTextContent {
+  flex: 1;
+}
+
+/* Progress Card - Ana Form Kartı */
+.progressCard {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  border: 1px solid #e0e6ed;
+}
+
+.stepperWrapper {
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Stepper container override */
+.stepperWrapper .stepperContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stepperWrapper .stepRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.stepQuestion {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Options Grid */
+.optionsGrid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* === EACH CARD === */
+.optionCard {
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid #E5E7EB;
+    padding: 24px 22px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.optionCard:hover {
+    border-color: #CBD5E1;
+    background: #F3F6FA;
+    transform: translateY(-2px);
+}
+
+/* Selected */
+.optionCard.selected {
+    border-color: #133E87;
+    background: #EBF2FF;
+}
+
+/* === ICON === */
+.optionIcon {
+    width: 46px;
+    height: 46px;
+    margin-right: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* === TEXT BLOCK === */
+.optionTextContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.optionTitle {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.optionSubs {
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #A0A0A0;
+}
+
+.optionContentWrapper {
+  display: flex;
+  gap: 20px;
+}
+
+/* Form Footer Buttons */
+.formFooterButtons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+/* 🚨 DÜĞME STİLLERİ (Kaza Niteliği Ekranından Alındı) */
+
+/* Geri Dön Butonu Stili */
+.footerButton {
+  flex: 1;
+  padding: 15px 20px;
+  background-color: #E6F0F9; /* Açık mavi arka plan */
+  border: none;
+  border-radius: 12px;
+  color: #3b82f6; /* Mavi metin rengi */
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.footerButton:hover:not(:disabled) {
+  background-color: #d8e5f2;
+  transform: translateY(-1px);
+}
+
+/* === BUTTON === */
+.backBtn,
+.nextBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 15px 50px; /* accidentType ile aynı */
+  border-radius: 12px;
+  border: none;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 20px;   /* accidentType ile aynı */
+  line-height: 28px; /* accidentType ile aynı */
+}
+
+/* === BACK BUTTON === */
+.backBtn {
+  background: #CBDCEB;
+  color: #1E293B;
+}
+
+.backBtn:hover:not(.disabled) {
+  background: #b9cee4;
+}
+
+/* === NEXT BUTTON === */
+.nextBtn {
+  background: #133E87;
+  color: #ffffff;
+}
+
+.nextBtn:hover:not(.disabled) {
+  background: #0f3470;
+}
+
+/* === DISABLED STATE === */
+.disabled {
+  background: #DDD !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* === ICON CIRCLE (DAİRE) === */
+.iconCircle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === ICON IMAGE === */
+.iconCircle img {
+  width: 14px;
+  height: 14px;
+}
+
+/* Info Card */
+.infoCard {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.infoIcon {
+  color: #856404;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.infoText {
+  font-size: 13px;
+  color: #856404;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stepperScrollContainer {
+    padding: 20px 16px;
+  }
+
+  .stepperCardsContainer {
+    max-width: 100%;
+  }
+
+  .companyNameFooter {
+    padding: 10px 16px;
+  }
+
+  .companyCardContentInsurance {
+    padding: 16px 16px;
+  }
+
+  .progressCard {
+    padding: 30px 20px;
+  }
+
+  .stepQuestion {
+    font-size: 18px;
+  }
+
+  .optionCard {
+    padding: 16px;
+  }
+
+  .formFooterButtons {
+    flex-direction: column;
+  }
+
+  .footerButton,
+  .continueButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .progressCard {
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+
+  .companyCardAccidentInsurance {
+    border-radius: 12px;
+    margin-bottom: 32px;
+  }
+  
+  .companyNameFooter {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  .companyCardContentInsurance {
+    padding: 16px;
+  }
+
+  .companyNameAccidentInsuranceFooter {
+    font-size: 18px;
+  }
+
+  .companyTypeInsurance {
+    font-size: 30px;
+    line-height: 40px;
+  }
+
+  .stepQuestion {
+    font-size: 16px;
+  }
+
+  .optionCard {
+    padding: 14px;
+  }
+
+  .optionIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .optionTitle {
+    font-size: 15px;
+  }
+
+  .optionSubs {
+    font-size: 12px;
+  }
+
+  .footerButton,
+  .continueButton {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}

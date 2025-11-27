@@ -55,31 +55,33 @@ export default function AccidentTypeScreen() {
             <div className={styles.scrollContainer}>
                 <div className={styles.cardsContainer}>
 
-                    {/* --- ŞİRKET KARTI --- */}
                     {selectedCompany && (
-                        <div className={styles.companyCardAccident}>
-                            <div className={styles.companyCardContent}>
-                                <div className={styles.companyTextContent}>
-                                    <div className={styles.companyTypeWrapper}>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyTypeOutline}>Sigorta<br />Şirketi</span>
-                                        <span className={styles.companyType}>Sigorta<br />Şirketi</span>
+                                // Şirket Kartı
+                                <div className={styles.companyCardAccidentInsurance}>
+                                  <div className={styles.companyCardContentInsurance}>
+                                    <div className={styles.companyTextContentInsurance}>
+                                      <div className={styles.companyTypeWrapperInsurance}>
+                                        <span className={styles.companyTypeInsurance}>Sigorta<br />Şirketi</span>
+                                      </div>
                                     </div>
-                                    <h2 className={styles.companyNameAccident}>{selectedCompany.name}</h2>
-                                </div>
-
-                                {selectedCompany.photo && (
-                                    <img
+                    
+                                    {selectedCompany.photo && (
+                                      <img
                                         src={selectedCompany.photo}
                                         alt={selectedCompany.name}
                                         className={styles.companyLogoImg}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    )}
+                                      />
+                                    )}
+                                  </div>
+                    
+                                  {/* Koyu Mavi Alt Şerit */}
+                                  <div className={styles.companyNameFooter}>
+                                    <h2 className={styles.companyNameAccidentInsuranceFooter}>
+                                      {selectedCompany.name}
+                                    </h2>
+                                  </div>
+                                </div>
+                              )}
 
                     {/* --- KAZA SEÇİM KARTI --- */}
                     <div className={styles.stepperCard}>
