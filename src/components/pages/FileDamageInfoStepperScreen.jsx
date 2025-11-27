@@ -126,30 +126,26 @@ const FileDamageInfoStepperScreen = () => {
     });
 
     return (
-        <div >
+        <div>   {/* <<< BURADA className YOK */}
             {/* arka plan daireleri */}
             <div className="bg-circle bg-circle-1" />
             <div className="bg-circle bg-circle-2" />
             <div className="bg-circle bg-circle-3" />
 
             <div className="content-area">
+                {/* ✅ Stepper önce */}
+                <Stepper
+                    steps={steps}
+                    currentStep={currentStep}
+                    onStepPress={handleStepClick}
+                />
+
                 <h1 className="page-title">
                     {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
                 </h1>
 
                 <div className="vehicle-form-card">
                     <div className="vehicle-form-section-content">
-                        {/* Stepper sadece 1. adımda */}
-                       
-                            <div style={{ marginBottom: 20 }}>
-                                <Stepper
-                                    steps={steps}
-                                    currentStep={currentStep}
-                                    onStepPress={handleStepClick}
-                                />
-                            </div>
-                        
-
                         {currentStep === 1 && (
                             <FormRenderer
                                 fields={damageFieldsWithCities}
@@ -180,6 +176,7 @@ const FileDamageInfoStepperScreen = () => {
                                 )}
                             />
                         )}
+
                         {currentStep === 2 && (
                             <DocumentUploaderScreen
                                 damageData={damageData}
@@ -188,14 +185,13 @@ const FileDamageInfoStepperScreen = () => {
                                 routeState={routeState}
                             />
                         )}
-
-
-
                     </div>
                 </div>
             </div>
         </div>
     );
+
+
 };
 
 export default FileDamageInfoStepperScreen;
