@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 
 
-import "../../styles/rejectedFileScreen.css";     // sadece bu sayfaya özel stiller
+import "../../styles/rejectedFileScreen.css";     
 
 const RejectedFilesScreen = () => {
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ return (
         {/* Geri ok */}
         <button
           type="button"
-          className="rejected-back-btn"
+          className="rejected-back"
           onClick={() => navigate(-1)}
         >
           ←

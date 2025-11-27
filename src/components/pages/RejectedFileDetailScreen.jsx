@@ -570,7 +570,7 @@ const RejectedFileDetailScreen = () => {
             <div className="content-area frd-content-area">
                 <button
                     type="button"
-                    className="frd-back-btn"
+                    className="rejected-back"
                     onClick={() => navigate(-1)}
                 >
                     ←

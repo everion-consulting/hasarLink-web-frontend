@@ -4,14 +4,21 @@
   z-index: 1;
   border: none;
   background: rgba(255, 255, 255, 0.9);
-  font-size: 18px;
   cursor: pointer;
-  margin-bottom: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
+
+  /* 🔹 KAÇ PIXEL OLMASINI İSTERSEN BURADAN AYARLARSIN */
+  width: 60px;
+  height: 60px;
+  padding: 0;
+
+  /* 🔹 DAİREYİ KALDIR – KARE YAP */
+  border-radius: 8px; /* istersen 4px yap daha köşeli olur */
+
+  font-size: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
@@ -19,6 +26,7 @@
   background-color: #e5e7eb;
   transform: translateY(-1px);
 }
+
 
 /* 📦 Kart ve liste genel */
 .rejected-card {

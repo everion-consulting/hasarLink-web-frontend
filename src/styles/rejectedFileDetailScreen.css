@@ -11,6 +11,33 @@
   margin: 0 auto;
 }
 
+.rejected-back {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+
+  /* 🔹 KAÇ PIXEL OLMASINI İSTERSEN BURADAN AYARLARSIN */
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  /* 🔹 DAİREYİ KALDIR – KARE YAP */
+  border-radius: 8px; /* istersen 4px yap daha köşeli olur */
+
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.rejected-back:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
 
 
 
