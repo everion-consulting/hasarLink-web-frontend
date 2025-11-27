@@ -116,7 +116,7 @@ export default [
       {
         name: "vehicle_plate",
         label: "Mağdur Araç Plaka",
-        type: "text",
+        type: "vehicle_plate",
         placeholder: "34 ABC 123",
         required: true,
         icon: TruckIcon,
