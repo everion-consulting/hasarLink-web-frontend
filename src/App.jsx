@@ -21,12 +21,13 @@ import Contact from "./components/pages/Contact";
 import "./styles/styles.css";
 import DraftNotifications from "./components/pages/DraftNotifications";
 import FileDamageInfoStepperScreen from "./components/pages/FileDamageInfoStepperScreen";
+import FileDetail from "./components/pages/FileDetail";
 import NotificationScreen from "./components/pages/NotificationScreen";
 import RejectedFileScreen from "./components/pages/RejectedFileScreen";
 import RejectedFileDetailScreen from "./components/pages/RejectedFileDetailScreen";
-
 import apiService from "./services/apiServices";
 import Settings from "./components/pages/Setting";
+import FileNotifications from "./components/pages/FileNotifications";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -75,6 +76,8 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/insured-mechanic-stepper" element={isAuth ? <InsuredMechanicStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/accident-type" element={isAuth ? <AccidentTypeScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/draft-notifications" element={isAuth ? <DraftNotifications /> : <Navigate to="/auth" replace />} />
+        <Route path="/file-notifications" element={isAuth ? <FileNotifications /> : <Navigate to="/auth" replace />} />
+        <Route path="/file-detail/:fileId" element={isAuth ? <FileDetail /> : <Navigate to="/auth" replace />} />
         <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notifications" element={isAuth ? <NotificationScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar" element={isAuth ? <RejectedFileScreen /> : <Navigate to="/auth" replace />} />

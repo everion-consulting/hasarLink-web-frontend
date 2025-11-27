@@ -32,36 +32,60 @@ export default function Dashboard() {
 
   async function fetchCounts() {
     try {
-      setLoading(true);
       const res = await apiService.getFileSubmissionCounts();
 
-      if (!res?.success) {
-        console.error("❌ Dosya sayıları alınamadı:", res?.message);
+      if (!res.success) {
+        console.error("❌ Dosya sayıları alınamadı:", res.message);
+        Alert.alert(res.message || "Dosya sayıları alınamadı.");
         return;
       }
-
-      const data = res?.data;
+      const data = res?.data.data
 
       setDashboardData({
-        counts: {
-          not_completed: data?.counts?.not_completed ?? 0,
-          in_progress: data?.counts?.in_progress ?? 0,
-          pending: data?.counts?.pending ?? 0,
-          rejected: data?.counts?.rejected ?? 0,
-          total: data?.counts?.total ?? 0,
-          completed: data?.counts?.completed ?? 0,
-          this_month_total: data?.counts?.this_month_total ?? 0,
+        counts: data.counts ?? {
+          not_completed: 0,
+          in_progress: 0,
+          pending: 0,
+          rejected: 0,
+          total: 0,
+          this_month_total: 0,
         },
-        pending_files: data?.pending_files ?? [],
-        total_estimated_amount: data?.total_estimated_amount ?? 0,
-        monthly_estimated_amount: data?.monthly_estimated_amount ?? 0,
-        total_favourite_companies: data?.total_favourite_companies ?? 0,
-        favourite_insurance_companies: data?.favourite_insurance_companies ?? [],
+        pending_files: Array.isArray(data.pending_files) ? data.pending_files : [],
+        total_estimated_amount: data.total_estimated_amount ?? 0,
+        monthly_estimated_amount: data.monthly_estimated_amount ?? 0,
       });
+    } catch (err) {
+      setDashboardData({
+        counts: {
+          not_completed: 0,
+          in_progress: 0,
+          pending: 0,
+          rejected: 0,
+          total: 0,
+          this_month_total: 0,
+        },
+        pending_files: [],
+        total_estimated_amount: 0,
+        monthly_estimated_amount: 0,
+      });
+    }
+  }
+
+  async function fetchDraftCount() {
+    try {
+      const res = await apiService.getDrafts();
+      if (res?.success) {
+        setDashboardData((prev) => ({
+          ...prev,
+          counts: {
+            ...prev.counts,
+          },
+        }));
+      } else {
+        console.error("Taslak bildirimler alınamadı:", res?.message);
+      }
     } catch (error) {
-      console.error("❌ FetchCounts Error:", error);
-    } finally {
-      setLoading(false);
+      console.error("Taslak bildirimler alınırken hata:", error);
     }
   }
 
@@ -78,6 +102,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchCounts();
+    fetchDraftCount();
     fetchProfile();
   }, []);
 
@@ -108,7 +133,7 @@ export default function Dashboard() {
         {/* YENİ DOSYA */}
         <div
           className={`${styles.cardDashboard} ${styles.cardNewFile}`}
-          onClick={handleNewFileClick}     
+          onClick={handleNewFileClick}
           style={{ cursor: "pointer" }}
         >
           <img
@@ -123,8 +148,8 @@ export default function Dashboard() {
           <button
             className={styles.cardDashboardBtn}
             onClick={(e) => {
-              e.stopPropagation();          
-              handleNewFileClick();         
+              e.stopPropagation();
+              handleNewFileClick();
             }}
           >
             BİLDİR
@@ -136,7 +161,7 @@ export default function Dashboard() {
         <div className={`${styles.cardDashboard} ${styles.cardApproved}`}>
           <h3 className={styles.cardDashboardHeading}>ONAYLANANLAR</h3>
           <p className={styles.cardDashboardCount}>
-            <span className={styles.cardDashboardCountNumber}>{counts.completed}</span> Dosya
+            <span className={styles.cardDashboardCountNumber}>{dashboardData.counts.completed}</span> Dosya
           </p>
           <img src={onaylananlarIcon} className={styles.cardStatusIcon} alt="İkon" />
         </div>
@@ -145,7 +170,7 @@ export default function Dashboard() {
         <div className={`${styles.cardDashboard} ${styles.cardPending}`}>
           <h3 className={styles.cardDashboardHeading}>ONAY BEKLEYENLER</h3>
           <p className={styles.cardDashboardCount}>
-            <span className={styles.cardDashboardCountNumber}>{counts.pending}</span> Dosya
+            <span className={styles.cardDashboardCountNumber}>{dashboardData.counts.pending}</span> Dosya
           </p>
           <img src={onayBekleyenlerIcon} className={styles.cardStatusIcon} alt="İkon" />
         </div>
@@ -154,8 +179,8 @@ export default function Dashboard() {
         <div className={`${styles.cardDashboard} ${styles.cardAmount}`}>
           <h3 className={styles.cardDashboardHeading}>TALEP EDİLEN TOPLAM TUTAR</h3>
 
-          <p className={styles.amountMain}>{formatAmount(total_estimated_amount)} TL</p>
-          <p className={styles.amountSub}>Bu Ay {formatAmount(monthly_estimated_amount)} TL</p>
+          <p className={styles.amountMain}>{formatAmount(dashboardData.total_estimated_amount)} TL</p>
+          <p className={styles.amountSub}>Bu Ay {formatAmount(dashboardData.monthly_estimated_amount)} TL</p>
 
           <img src={TalepEdilenIcon} className={styles.cardRequestedIcon} alt="İkon" />
         </div>
@@ -163,7 +188,7 @@ export default function Dashboard() {
         {/* TASLAK BİLDİRİMLERİM */}
         <div className={`${styles.cardDashboard} ${styles.cardDrafts}`}>
           <h3 className={styles.cardDashboardHeading}>
-            TASLAK BİLDİRİMLERİM ({favourite_insurance_companies.length})
+            TASLAK BİLDİRİMLERİM ({dashboardData.counts.not_completed})
           </h3>
 
           <div className={styles.innerCard}>
@@ -179,6 +204,13 @@ export default function Dashboard() {
               className={styles.draftsIllustration}
             />
           </div>
+
+          <button
+            className={styles.cardDashboardBtn}
+            onClick={() => navigate('/draft-notifications')}
+          >
+            TAMAMLA
+          </button>
         </div>
 
         {/* REDDEDİLEN DOSYALAR */}

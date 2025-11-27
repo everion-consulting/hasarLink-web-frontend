@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import styles from './../../styles/victimInfoScreen.module.css';
 import FormRenderer from '../forms/FormRenderer';
 import { getVictimFields } from '../../constants/victimFields';
@@ -8,6 +8,23 @@ import FormFooter from '../forms/FormFooter';
 
 const VictimInfoStepper = ({ samePerson = false }) => {
   const navigate = useNavigate();
+  const location = useLocation(); 
+
+ 
+  const locationState = location.state || {};
+  const kazaNitelik = locationState.kazaNitelik;
+  const selectedCompany = locationState.selectedCompany;
+  const insuranceSource = locationState.insuranceSource;
+  const karsiSamePerson = locationState.karsiSamePerson;
+  
+  console.log('🔍 VictimInfoStepper - Gelen parametreler:', {
+    kazaNitelik,
+    selectedCompany,
+    insuranceSource,
+    samePerson,
+    karsiSamePerson
+  });
+
   const [isCompany, setIsCompany] = useState(false);
   const [formValues, setFormValues] = useState({});
 
@@ -25,7 +42,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   }, [isCompany]);
 
   const handleBack = () => {
-    navigate(-1); // Bir önceki sayfaya dön
+    navigate(-1);
   };
 
   const handleFormSubmit = (values) => {
@@ -41,13 +58,27 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
     setFormValues(prev => ({ ...prev, ...transformedValues }));
 
-    // Mağdur bilgileri tamamlandıktan sonra DriverInfoScreen'e yönlendir
-    console.log('Navigating to /driver-info');
+    // 🔥 KRİTİK: Tüm parametreleri driver-info'ya iletiyoruz
+    const navigationState = {
+      // Temel parametreler
+      kazaNitelik: kazaNitelik,
+      selectedCompany: selectedCompany,
+      insuranceSource: insuranceSource,
+      samePerson: samePerson,
+      karsiSamePerson: karsiSamePerson,
+      
+      // Form verileri
+      victimData: transformedValues,
+      
+      // Diğer state değerleri
+      ...locationState
+    };
+
+    console.log('🚀 VictimInfo -> DriverInfo\'ya gönderilen kazaNitelik:', navigationState.kazaNitelik);
+    console.log('📍 Navigating to /driver-info');
+
     navigate('/driver-info', {
-      state: {
-        victimData: transformedValues,
-        samePerson
-      }
+      state: navigationState
     });
   };
 
@@ -92,7 +123,6 @@ const VictimInfoStepper = ({ samePerson = false }) => {
                 />
               )}
             />
-
           </div>
         </div>
       </div>

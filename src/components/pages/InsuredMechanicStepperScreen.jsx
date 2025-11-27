@@ -15,18 +15,43 @@ export default function InsuredMechanicStepperScreen() {
     const location = useLocation();
     const { profileDetail } = useProfile();
 
-
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
-    const {
-        insuranceSource,
-        karsiSamePerson,
-        kazaNitelik,
-        selectedCompany,
-        samePerson
-    } = location.state || {};
+   
+    const [routeParams, setRouteParams] = useState({
+        insuranceSource: location.state?.insuranceSource || null,
+        karsiSamePerson: location.state?.karsiSamePerson || null,
+        kazaNitelik: location.state?.kazaNitelik || null,
+        selectedCompany: location.state?.selectedCompany || null,
+        samePerson: location.state?.samePerson || false,
+    });
 
-    const [currentStep, setCurrentStep] = useState(1);
+  
+    useEffect(() => {
+        if (location.state) {
+            console.log('🔄 Route params güncelleniyor:', location.state);
+            setRouteParams({
+                insuranceSource: location.state.insuranceSource || null,
+                karsiSamePerson: location.state.karsiSamePerson || null,
+                kazaNitelik: location.state.kazaNitelik || null,
+                selectedCompany: location.state.selectedCompany || null,
+                samePerson: location.state.samePerson || false,
+            });
+        }
+    }, [location.state]);
+
+    const { insuranceSource, karsiSamePerson, kazaNitelik, selectedCompany, samePerson } = routeParams;
+
+    const [currentStep, setCurrentStep] = useState(() => {
+        if (location.state?.editMode && location.state?.focusSection) {
+            if (location.state.focusSection === 'service_info') {
+                return location.state.kazaNitelik === 'TEKLİ KAZA (BEYANLI)' ? 1 : 2;
+            }
+            return 1;
+        }
+        return 1;
+    });
+
     const [insuredData, setInsuredData] = useState({});
     const [serviceData, setServiceData] = useState({});
     const [opposingDriverData, setOpposingDriverData] = useState({});
@@ -51,47 +76,40 @@ export default function InsuredMechanicStepperScreen() {
         });
     }, [cityOptions]);
 
-    // Debug log
     console.log('🔍 InsuredMechanicStepperScreen MOUNTED');
-    console.log('📦 location.state:', location.state);
+    console.log('📦 routeParams:', routeParams);
     console.log('  kazaNitelik:', kazaNitelik);
     console.log('  insuranceSource:', insuranceSource);
     console.log('  samePerson:', samePerson);
     console.log('  karsiSamePerson:', karsiSamePerson);
+    console.log('  currentStep:', currentStep);
 
-    // Dinamik step hesaplama
+    // 🔥 DİNAMİK STEP HESAPLAMA - İSTENİLEN MANTIK
     const calculateSteps = () => {
         console.log('📊 calculateSteps çalıştı');
         console.log('  kazaNitelik:', kazaNitelik);
         console.log('  insuranceSource:', insuranceSource);
-        console.log('  samePerson:', samePerson);
 
-        // Senaryo 1: Tekli Kaza → Sadece Servis
+        // 🔥 TEKLİ KAZA → Sadece Servis
         if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
-            console.log('✅ SENARYO 1: Tekli Kaza');
+            console.log('✅ TEKLİ KAZA -> SADECE Servis');
             return ['Servis Bilgileri'];
         }
 
-        // Senaryo 2: İkili Kaza + Sürücü=Mağdur Aynı → Sigortalı + Servis
-        if (kazaNitelik === 'İKİLİ KAZA' && samePerson) {
-            console.log('✅ SENARYO 2: İkili Kaza');
+        // 🔥 İKİLİ KAZA → Sigortalı + Servis
+        if (kazaNitelik === 'İKİLİ KAZA') {
+            console.log('✅ İKİLİ KAZA -> Sigortalı + Servis');
             return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
         }
 
-        // Senaryo 3: Çoklu Kaza + Karşı Kasko + Aynı Kişi → Sigortalı + Servis (sadece plaka zorunlu)
-        if (kazaNitelik === 'ÇOKLU KAZA' && insuranceSource === 'karsi kasko' && samePerson) {
-            console.log('✅ SENARYO 3: Çoklu Kaza + Karşı Kasko');
+        // 🔥 ÇOKLU KAZA → Sigortalı + Servis
+        if (kazaNitelik === 'ÇOKLU KAZA') {
+            console.log('✅ ÇOKLU KAZA -> Sigortalı + Servis');
             return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
         }
 
-        // Senaryo 4: Çoklu Kaza + Karşı Trafik + Farklı Kişi → Sigortalı + Karşı Sürücü + Servis
-        if (kazaNitelik === 'ÇOKLU KAZA' && insuranceSource === 'karsi trafik' && !samePerson) {
-            console.log('✅ SENARYO 4: Çoklu Kaza + Karşı Trafik');
-            return ['Sigortalı Bilgileri', 'Karşı Araç Sürücüsü Bilgileri', 'Servis Bilgileri'];
-        }
-
-        // Default: Sigortalı + Servis
-        console.log('⚠️ DEFAULT SENARYO - Bu olmamalı!');
+        // Default fallback
+        console.log('⚠️ DEFAULT -> Sigortalı + Servis');
         return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
     };
 
@@ -131,7 +149,6 @@ export default function InsuredMechanicStepperScreen() {
                 const res = await apiService.getCities();
                 console.log("🌍 raw city response:", res);
 
-                // axios ise:
                 const cities = res?.data?.results || res?.data || [];
 
                 const options = cities.map((city) => ({
@@ -149,7 +166,6 @@ export default function InsuredMechanicStepperScreen() {
 
         fetchAllCities();
     }, []);
-
 
     // Route parametrelerinden verileri yükle
     useEffect(() => {
@@ -170,11 +186,12 @@ export default function InsuredMechanicStepperScreen() {
                     case 'insured_info':
                         setCurrentStep(1);
                         break;
-                    case 'karsi_driver_info':
-                        setCurrentStep(2);
-                        break;
                     case 'service_info':
-                        setCurrentStep(steps.length);
+                        if (location.state.kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
+                            setCurrentStep(1);
+                        } else {
+                            setCurrentStep(2);
+                        }
                         break;
                     default:
                         setCurrentStep(1);
@@ -186,48 +203,36 @@ export default function InsuredMechanicStepperScreen() {
     // Form submit handlers
     const handleInsuredSubmit = (values) => {
         setInsuredData(values);
-
-        // Senaryo 4: Karşı sürücü bilgisi gerekiyorsa step 2'ye git
-        if (kazaNitelik === 'ÇOKLU KAZA' && insuranceSource === 'karsi trafik' && !samePerson) {
-            setCurrentStep(2);
-        } else {
-            setCurrentStep(currentStep + 1);
-        }
-    };
-
-    const handleOpposingDriverSubmit = (values) => {
-        setOpposingDriverData(values);
+        // Sigortalı sonrası her zaman Servis'e git
         setCurrentStep(currentStep + 1);
     };
 
     const handleServiceSubmit = (values) => {
         setServiceData(values);
 
+        // 🔥 KRİTİK: routeParams içindeki değerleri kullan
+        const navigationState = {
+            ...location.state,
+            // 🔥 routeParams'tan değerleri açıkça ekle
+            kazaNitelik,
+            insuranceSource,
+            selectedCompany,
+            samePerson,
+            karsiSamePerson,
+            startStep: location.state?.editMode ? (location.state?.returnStep || 3) : 3,
+            insuredData,
+            serviceData: values,
+        };
+
+        console.log('🚀 handleServiceSubmit - navigation state:', navigationState);
+
         // Düzenleme modunda mı?
         if (location.state?.editMode) {
-            const returnTo = location.state?.returnTo || 'StepInfoScreen';
-            const returnStep = location.state?.returnStep || 3;
-
-            navigate(`/${returnTo}`, {
-                state: {
-                    ...location.state,
-                    startStep: returnStep,
-                    insuredData,
-                    opposingDriverData,
-                    serviceData: values,
-                }
-            });
+            const returnTo = location.state?.returnTo || 'step-info';
+            navigate(`/${returnTo}`, { state: navigationState });
         } else {
             // Normal akış: StepInfoScreen'e git
-            navigate('/step-info', {
-                state: {
-                    ...location.state,
-                    startStep: 3,
-                    insuredData,
-                    opposingDriverData,
-                    serviceData: values,
-                }
-            });
+            navigate('/step-info', { state: navigationState });
         }
     };
 
@@ -260,7 +265,6 @@ export default function InsuredMechanicStepperScreen() {
             });
         }
 
-        // Diğer senaryolar: Tüm alanlar zorunlu (veya field'da tanımlı olduğu gibi)
         return fields;
     };
 
@@ -284,6 +288,64 @@ export default function InsuredMechanicStepperScreen() {
         </div>
     );
 
+    // 🔥 BASİTLEŞTİRİLMİŞ RENDER MANTIGI
+    const renderCurrentForm = () => {
+        console.log('🎨 RENDER - currentStep:', currentStep, 'kazaNitelik:', kazaNitelik, 'steps:', steps);
+
+        // 🔥 TEKLİ KAZA → Sadece Servis
+        if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
+            console.log('✅ TEKLİ KAZA -> Servis formu');
+            return (
+                <FormRenderer
+                    fields={serviceFields}
+                    values={serviceData}
+                    setValues={setServiceData}
+                    onSubmit={handleServiceSubmit}
+                    renderFooter={renderFormFooter}
+                />
+            );
+        }
+
+        // 🔥 İKİLİ/ÇOKLU KAZA → Step 1: Sigortalı, Step 2: Servis
+        if (currentStep === 1) {
+            console.log('✅ Step 1 -> Sigortalı formu');
+            return (
+                <FormRenderer
+                    fields={getAdjustedFields(insuredField)}
+                    values={insuredData}
+                    setValues={setInsuredData}
+                    onSubmit={handleInsuredSubmit}
+                    renderFooter={renderFormFooter}
+                />
+            );
+        }
+
+        if (currentStep === 2) {
+            console.log('✅ Step 2 -> Servis formu');
+            return (
+                <FormRenderer
+                    fields={serviceFields}
+                    values={serviceData}
+                    setValues={setServiceData}
+                    onSubmit={handleServiceSubmit}
+                    renderFooter={renderFormFooter}
+                />
+            );
+        }
+
+        // Fallback
+        console.log('⚠️ FALLBACK -> Servis formu');
+        return (
+            <FormRenderer
+                fields={serviceFields}
+                values={serviceData}
+                setValues={setServiceData}
+                onSubmit={handleServiceSubmit}
+                renderFooter={renderFormFooter}
+            />
+        );
+    };
+
     return (
         <div className={styles.screenContainer}>
             <div className={styles.contentArea}>
@@ -295,57 +357,7 @@ export default function InsuredMechanicStepperScreen() {
 
                 <div className={styles.formCard}>
                     <div className={styles.formSectionContent}>
-                        {console.log('🎨 RENDER - currentStep:', currentStep, 'kazaNitelik:', kazaNitelik)}
-
-                        {/* Senaryo 1: Tekli Kaza - Sadece Servis */}
-                        {kazaNitelik === 'TEKLİ KAZA (BEYANLI)' && currentStep === 1 && (
-                            <>
-                                {console.log('✅ Rendering TEKLI KAZA form')}
-                                <FormRenderer
-                                    fields={serviceFields}
-                                    values={serviceData}
-                                    setValues={setServiceData}
-                                    onSubmit={handleServiceSubmit}
-                                    renderFooter={renderFormFooter}
-                                />
-                            </>
-                        )}
-
-                        {/* Senaryo 2, 3, 4: Sigortalı Bilgileri (Step 1) */}
-                        {kazaNitelik !== 'TEKLİ KAZA (BEYANLI)' && currentStep === 1 && (
-                            <FormRenderer
-                                fields={getAdjustedFields(insuredField)}
-                                values={insuredData}
-                                setValues={setInsuredData}
-                                onSubmit={handleInsuredSubmit}
-                                renderFooter={renderFormFooter}
-                            />
-                        )}
-
-                        {/* Senaryo 4: Karşı Sürücü Bilgileri (Step 2) */}
-                        {kazaNitelik === 'ÇOKLU KAZA' &&
-                            insuranceSource === 'karsi trafik' &&
-                            !samePerson &&
-                            currentStep === 2 && (
-                                <FormRenderer
-                                    fields={opposingDriverFields}
-                                    values={opposingDriverData}
-                                    setValues={setOpposingDriverData}
-                                    onSubmit={handleOpposingDriverSubmit}
-                                    renderFooter={renderFormFooter}
-                                />
-                            )}
-
-                        {/* Servis Bilgileri - Tüm senaryolarda son adım */}
-                        {currentStep === steps.length && kazaNitelik !== 'TEKLİ KAZA (BEYANLI)' && (
-                            <FormRenderer
-                                fields={serviceFields}
-                                values={serviceData}
-                                setValues={setServiceData}
-                                onSubmit={handleServiceSubmit}
-                                renderFooter={renderFormFooter}
-                            />
-                        )}
+                        {renderCurrentForm()}
                     </div>
                 </div>
             </div>
