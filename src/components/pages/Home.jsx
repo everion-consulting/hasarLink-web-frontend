@@ -297,46 +297,42 @@ export default function Dashboard() {
           </button>
         </div>
         {/* BU AY AÇILAN DOSYA SAYISI */}
-<div
-  className={`${styles.cardDashboard} ${styles.cardBottomRight}`}
-  onClick={() => navigate("/monthly-files")}
-  style={{ cursor: "pointer" }}
->
-  <div className={styles.cardBottomRightInner}>
-    {/* SOL TARAF */}
-    <div className={styles.cardBottomRightText}>
-      <h3 className={styles.cardBottomRightTitleTop}>
-        BU AY AÇILAN
-      </h3>
+        <div
+          className={`${styles.cardDashboard} ${styles.cardBottomRight}`}
+          onClick={() => navigate("/monthly-files")}
+          style={{ cursor: "pointer" }}
+        >
+          <div className={styles.cardBottomRightInner}>
+            {/* SOL TARAF */}
+            <div className={styles.cardBottomRightText}>
+              <h3 className={styles.cardDashboardHeading}>
+                BU AY AÇILAN DOSYA SAYISI
+              </h3>
 
-      <p className={styles.cardBottomRightTitleSub}>
-        DOSYA SAYISI
-      </p>
+              <p className={`${styles.cardDashboardCount} ${styles.cardBottomRightCount}`}>
+                <span className={styles.cardDashboardCountNumber}>
+                  {counts.this_month_total ?? 0}
+                </span>{" "}
+                Dosya
+              </p>
+            </div>
 
-      <p className={`${styles.cardDashboardCount} ${styles.cardBottomRightCount}`}>
-        <span className={styles.cardDashboardCountNumber}>
-          {counts.this_month_total ?? 0}
-        </span>{" "}
-        Dosya
-      </p>
-    </div>
+            {/* SAĞ TARAF */}
+            <div className={styles.cardBottomRightSide}>
+              <CalendarDaysIcon width={50} height={50} color="#133E87" />
 
-    {/* SAĞ TARAF */}
-    <div className={styles.cardBottomRightSide}>
-      <CalendarDaysIcon width={50} height={50} color="#133E87" />
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          navigate("/monthly-files");
-        }}
-        className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight} ${styles.cardBottomRightButton}`}
-      >
-        TÜMÜNÜ GÖR
-      </button>
-    </div>
-  </div>
-</div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/monthly-files");
+                }}
+                className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight} ${styles.cardBottomRightButton}`}
+              >
+                TÜMÜNÜ GÖR
+              </button>
+            </div>
+          </div>
+        </div>
 
 
 

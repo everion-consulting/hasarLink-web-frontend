@@ -302,19 +302,6 @@
   flex: 2;
 }
 
-.cardBottomRightTitleTop {
-  margin-top: 5px;
-  margin-bottom: 0;
-  font-size: 24px;
-  line-height: 30px;
-}
-
-.cardBottomRightTitleSub {
-  margin-top: 5px;
-  margin-bottom: 0;
-  font-weight: 600;
-  font-size: 18px;
-}
 
 .cardBottomRightCount {
   margin-top: 5px;
