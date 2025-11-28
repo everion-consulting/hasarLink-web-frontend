@@ -290,6 +290,52 @@
   flex-direction: column;
 }
 
+
+.cardBottomRightInner {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.cardBottomRightText {
+  flex: 2;
+}
+
+.cardBottomRightTitleTop {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.cardBottomRightTitleSub {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.cardBottomRightCount {
+  margin-top: 5px;
+}
+
+.cardBottomRightSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  gap: 16px;
+}
+
+
+.cardBottomRightButton {
+  margin-top: 4px;
+  width: 100%;
+}
+
+
 .sigortaIcon {
   width: 80px;
   height: auto;
@@ -369,6 +415,30 @@
   .cardBottomRight {
     grid-column: 2 / 3;
     grid-row: 3 / 4;
+  }
+
+  .cardBottomRightInner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardBottomRightSide {
+    width: 100%;
+    align-items: stretch;
+    margin-top: 16px;
+  }
+
+  .cardBottomRightButton {
+    width: 100%;         
+  }
+
+  .cardBottomRightTitleTop {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .cardBottomRightTitleSub {
+    font-size: 16px;
   }
 
   .cardRejected {
