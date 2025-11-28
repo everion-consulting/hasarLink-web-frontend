@@ -125,10 +125,12 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: visible;
   border: 1px solid #e0e6ed;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .stepperWrapper {
-  margin-bottom: 40px;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -149,10 +151,10 @@
 }
 
 .stepQuestion {
-  font-size: 20px;
-  font-weight: 700;
-  color: #000;
-  margin-bottom: 24px;
+  font-size: 25px;
+  line-height: 30px;
+  font-weight: 400;
+  color: #333;
   text-align: center;
 }
 
@@ -160,7 +162,6 @@
 .optionsGrid {
   display: grid;
   gap: 16px;
-  margin-bottom: 32px;
 }
 
 /* === EACH CARD === */

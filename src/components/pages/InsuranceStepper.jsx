@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Stepper from '../stepper/Stepper';
 import styles from '../../styles/insuranceStepper.module.css';
+import FormFooter from '../forms/FormFooter';
 
 export default function InsuranceStepper() {
   const navigate = useNavigate();
@@ -298,29 +299,16 @@ export default function InsuranceStepper() {
                 </>
               )}
             </div>
-
-            
           </div>
-          <div className={styles.formFooterButtons}>
-              {/* 🚨 Düğme Sınıfı Değiştirildi */}
-              <button
-                className={styles.backBtn} 
-                onClick={handleBackPress}
-              >
-                <ArrowLeft size={18} strokeWidth={2.0} />
-                <span>GERİ DÖN</span>
-              </button>
-
-              {/* 🚨 Düğme Sınıfı Değiştirildi ve Etkinleştirme Mantığı Korundu */}
-              <button
-                className={`${styles.nextBtn} ${!isAllChosenForCurrentStep ? styles.disabled : ''}`}
-                onClick={handleContinue}
-                disabled={!isAllChosenForCurrentStep}
-              >
-                <span>{editMode ? 'KAYDET' : 'DEVAM ET'}</span>
-                <ArrowRight size={18} strokeWidth={2.0} />
-              </button>
-            </div>
+          
+          {/* --- BUTONLAR --- */}
+          <FormFooter
+            onBack={() => navigate(-1)}
+            onNext={handleContinue}
+            nextLabel="DEVAM ET"
+            backLabel="GERİ DÖN"
+            disabled={!isAllChosenForCurrentStep}
+          />
 
           <div className={styles.infoCard}>
             <Info size={20} className={styles.infoIcon} />
