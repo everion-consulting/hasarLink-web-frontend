@@ -32,7 +32,6 @@ export const getVictimFields = (isCompany = false) => {
       required: true,
       maxLength: isCompany ? undefined : 11,
     },
-    { name: "victim_mail", label: "E-Mail", placeholder: "ornek@mail.com", type: "email", required: false },
     { name: "victim_phone", label: "Telefon", placeholder: "5xxxxxxxxx", type: "phone", required: false },
   ];
 

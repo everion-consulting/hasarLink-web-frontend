@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthAPI from "../services/authAPI";
+
+import coreService from "../services/coreService";
 import styles from "../styles/topbar.module.css";
 import { Bell } from "lucide-react";
 
 export default function TopBar() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(0);
 
     const handleNotificationsClick = () => {
-        navigate("/notifications"); 
+        navigate("/notifications");
     };
 
     const handleLogout = async () => {
@@ -24,37 +27,93 @@ export default function TopBar() {
         }
     };
 
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await coreService.getUnreadNotificationsCount();
+
+                if (!res?.success) {
+                    console.error("❌ Unread notification alınamadı:", res?.message);
+                    setNotificationCount(0);
+                    return;
+                }
+
+                // Backend'den gelen yapıya göre uyarlayabilirsin
+                // Örn: { success: true, data: { unread_count: 5 } }
+                const data = res?.data ?? {};
+                const count =
+                    data.unread_count ?? // tercih edilen
+                    data.count ??         // belki böyle dönüyordur
+                    0;
+
+                setNotificationCount(count);
+            } catch (err) {
+                console.error("❌ getUnreadNotificationsCount hatası:", err);
+                setNotificationCount(0);
+            }
+        };
+
+        fetchUnread();
+    }, []);
+
+
+
     return (
         <header className={styles.topBar}>
             <div className={styles.logo}>HASARLİNK</div>
 
             {/* DESKTOP TABS */}
             <nav className={`${styles.tabs} ${styles.desktopMenu}`}>
-                <NavLink to="/" end className={({ isActive }) =>
-                    `${styles.tab} ${isActive ? styles.active : ""}`
-                }>Anasayfa</NavLink>
+                <NavLink
+                    to="/"
+                    end
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    Anasayfa
+                </NavLink>
 
-                <NavLink to="/file-notifications" className={({ isActive }) =>
-                    `${styles.tab} ${isActive ? styles.active : ""}`
-                }>Dosya Bildirimlerim</NavLink>
+                <NavLink
+                    to="/file-notifications"
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    Dosya Bildirimlerim
+                </NavLink>
 
-                <NavLink to="/profile" className={({ isActive }) =>
-                    `${styles.tab} ${isActive ? styles.active : ""}`
-                }>Profilim</NavLink>
+                <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    Profilim
+                </NavLink>
 
-                <NavLink to="/contact" className={({ isActive }) =>
-                    `${styles.tab} ${isActive ? styles.active : ""}`
-                }>İletişim</NavLink>
+                <NavLink
+                    to="/contact"
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    İletişim
+                </NavLink>
 
-                <NavLink to="/settings" className={({ isActive }) =>
-                    `${styles.tab} ${isActive ? styles.active : ""}`
-                }>Ayarlar</NavLink>
+                <NavLink
+                    to="/settings"
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    Ayarlar
+                </NavLink>
             </nav>
 
             {/* RIGHT GROUP: Notification + Logout */}
             <div className={styles.rightGroup}>
-
-                {/* NOTIFICATION ICON */}
+                {/* NOTIFICATION ICON (DESKTOP) */}
                 <div
                     className={styles.notificationIconDesktop}
                     onClick={handleNotificationsClick}
@@ -62,9 +121,10 @@ export default function TopBar() {
                     style={{ cursor: "pointer" }}
                 >
                     <Bell size={22} />
-                    <span className={styles.notificationBadge}>3</span>
+                    <span className={styles.notificationBadge}>
+                        {notificationCount}
+                    </span>
                 </div>
-
 
                 {/* ÇIKIŞ YAP BUTTON */}
                 <button
@@ -76,14 +136,19 @@ export default function TopBar() {
                         <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
                     </span>
                 </button>
-
             </div>
 
-            {/* --- MOBILE RIGHT GROUP (Bildirim + Hamburger) --- */}
+            {/* --- MOBILE RIGHT GROUP --- */}
             <div className={styles.mobileRightGroup}>
-                <div className={styles.notificationIconMobile}>
+                <div
+                    className={styles.notificationIconMobile}
+                    onClick={handleNotificationsClick}
+                    role="button"
+                >
                     <Bell size={22} />
-                    <span className={styles.notificationBadge}>3</span>
+                    <span className={styles.notificationBadge}>
+                        {notificationCount}
+                    </span>
                 </div>
 
                 <div
@@ -97,11 +162,24 @@ export default function TopBar() {
             {/* MOBILE MENU */}
             {isMenuOpen && (
                 <div className={styles.mobileMenu}>
-                    <NavLink to="/" end onClick={() => setIsMenuOpen(false)}>Anasayfa</NavLink>
-                    <NavLink to="/file-notifications" onClick={() => setIsMenuOpen(false)}>Dosya Bildirimlerim</NavLink>
-                    <NavLink to="/profile" onClick={() => setIsMenuOpen(false)}>Profilim</NavLink>
-                    <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>İletişim</NavLink>
-                    <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>Ayarlar</NavLink>
+                    <NavLink to="/" end onClick={() => setIsMenuOpen(false)}>
+                        Anasayfa
+                    </NavLink>
+                    <NavLink
+                        to="/file-notifications"
+                        onClick={() => setIsMenuOpen(false)}
+                    >
+                        Dosya Bildirimlerim
+                    </NavLink>
+                    <NavLink to="/profile" onClick={() => setIsMenuOpen(false)}>
+                        Profilim
+                    </NavLink>
+                    <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>
+                        İletişim
+                    </NavLink>
+                    <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>
+                        Ayarlar
+                    </NavLink>
 
                     <button
                         className={styles.mobileLogout}
