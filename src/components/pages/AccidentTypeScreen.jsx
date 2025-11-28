@@ -56,32 +56,32 @@ export default function AccidentTypeScreen() {
                 <div className={styles.cardsContainer}>
 
                     {selectedCompany && (
-                                // Şirket Kartı
-                                <div className={styles.companyCardAccidentInsurance}>
-                                  <div className={styles.companyCardContentInsurance}>
-                                    <div className={styles.companyTextContentInsurance}>
-                                      <div className={styles.companyTypeWrapperInsurance}>
+                        // Şirket Kartı
+                        <div className={styles.companyCardAccidentInsurance}>
+                            <div className={styles.companyCardContentInsurance}>
+                                <div className={styles.companyTextContentInsurance}>
+                                    <div className={styles.companyTypeWrapperInsurance}>
                                         <span className={styles.companyTypeInsurance}>Sigorta<br />Şirketi</span>
-                                      </div>
                                     </div>
-                    
-                                    {selectedCompany.photo && (
-                                      <img
+                                </div>
+
+                                {selectedCompany.photo && (
+                                    <img
                                         src={selectedCompany.photo}
                                         alt={selectedCompany.name}
                                         className={styles.companyLogoImg}
-                                      />
-                                    )}
-                                  </div>
-                    
-                                  {/* Koyu Mavi Alt Şerit */}
-                                  <div className={styles.companyNameFooter}>
-                                    <h2 className={styles.companyNameAccidentInsuranceFooter}>
-                                      {selectedCompany.name}
-                                    </h2>
-                                  </div>
-                                </div>
-                              )}
+                                    />
+                                )}
+                            </div>
+
+                            {/* Koyu Mavi Alt Şerit */}
+                            <div className={styles.companyNameFooter}>
+                                <h2 className={styles.companyNameAccidentInsuranceFooter}>
+                                    {selectedCompany.name}
+                                </h2>
+                            </div>
+                        </div>
+                    )}
 
                     {/* --- KAZA SEÇİM KARTI --- */}
                     <div className={styles.stepperCard}>
@@ -109,17 +109,17 @@ export default function AccidentTypeScreen() {
                             ))}
                         </div>
                     </div>
-
+                    {/* --- BUTONLAR --- */}
+                    <FormFooter
+                        onBack={() => navigate(-1)}
+                        onNext={onSave}
+                        nextLabel="DEVAM ET"
+                        backLabel="GERİ DÖN"
+                        disabled={!selected}
+                    />
                 </div>
 
-                {/* --- BUTONLAR --- */}
-                <FormFooter
-                    onBack={() => navigate(-1)}
-                    onNext={onSave}
-                    nextLabel="DEVAM ET"
-                    backLabel="GERİ DÖN"
-                    disabled={!selected}
-                />
+
 
             </div>
         </div>
