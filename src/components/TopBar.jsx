@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthAPI from "../services/authAPI";
-import apiService from "../services/apiServices";
+
+import coreService from "../services/coreService";
 import styles from "../styles/topbar.module.css";
 import { Bell } from "lucide-react";
 
@@ -27,37 +28,34 @@ export default function TopBar() {
     };
 
     useEffect(() => {
-        const fetchCounts = async () => {
+        const fetchUnread = async () => {
             try {
-                const res = await apiService.getUnreadNotificationsCount();
+                const res = await coreService.getUnreadNotificationsCount();
 
                 if (!res?.success) {
-                    console.error("❌ Dosya sayıları alınamadı:", res?.message);
+                    console.error("❌ Unread notification alınamadı:", res?.message);
                     setNotificationCount(0);
                     return;
                 }
 
-                const data = res?.data?.data ?? res?.data ?? {};
+                // Backend'den gelen yapıya göre uyarlayabilirsin
+                // Örn: { success: true, data: { unread_count: 5 } }
+                const data = res?.data ?? {};
+                const count =
+                    data.unread_count ?? // tercih edilen
+                    data.count ??         // belki böyle dönüyordur
+                    0;
 
-                // İstersen burayı ihtiyacına göre değiştir:
-                // pending_files adetini badge'e yazıyorum, yoksa counts.pending kullanıyorum.
-                const fromPendingFiles = Array.isArray(data.pending_files)
-                    ? data.pending_files.length
-                    : undefined;
-
-                const fromCountsPending = data?.counts?.pending ?? 0;
-
-                setNotificationCount(
-                    typeof fromPendingFiles === "number" ? fromPendingFiles : fromCountsPending
-                );
+                setNotificationCount(count);
             } catch (err) {
-                console.error("❌ getFileSubmissionCounts hatası:", err);
+                console.error("❌ getUnreadNotificationsCount hatası:", err);
                 setNotificationCount(0);
             }
         };
 
-        fetchCounts();
+        fetchUnread();
     }, []);
+
 
 
     return (
