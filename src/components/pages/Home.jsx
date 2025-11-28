@@ -30,6 +30,9 @@ export default function Dashboard() {
   });
 
   const [loading, setLoading] = useState(true);
+   const goToOngoing = () => {
+    navigate("/ongoing-files");
+  };
 
   async function fetchCounts() {
     try {
@@ -262,7 +265,13 @@ export default function Dashboard() {
         </div>
 
         {/* DEVAM EDENLER */}
-        <div className={`${styles.cardDashboard} ${styles.cardOngoing}`}>
+        <div
+          className={`${styles.cardDashboard} ${styles.cardOngoing}`}
+          onClick={goToOngoing}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && goToOngoing()}
+        >
           <h3 className={styles.cardDashboardHeading}>DEVAM EDENLER</h3>
 
           <ul className={styles.ongoingList}>
@@ -278,13 +287,13 @@ export default function Dashboard() {
           </ul>
 
           <button
+            type="button"
             className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight}`}
-            onClick={() => navigate('/upload')}
+            onClick={goToOngoing}
           >
             YÜKLE
           </button>
         </div>
-
         {/* ALT SAĞ BÜYÜK KART */}
         <div className={`${styles.cardDashboard} ${styles.cardBottomRight}`}>
           <h3 className={styles.cardDashboardHeading}>TOPLAM İŞLEM</h3>

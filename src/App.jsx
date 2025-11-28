@@ -32,6 +32,7 @@ import NotifiedScreen from "./components/pages/NotifiedScreen";
 import { NotificationProvider } from "./context/NotifiedContext";
 import SuccessScreen from "./components/pages/SuccessScreen";
 import ProcessedScreen from "./components/pages/ProcessedScreen";
+import OnGoingFileScreen from "./components/pages/OnGoingFileScreen";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -89,6 +90,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/reddedilen-dosyalar-detay/:submissionId" element={isAuth ? <RejectedFileDetailScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notified-screen" element={isAuth ? <NotifiedScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/processed-screen" element={isAuth ? <ProcessedScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/ongoing-files" element={isAuth ? <OnGoingFileScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
