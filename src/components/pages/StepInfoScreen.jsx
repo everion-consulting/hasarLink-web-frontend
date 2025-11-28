@@ -245,7 +245,7 @@ export default function StepInfoScreen() {
           is_completed: false,
         };
 
-        if (insuranceSource === "karsi trafik" && karsiSamePerson === false) {
+        if ((insuranceSource === "karsi trafik" || insuranceSource === "karsi kasko") && karsiSamePerson === false) {
           payload = {
             ...payload,
             opposing_driver_fullname: opposingDriverData.opposing_driver_fullname || "",
@@ -390,7 +390,7 @@ export default function StepInfoScreen() {
                 }
               ]
             },
-            ...(rawInsuranceSource === 'karsi trafik' || insuranceSource === 'karsi trafik'
+            ...(rawInsuranceSource === 'karsi trafik' || insuranceSource === 'karsi kasko'
               ? [
                 {
                   title: 'Karşı Ruhsat Sahibi ve Sürücü Bilgisi Aynı Mı?',
