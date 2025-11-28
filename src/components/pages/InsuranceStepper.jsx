@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   User,
@@ -10,13 +10,12 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import Stepper from '../stepper/Stepper';
-import '../../styles/insuranceStepper.css';
+import styles from '../../styles/insuranceStepper.module.css';
 
 export default function InsuranceStepper() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Route state'den gelen değerler
   const selectedCompany = location.state?.selectedCompany || null;
   const editMode = location.state?.editMode || false;
   const focusStep = location.state?.focusStep || 1;
@@ -27,7 +26,6 @@ export default function InsuranceStepper() {
   const returnStep = location.state?.returnStep || 1;
   const kazaNitelik = location.state?.kazaNitelik || null;
 
-  // STEPLER
   const [currentStep, setCurrentStep] = useState(
     () => (editMode && focusStep) ? focusStep : 1
   );
@@ -38,7 +36,6 @@ export default function InsuranceStepper() {
 
   const [step2Selection, setStep2Selection] = useState(
     () => {
-      // 🔥 TEKLİ KAZA İSE OTOMATİK "bizim kasko" SET ET
       if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
         return "bizim kasko";
       }
@@ -55,17 +52,12 @@ export default function InsuranceStepper() {
       ? ['Adım 1']
       : ['Adım 1', 'Adım 2', ...(step2Selection === 'karsi trafik' ? ['Adım 3'] : [])];
 
-  // EditMode değerlerini yeniden yükle
   useEffect(() => {
     if (editMode) {
       setCurrentStep(focusStep || 1);
-      setStep1Selection(preSelectedStep1);
-      setStep2Selection(preSelectedStep2);
-      setStep3Selection(preSelectedStep3);
     }
-  }, [editMode, focusStep, preSelectedStep1, preSelectedStep2, preSelectedStep3]);
+  }, [editMode, focusStep]);
 
-  // Ikon map'i
   const iconComponents = {
     user: User,
     users: Users,
@@ -73,15 +65,14 @@ export default function InsuranceStepper() {
     shield: Shield,
   };
 
-  // GERİ DÖN
-  const handleBackPress = () => {
-    const safeParams = {
+  const getSafeParams = useCallback((s1 = step1Selection, s2 = step2Selection, s3 = step3Selection) => {
+    return {
       selectedCompany,
       kazaNitelik,
-      samePerson: step1Selection === 'yes',
-      insuranceSource: step2Selection,
-      karsiSamePerson: step3Selection === 'yes',
-      startStep: returnStep,
+      samePerson: s1 === 'yes',
+      insuranceSource: s2,
+      karsiSamePerson: s3 === 'yes',
+      startStep: returnStep || 1,
       driverData: location.state?.driverData || {},
       victimData: location.state?.victimData || {},
       vehicleData: location.state?.vehicleData || {},
@@ -92,9 +83,11 @@ export default function InsuranceStepper() {
       opposingDriverData: location.state?.opposingDriverData || {},
       documents: location.state?.documents,
     };
+  }, [selectedCompany, kazaNitelik, location.state, returnStep, step1Selection, step2Selection, step3Selection]);
 
+  const handleBackPress = () => {
     if (editMode && returnTo) {
-      navigate(returnTo, { state: safeParams });
+      navigate(returnTo, { state: getSafeParams() });
     } else if (currentStep === 1) {
       navigate(-1);
     } else {
@@ -102,26 +95,25 @@ export default function InsuranceStepper() {
     }
   };
 
-  // OPTION CARD
   const OptionCard = ({ title, selected, onPress, iconName, subs }) => {
     const IconComponent = iconComponents[iconName] || User;
 
     return (
       <div
-        className={`option-card ${selected ? 'selected' : ''}`}
+        className={`${styles.optionCard} ${selected ? styles.selected : ''}`}
         onClick={onPress}
       >
-        <div className="option-content-wrapper">
+        <div className={styles.optionContentWrapper}>
           <IconComponent
             size={35}
-            className={`option-icon ${selected ? 'selected' : ''}`}
+            className={`${styles.optionIcon} ${selected ? styles.selected : ''}`}
           />
-          <div className="option-text-content">
-            <h3 className={`option-title ${selected ? 'selected' : ''}`}>
+          <div className={styles.optionTextContent}>
+            <h3 className={`${styles.optionTitle} ${selected ? styles.selected : ''}`}>
               {title}
             </h3>
             {subs && (
-              <p className={`option-subs ${selected ? 'selected' : ''}`}>
+              <p className={`${styles.optionSubs} ${selected ? styles.selected : ''}`}>
                 {subs}
               </p>
             )}
@@ -131,206 +123,99 @@ export default function InsuranceStepper() {
     );
   };
 
-  // ❗ ADIM 1 — TEKLİ KAZA İSE DİREKT BİZİM KASKO'YA GÖNDER
   const handleStep1Select = (option) => {
     setStep1Selection(option);
+  };
 
-    // TEKLİ KAZA ÖZEL DAVRANIŞ
-    if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
-      const safeParams = {
-        selectedCompany,
-        kazaNitelik,
-        samePerson: option === 'yes',
-        insuranceSource: step2Selection,
-        karsiSamePerson: step3Selection === 'yes',
-        startStep: 1,
-        driverData: location.state?.driverData || {},
-        victimData: location.state?.victimData || {},
-        vehicleData: location.state?.vehicleData || {},
-        insuredData: location.state?.insuredData || {},
-        mechanicData: location.state?.mechanicData || {},
-        serviceData: location.state?.serviceData || {},
-        damageData: location.state?.damageData || {},
-        documents: location.state?.documents,
-      };
+  const handleStep2Select = (option) => {
+    setStep2Selection(option);
+  };
+
+  const handleStep3Select = (option) => {
+    setStep3Selection(option);
+  };
+
+  const isAllChosenForCurrentStep =
+    currentStep === 1 ? !!step1Selection
+      : currentStep === 2 ? !!step2Selection
+        : currentStep === 3 ? !!step3Selection
+          : false;
+
+  const handleContinue = () => {
+    // Tekli kaza durumu:
+    if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)' && step1Selection) {
+      const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
 
       if (editMode && returnTo) {
         navigate(returnTo, { state: safeParams });
-        return;
+      } else {
+        navigate('/step-info', { state: safeParams });
       }
-
-      navigate('/step-info', { state: safeParams });
       return;
     }
 
-    // NORMAL AKIŞ
-    if (editMode && returnTo) {
-      const safeParams = {
-        selectedCompany,
-        kazaNitelik,
-        samePerson: option === 'yes',
-        insuranceSource: step2Selection,
-        karsiSamePerson: step3Selection === 'yes',
-        startStep: returnStep || 1,
-        driverData: location.state?.driverData || {},
-        victimData: location.state?.victimData || {},
-        vehicleData: location.state?.vehicleData || {},
-        insuredData: location.state?.insuredData || {},
-        mechanicData: location.state?.mechanicData || {},
-        serviceData: location.state?.serviceData || {},
-        damageData: location.state?.damageData || {},
-        opposingDriverData: location.state?.opposingDriverData || {},
-        documents: location.state?.documents,
-      };
-      navigate(returnTo, { state: safeParams });
-    } else {
+    // Normal Akış:
+    if (currentStep === 1 && step1Selection) {
       setCurrentStep(2);
-    }
-  };
+    } else if (currentStep === 2 && step2Selection) {
+      if (step2Selection === 'karsi trafik') {
+        setCurrentStep(3);
+      } else {
+        const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
 
-  // ADIM 2 NORMAL (TEKLİ KAZA HARİÇ) - DÜZELTİLDİ!
-  const handleStep2Select = (option) => {
-    console.log("🔄 Step2 seçildi:", option);
-    setStep2Selection(option);
+        if (editMode && returnTo) {
+          navigate(returnTo, { state: safeParams });
+        } else {
+          navigate('/step-info', { state: safeParams });
+        }
+      }
+    } else if (currentStep === 3 && step3Selection) {
+      const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
 
-    // 🔥 KRİTİK DÜZELTME: Karşı trafik seçilirse Step 3'e git, diğerleri StepInfo'ya
-    if (option === 'karsi trafik') {
-      console.log("➡️ Karşı trafik -> Step 3'e geçiliyor");
-      setCurrentStep(3);
-      return; // Burada return yapıyoruz, navigation YAPMIYORUZ
-    }
-
-    // Diğer seçenekler (bizim kasko, karşı kasko) direkt StepInfo'ya gider
-    console.log("➡️ Diğer seçenek -> StepInfo'ya gidiliyor");
-    const safeParams = {
-      selectedCompany,
-      kazaNitelik,
-      samePerson: step1Selection === 'yes',
-      insuranceSource: option, // 🔥 step2Selection yerine option kullan
-      karsiSamePerson: step3Selection === 'yes',
-      startStep: 1,
-      driverData: location.state?.driverData || {},
-      victimData: location.state?.victimData || {},
-      vehicleData: location.state?.vehicleData || {},
-      insuredData: location.state?.insuredData || {},
-      mechanicData: location.state?.mechanicData || {},
-      serviceData: location.state?.serviceData || {},
-      damageData: location.state?.damageData || {},
-      documents: location.state?.documents,
-    };
-
-    console.log("🚀 StepInfoScreen'e gönderilen insuranceSource:", option);
-
-    if (editMode && returnTo) {
-      navigate(returnTo, { state: safeParams });
-    } else {
-      navigate('/step-info', { state: safeParams });
-    }
-  };
-
-  // ADIM 3 - KARŞI TRAFİK İÇİN - DÜZELTİLDİ!
-  const handleStep3Select = (option) => {
-    console.log("🔄 Step3 seçildi:", option);
-    setStep3Selection(option);
-
-    const safeParams = {
-      selectedCompany,
-      kazaNitelik,
-      samePerson: step1Selection === 'yes',
-      insuranceSource: step2Selection, // 🔥 Burada step2Selection doğru
-      karsiSamePerson: option === 'yes',
-      startStep: returnStep || 1,
-      driverData: location.state?.driverData || {},
-      victimData: location.state?.victimData || {},
-      vehicleData: location.state?.vehicleData || {},
-      insuredData: location.state?.insuredData || {},
-      mechanicData: location.state?.mechanicData || {},
-      serviceData: location.state?.serviceData || {},
-      damageData: location.state?.damageData || {},
-      opposingDriverData: location.state?.opposingDriverData || {},
-      documents: location.state?.documents,
-    };
-
-    console.log("🚀 StepInfoScreen'e gönderilen insuranceSource:", step2Selection);
-    console.log("🚀 Tüm gönderilen params:", safeParams);
-
-    if (editMode && returnTo) {
-      navigate(returnTo, { state: safeParams });
-    } else {
-      navigate('/step-info', { state: safeParams });
-    }
-  };
-
-  // DEVAM ET BUTONU İÇİN KONTROL
-  const isAllChosen = kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
-    ? !!step1Selection
-    : !!step1Selection && !!step2Selection;
-
-  const handleContinue = () => {
-    if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') return;
-
-    const safeParams = {
-      selectedCompany,
-      kazaNitelik,
-      samePerson: step1Selection === 'yes',
-      insuranceSource: step2Selection,
-      karsiSamePerson: step3Selection === 'yes',
-      startStep: returnStep || 1,
-      driverData: location.state?.driverData || {},
-      victimData: location.state?.victimData || {},
-      vehicleData: location.state?.vehicleData || {},
-      insuredData: location.state?.insuredData || {},
-      mechanicData: location.state?.mechanicData || {},
-      serviceData: location.state?.serviceData || {},
-      damageData: location.state?.damageData || {},
-      opposingDriverData: location.state?.opposingDriverData || {},
-      documents: location.state?.documents,
-    };
-
-    console.log("🚀 Continue butonu - StepInfoScreen'e gönderilen insuranceSource:", step2Selection);
-    console.log("🚀 Tüm gönderilen params:", safeParams);
-
-    if (editMode && returnTo) {
-      navigate(returnTo, { state: safeParams });
-    } else {
-      navigate('/step-info', { state: safeParams });
+      if (editMode && returnTo) {
+        navigate(returnTo, { state: safeParams });
+      } else {
+        navigate('/step-info', { state: safeParams });
+      }
     }
   };
 
   return (
-    <div className="insurance-stepper-page">
-      <div className="stepper-scroll-container">
-        <div className="stepper-cards-container">
+    <div className={styles.insuranceStepperPage}>
+      <div className={styles.stepperScrollContainer}>
+        <div className={styles.stepperCardsContainer}>
 
-          {/* === GÜNCELLENMİŞ SİGORTA KARTI - AccidentTypeScreen stili === */}
           {selectedCompany && (
-            <div className="company-card-accident-insurance">
-              <div className="company-card-content-insurance">
-                <div className="company-text-content-insurance">
-                  <div className="company-type-wrapper-insurance">
-                    <span className="company-type-insurance">Sigorta<br />Şirketi</span>
+            // Şirket Kartı
+            <div className={styles.companyCardAccidentInsurance}>
+              <div className={styles.companyCardContentInsurance}>
+                <div className={styles.companyTextContentInsurance}>
+                  <div className={styles.companyTypeWrapperInsurance}>
+                    <span className={styles.companyTypeInsurance}>Sigorta<br />Şirketi</span>
                   </div>
-                  <h2 className="company-name-accident-insurance">
-                    {selectedCompany.name}
-                  </h2>
                 </div>
 
                 {selectedCompany.photo && (
                   <img
                     src={selectedCompany.photo}
                     alt={selectedCompany.name}
-                    className="company-logo-img"
+                    className={styles.companyLogoImg}
                   />
                 )}
+              </div>
+
+              {/* Koyu Mavi Alt Şerit */}
+              <div className={styles.companyNameFooter}>
+                <h2 className={styles.companyNameAccidentInsuranceFooter}>
+                  {selectedCompany.name}
+                </h2>
               </div>
             </div>
           )}
 
-          {/* Progress */}
-          <div className="progress-card">
-            {/* TEKLİ KAZA İSE STEPPER GÖRÜNMESİN */}
+          <div className={styles.progressCard}>
             {kazaNitelik !== 'TEKLİ KAZA (BEYANLI)' && (
-              <div className="stepper-wrapper">
+              <div className={styles.stepperWrapper}>
                 <Stepper
                   steps={stepNames}
                   currentStep={currentStep}
@@ -343,8 +228,7 @@ export default function InsuranceStepper() {
               </div>
             )}
 
-            {/* Başlık */}
-            <h2 className="step-question">
+            <h2 className={styles.stepQuestion}>
               {currentStep === 1
                 ? 'Sürücü Bilgisi ile Mağdur Bilgisi Aynı Mı?'
                 : currentStep === 2
@@ -352,9 +236,7 @@ export default function InsuranceStepper() {
                   : 'Karşı Ruhsat Sahibi ve Sürücü Aynı Kişi Mi?'}
             </h2>
 
-            {/* Seçenekler */}
-            <div className="options-grid">
-              {/* ADIM 1 */}
+            <div className={styles.optionsGrid}>
               {currentStep === 1 && (
                 <>
                   <OptionCard
@@ -374,7 +256,6 @@ export default function InsuranceStepper() {
                 </>
               )}
 
-              {/* ADIM 2 — TEKLİ KAZA İSE GİZLENİR */}
               {currentStep === 2 && kazaNitelik !== 'TEKLİ KAZA (BEYANLI)' && (
                 <>
                   <OptionCard
@@ -398,7 +279,6 @@ export default function InsuranceStepper() {
                 </>
               )}
 
-              {/* ADIM 3 */}
               {currentStep === 3 && (
                 <>
                   <OptionCard
@@ -419,36 +299,32 @@ export default function InsuranceStepper() {
               )}
             </div>
 
-            {/* Footer Buttons */}
-            <div className="form-footer-buttons">
+            
+          </div>
+          <div className={styles.formFooterButtons}>
+              {/* 🚨 Düğme Sınıfı Değiştirildi */}
               <button
-                className="back-button-web"
+                className={styles.backBtn} 
                 onClick={handleBackPress}
               >
-                <div className="button-icon-wrapper">
-                  <ArrowLeft size={18} strokeWidth={2.0} />
-                </div>
+                <ArrowLeft size={18} strokeWidth={2.0} />
                 <span>GERİ DÖN</span>
               </button>
 
-              {/* Devam */}
+              {/* 🚨 Düğme Sınıfı Değiştirildi ve Etkinleştirme Mantığı Korundu */}
               <button
-                className={`continue-button-web ${(!isAllChosen && kazaNitelik !== 'TEKLİ KAZA (BEYANLI)') ? 'disabled' : ''}`}
+                className={`${styles.nextBtn} ${!isAllChosenForCurrentStep ? styles.disabled : ''}`}
                 onClick={handleContinue}
-                disabled={!isAllChosen && kazaNitelik !== 'TEKLİ KAZA (BEYANLI)'}
+                disabled={!isAllChosenForCurrentStep}
               >
                 <span>{editMode ? 'KAYDET' : 'DEVAM ET'}</span>
-                <div className="button-icon-wrapper">
-                  <ArrowRight size={18} strokeWidth={2.0} />
-                </div>
+                <ArrowRight size={18} strokeWidth={2.0} />
               </button>
             </div>
-          </div>
 
-          {/* Bilgi Kartı */}
-          <div className="info-card">
-            <Info size={20} className="info-icon" />
-            <p className="info-text">
+          <div className={styles.infoCard}>
+            <Info size={20} className={styles.infoIcon} />
+            <p className={styles.infoText}>
               Bilgi: Şirketler adına yapılan işlemlerde mağdur bilgisi ile
               sürücü bilgisi farklı kabul edilir. Bu nedenle "Hayır, farklı kişi"
               seçeneğini kullanınız.

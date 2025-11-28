@@ -80,23 +80,6 @@
   height: 14px;
 }
 
-/* === DARK MODE (İstersen kullanılır) === */
-.dark .backBtn {
-  background-color: #CBDCEB;
-}
-
-.dark .nextBtn {
-  background-color: #608BC1;
-}
-
-.dark .backText {
-  color: #000000;
-}
-
-.dark .nextText {
-  color: #ffffff;
-}
-
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .formFooter {

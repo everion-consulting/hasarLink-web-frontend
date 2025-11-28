@@ -27,7 +27,6 @@ const serviceField = [
       placeholder: "Kimlik numaranızı giriniz",
       required: true,
       maxLength: 11,
-      keyboardType: "numeric",
       validate: (value) => {
         return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
       }
@@ -35,12 +34,11 @@ const serviceField = [
     {
       name: "repair_phone",
       label: "Telefon No",
-      type: "tel",
+      type: "phone",
       placeholder: "555-333-22-11",
       required: true,
       maxLength: 17,
-      formatter: maskPhone,
-      keyboardType: "numeric"
+      formatter: maskPhone
     },
     { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: true },
   

@@ -21,90 +21,84 @@
 }
 
 
-/* ============================== */
-/*     ŞİRKET KARTI - SAME        */
-/* ============================== */
-.companyCardAccident {
-    width: 100%;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 0;
-    overflow: hidden;
-    border-bottom: 33px solid #133E87;
+/* SİGORTA KARTI STİLLERİ */
+.companyCardAccidentInsurance {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e0e6ed;
+  border-bottom: none; 
+  margin-bottom: 24px;
 }
 
-.companyCardContent {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
+.companyCardContentInsurance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+.companyTextContentInsurance {
+  flex: 1;
+}
+
+.companyTypeWrapperInsurance {
+  position: relative;
+  display: inline-block;
+}
+
+.companyTypeInsurance {
+  font-family: 'Poppins-Regular', 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 35px;
+  line-height: 45px;
+  letter-spacing: 1px;
+  color: #CBDCEB;
+  text-shadow:
+    -1px -1px 0 #608BC1,
+    1px -1px 0 #608BC1,
+    -1px 1px 0 #608BC1,
+    1px 1px 0 #608BC1;
+  text-align: left;
+}
+
+/* Koyu Mavi Alt Şerit */
+.companyNameFooter {
+  background-color: #133E87;
+  padding: 12px 24px;
+  width: 100%;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-top: -1px; 
+}
+
+/* Alt Şeritteki Şirket Adı */
+.companyNameAccidentInsuranceFooter {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-align: left;
+}
+
+.companyNameAccidentInsurance {
+  display: none; 
+}
+
+
+.companyLogoImg {
+  width: 120px;
+  height: 100px;
+  object-fit: contain;
+  margin-left: 12px;
 }
 
 .companyTextContent {
-    flex: 1;
+  flex: 1;
 }
-
-.companyTypeWrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.companyTypeOutline {
-    position: absolute;
-    font-family: 'Poppins';
-    font-weight: 400;
-    font-size: 35px;
-    line-height: 45px;
-    color: transparent;
-    -webkit-text-stroke: 1px #608BC1;
-}
-
-.companyTypeOutline:nth-child(1) {
-    left: 1px;
-    top: 0;
-}
-
-.companyTypeOutline:nth-child(2) {
-    left: -1px;
-    top: 0;
-}
-
-.companyTypeOutline:nth-child(3) {
-    left: 0;
-    top: 1px;
-}
-
-.companyTypeOutline:nth-child(4) {
-    left: 0;
-    top: -1px;
-}
-
-.companyType {
-    font-family: 'Poppins';
-    font-weight: 400;
-    font-size: 35px;
-    line-height: 45px;
-    color: #CBDCEB;
-    text-shadow: -1px -1px 0 #608BC1;
-    position: relative;
-}
-
-.companyNameAccident {
-    font-family: 'Poppins';
-    font-size: 16px;
-    color: #fff;
-    margin-top: 12px;
-    margin-left: 15px;
-}
-
-.companyLogoImg {
-    width: 120px;
-    height: 100px;
-    object-fit: contain;
-    margin-left: 12px;
-}
-
 
 /* ============================== */
 /*       KAZA NİTELİĞİ KARTI       */

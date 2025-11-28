@@ -30,6 +30,7 @@ import Settings from "./components/pages/Setting";
 import FileNotifications from "./components/pages/FileNotifications";
 import NotifiedScreen from "./components/pages/NotifiedScreen";
 import { NotificationProvider } from "./context/NotifiedContext";
+import SuccessScreen from "./components/pages/SuccessScreen";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -83,6 +84,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notifications" element={isAuth ? <NotificationScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar" element={isAuth ? <RejectedFileScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/success" element={isAuth ? <SuccessScreen/> : <Navigate to="/auth" replace/>}/>
         <Route path="/reddedilen-dosyalar-detay/:submissionId" element={isAuth ? <RejectedFileDetailScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notified-screen" element={isAuth ? <NotifiedScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />

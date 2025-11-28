@@ -26,6 +26,7 @@ export default function Dashboard() {
     monthly_estimated_amount: 0,
     total_favourite_companies: 0,
     favourite_insurance_companies: [],
+    recent_incomplete_companies: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -53,6 +54,9 @@ export default function Dashboard() {
         pending_files: Array.isArray(data.pending_files) ? data.pending_files : [],
         total_estimated_amount: data.total_estimated_amount ?? 0,
         monthly_estimated_amount: data.monthly_estimated_amount ?? 0,
+        recent_incomplete_companies: Array.isArray(data.recent_incomplete_companies)
+          ? data.recent_incomplete_companies
+          : [],
       });
     } catch (err) {
       setDashboardData({
@@ -120,7 +124,8 @@ export default function Dashboard() {
     counts,
     total_estimated_amount,
     monthly_estimated_amount,
-    favourite_insurance_companies
+    favourite_insurance_companies,
+    recent_incomplete_companies
   } = dashboardData;
 
   const formatAmount = (amount) =>
@@ -206,11 +211,12 @@ export default function Dashboard() {
 
           <div className={styles.innerCard}>
             <div className={styles.draftsLogos}>
-              {[1, 2, 3].map((_, i) => (
-                <div key={i} className={styles.draftLogo} />
+              {(dashboardData.recent_incomplete_companies ?? []).map((item) => (
+                <div key={item.id} className={styles.draftLogo}>
+                  <img className={styles.sigortaIcon} src={item.photo} alt={item.name} />
+                </div>
               ))}
             </div>
-
             <img
               src={TaslakBildirimlerIcon}
               alt="Taslak Bildirimlerim"

@@ -1,0 +1,116 @@
+/* Arka Plan */
+.successWrapper {
+    width: 100%;
+  
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+/* Kart */
+.successCard {
+    width: 480px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Başlık */
+.successTitle {
+    font-size: 32px;
+    font-weight: 800;
+    color: #000;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+}
+
+.successSubtitle {
+    font-size: 16px;
+    color: #555;
+    margin-top: -4px;
+    margin-bottom: 28px;
+}
+
+/* Info Box */
+.infoBox {
+    width: 440px;
+    background: #FFFFFF;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.infoLabel {
+    font-size: 14px;
+    color: #444;
+    font-weight: 500;
+}
+
+.infoValue {
+    font-size: 18px;
+    font-weight: 700;
+    color: #133E87;
+    margin-top: 4px;
+}
+
+/* Resim */
+.successImageArea {
+    margin: 30px 0 25px;
+}
+
+.successIllustration {
+    width: 260px;
+    height: auto;
+}
+
+/* Butonlar */
+.buttonArea {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 340px;
+}
+
+/* Ortak Buton */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    border: none;
+    font-family: "Poppins", sans-serif;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: .2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Geri Butonu */
+.btnBack {
+    color: #000;
+}
+
+/* Yeni Dosya Butonu */
+.btnFile {
+    background: #608BC1;
+    color: #fff;
+}
