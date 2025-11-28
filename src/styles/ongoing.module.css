@@ -152,9 +152,8 @@
   align-items: center;
 }
 
-
 .pendingBadge {
-  background-color: rgba(251, 192, 45, 0.7)
+  background-color: rgba(251, 192, 45, 0.7);
 }
 
 .approvedBadge {
@@ -193,26 +192,87 @@
   opacity: 0.8;
 }
 
-/* RESPONSIVE */
-@media (min-width: 768px) {
-  .backBtn {
-    width: 60px;
-    height: 60px;
-    font-size: 20px;
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+/* Tablet ve küçük laptoplar */
+@media (max-width: 1024px) {
+  .content {
+    padding: 0 12px 28px;
+  }
+
+  .contentInner {
+    max-width: 720px;
   }
 
   .headerTitleCentered {
-    font-size: 30px;
+    font-size: 28px;
   }
 }
 
+/* Tablet & büyük telefonlar */
+@media (max-width: 768px) {
+  .content {
+    padding: 0 12px 24px;
+  }
+
+  .contentInner {
+    max-width: 100%;
+  }
+
+  .headerTitleCentered {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .fileContainer {
+    padding: 14px;
+  }
+
+  .fileNumber,
+  .insuranceInfo {
+    font-size: 13px;
+  }
+
+  .detailLinkText {
+    font-size: 13px;
+  }
+
+  .backBtn {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+}
+
+/* Küçük telefonlar */
 @media (max-width: 480px) {
   .headerTitleCentered {
     font-size: 22px;
+    margin-top: 16px;
+    margin-bottom: 16px;
   }
 
-  .fileNumber {
-    font-size: 13px;
+  .backBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .fileContainer {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .fileHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .infoIconBtn {
+    align-self: flex-end;
   }
 
   .statusRow {
@@ -220,9 +280,12 @@
     align-items: flex-start;
   }
 
-  .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+  .detailLink {
+    align-self: flex-end;
+  }
+
+  .fileNumber,
+  .insuranceInfo {
+    font-size: 12px;
   }
 }

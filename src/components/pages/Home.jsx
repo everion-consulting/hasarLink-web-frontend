@@ -7,6 +7,8 @@ import TaslakBildirimlerIcon from "../../assets/images/taslakBildirimler.svg";
 import TalepEdilenIcon from "../../assets/images/talepEdilen.svg";
 import onaylananlarIcon from "../../assets/images/onaylananlar.svg";
 import onayBekleyenlerIcon from "../../assets/images/onayBekleyenler.svg";
+import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+
 
 
 export default function Dashboard() {
@@ -30,7 +32,7 @@ export default function Dashboard() {
   });
 
   const [loading, setLoading] = useState(true);
-   const goToOngoing = () => {
+  const goToOngoing = () => {
     navigate("/ongoing-files");
   };
 
@@ -294,13 +296,46 @@ export default function Dashboard() {
             YÜKLE
           </button>
         </div>
-        {/* ALT SAĞ BÜYÜK KART */}
-        <div className={`${styles.cardDashboard} ${styles.cardBottomRight}`}>
-          <h3 className={styles.cardDashboardHeading}>TOPLAM İŞLEM</h3>
-          <p className={styles.cardDashboardCount}>
-            <span className={styles.cardDashboardCountNumber}>{counts.total}</span> Dosya
-          </p>
+        {/* BU AY AÇILAN DOSYA SAYISI */}
+        <div
+          className={`${styles.cardDashboard} ${styles.cardBottomRight}`}
+          onClick={() => navigate("/monthly-files")}
+          style={{ cursor: "pointer" }}
+        >
+          <div className={styles.cardBottomRightInner}>
+            {/* SOL TARAF */}
+            <div className={styles.cardBottomRightText}>
+              <h3 className={styles.cardDashboardHeading}>
+                BU AY AÇILAN DOSYA SAYISI
+              </h3>
+
+              <p className={`${styles.cardDashboardCount} ${styles.cardBottomRightCount}`}>
+                <span className={styles.cardDashboardCountNumber}>
+                  {counts.this_month_total ?? 0}
+                </span>{" "}
+                Dosya
+              </p>
+            </div>
+
+            {/* SAĞ TARAF */}
+            <div className={styles.cardBottomRightSide}>
+              <CalendarDaysIcon width={50} height={50} color="#133E87" />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/monthly-files");
+                }}
+                className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight} ${styles.cardBottomRightButton}`}
+              >
+                TÜMÜNÜ GÖR
+              </button>
+            </div>
+          </div>
         </div>
+
+
+
 
       </div>
     </div>
