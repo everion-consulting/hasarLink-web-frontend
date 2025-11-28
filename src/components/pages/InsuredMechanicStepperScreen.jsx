@@ -8,6 +8,7 @@ import serviceField from '../../constants/serviceField';
 import opposingDriverFields from '../../constants/opposingDriverFields';
 import { useProfile } from '../../context/ProfileContext';
 import apiService from '../../services/apiServices';
+import { toYYYYMMDD } from '../utils/formatter';
 import styles from '../../styles/victimInfoScreen.module.css';
 
 export default function InsuredMechanicStepperScreen() {
@@ -123,6 +124,24 @@ export default function InsuredMechanicStepperScreen() {
             samePerson;
     };
 
+    // 🔥 Tarih formatını DD.MM.YYYY'ye çeviren yardımcı fonksiyon
+    const formatDateToDDMMYYYY = (dateStr) => {
+        if (!dateStr) return '';
+        
+        // Eğer zaten DD.MM.YYYY formatındaysa direkt döndür
+        if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
+            return dateStr;
+        }
+        
+        // YYYY-MM-DD formatındaysa çevir
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}.${month}.${year}`;
+        }
+        
+        return dateStr;
+    };
+
     // Profile verilerini yükle
     useEffect(() => {
         const loadProfileData = async () => {
@@ -139,7 +158,7 @@ export default function InsuredMechanicStepperScreen() {
                 setServiceData(prev => ({
                     ...prev,
                     repair_fullname: profileDetail.repair_fullname || '',
-                    repair_birth_date: profileDetail.repair_birth_date || '',
+                    repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || '',
                     repair_tc: profileDetail.repair_tc || '',
                     repair_phone: profileDetail.repair_phone || '',
                     service_name: profileDetail.service_name || '',
@@ -233,7 +252,7 @@ export default function InsuredMechanicStepperScreen() {
         try {
             const profileUpdateData = {
                 repair_fullname: values.repair_fullname,
-                repair_birth_date: values.repair_birth_date,
+                repair_birth_date: toYYYYMMDD(values.repair_birth_date), // DD.MM.YYYY -> YYYY-MM-DD
                 repair_tc: values.repair_tc,
                 repair_phone: values.repair_phone,
                 service_name: values.service_name,
@@ -279,8 +298,13 @@ export default function InsuredMechanicStepperScreen() {
             const returnTo = location.state?.returnTo || 'step-info';
             navigate(`/${returnTo}`, { state: navigationState });
         } else {
-            // 🔥 DEĞİŞİKLİK BURADA: Normal akışta hasar bilgileri sayfasına git
-            navigate('/hasar-bilgileri', { state: navigationState });
+            // 🔥 Normal akışta step-info'ya geri dön (3. adım onayı için)
+            navigate('/step-info', { 
+                state: {
+                    ...navigationState,
+                    startStep: 3 // 3. adımda başlat
+                }
+            });
         }
     };
 
