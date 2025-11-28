@@ -10,7 +10,6 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const navigate = useNavigate();
   const location = useLocation(); 
 
- 
   const locationState = location.state || {};
   const kazaNitelik = locationState.kazaNitelik;
   const selectedCompany = locationState.selectedCompany;
@@ -46,36 +45,39 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   };
 
   const handleFormSubmit = (values) => {
-    console.log('Mağdur Form verileri:', values);
-
+    console.log('✅ VictimInfoStepper - Ham form verileri:', values);
+    
     // Transform işlemlerini uygula
     const transformedValues = { ...values };
+    
     victimFields.forEach(field => {
       if (field.transform && typeof field.transform === 'function' && values[field.name]) {
+        console.log(`🔄 VictimInfo - Transforming ${field.name}:`, values[field.name]);
         transformedValues[field.name] = field.transform(values[field.name]);
+        console.log(`✅ VictimInfo - Transform sonrası ${field.name}:`, transformedValues[field.name]);
       }
     });
 
-    setFormValues(prev => ({ ...prev, ...transformedValues }));
+    console.log('✅ VictimInfoStepper - Transform sonrası victimData:', transformedValues);
 
-    // 🔥 KRİTİK: Tüm parametreleri driver-info'ya iletiyoruz
+    // ✅ Tüm parametreleri bir sonraki adıma ilet
     const navigationState = {
-      // Temel parametreler
+      // Mevcut location.state'i koru
+      ...locationState,
+      
+      // Transform edilmiş victim verisini ekle
+      victimData: transformedValues,
+      
+      // Temel parametreler (eğer locationState'de yoksa)
       kazaNitelik: kazaNitelik,
       selectedCompany: selectedCompany,
       insuranceSource: insuranceSource,
       samePerson: samePerson,
       karsiSamePerson: karsiSamePerson,
-      
-      // Form verileri
-      victimData: transformedValues,
-      
-      // Diğer state değerleri
-      ...locationState
     };
 
-    console.log('🚀 VictimInfo -> DriverInfo\'ya gönderilen kazaNitelik:', navigationState.kazaNitelik);
-    console.log('📍 Navigating to /driver-info');
+    console.log('🚀 VictimInfo -> DriverInfo\'ya gönderilen TÜM state:', navigationState);
+    console.log('📍 victimData:', navigationState.victimData);
 
     navigate('/driver-info', {
       state: navigationState

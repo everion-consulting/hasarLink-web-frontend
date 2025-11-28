@@ -9,6 +9,9 @@ const DriverVictimStepperScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ✅ Location.state'den TÜM verileri al
+  const locationState = location.state || {};
+  
   const {
     victimData = {},
     driverData = {},
@@ -18,8 +21,11 @@ const DriverVictimStepperScreen = () => {
     kazaNitelik,
     karsiSamePerson,
     vehicleData: existingVehicleData,
-    ...otherParams
-  } = location.state || {};
+  } = locationState;
+
+  console.log('🔍 DriverVictimStepper - Gelen location.state:', locationState);
+  console.log('🔍 DriverVictimStepper - victimData:', victimData);
+  console.log('🔍 DriverVictimStepper - driverData:', driverData);
 
   const [vehicleData, setVehicleData] = useState(
     existingVehicleData || {
@@ -35,7 +41,6 @@ const DriverVictimStepperScreen = () => {
     }
   );
 
-  // 🔍 vehicleData her değiştiğinde log'la
   useEffect(() => {
     console.log('🚗 vehicleData güncellendi:', vehicleData);
   }, [vehicleData]);
@@ -61,37 +66,48 @@ const DriverVictimStepperScreen = () => {
   const currentStep = samePerson ? 2 : 3;
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(-1, {
+      state: locationState  // Geri giderken tüm state'i koru
+    });
   };
 
   const handleVehicleSubmit = (vehicleFormData) => {
     console.log("🚗 Vehicle Form Tamamlandı:", vehicleFormData);
+    console.log("📦 Mevcut victimData:", victimData);
+    console.log("📦 Mevcut driverData:", driverData);
 
-    // Tüm verileri birleştir
+    // Transform işlemlerini uygula
+    const transformedVehicleData = { ...vehicleFormData };
+    vehicleFields.forEach(field => {
+      if (field.transform && typeof field.transform === 'function' && vehicleFormData[field.name]) {
+        transformedVehicleData[field.name] = field.transform(vehicleFormData[field.name]);
+      }
+    });
+
+    // ✅ KRİTİK: Tüm verileri birleştir ve StepInfo'ya gönder
     const completeData = {
-      victimData: victimData || {},
-      driverData: driverData || {},
-      vehicleData: vehicleFormData,
-      selectedCompany,
-      insuranceSource,
-      kazaNitelik,
-      karsiSamePerson,
-      samePerson,
-      startStep: 2, // StepInfoScreen'de 2. adımda olacak
-      ...otherParams
+      // Mevcut tüm location.state'i koru
+      ...locationState,
+      
+      // Form verilerini ekle/güncelle
+      victimData: victimData,           // ✅ victimData'yı muhafaza et
+      driverData: driverData,           // ✅ driverData'yı muhafaza et
+      vehicleData: transformedVehicleData,  // ✅ Yeni vehicle verisini ekle
+      
+      // StepInfo için gerekli
+      startStep: 2,
     };
 
-    console.log("📦 StepInfoScreen'e gönderilen TÜM veriler:", completeData);
-    console.log("📍 victimData:", victimData);
-    console.log("📍 driverData:", driverData);
-    console.log("📍 vehicleData:", vehicleFormData);
+    console.log("🚀 DriverVictimStepper -> StepInfo'ya gönderilen TÜM veriler:", completeData);
+    console.log("📍 victimData korundu mu?", completeData.victimData);
+    console.log("📍 driverData korundu mu?", completeData.driverData);
+    console.log("📍 vehicleData:", completeData.vehicleData);
 
     navigate("/step-info", {
       state: completeData
     });
   };
 
-  // Footer render'ında
   const renderFormFooter = ({ submit, allValid }) => (
     <div className="form-footer-web">
       <button className="back-button-web" onClick={handleBack} type="button">
@@ -100,7 +116,7 @@ const DriverVictimStepperScreen = () => {
       <button
         className="next-button-web"
         onClick={submit}
-        // disabled={!allValid} // Bu satırı yorum satırı yap veya kaldır
+        disabled={!allValid}
         type="button"
       >
         FORMU TAMAMLA <span className="arrow-icon">➔</span>
