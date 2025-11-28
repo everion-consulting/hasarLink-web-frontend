@@ -5,7 +5,7 @@ import step from '.././images/step.png';
 import BirIcon from '.././images/birIcon.svg';
 import IkiIcon from '.././images/ikiIcon.svg';
 import UcIcon from '.././images/ucIcon.svg';
-import { formatPlate, maskPhone, toYYYYMMDD ,toDDMMYYYY} from '../utils/formatter';
+import { formatPlate, maskPhone, toYYYYMMDD, toDDMMYYYY } from '../utils/formatter';
 import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import FormFooter from '../forms/FormFooter';
@@ -28,7 +28,12 @@ export default function StepInfoScreen() {
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
-  const karsiSamePerson = params?.karsiSamePerson || null;
+  const karsiSamePerson =
+    params?.karsiSamePerson === true
+      ? true
+      : params?.karsiSamePerson === false
+        ? false
+        : null;
   const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
 
@@ -353,7 +358,7 @@ export default function StepInfoScreen() {
                 }
               ]
             },
-            ...(insuranceSource === 'karsi trafik'
+            ...(rawInsuranceSource === 'karsi trafik' || insuranceSource === 'karsi trafik'
               ? [
                 {
                   title: 'Karşı Ruhsat Sahibi ve Sürücü Bilgisi Aynı Mı?',
@@ -361,16 +366,19 @@ export default function StepInfoScreen() {
                   data: [
                     {
                       label: '',
-                      value: karsiSamePerson
-                        ? 'Evet, aynı.'
-                        : karsiSamePerson === false
-                          ? 'Hayır, farklı.'
-                          : 'Seçiniz'
+                      value:
+                        karsiSamePerson === true
+                          ? 'Evet, aynı.'
+                          : karsiSamePerson === false
+                            ? 'Hayır, farklı.'
+                            : 'Seçiniz'
+
                     }
                   ]
                 }
               ]
               : [])
+
           ]
         };
 
@@ -745,8 +753,6 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusStep: 3,
-            preSelectedStep1: samePerson ? 'yes' : 'no',
-            preSelectedStep2: insuranceSource,
             preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
             returnTo: '/step-info',
             returnStep: currentStep
