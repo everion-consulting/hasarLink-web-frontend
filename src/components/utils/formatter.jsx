@@ -77,36 +77,49 @@ export const validateDateYMD = validateDateDMY; // alias
 // -------------------
 const asLocalDate = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-export const toYYYYMMDD = (dateLike) => {
-  if (!dateLike) return "";
-
-  // "DD.MM.YYYY" → "YYYY-MM-DD"
-  if (typeof dateLike === "string" && /^\d{2}\.\d{2}\.\d{4}$/.test(dateLike)) {
-    const [dd, mm, yyyy] = dateLike.split(".");
-    return `${yyyy}-${mm}-${dd}`;
+// utils/formatter.js - toYYYYMMDD fonksiyonunu tamamen yenileyelim
+export const toYYYYMMDD = (dateString) => {
+  if (!dateString || dateString === '' || dateString === 'Seçiniz') {
+    return null; // ✅ Boş değerleri null olarak gönder
   }
 
-  // "DD-MM-YYYY" → "YYYY-MM-DD"
-  if (typeof dateLike === "string" && /^\d{2}-\d{2}-\d{4}$/.test(dateLike)) {
-    const [dd, mm, yyyy] = dateLike.split("-");
-    return `${yyyy}-${mm}-${dd}`;
+  console.log('🔧 toYYYYMMDD input:', dateString);
+
+  try {
+    // Eğer zaten YYYY-MM-DD formatındaysa
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // DD.MM.YYYY → YYYY-MM-DD
+    if (typeof dateString === 'string' && /^\d{2}\.\d{2}\.\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('.');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+
+    // DD-MM-YYYY → YYYY-MM-DD
+    if (typeof dateString === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('-');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+
+    // Date objesinden
+    if (dateString instanceof Date) {
+      const year = dateString.getFullYear();
+      const month = String(dateString.getMonth() + 1).padStart(2, '0');
+      const day = String(dateString.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Diğer durumlarda boş string gönderme, null gönder
+    console.warn('❌ Geçersiz tarih formatı:', dateString);
+    return null;
+
+  } catch (error) {
+    console.error('❌ Tarih dönüşüm hatası:', error);
+    return null;
   }
-
-  // "YYYY-MM-DD" → "YYYY-MM-DD"
-  if (typeof dateLike === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateLike)) {
-    return dateLike;
-  }
-
-  // Date objesi
-  const d = dateLike instanceof Date ? dateLike : new Date(dateLike);
-  if (Number.isNaN(d.getTime())) return "";
-
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
 };
-
 export const toDDMMYYYY = (dateLike) => {
   if (!dateLike) return "";
 

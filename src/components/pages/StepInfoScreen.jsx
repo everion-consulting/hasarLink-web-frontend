@@ -5,7 +5,7 @@ import step from '.././images/step.png';
 import BirIcon from '.././images/birIcon.svg';
 import IkiIcon from '.././images/ikiIcon.svg';
 import UcIcon from '.././images/ucIcon.svg';
-import { formatPlate, maskPhone, toYYYYMMDD } from '../utils/formatter';
+import { formatPlate, maskPhone, toYYYYMMDD ,toDDMMYYYY} from '../utils/formatter';
 import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import FormFooter from '../forms/FormFooter';
@@ -152,7 +152,7 @@ export default function StepInfoScreen() {
         payload = {
           victim_fullname: victimData.victim_fullname,
           victim_tc: victimData.victim_tc,
-          victim_birth_date: toDDMMYYYY(victimData.victim_birth_date),
+          victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
@@ -166,7 +166,7 @@ export default function StepInfoScreen() {
             driver_tc: driverData.driver_tc,
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
-            driver_birth_date: toDDMMYYYY(driverData.driver_birth_date),
+            driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
           };
         }
 
@@ -215,7 +215,7 @@ export default function StepInfoScreen() {
             opposing_driver_tc: opposingDriverData.opposing_driver_tc || "",
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
-            opposing_driver_birth_date: toDDMMYYYY(opposingDriverData.opposing_driver_birth_date) || "",
+            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
           };
         }
       } else if (currentStep === 4) {
@@ -277,6 +277,8 @@ export default function StepInfoScreen() {
         if (newId) setSubmissionId(newId);
       }
     } else {
+      // ✅ DİĞER TÜM ADIMLARDA UPDATE ÇAĞIR
+      console.log(`📤 Step ${currentStep}: updateSubmission çağrılıyor...`);
       await updateSubmission();
     }
 
