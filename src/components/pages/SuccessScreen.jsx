@@ -17,7 +17,7 @@ const SuccessScreen = () => {
     const handleGoHome = () => navigate('/', { replace: true });
     const handleNewFile = () => {
         localStorage.removeItem("submissionId");
-        navigate('/first-screen', { replace: true });
+        navigate('/insurance-select', { replace: true });
     };
 
     return (

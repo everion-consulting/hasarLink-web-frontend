@@ -555,109 +555,126 @@ export default function StepInfoScreen() {
       return;
     }
 
-    switch (currentStep) {
-      case 1:
-        navigate('/victim-info', {
-          state: {
+    try {
+      switch (currentStep) {
+        case 1:
+          navigate('/victim-info', {
+            state: {
+              kazaNitelik,
+              insuranceSource,
+              selectedCompany,
+              samePerson,
+              karsiSamePerson,
+              driverData,
+              victimData,
+              vehicleData,
+              insuredData,
+              serviceData,
+              damageData,
+              mechanicData,
+              opposingDriverData,
+              documents: params?.documents,
+            }
+          });
+          break;
+
+        case 2:
+          console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
+
+          const insuredNavigationState = {
             kazaNitelik,
             insuranceSource,
-            selectedCompany,
             samePerson,
             karsiSamePerson,
+            selectedCompany,
             driverData,
             victimData,
             vehicleData,
             insuredData,
             serviceData,
             damageData,
-            mechanicData,
             opposingDriverData,
+            mechanicData,
             documents: params?.documents,
-          }
-        });
-        break;
+          };
 
-      case 2:
-        console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
-        console.log('  kazaNitelik (local):', kazaNitelik);
-        console.log('  insuranceSource (local):', insuranceSource);
-        console.log('  samePerson (local):', samePerson);
-        console.log('  karsiSamePerson (local):', karsiSamePerson);
-        console.log('  selectedCompany (local):', selectedCompany);
+          console.log('📦 Navigation state:', insuredNavigationState);
 
-        // 🔥 KRİTİK: Tüm değerleri açıkça belirt
-        const insuredNavigationState = {
-          kazaNitelik,           // 🔥 Local const
-          insuranceSource,       // 🔥 Hesaplanmış değer
-          samePerson,            // 🔥 Local const
-          karsiSamePerson,       // 🔥 Local const
-          selectedCompany,       // 🔥 Local const
+          navigate('/insured-mechanic-stepper', {
+            state: insuredNavigationState
+          });
+          break;
+
+        case 3:
+          navigate('/hasar-bilgileri', { state: { ...params } });
+          break;
+
+        case 4:
+          // ✅ 4. adımda direkt handleFinalApprove çağır
+          console.log('🎯 Step 4: Final approve called');
+          await handleFinalApprove();
+          break;
+
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error('❌ Navigation error:', error);
+      alert('İşlem sırasında bir hata oluştu: ' + error.message);
+    }
+  };
+
+  const handleFinalApprove = async () => {
+    try {
+      console.log('🎯 Final approve process started');
+
+      // Önce submission'ı güncelle
+      const updateResult = await updateSubmission();
+      console.log('📝 Update result:', updateResult);
+
+      const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
+
+      // Evrak sayısını hesapla
+      const uploadedDocuments = params?.documents
+        ? Object.values(params.documents)
+          .flat()
+          .filter(item => item && (item.file || item.preview)) // Hem file hem preview kontrolü
+          .length
+        : 0;
+
+      console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
+      console.log("🏢 Şirket adı:", selectedCompany?.name);
+
+      // Success screen'e yönlendir
+      console.log('🔄 Navigating to success screen...');
+
+      navigate('/success', {
+        state: {
+          fileName: randomFileNumber,
+          companyName: selectedCompany?.name || 'Bilinmiyor',
+          documentCount: uploadedDocuments,
+          kazaNitelik,
+          selectedCompany,
+          samePerson,
+          karsiSamePerson,
+          insuranceSource,
           driverData,
           victimData,
           vehicleData,
           insuredData,
           serviceData,
           damageData,
-          opposingDriverData,
           mechanicData,
+          opposingDriverData,
           documents: params?.documents,
-        };
+        },
+        replace: true // Önceki sayfaya geri dönüşü engeller
+      });
 
-        console.log('📦 Navigation state:', insuredNavigationState);
-
-        navigate('/insured-mechanic-stepper', {
-          state: insuredNavigationState
-        });
-        break;
-
-      case 3:
-        navigate('/hasar-bilgileri', { state: { ...params } });
-        break;
-
-      case 4:
-        handleFinalApprove();
-        break;
-
-      default:
-        break;
+    } catch (error) {
+      console.error('❌ Final approve error:', error);
+      alert('Son onaylama sırasında hata: ' + error.message);
     }
-  };
-
-  const handleFinalApprove = async () => {
-    await updateSubmission();
-
-    const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
-
-    const uploadedDocuments = params?.documents
-      ? Object.values(params.documents)
-        .flat()
-        .filter(item => item)
-        .length
-      : 0;
-
-    console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
-
-    navigate('/success-screen', {
-      state: {
-        fileName: randomFileNumber,
-        companyName: selectedCompany?.name || params?.companyName,
-        documentCount: uploadedDocuments,
-        kazaNitelik,
-        selectedCompany,
-        samePerson,
-        karsiSamePerson,
-        insuranceSource,
-        driverData,
-        victimData,
-        vehicleData,
-        insuredData,
-        serviceData,
-        damageData,
-        mechanicData,
-        opposingDriverData,
-        documents: params?.documents,
-      }
-    });
   };
   const handleEditPress = (section) => {
     if (isStepApproved) return;
