@@ -18,7 +18,7 @@ export default function InsuredMechanicStepperScreen() {
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
-    // ✅ Doğrudan location.state'ten al, routeParams kullanma
+    
     const {
         insuranceSource,
         karsiSamePerson,
@@ -48,7 +48,7 @@ export default function InsuredMechanicStepperScreen() {
     const isCokluKarsiTrafik =
         kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi trafik";
 
-    // ✅ Karşı sürücü formunu kontrol et - NATIVE'DEKİ MANTIK
+   
     const shouldShowOpposingDriver = insuranceSource === 'karsi trafik' && karsiSamePerson === false;
 
     console.log('🔍 Karşı Sürücü Durumu:', {
@@ -57,7 +57,7 @@ export default function InsuredMechanicStepperScreen() {
         shouldShowOpposingDriver
     });
 
-    // 🔥 DİNAMİK STEP HESAPLAMA - NATIVE'DEKİ MANTIK
+  
     const calculateSteps = () => {
         console.log('📊 calculateSteps çalıştı');
         console.log('  kazaNitelik:', kazaNitelik);
@@ -65,19 +65,19 @@ export default function InsuredMechanicStepperScreen() {
         console.log('  karsiSamePerson:', karsiSamePerson);
         console.log('  shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
-        // 🔥 TEKLİ KAZA → Sadece Servis (NATIVE'DEKİ MANTIK)
+        
         if (isTekliBizimKasko) {
             console.log('✅ TEKLİ KAZA -> SADECE Servis');
             return ['Servis Bilgileri'];
         }
 
-        // 🔥 Karşı trafik ve farklı kişi → Sigortalı + Karşı Sürücü + Servis (NATIVE'DEKİ MANTIK)
+        
         if (shouldShowOpposingDriver) {
             console.log('✅ KARŞI TRAFİK + FARKLI KİŞİ -> Sigortalı + Karşı Sürücü + Servis');
             return ['Sigortalı Bilgileri', 'Karşı Sürücü Bilgileri', 'Servis Bilgileri'];
         }
 
-        // 🔥 Diğer durumlar → Sigortalı + Servis (NATIVE'DEKİ MANTIK)
+        
         console.log('✅ DİĞER -> Sigortalı + Servis');
         return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
     };
@@ -104,7 +104,7 @@ export default function InsuredMechanicStepperScreen() {
     const [cityOptions, setCityOptions] = useState([]);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
-    // ✅ DÜZELTİLDİ: Service fields with city options - HATA GİDERİLDİ
+    
     const serviceFields = useMemo(() => {
         return serviceField.map(f => {
             if (f.type === 'row') {
@@ -118,14 +118,14 @@ export default function InsuredMechanicStepperScreen() {
                 };
             }
 
-            // ✅ DÜZELTİLDİ: Burada 'child' değil 'f' kullan
+            
             return f.name === 'service_city'
                 ? { ...f, options: cityOptions }
                 : f;
         });
     }, [cityOptions]);
 
-    // 🔥 Tarih formatını DD.MM.YYYY'ye çeviren yardımcı fonksiyon
+   
     const formatDateToDDMMYYYY = (dateStr) => {
         if (!dateStr) return '';
         
@@ -289,7 +289,7 @@ export default function InsuredMechanicStepperScreen() {
         console.log('✅ Servis formu tamamlandı:', values);
         setServiceData(values);
 
-        // 🔥 Profil güncelleme
+        
         try {
             const profileUpdateData = {
                 repair_fullname: values.repair_fullname,
@@ -318,7 +318,7 @@ export default function InsuredMechanicStepperScreen() {
             console.error('❌ Profil güncelleme hatası:', error);
         }
 
-        // ✅ KRİTİK: Tüm verileri doğru şekilde birleştir
+       
         const navigationState = {
             ...location.state,
             kazaNitelik,
@@ -328,7 +328,7 @@ export default function InsuredMechanicStepperScreen() {
             karsiSamePerson,
             startStep: editMode ? returnStep : 3,
             
-            // ✅ TÜM verileri ekle
+           
             insuredData: insuredData,
             serviceData: values,
             opposingDriverData: opposingDriverData,
@@ -444,11 +444,11 @@ export default function InsuredMechanicStepperScreen() {
         );
     };
 
-    // 🔥 RENDER MANTIĞI - NATIVE'DEKİ MANTIK
+    
     const renderCurrentForm = () => {
         console.log('🎨 RENDER - currentStep:', currentStep, 'steps:', steps, 'shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
-        // 🔥 TEKLİ KAZA → Sadece Servis
+       
         if (isTekliBizimKasko && currentStep === 1) {
             return (
                 <FormRenderer
@@ -461,7 +461,7 @@ export default function InsuredMechanicStepperScreen() {
             );
         }
 
-        // 🔥 Step 1: Sigortalı Bilgileri
+        
         if (currentStep === 1) {
             return (
                 <FormRenderer
@@ -474,7 +474,7 @@ export default function InsuredMechanicStepperScreen() {
             );
         }
 
-        // 🔥 Step 2: Karşı Sürücü Bilgileri - BU ARTIK ÇALIŞACAK!
+      
         if (currentStep === 2 && shouldShowOpposingDriver) {
             console.log('✅ Karşı sürücü formu render ediliyor');
             return (
@@ -488,7 +488,7 @@ export default function InsuredMechanicStepperScreen() {
             );
         }
 
-        // 🔥 Son Step: Servis Bilgileri
+       
         return (
             <FormRenderer
                 fields={serviceFields}
