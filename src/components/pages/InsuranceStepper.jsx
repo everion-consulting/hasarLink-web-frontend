@@ -51,7 +51,7 @@ export default function InsuranceStepper() {
   const stepNames =
     kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
       ? ['Adım 1']
-      : ['Adım 1', 'Adım 2', ...(step2Selection === 'karsi trafik' ? ['Adım 3'] : [])];
+      : ['Adım 1', 'Adım 2', ...((step2Selection === 'karsi trafik' || step2Selection === 'karsi kasko') ? ['Adım 3'] : [])];
 
   useEffect(() => {
     if (editMode) {
@@ -159,7 +159,7 @@ export default function InsuranceStepper() {
     if (currentStep === 1 && step1Selection) {
       setCurrentStep(2);
     } else if (currentStep === 2 && step2Selection) {
-      if (step2Selection === 'karsi trafik') {
+      if (step2Selection === 'karsi trafik' || step2Selection === 'karsi kasko') {
         setCurrentStep(3);
       } else {
         const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
