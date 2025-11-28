@@ -238,7 +238,7 @@ export default function Profile() {
                             <p className={styles.noFavorites}>Favori şirket yok</p>
                         )}
 
-                        {favoriteCompanies.map((id) => {
+                         {favoriteCompanies.slice(0, 6).map((id) => {
                             const comp = allCompaniesList?.find(c => c.id === id);
                             if (!comp) return null;
 
@@ -259,11 +259,11 @@ export default function Profile() {
                 <div className={styles.card}>
                     <div className={styles.cardTitleRow}>
                         <h3 className={styles.cardTitle}>DOSYA BİLDİRİMLERİM</h3>
-                        <a className={styles.editLink}>Hepsini Gör</a>
+                        <a className={styles.editLink} onClick={() => navigate("/file-notifications")}>Hepsini Gör</a>
                     </div>
 
-                    <div className={styles.fileStatusRow}>
-                        {fileNotifications.slice(0, 4).map((item) => (
+                    <div className={`${styles.fileStatusRow} ${styles['count-' + Math.min(fileNotifications.slice(0, 8).length, 8)]}`}>
+                        {fileNotifications.slice(0, 8).map((item) => (
                             <div key={item.id} className={styles.fileStatusBox}>
                                 {getStatusIcon(item.status)}
                             </div>
