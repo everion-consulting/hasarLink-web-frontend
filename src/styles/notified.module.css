@@ -1,0 +1,289 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  background-color: transparent;
+  color: #333333;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.background {
+  position: absolute;
+  inset: 0;
+  height: 380px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bgSvg {
+  width: 100%;
+  height: 100%;
+}
+
+
+.header {
+  position: relative;
+  padding: 32px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  z-index: 10;
+}
+
+
+.backBtn {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+
+  width: 60px;
+  height: 60px;
+  padding: 0;
+
+  border-radius: 8px;
+
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.backBtn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+
+.header {
+  position: relative;
+  padding: 32px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  z-index: 10;
+}
+
+
+.backBtn {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 8px;
+
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.backBtn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+
+.headerTitleCentered {
+  align-self: center;     
+  text-align: center;
+  margin-top: 24px;        
+  margin-bottom: 24px;     
+  font-size: 30px;
+  font-weight: 700;
+  color: #333333;
+  line-height: 1.2;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .headerTitleCentered {
+    font-size: 22px;
+  }
+
+  .backBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+}
+
+
+
+.content {
+  position: relative;
+  z-index: 5;
+  padding: 0 16px 32px;      
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.contentInner {
+  width: 100%;
+  max-width: 480px;
+}
+
+
+.empty {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 16px;
+  color: #111827;
+}
+
+
+.fileContainer {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.fileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.fileNumber {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.insuranceInfo {
+  font-size: 14px;
+  color: #000000;
+}
+
+/* info ikonu */
+.infoIconBtn {
+  border: none;
+  background: transparent;
+  padding: 3px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.infoIconBtn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.infoIconSvg {
+  width: 20px;
+  height: 20px;
+  color: #666666;
+}
+
+/* STATUS / FOOTER */
+.statusRow {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusBadge {
+  flex-direction: row;
+  border-radius: 10px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Bildirim yapılanlar listesi, rejected-list gibi */
+.listWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+
+.processingBadge {
+  background-color: rgba(251, 192, 45, 0.7);
+}
+
+.approvedBadge {
+  background-color: rgba(67, 160, 71, 0.7);
+}
+
+.approvedBadgeRisk {
+  background-color: rgba(198, 40, 40, 0.7);
+}
+
+.processingBadgeText,
+.approvedBadgeText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Detay linki */
+.detailLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.detailLinkText {
+  font-size: 14px;
+  color: #133e87;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.detailLink:hover .detailLinkText {
+  opacity: 0.8;
+}
+
+/* RESPONSIVE */
+@media (min-width: 768px) {
+  .backBtn {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+ 
+}
+
+@media (max-width: 480px) {
+  
+
+  .fileNumber {
+    font-size: 13px;
+  }
+
+  .statusRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .backBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+}

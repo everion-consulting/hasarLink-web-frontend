@@ -28,6 +28,8 @@ import RejectedFileDetailScreen from "./components/pages/RejectedFileDetailScree
 import apiService from "./services/apiServices";
 import Settings from "./components/pages/Setting";
 import FileNotifications from "./components/pages/FileNotifications";
+import NotifiedScreen from "./components/pages/NotifiedScreen";
+import { NotificationProvider } from "./context/NotifiedContext";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -82,6 +84,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/notifications" element={isAuth ? <NotificationScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar" element={isAuth ? <RejectedFileScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar-detay/:submissionId" element={isAuth ? <RejectedFileDetailScreen /> : <Navigate to="/auth" replace />} />
+        <Route path="/notified-screen" element={isAuth ? <NotifiedScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -147,9 +150,11 @@ export default function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Router>
-        <ProfileProvider>
-          <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
-        </ProfileProvider>
+        <NotificationProvider>
+          <ProfileProvider>
+            <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
+          </ProfileProvider>
+        </NotificationProvider>
       </Router>
     </GoogleOAuthProvider>
   );
