@@ -5,7 +5,7 @@ import step from '.././images/step.png';
 import BirIcon from '.././images/birIcon.svg';
 import IkiIcon from '.././images/ikiIcon.svg';
 import UcIcon from '.././images/ucIcon.svg';
-import { formatPlate, maskPhone, toYYYYMMDD } from '../utils/formatter';
+import { formatPlate, maskPhone, toYYYYMMDD, toDDMMYYYY } from '../utils/formatter';
 import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import FormFooter from '../forms/FormFooter';
@@ -13,14 +13,12 @@ import FormFooter from '../forms/FormFooter';
 export default function StepInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // ✅ Her render'da güncel location.state'i al
   const params = location.state || {};
 
+
   console.log("🔍 StepInfoScreen'e GELEN TÜM parametreler:", params);
-  console.log("🔍 Gelen kazaNitelik:", params.kazaNitelik);
-  console.log("🔍 Gelen insuranceSource:", params.insuranceSource);
-  console.log("🔍 Gelen selectedCompany:", params.selectedCompany);
-  console.log("🔍 Gelen samePerson:", params.samePerson);
-  console.log("🔍 Gelen karsiSamePerson:", params.karsiSamePerson);
   console.log("🔍 Gelen victimData:", params.victimData);
   console.log("🔍 Gelen driverData:", params.driverData);
   console.log("🔍 Gelen vehicleData:", params.vehicleData);
@@ -32,39 +30,56 @@ export default function StepInfoScreen() {
   const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
 
-
-
   const insuranceSource = (() => {
-    // 1. Önce TEKLİ KAZA kontrolü
     if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
       return "bizim kasko";
     }
-    // 2. Sonra gelen değeri kontrol et
     if (rawInsuranceSource && ["karsi trafik", "bizim kasko", "karsi kasko"].includes(rawInsuranceSource)) {
       return rawInsuranceSource;
     }
-    // 3. Fallback değer
     return "bizim kasko";
   })();
 
-  console.log("🔍 Hesaplanan insuranceSource:", insuranceSource);
-  console.log("🔍 Gelen rawInsuranceSource:", rawInsuranceSource);
-  console.log("🔍 kazaNitelik:", kazaNitelik);
-
-  // Form verilerini doğru şekilde al - BURASI FONKSİYON İÇİNDE OLMALI
-  const [driverData, setDriverData] = useState(params?.driverData || {});
-  const [victimData, setVictimData] = useState(params?.victimData || {});
-  const [vehicleData, setVehicleData] = useState(params?.vehicleData || {});
-  const [insuredData, setInsuredData] = useState(params?.insuredData || {});
-  const [mechanicData, setMechanicData] = useState(params?.mechanicData || {});
-  const [serviceData, setServiceData] = useState(params?.serviceData || {});
-  const [damageData, setDamageData] = useState(params?.damageData || {});
-  const [opposingDriverData, setOpposingDriverData] = useState(params?.opposingDriverData || {});
+  // ✅ State'leri params'tan başlat VE params değişince güncelle
+  const [driverData, setDriverData] = useState({});
+  const [victimData, setVictimData] = useState({});
+  const [vehicleData, setVehicleData] = useState({});
+  const [insuredData, setInsuredData] = useState({});
+  const [mechanicData, setMechanicData] = useState({});
+  const [serviceData, setServiceData] = useState({});
+  const [damageData, setDamageData] = useState({});
+  const [opposingDriverData, setOpposingDriverData] = useState({});
 
   const [currentStep, setCurrentStep] = useState(startStep);
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
+
+  // ✅ KRİTİK: params değiştiğinde state'leri güncelle
+  useEffect(() => {
+    console.log("🔄 useEffect tetiklendi - params güncellendi");
+    console.log("📦 Yeni params.victimData:", params.victimData);
+    console.log("📦 Yeni params.driverData:", params.driverData);
+    console.log("📦 Yeni params.vehicleData:", params.vehicleData);
+
+    if (params.victimData) {
+      console.log("✅ victimData güncelleniyor:", params.victimData);
+      setVictimData(params.victimData);
+    }
+    if (params.driverData) {
+      console.log("✅ driverData güncelleniyor:", params.driverData);
+      setDriverData(params.driverData);
+    }
+    if (params.vehicleData) {
+      console.log("✅ vehicleData güncelleniyor:", params.vehicleData);
+      setVehicleData(params.vehicleData);
+    }
+    if (params.insuredData) setInsuredData(params.insuredData);
+    if (params.mechanicData) setMechanicData(params.mechanicData);
+    if (params.serviceData) setServiceData(params.serviceData);
+    if (params.damageData) setDamageData(params.damageData);
+    if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
+  }, [location.state]);
 
   const isTekliBizimKasko =
     kazaNitelik === "TEKLİ KAZA (BEYANLI)" &&
@@ -152,7 +167,7 @@ export default function StepInfoScreen() {
         payload = {
           victim_fullname: victimData.victim_fullname,
           victim_tc: victimData.victim_tc,
-          victim_birth_date: toDDMMYYYY(victimData.victim_birth_date),
+          victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
@@ -166,7 +181,7 @@ export default function StepInfoScreen() {
             driver_tc: driverData.driver_tc,
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
-            driver_birth_date: toDDMMYYYY(driverData.driver_birth_date),
+            driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
           };
         }
 
@@ -187,14 +202,14 @@ export default function StepInfoScreen() {
         payload = {
           insured_fullname: insuredData.insured_fullname,
           insured_tc: insuredData.insured_tc,
-          insured_birth_date: insuredData.insured_birth_date,
+          insured_birth_date: toYYYYMMDD(insuredData.insured_birth_date),
           insured_phone: insuredData.insured_phone,
           insured_mail: insuredData.insured_mail,
           insured_plate: insuredData.insured_plate,
           insured_policy_no: insuredData.insured_policy_no,
           insured_file_no: insuredData.insured_file_no,
           repair_fullname: mechanicData.repair_fullname,
-          repair_birth_date: mechanicData.repair_birth_date,
+          // repair_birth_date: toYYYYMMDD(mechanicData.repair_birth_date),
           repair_tc: mechanicData.repair_tc,
           repair_phone: mechanicData.repair_phone,
           service_name: serviceData.service_name,
@@ -215,7 +230,7 @@ export default function StepInfoScreen() {
             opposing_driver_tc: opposingDriverData.opposing_driver_tc || "",
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
-            opposing_driver_birth_date: toDDMMYYYY(opposingDriverData.opposing_driver_birth_date) || "",
+            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
           };
         }
       } else if (currentStep === 4) {
@@ -277,6 +292,8 @@ export default function StepInfoScreen() {
         if (newId) setSubmissionId(newId);
       }
     } else {
+      // ✅ DİĞER TÜM ADIMLARDA UPDATE ÇAĞIR
+      console.log(`📤 Step ${currentStep}: updateSubmission çağrılıyor...`);
       await updateSubmission();
     }
 

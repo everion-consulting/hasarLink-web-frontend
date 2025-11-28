@@ -8,21 +8,17 @@
   flex-direction: column;
 }
 
-/* (İstersen ileride kullanırsın, şu an JSX'te yok) */
-.background {
-  position: absolute;
-  inset: 0;
-  height: 380px;
-  overflow: hidden;
-  z-index: 0;
+
+.header {
+  position: relative;
+  padding: 32px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 10;
 }
 
-.bgSvg {
-  width: 100%;
-  height: 100%;
-}
 
-/* Geri butonu */
 .backBtn {
   position: relative;
   z-index: 1;
@@ -49,6 +45,7 @@
   transform: translateY(-1px);
 }
 
+
 .headerTitleCentered {
   align-self: center;
   text-align: center;
@@ -60,7 +57,30 @@
   line-height: 1.2;
 }
 
-/* Ana içerik kartının içindeki liste */
+
+.content {
+  position: relative;
+  z-index: 5;
+  padding: 0 16px 32px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.contentInner {
+  width: 100%;
+  max-width: 480px;
+}
+
+
+.empty {
+  padding: 32px 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #111827;
+}
+
+
 .listWrapper {
   display: flex;
   flex-direction: column;
@@ -68,15 +88,6 @@
   margin-top: 12px;
 }
 
-/* Boş durum */
-.empty {
-  margin-top: 40px;
-  text-align: center;
-  font-size: 16px;
-  color: #111827;
-}
-
-/* Her bir dosya kartı */
 .fileContainer {
   background-color: #ffffff;
   border-radius: 12px;
@@ -105,7 +116,7 @@
   color: #000000;
 }
 
-/* info ikonu */
+
 .infoIconBtn {
   border: none;
   background: transparent;
@@ -124,7 +135,7 @@
   color: #666666;
 }
 
-/* STATUS / FOOTER */
+
 .statusRow {
   margin-top: 8px;
   display: flex;
@@ -141,9 +152,9 @@
   align-items: center;
 }
 
-/* Durum renkleri */
+
 .processingBadge {
-  background-color: rgba(251, 192, 45, 0.7);
+  background-color: rgba(58, 174, 179, 0.7);
 }
 
 .approvedBadge {
@@ -161,7 +172,7 @@
   color: #ffffff;
 }
 
-/* Detay linki */
+
 .detailLink {
   border: none;
   background: transparent;
@@ -182,82 +193,26 @@
   opacity: 0.8;
 }
 
-/* ===========================
-   RESPONSIVE
-   =========================== */
-
-/* Tablet ve daha küçük laptoplarda kart alanını biraz daralt */
-@media (max-width: 1024px) {
-  .headerTitleCentered {
-    font-size: 26px;
-  }
-
-  .fileContainer {
-    padding: 14px;
-  }
-}
-
-/* Tablet & büyük telefon */
-@media (max-width: 768px) {
-  .headerTitleCentered {
-    font-size: 24px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .fileContainer {
-    padding: 14px;
-  }
-
-  .fileNumber,
-  .insuranceInfo {
-    font-size: 13px;
-  }
-
-  .detailLinkText {
-    font-size: 13px;
-  }
-
-  /* aracın bulunduğu kartları biraz daha sıkı tutalım */
-  .listWrapper {
-    gap: 10px;
-    margin-top: 10px;
-  }
-
+/* RESPONSIVE */
+@media (min-width: 768px) {
   .backBtn {
-    width: 50px;
-    height: 50px;
-    font-size: 18px;
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .headerTitleCentered {
+    font-size: 30px;
   }
 }
 
-/* Küçük telefon */
 @media (max-width: 480px) {
   .headerTitleCentered {
-    font-size: 20px;
-    line-height: 1.3;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    font-size: 22px;
   }
 
-  .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-  }
-
-  .fileContainer {
-    padding: 12px;
-    border-radius: 10px;
-  }
-
-  .fileHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .infoIconBtn {
-    align-self: flex-end;
+  .fileNumber {
+    font-size: 13px;
   }
 
   .statusRow {
@@ -265,12 +220,9 @@
     align-items: flex-start;
   }
 
-  .detailLink {
-    align-self: flex-end;
-  }
-
-  .fileNumber,
-  .insuranceInfo {
-    font-size: 12px;
+  .backBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
 }
