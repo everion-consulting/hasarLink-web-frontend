@@ -71,7 +71,7 @@ export default function InsuranceStepper() {
       kazaNitelik,
       samePerson: s1 === 'yes',
       insuranceSource: s2,
-      karsiSamePerson: s3 === 'yes',
+      karsiSamePerson: s3 === 'yes' ? true : s3 === 'no' ? false : null,
       startStep: returnStep || 1,
       driverData: location.state?.driverData || {},
       victimData: location.state?.victimData || {},
@@ -299,28 +299,28 @@ export default function InsuranceStepper() {
               )}
             </div>
 
-            
+
           </div>
           <div className={styles.formFooterButtons}>
-              {/* 🚨 Düğme Sınıfı Değiştirildi */}
-              <button
-                className={styles.backBtn} 
-                onClick={handleBackPress}
-              >
-                <ArrowLeft size={18} strokeWidth={2.0} />
-                <span>GERİ DÖN</span>
-              </button>
+            {/* 🚨 Düğme Sınıfı Değiştirildi */}
+            <button
+              className={styles.backBtn}
+              onClick={handleBackPress}
+            >
+              <ArrowLeft size={18} strokeWidth={2.0} />
+              <span>GERİ DÖN</span>
+            </button>
 
-              {/* 🚨 Düğme Sınıfı Değiştirildi ve Etkinleştirme Mantığı Korundu */}
-              <button
-                className={`${styles.nextBtn} ${!isAllChosenForCurrentStep ? styles.disabled : ''}`}
-                onClick={handleContinue}
-                disabled={!isAllChosenForCurrentStep}
-              >
-                <span>{editMode ? 'KAYDET' : 'DEVAM ET'}</span>
-                <ArrowRight size={18} strokeWidth={2.0} />
-              </button>
-            </div>
+            {/* 🚨 Düğme Sınıfı Değiştirildi ve Etkinleştirme Mantığı Korundu */}
+            <button
+              className={`${styles.nextBtn} ${!isAllChosenForCurrentStep ? styles.disabled : ''}`}
+              onClick={handleContinue}
+              disabled={!isAllChosenForCurrentStep}
+            >
+              <span>{editMode ? 'KAYDET' : 'DEVAM ET'}</span>
+              <ArrowRight size={18} strokeWidth={2.0} />
+            </button>
+          </div>
 
           <div className={styles.infoCard}>
             <Info size={20} className={styles.infoIcon} />
