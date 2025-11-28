@@ -1,12 +1,13 @@
-/* StepInfo.css - RESİMDEKİ TASARIMA UYGUN */
+/* StepInfo.module.css */
 
-.step-info-container {
+/* CONTAINER */
+.stepInfoContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-.scroll-view {
+.scrollView {
   flex: 1;
   padding: 0 20px;
   overflow-y: auto;
@@ -16,7 +17,7 @@
   align-items: center;
 }
 
-.page-title {
+.pageTitle {
   font-size: 24px;
   font-weight: 400;
   color: #000000;
@@ -27,17 +28,17 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* ADIM Stili - İKONLU VERSİYON */
-.step-info-section {
+/* ADIM BİLGİ ALANI */
+.stepInfoSection {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
   margin-bottom: 20px;
-  order: 3; /* 🔥 HER ZAMAN 3. SIRADA OLSUN */
+  order: 3;
 }
 
-.step-header {
+.stepHeader {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,20 +46,20 @@
   gap: 10px;
 }
 
-.step-title {
+.stepTitle {
   font-size: 48px;
   font-weight: 700;
   color: #133E87;
   font-family: 'Poppins', sans-serif;
 }
 
-.step-icon-container {
+.stepIconContainer {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.step-info {
+.stepInfo {
   font-size: 16px;
   font-weight: 400;
   color: #333;
@@ -68,128 +69,8 @@
   margin: 0 20px 20px 20px;
 }
 
-/* BUTON CONTAINER - ALT KISIM */
-.footer {
-  background-color: #fff;
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
-  margin-top: auto;
-  order: 4; /* 🔥 EN ALTTA OLSUN */
-}
-
-.button-container {
-  display: flex;
-  gap: 15px;
-  width: 100%;
-}
-
-/* GERİ DÖN BUTONU */
-.back-button {
-  flex: 1;
-  background-color: #CBDCEB;
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.2s ease;
-}
-
-.back-button:hover {
-  background-color: #b8cce0;
-  transform: translateY(-1px);
-}
-
-.back-button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.back-icon-wrapper {
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.5;
-  color: #000000;
-}
-
-.back-button-text {
-  font-size: 16px;
-  font-weight: bold;
-  color: #000000;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* DEVAM ET BUTONU */
-.continue-button {
-  flex: 1;
-  background-color: #133E87;
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  transition: all 0.2s ease;
-}
-
-.continue-button:hover:not(.disabled) {
-  background-color: #0d2c5e;
-  transform: translateY(-1px);
-}
-
-.continue-button.disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.continue-button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.continue-icon-wrapper {
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.continue-icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.5;
-  color: #ffffff;
-}
-
-.continue-button-text {
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffffff;
-  font-family: 'Poppins', sans-serif;
-}
-
-.continue-button-text.disabled {
-  color: #666;
-}
-
-/* FORM KARTI - RESİMDEKİ GİBİ */
-.form-card {
+/* FORM KARTI */
+.formCard {
   background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
@@ -202,8 +83,8 @@
   order: 2;
 }
 
-/* HER KART - RESİMDEKİ GİBİ */
-.section-box {
+/* HER BÖLÜM */
+.sectionBox {
   padding: 10px;
   border: 1px solid #E0E0E0;
   border-radius: 8px;
@@ -215,14 +96,14 @@
   margin-bottom: 15px;
 }
 
-.section-title-step {
+.sectionTitleStep {
   font-size: 20px;
   font-weight: 500;
   color: #000;
   font-family: 'Poppins', sans-serif;
 }
 
-.content-box {
+.contentBox {
   background-color: #ffffff;
   border-radius: 8px;
   border-bottom: none !important;
@@ -233,23 +114,22 @@
   flex-direction: column;
 }
 
-
-.data-row {
+.dataRow {
   margin-bottom: 12px;
   padding: 8px 0;
 }
 
-.data-row:last-child {
+.dataRow:last-child {
   border-bottom: none;
 }
 
-.label-value-pair {
+.labelValuePair {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
 }
 
-.data-label {
+.dataLabel {
   font-size: 14px;
   font-weight: 600;
   color: #000000;
@@ -258,7 +138,7 @@
   margin-right: 15px;
 }
 
-.data-value {
+.dataValue {
   font-size: 14px;
   font-weight: 400;
   font-style: normal;
@@ -272,18 +152,18 @@
   white-space: normal;
 }
 
-.red-text {
+.redText {
   color: #ff0000;
   font-weight: 600;
 }
 
-/* DÜZENLE BUTONU - RESİMDEKİ GİBİ */
-.edit-button-container {
+/* DÜZENLE BUTONU */
+.editButtonContainer {
   display: flex;
   justify-content: flex-end;
 }
 
-.edit-button {
+.editButton {
   padding: 8px 20px;
   background: none;
   border: 1px solid #133E87;
@@ -292,12 +172,12 @@
   transition: all 0.3s ease;
 }
 
-.edit-button:hover {
+.editButton:hover {
   background-color: #133E87;
   color: white;
 }
 
-.edit-button-text {
+.editButtonText {
   color: #133E87;
   font-size: 14px;
   font-weight: 500;
@@ -305,12 +185,18 @@
   transition: color 0.3s ease;
 }
 
-.edit-button:hover .edit-button-text {
+.editButton:hover .editButtonText {
   color: white;
 }
 
+/* ONAYLA BÖLÜMÜ */
+.approveSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-.approve-button {
+.approveButton {
   background-color: #133E87;
   border-radius: 8px;
   padding: 15px 30px;
@@ -326,11 +212,11 @@
   transition: background-color 0.3s ease;
 }
 
-.approve-button:hover {
+.approveButton:hover {
   background-color: #0d2c5e;
 }
 
-.approve-button-text {
+.approveButtonText {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -340,7 +226,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.approve-icon-wrapper {
+.approveIconWrapper {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -350,24 +236,24 @@
   justify-content: center;
 }
 
-.approve-icon {
+.approveIcon {
   width: 18px;
   height: 18px;
   stroke-width: 2.5;
   color: #ffffff;
 }
 
-/* ONAYLANMIŞ STEP BİLEŞENİ */
-.approved-container {
+/* ONAYLANMIŞ ALAN */
+.approvedContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  order: 2; /* 🔥 FORM KARTIYLA AYNI SIRADA */
+  order: 2;
   margin: 30px 0;
 }
 
-.approved-card {
+.approvedCard {
   background-color: #fff;
   border-radius: 15px;
   padding: 60px 40px;
@@ -383,13 +269,13 @@
   justify-content: center;
 }
 
-.onay-icon {
+.onayIcon {
   width: 150px;
   height: 150px;
   margin-bottom: 40px;
 }
 
-.approved-message {
+.approvedMessage {
   background-color: #fff;
   border: 2px solid #133E87;
   padding: 12px 20px;
@@ -397,7 +283,7 @@
   margin-top: 50px;
 }
 
-.approved-message-text {
+.approvedMessageText {
   font-size: 18px;
   font-weight: 600;
   color: #133E87;
@@ -405,8 +291,8 @@
   text-align: center;
 }
 
-/* DEVRE DIŞI DÜZENLEME BİLGİSİ */
-.disabled-edit-info {
+/* DÜZENLENEMEZ ALAN BİLGİSİ */
+.disabledEditInfo {
   padding: 8px 12px;
   background-color: #F0F0F0;
   border-radius: 8px;
@@ -416,65 +302,56 @@
   text-align: center;
 }
 
-/* RESPONSIVE DÜZENLEMELER */
+/* RESPONSIVE */
 @media (max-width: 992px) {
-  .form-card {
+  .formCard {
     padding: 15px;
   }
 }
 
 @media (max-width: 768px) {
-  .scroll-view {
+  .scrollView {
     padding: 0 15px;
   }
 
-  .page-title {
+  .pageTitle {
     font-size: 20px;
     margin-top: 20px;
   }
 
-  .form-card {
+  .formCard {
     padding: 15px;
   }
 
-  .data-label {
+  .dataLabel {
     min-width: 120px;
     font-size: 13px;
   }
 
-  .data-value {
+  .dataValue {
     font-size: 13px;
   }
 
-  .step-title {
+  .stepTitle {
     font-size: 36px;
   }
 
-  .button-container {
-    flex-direction: column;
-  }
-
-  .back-button,
-  .continue-button {
-    width: 100%;
-  }
-
-  .label-value-pair {
+  .labelValuePair {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
 
-  .data-value {
+  .dataValue {
     text-align: left;
   }
 
-  .approved-card {
+  .approvedCard {
     padding: 40px 20px;
     min-height: 250px;
   }
 
-  .onay-icon {
+  .onayIcon {
     width: 120px;
     height: 120px;
     margin-bottom: 30px;
@@ -482,48 +359,48 @@
 }
 
 @media (max-width: 480px) {
-  .section-box {
+  .sectionBox {
     padding: 15px;
   }
 
-  .section-title-step {
+  .sectionTitleStep {
     font-size: 16px;
   }
 
-  .data-label,
-  .data-value {
+  .dataLabel,
+  .dataValue {
     font-size: 12px;
   }
 
-  .edit-button {
+  .editButton {
     padding: 6px 15px;
   }
 
-  .approve-button {
+  .approveButton {
     padding: 12px 20px;
   }
 
-  .step-title {
+  .stepTitle {
     font-size: 28px;
   }
 
-  .step-info {
+  .stepInfo {
     font-size: 14px;
     margin: 0 10px 15px 10px;
   }
 
-  .approved-card {
+  .approvedCard {
     padding: 30px 15px;
     min-height: 200px;
   }
 
-  .onay-icon {
+  .onayIcon {
     width: 100px;
     height: 100px;
     margin-bottom: 20px;
   }
 
-  .approved-message-text {
+  .approvedMessageText {
     font-size: 16px;
   }
 }

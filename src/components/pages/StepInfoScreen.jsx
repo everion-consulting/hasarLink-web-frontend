@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../../styles/StepInfo.css';
+import styles from "../../styles/StepInfo.module.css";
 import step from '.././images/step.png';
 import BirIcon from '.././images/birIcon.svg';
 import IkiIcon from '.././images/ikiIcon.svg';
@@ -838,11 +838,11 @@ export default function StepInfoScreen() {
   }, [params]);
 
   const ApprovedStepComponent = () => (
-    <div className="approved-container">
-      <div className="approved-card">
-        <img src={step} className="onay-icon" alt="Onay" />
-        <div className="approved-message">
-          <div className="approved-message-text">
+    <div className={styles.approvedContainer}>
+      <div className={styles.approvedCard}>
+        <img src={step} className={styles.onayIcon} alt="Onay" />
+        <div className={styles.approvedMessage}>
+          <div className={styles.approvedMessageText}>
             Girdiğiniz bilgiler onaylanmıştır
           </div>
         </div>
@@ -851,29 +851,29 @@ export default function StepInfoScreen() {
   );
 
   const FormCardComponent = () => (
-    <div className="form-card">
+    <div className={styles.formCard}>
       {getStepContent().sections.map((section, sectionIndex) => (
-        <div key={sectionIndex} className="section-box">
-          <div className="content-box">
-            <div className="section-title-step">{section.title}</div>
+        <div key={sectionIndex} className={styles.sectionBox}>
+          <div className={styles.contentBox}>
+            <div className={styles.sectionTitleStep}>{section.title}</div>
 
-            <div className="data-container">
+            <div className={styles.dataContainer}>
               {section.data.map((item, itemIndex) => (
                 (item.value !== undefined && item.value !== null) && (
-                  <div key={itemIndex} className="data-row">
-                    <div className="label-value-pair">
+                  <div key={itemIndex} className={styles.dataRow}>
+                    <div className={styles.labelValuePair}>
                       {item.label ? (
-                        <div className="data-label">
+                        <div className={styles.dataLabel}>
                           {item.label}
                           {item.label === 'Mağdur Araç Plaka' && isCokluKarsiKasko && (
                             <span style={{ color: 'red' }}> *</span>
                           )}:
                         </div>
                       ) : (
-                        <div className="data-label">{'\u00A0'}</div>
+                        <div className={styles.dataLabel}>{'\u00A0'}</div>
                       )}
                       <div
-                        className="data-value"
+                        className={styles.dataValue}
                         style={item.label === 'Mağdur Araç Plaka' ? { color: 'red' } : {}}
                       >
                         {item.value}
@@ -884,17 +884,17 @@ export default function StepInfoScreen() {
               ))}
             </div>
 
-            <div className="edit-button-container">
+            <div className={styles.editButtonContainer}>
               {kazaNitelik === "TEKLİ KAZA (BEYANLI)" && section.editKey === "insurance_source" ? (
-                <div className="disabled-edit-info">
+                <div className={styles.disabledEditInfo}>
                   Tekli kaza seçtiğiniz için bu alan düzenlenemez.
                 </div>
               ) : (
                 <button
-                  className="edit-button"
+                  className={styles.editButton}
                   onClick={() => handleEditPress(section)}
                 >
-                  <span className="edit-button-text">Düzenle</span>
+                  <span className={styles.editButtonText}>Düzenle</span>
                 </button>
               )}
             </div>
@@ -902,14 +902,14 @@ export default function StepInfoScreen() {
         </div>
       ))}
 
-      <div className="approve-section">
+      <div className={styles.approveSection}>
         <button
-          className="approve-button"
+          className={styles.approveButton}
           onClick={currentStep === 4 ? handleFinalApprove : handleStepApprove}
         >
-          <span className="approve-button-text">ONAYLA</span>
-          <div className="approve-icon-wrapper">
-            <ArrowUpRightIcon className="approve-icon" />
+          <span className={styles.approveButtonText}>ONAYLA</span>
+          <div className={styles.approveIconWrapper}>
+            <ArrowUpRightIcon className={styles.approveIcon} />
           </div>
         </button>
       </div>
@@ -917,21 +917,21 @@ export default function StepInfoScreen() {
   );
 
   return (
-    <div className="step-info-container">
-      <div className="scroll-view">
-        <div className="page-title">Adım Adım Dosyanı Oluştur</div>
+    <div className={styles.stepInfoContainer}>
+      <div className={styles.scrollView}>
+        <div className={styles.pageTitle}>Adım Adım Dosyanı Oluştur</div>
 
         {isStepApproved ? <ApprovedStepComponent /> : <FormCardComponent />}
 
-        <div className="step-info-section">
+        <div className={styles.stepInfoSection}>
           {currentStep !== 4 && (
-            <div className="step-header">
-              <div className="step-title">ADIM</div>
+            <div className={styles.stepHeader}>
+              <div className={styles.stepTitle}>ADIM</div>
               {renderStepIcon()}
             </div>
           )}
 
-          <div className="step-info">
+          <div className={styles.stepInfo}>
             {currentStep === 1 && (isStepApproved
               ? 'Bu adımda Mağdur/Sürücü ve Araç Bilgilerini dolduracaksınız.'
               : 'Bu adımda Mağdur/Sürücü ve Araç Bilgilerini dolduracaksınız.')}
@@ -960,4 +960,5 @@ export default function StepInfoScreen() {
       />
     </div>
   );
+
 }
