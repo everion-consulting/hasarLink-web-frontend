@@ -3,8 +3,10 @@ import styles from "../../styles/contact.module.css";
 import { ChevronDown, MessageSquare, Mail, HelpCircle } from "lucide-react";
 import apiService from "../../services/apiServices";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function Contact() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [subject, setSubject] = useState("");
     const [message, setMessage] = useState("");
@@ -129,7 +131,7 @@ export default function Contact() {
             {/* Butonlar */}
             <div className={styles.contactButtons}>
 
-                <button className={styles.backBtn}>
+                <button className={styles.backBtn} onClick={() => navigate(-1)}>
                     <span className={styles.contactBtnIcon}>
                         <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
                     </span>
