@@ -40,12 +40,14 @@ export default function Dashboard() {
     try {
       const res = await apiService.getFileSubmissionCounts();
 
-      if (!res.success) {
-        console.error("❌ Dosya sayıları alınamadı:", res.message);
-        Alert.alert(res.message || "Dosya sayıları alınamadı.");
+      if (!res?.success) {
+        console.error("❌ Dosya sayıları alınamadı:", res?.message);
+        // web tarafında Alert yok → window.alert kullan
+        window.alert(res?.message || "Dosya sayıları alınamadı.");
         return;
       }
-      const data = res?.data.data
+
+      const data = res?.data?.data || res?.data || {};
 
       setDashboardData({
         counts: data.counts ?? {
@@ -54,16 +56,23 @@ export default function Dashboard() {
           pending: 0,
           rejected: 0,
           total: 0,
+          completed: 0,
           this_month_total: 0,
         },
         pending_files: Array.isArray(data.pending_files) ? data.pending_files : [],
         total_estimated_amount: data.total_estimated_amount ?? 0,
         monthly_estimated_amount: data.monthly_estimated_amount ?? 0,
+        // ✅ yeni alanlar
+        total_favourite_companies: data.total_favourite_companies ?? 0,
+        favourite_insurance_companies: Array.isArray(data.favourite_insurance_companies)
+          ? data.favourite_insurance_companies
+          : [],
         recent_incomplete_companies: Array.isArray(data.recent_incomplete_companies)
           ? data.recent_incomplete_companies
           : [],
       });
     } catch (err) {
+      console.error("❌ fetchCounts hata:", err);
       setDashboardData({
         counts: {
           not_completed: 0,
@@ -71,14 +80,19 @@ export default function Dashboard() {
           pending: 0,
           rejected: 0,
           total: 0,
+          completed: 0,
           this_month_total: 0,
         },
         pending_files: [],
         total_estimated_amount: 0,
         monthly_estimated_amount: 0,
+        total_favourite_companies: 0,
+        favourite_insurance_companies: [],
+        recent_incomplete_companies: [],
       });
     }
   }
+
 
   async function fetchDraftCount() {
     try {
@@ -200,7 +214,7 @@ export default function Dashboard() {
           <h3 className={styles.cardDashboardHeading}>İŞLEME ALINANLAR</h3>
           <p className={styles.cardDashboardCount}>
             <span className={styles.cardDashboardCountNumber}>
-              {dashboardData.counts.pending}
+              {dashboardData.counts.in_progress ?? 0}
             </span>{" "}
             Dosya
           </p>
@@ -277,11 +291,10 @@ export default function Dashboard() {
           <h3 className={styles.cardDashboardHeading}>DEVAM EDENLER</h3>
 
           <ul className={styles.ongoingList}>
-            {counts.in_progress > 0 ? (
+            {counts.pending > 0 ? (
               <>
-                <li>Devam eden dosya sayısı: {counts.in_progress}</li>
-                <li>Tamamlanmamış: {counts.not_completed}</li>
-                <li>Bu ay açılan: {counts.this_month_total}</li>
+                <li>Devam eden dosya sayısı: {counts.pending}</li>
+
               </>
             ) : (
               <li>Devam eden dosya bulunmuyor</li>
@@ -291,10 +304,15 @@ export default function Dashboard() {
           <button
             type="button"
             className={`${styles.cardDashboardBtn} ${styles.cardDashboardBtnLight}`}
-            onClick={goToOngoing}
+            onClick={(e) => {
+              e.stopPropagation();
+              goToOngoing();
+            }}
           >
             YÜKLE
           </button>
+
+
         </div>
         {/* BU AY AÇILAN DOSYA SAYISI */}
         <div
