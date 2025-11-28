@@ -1,0 +1,150 @@
+.stepperContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+.circleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.stepButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.stepButton:hover {
+  transform: scale(1.05);
+}
+
+/* Adım Dairesi - stepCircle */
+.stepCircle {
+  --circle-size: 65px;
+  --border-color: #133E87;
+  --inactive-bg: white;
+  --inactive-border: var(--border-color);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background-color: var(--inactive-bg);
+  border: 2px solid var(--inactive-border);
+}
+
+/* Aktif veya Tamamlanmış Adım Dairesi - stepCircle.active */
+.stepCircle.active {
+  background-color: var(--border-color);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 6px -1px rgba(26, 77, 140, 0.3);
+}
+
+/* Adım Numarası - stepNumber */
+.stepNumber {
+  font-size: 32px;
+  line-height: 35px;
+  font-weight: 400;
+  transition: color 0.3s ease;
+  color: var(--border-color);
+}
+
+.stepNumber.active {
+  color: white;
+}
+
+/* Adım Etiketi - stepLabel */
+.stepLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #A0A0A0;
+  text-align: center;
+  line-height: 1.4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+}
+
+/* İki Adım Arasındaki Çizgi - lineBetween */
+.lineBetween {
+  height: 2px;
+  background-color: #1a4d8c;
+  flex: 1;
+  min-width: 180px;
+  max-width: 120px;
+  align-self: flex-start;
+  margin-top: calc(65px / 2);
+  transform: translateY(-50%);
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.lineBetween.completed {
+  background-color: #1a4d8c;
+}
+
+@media (max-width: 768px) {
+  .stepCircle {
+    --circle-size: 50px;
+    width: var(--circle-size);
+    height: var(--circle-size);
+  }
+
+  .stepNumber {
+    font-size: 18px;
+  }
+
+  .stepLabel {
+    font-size: 13px;
+    max-width: 90px;
+  }
+
+  .lineBetween {
+    min-width: 100px;
+    max-width: 100px;
+    margin-top: calc(44px / 2);
+  }
+}
+
+@media (max-width: 480px) {
+  .stepCircle {
+    --circle-size: 40px;
+    width: var(--circle-size);
+    height: var(--circle-size);
+  }
+
+  .stepNumber {
+    font-size: 16px;
+  }
+
+  .stepLabel {
+    font-size: 12px;
+    max-width: 80px;
+  }
+
+  .lineBetween {
+    min-width: 80px;
+    max-width: 80px;
+    margin-top: calc(40px / 2);
+  }
+}
