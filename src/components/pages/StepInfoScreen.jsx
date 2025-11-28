@@ -26,7 +26,12 @@ export default function StepInfoScreen() {
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
-  const karsiSamePerson = params?.karsiSamePerson || null;
+  const karsiSamePerson =
+    params?.karsiSamePerson === true
+      ? true
+      : params?.karsiSamePerson === false
+        ? false
+        : null;
   const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
 
@@ -55,12 +60,15 @@ export default function StepInfoScreen() {
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
 
-  // ✅ KRİTİK: params değiştiğinde state'leri güncelle
+
+
   useEffect(() => {
     console.log("🔄 useEffect tetiklendi - params güncellendi");
     console.log("📦 Yeni params.victimData:", params.victimData);
     console.log("📦 Yeni params.driverData:", params.driverData);
     console.log("📦 Yeni params.vehicleData:", params.vehicleData);
+    console.log("📦 Yeni params.serviceData:", params.serviceData); // ✅ BU SATIRI EKLEYİN
+    console.log("📦 Yeni params.insuredData:", params.insuredData); // ✅ BU SATIRI EKLEYİN
 
     if (params.victimData) {
       console.log("✅ victimData güncelleniyor:", params.victimData);
@@ -74,9 +82,23 @@ export default function StepInfoScreen() {
       console.log("✅ vehicleData güncelleniyor:", params.vehicleData);
       setVehicleData(params.vehicleData);
     }
-    if (params.insuredData) setInsuredData(params.insuredData);
+    if (params.insuredData) {
+      console.log("✅ insuredData güncelleniyor:", params.insuredData);
+      setInsuredData(params.insuredData);
+    }
+    if (params.serviceData) {
+      console.log("✅ serviceData güncelleniyor:", params.serviceData);
+      setServiceData(params.serviceData);
+      // ✅ serviceData'dan mechanicData'ya da aktarım yap
+      setMechanicData(prev => ({
+        ...prev,
+        repair_fullname: params.serviceData.repair_fullname,
+        repair_birth_date: params.serviceData.repair_birth_date,
+        repair_tc: params.serviceData.repair_tc,
+        repair_phone: params.serviceData.repair_phone,
+      }));
+    }
     if (params.mechanicData) setMechanicData(params.mechanicData);
-    if (params.serviceData) setServiceData(params.serviceData);
     if (params.damageData) setDamageData(params.damageData);
     if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
   }, [location.state]);
@@ -208,10 +230,10 @@ export default function StepInfoScreen() {
           insured_plate: insuredData.insured_plate,
           insured_policy_no: insuredData.insured_policy_no,
           insured_file_no: insuredData.insured_file_no,
-          repair_fullname: mechanicData.repair_fullname,
+          repair_fullname: serviceData.repair_fullname,
           // repair_birth_date: toYYYYMMDD(mechanicData.repair_birth_date),
-          repair_tc: mechanicData.repair_tc,
-          repair_phone: mechanicData.repair_phone,
+          repair_tc: serviceData.repair_tc,
+          repair_phone: serviceData.repair_phone,
           service_name: serviceData.service_name,
           service_tax_no: serviceData.service_tax_no,
           service_phone: serviceData.service_phone,
@@ -333,7 +355,7 @@ export default function StepInfoScreen() {
                         ? 'İKİLİ KAZA'
                         : kazaNitelik === 'ÇOKLU KAZA'
                           ? 'ÇOKLU KAZA'
-                          : 'Seçiniz'
+                          : 'YOK'
                 }
               ]
             },
@@ -341,7 +363,7 @@ export default function StepInfoScreen() {
               title: 'Seçilen Sigorta Şirketi',
               editKey: 'insurance_company',
               data: [
-                { label: '', value: selectedCompany?.name || 'Seçiniz' },
+                { label: '', value: selectedCompany?.name || 'YOK' },
               ]
             },
             {
@@ -364,11 +386,11 @@ export default function StepInfoScreen() {
                         ? 'Bizim Kasko'
                         : insuranceSource === 'karsi kasko'
                           ? 'Karşı Kasko'
-                          : 'Seçiniz'
+                          : 'YOK'
                 }
               ]
             },
-            ...(insuranceSource === 'karsi trafik'
+            ...(rawInsuranceSource === 'karsi trafik' || insuranceSource === 'karsi trafik'
               ? [
                 {
                   title: 'Karşı Ruhsat Sahibi ve Sürücü Bilgisi Aynı Mı?',
@@ -376,16 +398,19 @@ export default function StepInfoScreen() {
                   data: [
                     {
                       label: '',
-                      value: karsiSamePerson
-                        ? 'Evet, aynı.'
-                        : karsiSamePerson === false
-                          ? 'Hayır, farklı.'
-                          : 'Seçiniz'
+                      value:
+                        karsiSamePerson === true
+                          ? 'Evet, aynı.'
+                          : karsiSamePerson === false
+                            ? 'Hayır, farklı.'
+                            : 'YOK'
+
                     }
                   ]
                 }
               ]
               : [])
+
           ]
         };
 
@@ -397,11 +422,11 @@ export default function StepInfoScreen() {
               title: 'Mağdur Bilgileri',
               editKey: 'victim_info',
               data: [
-                { label: 'Ad Soyad', value: victimData.victim_fullname || 'Seçiniz' },
-                { label: 'Kimlik No', value: victimData.victim_tc || 'Seçiniz' },
-                { label: 'E-Mail', value: victimData.victim_mail || 'Seçiniz' },
-                { label: 'Telefon No', value: victimData.victim_phone || 'Seçiniz' },
-                { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'Seçiniz' },
+                { label: 'Ad Soyad', value: victimData.victim_fullname || 'YOK' },
+                { label: 'Kimlik No', value: victimData.victim_tc || 'YOK' },
+                { label: 'E-Mail', value: victimData.victim_mail || 'YOK' },
+                { label: 'Telefon No', value: victimData.victim_phone || 'YOK' },
+                { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'YOK' },
               ]
             },
             ...(!samePerson
@@ -410,10 +435,10 @@ export default function StepInfoScreen() {
                   title: 'Sürücü Bilgileri',
                   editKey: 'driver_info',
                   data: [
-                    { label: 'Ad Soyad', value: driverData.driver_fullname || 'Seçiniz' },
-                    { label: 'Kimlik No', value: driverData.driver_tc || 'Seçiniz' },
-                    { label: 'Telefon No', value: driverData.driver_phone || 'Seçiniz' },
-                    { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'Seçiniz' }
+                    { label: 'Ad Soyad', value: driverData.driver_fullname || 'YOK' },
+                    { label: 'Kimlik No', value: driverData.driver_tc || 'YOK' },
+                    { label: 'Telefon No', value: driverData.driver_phone || 'YOK' },
+                    { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'YOK' }
                   ]
                 }
               ]
@@ -422,15 +447,15 @@ export default function StepInfoScreen() {
               title: 'Mağdur Araç Bilgileri',
               editKey: 'vehicle_info',
               data: [
-                { label: 'Araç Markası', value: formatPlate(vehicleData.vehicle_brand) || 'Seçiniz' },
-                { label: 'Araç Türü', value: vehicleData.vehicle_type || 'Seçiniz' },
-                { label: 'Model', value: formatPlate(vehicleData.vehicle_model) || 'Seçiniz' },
-                { label: 'Ruhsat Seri No', value: formatPlate(vehicleData.vehicle_license_no) || 'Seçiniz' },
-                { label: 'Şasi No', value: formatPlate(vehicleData.vehicle_chassis_no) || 'Seçiniz' },
-                { label: 'Motor No', value: formatPlate(vehicleData.vehicle_engine_no) || 'Seçiniz' },
-                { label: 'Model Yılı', value: vehicleData.vehicle_year || 'Seçiniz' },
-                { label: 'Mağdur Araç Plaka', value: formatPlate(vehicleData.vehicle_plate) || 'Seçiniz' },
-                { label: 'Araç Kullanım Türü', value: vehicleData.vehicle_usage_type || 'Seçiniz' }
+                { label: 'Araç Markası', value: formatPlate(vehicleData.vehicle_brand) || 'YOK' },
+                { label: 'Araç Türü', value: vehicleData.vehicle_type || 'YOK' },
+                { label: 'Model', value: formatPlate(vehicleData.vehicle_model) || 'YOK' },
+                { label: 'Ruhsat Seri No', value: formatPlate(vehicleData.vehicle_license_no) || 'YOK' },
+                { label: 'Şasi No', value: formatPlate(vehicleData.vehicle_chassis_no) || 'YOK' },
+                { label: 'Motor No', value: formatPlate(vehicleData.vehicle_engine_no) || 'YOK' },
+                { label: 'Model Yılı', value: vehicleData.vehicle_year || 'YOK' },
+                { label: 'Mağdur Araç Plaka', value: formatPlate(vehicleData.vehicle_plate) || 'YOK' },
+                { label: 'Araç Kullanım Türü', value: vehicleData.vehicle_usage_type || 'YOK' }
               ]
             }
           ]
@@ -444,27 +469,27 @@ export default function StepInfoScreen() {
               title: 'Sigortalı Bilgileri',
               editKey: 'insured_info',
               data: [
-                { label: 'Ad Soyad', value: insuredData.insured_fullname || 'Seçiniz' },
-                { label: 'TC No', value: insuredData.insured_tc || 'Seçiniz' },
-                { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'Seçiniz' },
-                { label: 'Telefon', value: insuredData.insured_phone || 'Seçiniz' },
-                { label: 'E-Mail', value: insuredData.insured_mail || 'Seçiniz' },
-                { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'Seçiniz' },
-                { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'Seçiniz' },
-                { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'Seçiniz' },
+                { label: 'Ad Soyad', value: insuredData.insured_fullname || 'YOK' },
+                { label: 'TC No', value: insuredData.insured_tc || 'YOK' },
+                { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'YOK' },
+                { label: 'Telefon', value: insuredData.insured_phone || 'YOK' },
+                { label: 'E-Mail', value: insuredData.insured_mail || 'YOK' },
+                { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'YOK' },
+                { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'YOK' },
+                { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'YOK' },
               ]
             },
-            ...(hasKarsiTrafik
+            ...(hasKarsiTrafik && karsiSamePerson === false
               ? [
                 {
                   title: 'Karşı Taraf Sürücü Bilgileri',
                   editKey: 'karsi_driver_info',
                   data: [
-                    { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'Seçiniz' },
-                    { label: 'TC No', value: opposingDriverData.opposing_driver_tc || 'Seçiniz' },
-                    { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'Seçiniz' },
-                    { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'Seçiniz' },
-                    { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'Seçiniz' },
+                    { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'YOK' },
+                    { label: 'TC No', value: opposingDriverData.opposing_driver_tc || 'YOK' },
+                    { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'YOK' },
+                    { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'YOK' },
+                    { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'YOK' },
                   ]
                 }
               ]
@@ -473,22 +498,21 @@ export default function StepInfoScreen() {
               title: 'Servis Bilgileri',
               editKey: 'service_info',
               data: [
-                { label: 'Ad Soyad', value: mechanicData.repair_fullname || 'Seçiniz' },
-                { label: 'Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
-                { label: 'TC No', value: mechanicData.repair_tc || 'Seçiniz' },
-                { label: 'Telefon', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
-                { label: 'IBAN', value: serviceData.service_iban || 'Seçiniz' },
-                { label: 'IBAN Adı', value: serviceData.service_iban_name || 'Seçiniz' },
-                { label: 'Servis Adı', value: serviceData.service_name || 'Seçiniz' },
-                { label: 'İl', value: serviceData.service_city || 'Seçiniz' },
-                { label: 'İlçe', value: serviceData.service_state_city_city || 'Seçiniz' },
-                { label: 'Adres', value: serviceData.service_address || 'Seçiniz' },
-                { label: 'Servis No', value: serviceData.service_tax_no || 'Seçiniz' },
+                { label: 'Ad Soyad', value: serviceData.repair_fullname || 'YOK' },
+                { label: 'Doğum Tarihi', value: serviceData.repair_birth_date || 'YOK' },
+                { label: 'TC No', value: serviceData.repair_tc || 'YOK' },
+                { label: 'Telefon', value: maskPhone(serviceData.repair_phone) || 'YOK' },
+                { label: 'IBAN', value: serviceData.service_iban || 'YOK' },
+                { label: 'IBAN Adı', value: serviceData.service_iban_name || 'YOK' },
+                { label: 'Servis Adı', value: serviceData.service_name || 'YOK' },
+                { label: 'İl', value: serviceData.service_city || 'YOK' },
+                { label: 'İlçe', value: serviceData.service_state_city_city || 'YOK' },
+                { label: 'Adres', value: serviceData.service_address || 'YOK' },
+                { label: 'Servis No', value: serviceData.service_tax_no || 'YOK' },
               ]
             }
           ]
         };
-
       case 4:
         return {
           title: 'Hasar Bilgileri ve Evrak Yükleme',
@@ -497,32 +521,32 @@ export default function StepInfoScreen() {
               title: 'Hasar Bilgileri',
               editKey: 'damage_info',
               data: [
-                { label: 'Hasar Türü', value: damageData.damage_type || 'Seçiniz' },
-                { label: 'Hasar Bölgesi', value: damageData.damage_description || 'Seçiniz' },
+                { label: 'Hasar Türü', value: damageData.damage_type || 'YOK' },
+                { label: 'Hasar Bölgesi', value: damageData.damage_description || 'YOK' },
                 {
                   label: 'Kaza Yeri',
                   value: damageData.accident_city && damageData.accident_district
                     ? `${damageData.accident_city} / ${damageData.accident_district}`
-                    : 'Seçiniz'
+                    : 'YOK'
                 },
-                { label: 'Kaza Tarihi', value: damageData.accident_date || 'Seçiniz' },
-                { label: 'Poliçe No', value: formatPlate(damageData.policy_no) || 'Seçiniz' },
-                { label: 'Tahmini Hasar Tutarı', value: damageData.estimated_damage_amount || 'Seçiniz' },
-                { label: 'Tutanak Türü', value: damageData.official_report_type || 'Seçiniz' },
+                { label: 'Kaza Tarihi', value: damageData.accident_date || 'YOK' },
+                { label: 'Poliçe No', value: formatPlate(damageData.policy_no) || 'YOK' },
+                { label: 'Tahmini Hasar Tutarı', value: damageData.estimated_damage_amount || 'YOK' },
+                { label: 'Tutanak Türü', value: damageData.official_report_type || 'YOK' },
               ]
             },
             {
               title: 'Evrak Yükleme Alanı',
               editKey: 'documents',
               data: [
-                { label: 'Tutanak', value: params?.documents?.olayYeri?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Anlaşmalı Tutanak', value: params?.documents?.tutanaklar?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Mağdur Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Mağdur Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Karşı Sigortalı Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Karşı Sigortalı Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Fotoğraflar', value: params?.documents?.fotograflar ? 'Yüklendi' : 'Seçiniz' },
-                { label: 'Diğer', value: params?.documents?.diger ? 'Yüklendi' : 'Seçiniz' },
+                { label: 'Tutanak', value: params?.documents?.olayYeri?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Anlaşmalı Tutanak', value: params?.documents?.tutanaklar?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Mağdur Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Mağdur Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Karşı Sigortalı Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Karşı Sigortalı Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Fotoğraflar', value: params?.documents?.fotograflar ? 'Yüklendi' : 'YOK' },
+                { label: 'Diğer', value: params?.documents?.diger ? 'Yüklendi' : 'YOK' },
               ]
             }
           ]
@@ -760,8 +784,6 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusStep: 3,
-            preSelectedStep1: samePerson ? 'yes' : 'no',
-            preSelectedStep2: insuranceSource,
             preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
             returnTo: '/step-info',
             returnStep: currentStep

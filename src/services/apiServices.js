@@ -81,12 +81,13 @@ const apiService = {
     return await fetchData(`${PATH}/submissions/files/${fileId}/`, 'DELETE');
   },
 
-  async getDrafts() {
-    return await fetchData(`${PATH}/submissions/drafts/`, 'GET');
-  },
-
-  async getDrafts() {
-    return await fetchData(`${PATH}/submissions/drafts/`, 'GET');
+  async getDrafts(page = 1, selectedDate = null) {
+    let url = `${PATH}/submissions/drafts/?page=${page}`;
+    if (selectedDate) {
+      url += `&created_at__date=${selectedDate}`;
+    }
+    console.log("getDrafts API URL:", url);
+    return await fetchData(url, 'GET');
   },
 
   async getDraft(draftId) {
@@ -130,7 +131,7 @@ const apiService = {
     );
   },
 
-    async uploadFile(formData) {
+  async uploadFile(formData) {
     return await fetchData(
       `${PATH}/files/`,
       'POST',

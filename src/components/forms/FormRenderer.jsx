@@ -589,24 +589,40 @@ export default function FormRenderer({
                     ref={(el) => (dateRefs.current[f.name] = el)}
                     value={datePart ? toYYYYMMDD(datePart) : ""}
                     onChange={(e) => {
-                      const selectedDate = e.target.value; // YYYY-MM-DD
+                      const selectedDate = e.target.value; 
 
-                      let final = "";
                       if (selectedDate) {
                         const formatted = toDDMMYYYY(selectedDate);
-                        final = timePart ? `${formatted} ${timePart}` : formatted;
+                        handleChange(f.name, f.type, formatted);
+
+                        setTimeout(() => {
+                          const timeInput = timeRefs.current[f.name];
+                          if (timeInput) {
+                            if (timeInput.showPicker) timeInput.showPicker();
+                            else timeInput.focus();
+                          }
+                        }, 200);
+                      } else {
+                        handleChange(f.name, f.type, "");
                       }
-
-                      handleChange(f.name, f.type, final);
-
-                      // ⭐ DATE PICKER KAPANDIKTAN SONRA TIME PICKER AÇ
-                      setTimeout(() => {
-                        const timeInput = timeRefs.current[f.name];
-                        if (timeInput) {
-                          if (timeInput.showPicker) timeInput.showPicker();
-                          else timeInput.focus();
-                        }
-                      }, 200); // ← kritik gecikme
+                    }}
+                    onBlur={() => {
+                      const current = values[f.name] || "";
+                      const [date, time] = current.split(" ");
+                      if (date && !time) {
+                        setTimeout(() => {
+                          if (!values[f.name]?.includes(" ")) {
+                            setErrors(prev => ({
+                              ...prev,
+                              [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                            }));
+                            // Değeri temizle
+                            handleChange(f.name, f.type, "");
+                            const dateInput = dateRefs.current[f.name];
+                            if (dateInput) dateInput.value = "";
+                          }
+                        }, 300);
+                      }
                     }}
                     className="native-date-input"
                   />
@@ -619,14 +635,58 @@ export default function FormRenderer({
                     onChange={(e) => {
                       const selected = e.target.value;
 
-                      let final = "";
                       if (selected) {
-                        final = datePart ? `${datePart} ${selected}` : selected;
+                        if (datePart) {
+                          // Hem tarih hem saat var, birleştir
+                          handleChange(f.name, f.type, `${datePart} ${selected}`);
+                          // Hatayı temizle
+                          setErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors[f.name];
+                            return newErrors;
+                          });
+                        } else {
+                          // Saat var ama tarih yok, uyar
+                          setErrors(prev => ({
+                            ...prev,
+                            [f.name]: `Lütfen önce ${f.label} için tarih seçiniz`
+                          }));
+                          // Saati temizle
+                          handleChange(f.name, f.type, "");
+                          const timeInput = timeRefs.current[f.name];
+                          if (timeInput) timeInput.value = "";
+                        }
                       } else {
-                        final = datePart || "";
+                        // Saat temizlendi, sadece tarihi bırak veya tamamen temizle
+                        if (datePart) {
+                          // Tarih varsa uyar
+                          setErrors(prev => ({
+                            ...prev,
+                            [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                          }));
+                          handleChange(f.name, f.type, "");
+                        } else {
+                          handleChange(f.name, f.type, "");
+                        }
                       }
-
-                      handleChange(f.name, f.type, final);
+                    }}
+                    onBlur={() => {
+                      // Saat inputundan çıkıldığında kontrol et
+                      const current = values[f.name] || "";
+                      const [date, time] = current.split(" ");
+                      if (date && !time) {
+                        setTimeout(() => {
+                          setErrors(prev => ({
+                            ...prev,
+                            [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                          }));
+                          // Değeri temizle
+                          handleChange(f.name, f.type, "");
+                          // Date inputu da temizle
+                          const dateInput = dateRefs.current[f.name];
+                          if (dateInput) dateInput.value = "";
+                        }, 100);
+                      }
                     }}
                     className="native-time-input"
                   />
@@ -636,7 +696,24 @@ export default function FormRenderer({
                     className="date-trigger"
                     onClick={() => {
                       const di = dateRefs.current[f.name];
-                      if (di) di.showPicker ? di.showPicker() : di.focus();
+                      const ti = timeRefs.current[f.name];
+                      const current = values[f.name] || "";
+                      const [date, time] = current.split(" ");
+                      
+                      // Eğer tarih var ama saat yoksa, önce uyar sonra saati aç
+                      if (date && !time) {
+                        setErrors(prev => ({
+                          ...prev,
+                          [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                        }));
+                        if (ti) {
+                          if (ti.showPicker) ti.showPicker();
+                          else ti.focus();
+                        }
+                      } else {
+                        // Normal akış: tarihi aç
+                        if (di) di.showPicker ? di.showPicker() : di.focus();
+                      }
                     }}
                   >
                     {IconComponent && <IconComponent className="field-icon" />}

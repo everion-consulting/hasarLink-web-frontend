@@ -7,28 +7,60 @@ const DraftNotifications = () => {
     const [drafts, setDrafts] = useState([]);
     const [selectedDraft, setSelectedDraft] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [selectedDate, setSelectedDate] = useState('');
+    const itemsPerPage = 20;
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchDraftsData = async () => {
-            try {
-                const response = await apiService.getDrafts();
-                console.log("API'den gelen taslaklar:", response); // Yanıtı kontrol et
-                setDrafts(Array.isArray(response.data?.results) ? response.data.results : []);
-            } catch (error) {
-                console.error("Taslaklar alınırken hata:", error);
-                setDrafts([]);
-            }
-        };
+        fetchDraftsData(currentPage);
+    }, [currentPage, selectedDate]);
 
-        fetchDraftsData();
-    }, []);
+    const fetchDraftsData = async (page) => {
+        try {
+            console.log("Filtreleme parametreleri:", { page, selectedDate });
+            const response = await apiService.getDrafts(page, null, null);
+            console.log("API'den gelen taslaklar:", response);
+            
+            let results = Array.isArray(response.data?.results) ? response.data.results : [];
+            const count = response.data?.count || 0;
+
+            if (selectedDate) {
+                results = results.filter(draft => {
+
+                    const draftDate = draft.created_at?.slice(0, 10); 
+                    return draftDate === selectedDate;
+                });
+            }
+            
+            setDrafts(results);
+            setTotalCount(selectedDate ? results.length : count);
+            setTotalPages(Math.ceil((selectedDate ? results.length : count) / itemsPerPage));
+        } catch (error) {
+            console.error("Taslaklar alınırken hata:", error);
+            setDrafts([]);
+        }
+    };
+
+    const handleFilterChange = () => {
+        setCurrentPage(1); 
+        fetchDraftsData(1);
+    };
+
+    const handleClearFilters = () => {
+        setSelectedDate('');
+        setCurrentPage(1);
+    };
 
     const handleDelete = async (draftId) => {
         try {
             await apiService.deleteDraft(draftId);
             setDrafts(drafts.filter((draft) => draft.id !== draftId));
             setShowModal(false);
+
+            fetchDraftsData(currentPage);
         } catch (error) {
             console.error("Taslak silinirken hata:", error);
         }
@@ -149,6 +181,42 @@ const DraftNotifications = () => {
     return (
         <div className="draft-notifications">
             <h1>Taslak Bildirimlerim</h1>
+            
+            {/* Date Filter Section */}
+            <div className="filter-section">
+                <div className="filter-inputs">
+                    <div className="filter-input-group">
+                        <label htmlFor="selectedDate">Tarih Seçin:</label>
+                        <input
+                            type="date"
+                            id="selectedDate"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="filter-buttons">
+                    <button 
+                        className="filter-button" 
+                        onClick={handleFilterChange}
+                        disabled={!selectedDate}
+                    >
+                        Filtrele
+                    </button>
+                    <button 
+                        className="clear-filter-button" 
+                        onClick={handleClearFilters}
+                        disabled={!selectedDate}
+                    >
+                        Filtreyi Temizle
+                    </button>
+                </div>
+            </div>
+            
+            {totalCount > 0 && (
+                <p className="total-count">Toplam {totalCount} taslak bulundu.</p>
+            )}
+
             <ul>
                 {drafts.length > 0 ? (
                     drafts.map((draft) => (
@@ -177,6 +245,31 @@ const DraftNotifications = () => {
                     <p>Henüz taslak bildirim bulunmuyor.</p>
                 )}
             </ul>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="pagination">
+                    <button 
+                        className="pagination-button"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        ← Önceki
+                    </button>
+                    
+                    <div className="pagination-info">
+                        Sayfa {currentPage} / {totalPages}
+                    </div>
+                    
+                    <button 
+                        className="pagination-button"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Sonraki →
+                    </button>
+                </div>
+            )}
 
             {showModal && (
                 <div className="modal">

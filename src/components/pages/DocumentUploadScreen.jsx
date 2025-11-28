@@ -85,8 +85,6 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
         }
       }
 
-      alert("Dosyalar yüklendi!");
-
       const docs = Object.fromEntries(
         sections.map((s) => [s.id, s.files])
       );
