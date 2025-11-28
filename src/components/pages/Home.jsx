@@ -162,18 +162,31 @@ export default function Dashboard() {
         </div>
 
 
-        {/* ONAYLANANLAR */}
-        <div className={`${styles.cardDashboard} ${styles.cardApproved}`}>
-          <h3 className={styles.cardDashboardHeading}>ONAYLANANLAR</h3>
+        {/* Bildirimi Yapılanlar */}
+        <div
+          className={`${styles.cardDashboard} ${styles.cardApproved}`}
+          onClick={() => navigate("/notified-screen")}
+          style={{ cursor: "pointer" }}
+        >
+          <h3 className={styles.cardDashboardHeading}>BİLDİRİMİ YAPILANLAR</h3>
+
           <p className={styles.cardDashboardCount}>
-            <span className={styles.cardDashboardCountNumber}>{dashboardData.counts.completed}</span> Dosya
+            <span className={styles.cardDashboardCountNumber}>
+              {dashboardData.counts.completed}
+            </span>{" "}
+            Dosya
           </p>
-          <img src={onaylananlarIcon} className={styles.cardStatusIcon} alt="İkon" />
+
+          <img
+            src={onaylananlarIcon}
+            className={styles.cardStatusIcon}
+            alt="İkon"
+          />
         </div>
 
-        {/* ONAY BEKLEYENLER */}
+        {/* İŞLEME ALINANLAR */}
         <div className={`${styles.cardDashboard} ${styles.cardPending}`}>
-          <h3 className={styles.cardDashboardHeading}>ONAY BEKLEYENLER</h3>
+          <h3 className={styles.cardDashboardHeading}>İŞLEME ALINANLAR</h3>
           <p className={styles.cardDashboardCount}>
             <span className={styles.cardDashboardCountNumber}>{dashboardData.counts.pending}</span> Dosya
           </p>

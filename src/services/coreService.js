@@ -8,6 +8,9 @@ const coreService = {
     return await fetchData(`${PATH}/notifications/`, 'GET');
   },
 
+  async getUnreadNotificationsCount() {
+    return await fetchData(`${PATH}/notifications/unread/`, 'GET');
+  },
 
 };
 
