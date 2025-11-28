@@ -18,37 +18,82 @@ export default function InsuredMechanicStepperScreen() {
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
-   
-    const [routeParams, setRouteParams] = useState({
-        insuranceSource: location.state?.insuranceSource || null,
-        karsiSamePerson: location.state?.karsiSamePerson || null,
-        kazaNitelik: location.state?.kazaNitelik || null,
-        selectedCompany: location.state?.selectedCompany || null,
-        samePerson: location.state?.samePerson || false,
+    // ✅ Doğrudan location.state'ten al, routeParams kullanma
+    const {
+        insuranceSource,
+        karsiSamePerson,
+        kazaNitelik,
+        selectedCompany,
+        samePerson,
+        editMode = false,
+        focusSection,
+        returnTo,
+        returnStep = 3
+    } = location.state || {};
+
+    console.log('🔍 Gelen parametreler:', {
+        insuranceSource,
+        karsiSamePerson,
+        kazaNitelik,
+        editMode,
+        focusSection
     });
 
-  
-    useEffect(() => {
-        if (location.state) {
-            console.log('🔄 Route params güncelleniyor:', location.state);
-            setRouteParams({
-                insuranceSource: location.state.insuranceSource || null,
-                karsiSamePerson: location.state.karsiSamePerson || null,
-                kazaNitelik: location.state.kazaNitelik || null,
-                selectedCompany: location.state.selectedCompany || null,
-                samePerson: location.state.samePerson || false,
-            });
-        }
-    }, [location.state]);
+    const isTekliBizimKasko =
+        kazaNitelik === "TEKLİ KAZA (BEYANLI)" && insuranceSource === "bizim kasko";
 
-    const { insuranceSource, karsiSamePerson, kazaNitelik, selectedCompany, samePerson } = routeParams;
+    const isCokluKarsiKasko =
+        kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi kasko";
+
+    const isCokluKarsiTrafik =
+        kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi trafik";
+
+    // ✅ Karşı sürücü formunu kontrol et - NATIVE'DEKİ MANTIK
+    const shouldShowOpposingDriver = insuranceSource === 'karsi trafik' && karsiSamePerson === false;
+
+    console.log('🔍 Karşı Sürücü Durumu:', {
+        insuranceSource,
+        karsiSamePerson,
+        shouldShowOpposingDriver
+    });
+
+    // 🔥 DİNAMİK STEP HESAPLAMA - NATIVE'DEKİ MANTIK
+    const calculateSteps = () => {
+        console.log('📊 calculateSteps çalıştı');
+        console.log('  kazaNitelik:', kazaNitelik);
+        console.log('  insuranceSource:', insuranceSource);
+        console.log('  karsiSamePerson:', karsiSamePerson);
+        console.log('  shouldShowOpposingDriver:', shouldShowOpposingDriver);
+
+        // 🔥 TEKLİ KAZA → Sadece Servis (NATIVE'DEKİ MANTIK)
+        if (isTekliBizimKasko) {
+            console.log('✅ TEKLİ KAZA -> SADECE Servis');
+            return ['Servis Bilgileri'];
+        }
+
+        // 🔥 Karşı trafik ve farklı kişi → Sigortalı + Karşı Sürücü + Servis (NATIVE'DEKİ MANTIK)
+        if (shouldShowOpposingDriver) {
+            console.log('✅ KARŞI TRAFİK + FARKLI KİŞİ -> Sigortalı + Karşı Sürücü + Servis');
+            return ['Sigortalı Bilgileri', 'Karşı Sürücü Bilgileri', 'Servis Bilgileri'];
+        }
+
+        // 🔥 Diğer durumlar → Sigortalı + Servis (NATIVE'DEKİ MANTIK)
+        console.log('✅ DİĞER -> Sigortalı + Servis');
+        return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
+    };
+
+    const steps = calculateSteps();
 
     const [currentStep, setCurrentStep] = useState(() => {
-        if (location.state?.editMode && location.state?.focusSection) {
-            if (location.state.focusSection === 'service_info') {
-                return location.state.kazaNitelik === 'TEKLİ KAZA (BEYANLI)' ? 1 : 2;
+        // Edit modunda focusSection'a göre başlangıç adımı - NATIVE'DEKİ MANTIK
+        if (editMode && focusSection) {
+            if (focusSection === 'insured_info') return 1;
+            if (focusSection === 'karsi_driver_info') return 2;
+            if (focusSection === 'service_info') {
+                if (isTekliBizimKasko) return 1;
+                if (shouldShowOpposingDriver) return 3;
+                return 2;
             }
-            return 1;
         }
         return 1;
     });
@@ -59,6 +104,7 @@ export default function InsuredMechanicStepperScreen() {
     const [cityOptions, setCityOptions] = useState([]);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
+    // ✅ DÜZELTİLDİ: Service fields with city options - HATA GİDERİLDİ
     const serviceFields = useMemo(() => {
         return serviceField.map(f => {
             if (f.type === 'row') {
@@ -72,68 +118,21 @@ export default function InsuredMechanicStepperScreen() {
                 };
             }
 
+            // ✅ DÜZELTİLDİ: Burada 'child' değil 'f' kullan
             return f.name === 'service_city'
                 ? { ...f, options: cityOptions }
                 : f;
         });
     }, [cityOptions]);
 
-    console.log('🔍 InsuredMechanicStepperScreen MOUNTED');
-    console.log('📦 routeParams:', routeParams);
-    console.log('  kazaNitelik:', kazaNitelik);
-    console.log('  insuranceSource:', insuranceSource);
-    console.log('  samePerson:', samePerson);
-    console.log('  karsiSamePerson:', karsiSamePerson);
-    console.log('  currentStep:', currentStep);
-
-    // 🔥 DİNAMİK STEP HESAPLAMA - İSTENİLEN MANTIK
-    const calculateSteps = () => {
-        console.log('📊 calculateSteps çalıştı');
-        console.log('  kazaNitelik:', kazaNitelik);
-        console.log('  insuranceSource:', insuranceSource);
-
-        // 🔥 TEKLİ KAZA → Sadece Servis
-        if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
-            console.log('✅ TEKLİ KAZA -> SADECE Servis');
-            return ['Servis Bilgileri'];
-        }
-
-        // 🔥 İKİLİ KAZA → Sigortalı + Servis
-        if (kazaNitelik === 'İKİLİ KAZA') {
-            console.log('✅ İKİLİ KAZA -> Sigortalı + Servis');
-            return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
-        }
-
-        // 🔥 ÇOKLU KAZA → Sigortalı + Servis
-        if (kazaNitelik === 'ÇOKLU KAZA') {
-            console.log('✅ ÇOKLU KAZA -> Sigortalı + Servis');
-            return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
-        }
-
-        // Default fallback
-        console.log('⚠️ DEFAULT -> Sigortalı + Servis');
-        return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
-    };
-
-    const steps = calculateSteps();
-
-    // Zorunlu alan kontrolü - Senaryo 3 için
-    const isPlateOnlyRequired = () => {
-        return kazaNitelik === 'ÇOKLU KAZA' &&
-            insuranceSource === 'karsi kasko' &&
-            samePerson;
-    };
-
     // 🔥 Tarih formatını DD.MM.YYYY'ye çeviren yardımcı fonksiyon
     const formatDateToDDMMYYYY = (dateStr) => {
         if (!dateStr) return '';
         
-        // Eğer zaten DD.MM.YYYY formatındaysa direkt döndür
         if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
             return dateStr;
         }
         
-        // YYYY-MM-DD formatındaysa çevir
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
             const [year, month, day] = dateStr.split('-');
             return `${day}.${month}.${year}`;
@@ -145,14 +144,12 @@ export default function InsuredMechanicStepperScreen() {
     // Profile verilerini yükle
     useEffect(() => {
         const loadProfileData = async () => {
-            // Eğer profileDetail yoksa, fetchProfile ile yükle
             if (!profileDetail || Object.keys(profileDetail).length === 0) {
                 console.log('📥 Profil verisi yok, yeniden yükleniyor...');
                 await fetchProfile();
                 return;
             }
 
-            // ProfileDetail varsa serviceData'ya yükle
             if (!isProfileLoaded) {
                 console.log('✅ Profil verisi yüklendi:', profileDetail);
                 setServiceData(prev => ({
@@ -181,17 +178,12 @@ export default function InsuredMechanicStepperScreen() {
         const fetchAllCities = async () => {
             try {
                 const res = await apiService.getCities();
-                console.log("🌍 raw city response:", res);
-
                 const cities = res?.data?.results || res?.data || [];
-
                 const options = cities.map((city) => ({
                     label: city.name,
                     value: city.name,
                 }));
-
                 setCityOptions(options);
-                console.log("🌍 cityOptions (mapped):", options);
             } catch (err) {
                 console.error('❌ Şehir verileri alınamadı:', err);
                 setCityOptions([]);
@@ -204,55 +196,104 @@ export default function InsuredMechanicStepperScreen() {
     // Route parametrelerinden verileri yükle
     useEffect(() => {
         if (location.state) {
+            console.log('🔄 Route state verileri yükleniyor:', location.state);
+            
             if (location.state.insuredData) {
+                console.log('✅ insuredData yükleniyor:', location.state.insuredData);
                 setInsuredData(location.state.insuredData);
             }
             if (location.state.serviceData) {
+                console.log('✅ serviceData yükleniyor:', location.state.serviceData);
                 setServiceData(prev => ({
                     ...prev,
                     ...location.state.serviceData
                 }));
-                setIsProfileLoaded(true); // Route'tan gelen veri varsa profil yüklendi say
+                setIsProfileLoaded(true);
             }
             if (location.state.opposingDriverData) {
+                console.log('✅ opposingDriverData yükleniyor:', location.state.opposingDriverData);
                 setOpposingDriverData(location.state.opposingDriverData);
-            }
-
-            // Edit modunda ise ilgili adıma git
-            if (location.state.editMode && location.state.focusSection) {
-                switch (location.state.focusSection) {
-                    case 'insured_info':
-                        setCurrentStep(1);
-                        break;
-                    case 'service_info':
-                        if (location.state.kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
-                            setCurrentStep(1);
-                        } else {
-                            setCurrentStep(2);
-                        }
-                        break;
-                    default:
-                        setCurrentStep(1);
-                }
             }
         }
     }, [location.state]);
 
-    // Form submit handlers
+    // 🔹 Sigortalı adımı için alanları senaryoya göre yeniden işle - NATIVE'DEKİ MANTIK
+    const insuredFieldsForStep = useMemo(() => {
+        // 1) Çoklu + Karşı Kasko → sadece plaka zorunlu
+        if (isCokluKarsiKasko) {
+            return insuredField.map(f => {
+                if (f.type === "row" && Array.isArray(f.children)) {
+                    return {
+                        ...f,
+                        children: f.children.map(child => ({
+                            ...child,
+                            required: child.name === "insured_plate",
+                        })),
+                    };
+                }
+                return {
+                    ...f,
+                    required: f.name === "insured_plate",
+                };
+            });
+        }
+
+        // 2) Çoklu + Karşı Trafik → TÜM alanlar zorunlu
+        if (isCokluKarsiTrafik) {
+            return insuredField.map(f => {
+                if (f.type === "row" && Array.isArray(f.children)) {
+                    return {
+                        ...f,
+                        children: f.children.map(child => ({
+                            ...child,
+                            required: true,
+                        })),
+                    };
+                }
+                return {
+                    ...f,
+                    required: true,
+                };
+            });
+        }
+
+        // 3) Diğer senaryolarda alanlar olduğu gibi kalsın
+        return insuredField;
+    }, [isCokluKarsiKasko, isCokluKarsiTrafik]);
+
+    // Form submit handlers - NATIVE'DEKİ MANTIK
     const handleInsuredSubmit = (values) => {
+        console.log('✅ Sigortalı formu tamamlandı:', values);
         setInsuredData(values);
-        // Sigortalı sonrası her zaman Servis'e git
-        setCurrentStep(currentStep + 1);
+        
+        // Sonraki adıma geç - NATIVE'DEKİ MANTIK
+        if (shouldShowOpposingDriver) {
+            setCurrentStep(2); // Karşı sürücü bilgilerine geç
+        } else {
+            // Servis bilgilerine geç
+            const serviceStepIndex = steps.findIndex(step => step === 'Servis Bilgileri');
+            setCurrentStep(serviceStepIndex + 1);
+        }
+    };
+
+    const handleOpposingDriverSubmit = (values) => {
+        console.log('✅ Karşı sürücü formu tamamlandı:', values);
+        setOpposingDriverData(values);
+        
+        // Servis bilgilerine geç
+        const serviceStepIndex = steps.findIndex(step => step === 'Servis Bilgileri');
+        setCurrentStep(serviceStepIndex + 1);
     };
 
     const handleServiceSubmit = async (values) => {
+        console.log('✅ Servis formu tamamlandı:', values);
         setServiceData(values);
 
         // 🔥 Profil güncelleme
         try {
             const profileUpdateData = {
                 repair_fullname: values.repair_fullname,
-                repair_birth_date: toYYYYMMDD(values.repair_birth_date), // DD.MM.YYYY -> YYYY-MM-DD
+                repair_birth_date: toYYYYMMDD(values.repair_birth_date),
                 repair_tc: values.repair_tc,
                 repair_phone: values.repair_phone,
                 service_name: values.service_name,
@@ -277,32 +318,36 @@ export default function InsuredMechanicStepperScreen() {
             console.error('❌ Profil güncelleme hatası:', error);
         }
 
-        // 🔥 KRİTİK: routeParams içindeki değerleri kullan
+        // ✅ KRİTİK: Tüm verileri doğru şekilde birleştir
         const navigationState = {
             ...location.state,
-            // 🔥 routeParams'tan değerleri açıkça ekle
             kazaNitelik,
             insuranceSource,
             selectedCompany,
             samePerson,
             karsiSamePerson,
-            startStep: location.state?.editMode ? (location.state?.returnStep || 3) : 3,
-            insuredData,
+            startStep: editMode ? returnStep : 3,
+            
+            // ✅ TÜM verileri ekle
+            insuredData: insuredData,
             serviceData: values,
+            opposingDriverData: opposingDriverData,
         };
 
         console.log('🚀 handleServiceSubmit - navigation state:', navigationState);
+        console.log('🔍 insuredData gönderiliyor:', insuredData);
+        console.log('🔍 serviceData gönderiliyor:', values);
+        console.log('🔍 opposingDriverData gönderiliyor:', opposingDriverData);
 
         // Düzenleme modunda mı?
-        if (location.state?.editMode) {
-            const returnTo = location.state?.returnTo || 'step-info';
-            navigate(`/${returnTo}`, { state: navigationState });
+        if (editMode) {
+            const targetRoute = returnTo || 'step-info';
+            navigate(`/${targetRoute}`, { state: navigationState });
         } else {
-            // 🔥 Normal akışta step-info'ya geri dön (3. adım onayı için)
             navigate('/step-info', { 
                 state: {
                     ...navigationState,
-                    startStep: 3 // 3. adımda başlat
+                    startStep: 3
                 }
             });
         }
@@ -314,30 +359,6 @@ export default function InsuredMechanicStepperScreen() {
         } else {
             navigate(-1);
         }
-    };
-
-    // Zorunlu alan ayarlaması
-    const getAdjustedFields = (fields) => {
-        if (isPlateOnlyRequired() && fields === insuredField) {
-            // Scenario 3: Sadece plaka zorunlu, diğerleri opsiyonel
-            return fields.map(field => {
-                if (field.type === 'row') {
-                    return {
-                        ...field,
-                        children: field.children.map(child => ({
-                            ...child,
-                            required: false
-                        }))
-                    };
-                }
-                return {
-                    ...field,
-                    required: field.name === 'insured_plate'
-                };
-            });
-        }
-
-        return fields;
     };
 
     const renderFormFooter = ({ submit, allValid }) => (
@@ -355,18 +376,80 @@ export default function InsuredMechanicStepperScreen() {
                 disabled={!allValid}
                 type="button"
             >
-                {location.state?.editMode ? 'GÜNCELLE' : 'DEVAM ET'} <span className={styles.arrowIcon}>➔</span>
+                {editMode ? 'GÜNCELLE' : 'DEVAM ET'} <span className={styles.arrowIcon}>➔</span>
             </button>
         </div>
     );
 
-    // 🔥 BASİTLEŞTİRİLMİŞ RENDER MANTIGI
+    // Özel validasyon için footer - NATIVE'DEKİ MANTIK
+    const renderInsuredFormFooter = ({ submit, allValid }) => {
+        // 👉 Çoklu + Karşı Kasko → sadece plaka kontrolü
+        const onlyPlateValid =
+            isCokluKarsiKasko &&
+            insuredData?.insured_plate &&
+            insuredData.insured_plate.trim().length > 0;
+
+        // Butonun aktif olup olmamasını senaryoya göre ayarlıyoruz
+        const stepValid =
+            isCokluKarsiKasko
+                ? onlyPlateValid                 // Çoklu + Karşı Kasko → plaka doluysa aktif
+                : isCokluKarsiTrafik
+                    ? true                         // Çoklu + Karşı Trafik → hep aktif, hata input altında
+                    : allValid;                    // Diğer senaryolar → normal
+
+        const handleNextPress = () => {
+            // 1) Çoklu + Karşı Kasko → özel kural (sadece plaka zorunlu + alert)
+            if (isCokluKarsiKasko) {
+                if (!onlyPlateValid) {
+                    alert("Eksik Bilgi: Lütfen plaka bilgisini doldurunuz.");
+                    return;
+                }
+                handleInsuredSubmit(insuredData);
+                return;
+            }
+
+            // 2) Çoklu + Karşı Trafik → ALERT YOK
+            if (isCokluKarsiTrafik) {
+                submit();
+                return;
+            }
+
+            // 3) Diğer senaryolar → eski davranış (alert + allValid)
+            if (!allValid) {
+                alert("Eksik Bilgi: Lütfen tüm alanları doldurunuz.");
+                return;
+            }
+
+            submit();
+        };
+
+        return (
+            <div className={styles.formFooterWeb}>
+                <button
+                    className={styles.backButtonWeb}
+                    onClick={handleBack}
+                    type="button"
+                >
+                    <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
+                </button>
+                <button
+                    className={styles.nextButtonWeb}
+                    onClick={handleNextPress}
+                    disabled={!stepValid}
+                    type="button"
+                >
+                    DEVAM ET <span className={styles.arrowIcon}>➔</span>
+                </button>
+            </div>
+        );
+    };
+
+    // 🔥 RENDER MANTIĞI - NATIVE'DEKİ MANTIK
     const renderCurrentForm = () => {
-        console.log('🎨 RENDER - currentStep:', currentStep, 'kazaNitelik:', kazaNitelik, 'steps:', steps);
+        console.log('🎨 RENDER - currentStep:', currentStep, 'steps:', steps, 'shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
         // 🔥 TEKLİ KAZA → Sadece Servis
-        if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)') {
-            console.log('✅ TEKLİ KAZA -> Servis formu');
+        if (isTekliBizimKasko && currentStep === 1) {
             return (
                 <FormRenderer
                     fields={serviceFields}
@@ -378,35 +461,34 @@ export default function InsuredMechanicStepperScreen() {
             );
         }
 
-        // 🔥 İKİLİ/ÇOKLU KAZA → Step 1: Sigortalı, Step 2: Servis
+        // 🔥 Step 1: Sigortalı Bilgileri
         if (currentStep === 1) {
-            console.log('✅ Step 1 -> Sigortalı formu');
             return (
                 <FormRenderer
-                    fields={getAdjustedFields(insuredField)}
+                    fields={insuredFieldsForStep}
                     values={insuredData}
                     setValues={setInsuredData}
                     onSubmit={handleInsuredSubmit}
-                    renderFooter={renderFormFooter}
+                    renderFooter={renderInsuredFormFooter}
                 />
             );
         }
 
-        if (currentStep === 2) {
-            console.log('✅ Step 2 -> Servis formu');
+        // 🔥 Step 2: Karşı Sürücü Bilgileri - BU ARTIK ÇALIŞACAK!
+        if (currentStep === 2 && shouldShowOpposingDriver) {
+            console.log('✅ Karşı sürücü formu render ediliyor');
             return (
                 <FormRenderer
-                    fields={serviceFields}
-                    values={serviceData}
-                    setValues={setServiceData}
-                    onSubmit={handleServiceSubmit}
+                    fields={opposingDriverFields}
+                    values={opposingDriverData}
+                    setValues={setOpposingDriverData}
+                    onSubmit={handleOpposingDriverSubmit}
                     renderFooter={renderFormFooter}
                 />
             );
         }
 
-        // Fallback
-        console.log('⚠️ FALLBACK -> Servis formu');
+        // 🔥 Son Step: Servis Bilgileri
         return (
             <FormRenderer
                 fields={serviceFields}
@@ -426,6 +508,19 @@ export default function InsuredMechanicStepperScreen() {
                 <h2 className={styles.sectionTitle}>
                     {steps[currentStep - 1]}
                 </h2>
+
+                {/* Bilgi notları - NATIVE'DEKİ MANTIK */}
+                {isCokluKarsiKasko && currentStep === 1 && (
+                    <div className={styles.infoNote}>
+                        Bu adımda sadece sigortalı plaka bilgisini doldurmanız yeterlidir.
+                    </div>
+                )}
+
+                {isCokluKarsiTrafik && currentStep === 1 && (
+                    <div className={styles.infoNote}>
+                        Bu adımda tüm alanların doldurulması zorunludur.
+                    </div>
+                )}
 
                 <div className={styles.formCard}>
                     <div className={styles.formSectionContent}>

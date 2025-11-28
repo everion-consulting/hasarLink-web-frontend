@@ -60,12 +60,15 @@ export default function StepInfoScreen() {
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
 
-  // ✅ KRİTİK: params değiştiğinde state'leri güncelle
+
+
   useEffect(() => {
     console.log("🔄 useEffect tetiklendi - params güncellendi");
     console.log("📦 Yeni params.victimData:", params.victimData);
     console.log("📦 Yeni params.driverData:", params.driverData);
     console.log("📦 Yeni params.vehicleData:", params.vehicleData);
+    console.log("📦 Yeni params.serviceData:", params.serviceData); // ✅ BU SATIRI EKLEYİN
+    console.log("📦 Yeni params.insuredData:", params.insuredData); // ✅ BU SATIRI EKLEYİN
 
     if (params.victimData) {
       console.log("✅ victimData güncelleniyor:", params.victimData);
@@ -79,9 +82,23 @@ export default function StepInfoScreen() {
       console.log("✅ vehicleData güncelleniyor:", params.vehicleData);
       setVehicleData(params.vehicleData);
     }
-    if (params.insuredData) setInsuredData(params.insuredData);
+    if (params.insuredData) {
+      console.log("✅ insuredData güncelleniyor:", params.insuredData);
+      setInsuredData(params.insuredData);
+    }
+    if (params.serviceData) {
+      console.log("✅ serviceData güncelleniyor:", params.serviceData);
+      setServiceData(params.serviceData);
+      // ✅ serviceData'dan mechanicData'ya da aktarım yap
+      setMechanicData(prev => ({
+        ...prev,
+        repair_fullname: params.serviceData.repair_fullname,
+        repair_birth_date: params.serviceData.repair_birth_date,
+        repair_tc: params.serviceData.repair_tc,
+        repair_phone: params.serviceData.repair_phone,
+      }));
+    }
     if (params.mechanicData) setMechanicData(params.mechanicData);
-    if (params.serviceData) setServiceData(params.serviceData);
     if (params.damageData) setDamageData(params.damageData);
     if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
   }, [location.state]);
@@ -462,7 +479,7 @@ export default function StepInfoScreen() {
                 { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'Seçiniz' },
               ]
             },
-            ...(hasKarsiTrafik
+            ...(hasKarsiTrafik && karsiSamePerson === false
               ? [
                 {
                   title: 'Karşı Taraf Sürücü Bilgileri',
@@ -481,10 +498,10 @@ export default function StepInfoScreen() {
               title: 'Servis Bilgileri',
               editKey: 'service_info',
               data: [
-                { label: 'Ad Soyad', value: mechanicData.repair_fullname || 'Seçiniz' },
-                { label: 'Doğum Tarihi', value: mechanicData.repair_birth_date || 'Seçiniz' },
-                { label: 'TC No', value: mechanicData.repair_tc || 'Seçiniz' },
-                { label: 'Telefon', value: maskPhone(mechanicData.repair_phone) || 'Seçiniz' },
+                { label: 'Ad Soyad', value: serviceData.repair_fullname || 'Seçiniz' },
+                { label: 'Doğum Tarihi', value: serviceData.repair_birth_date || 'Seçiniz' },
+                { label: 'TC No', value: serviceData.repair_tc || 'Seçiniz' },
+                { label: 'Telefon', value: maskPhone(serviceData.repair_phone) || 'Seçiniz' },
                 { label: 'IBAN', value: serviceData.service_iban || 'Seçiniz' },
                 { label: 'IBAN Adı', value: serviceData.service_iban_name || 'Seçiniz' },
                 { label: 'Servis Adı', value: serviceData.service_name || 'Seçiniz' },
@@ -496,7 +513,6 @@ export default function StepInfoScreen() {
             }
           ]
         };
-
       case 4:
         return {
           title: 'Hasar Bilgileri ve Evrak Yükleme',
