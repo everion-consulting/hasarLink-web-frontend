@@ -185,13 +185,27 @@ export default function Dashboard() {
         </div>
 
         {/* İŞLEME ALINANLAR */}
-        <div className={`${styles.cardDashboard} ${styles.cardPending}`}>
+        <div
+          className={`${styles.cardDashboard} ${styles.cardPending}`}
+          onClick={() => navigate("/processed-screen")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && navigate("/processed-screen")}
+        >
           <h3 className={styles.cardDashboardHeading}>İŞLEME ALINANLAR</h3>
           <p className={styles.cardDashboardCount}>
-            <span className={styles.cardDashboardCountNumber}>{dashboardData.counts.pending}</span> Dosya
+            <span className={styles.cardDashboardCountNumber}>
+              {dashboardData.counts.pending}
+            </span>{" "}
+            Dosya
           </p>
-          <img src={onayBekleyenlerIcon} className={styles.cardStatusIcon} alt="İkon" />
+          <img
+            src={onayBekleyenlerIcon}
+            className={styles.cardStatusIcon}
+            alt="İkon"
+          />
         </div>
+
 
         {/* TALEP EDİLEN TOPLAM TUTAR */}
         <div className={`${styles.cardDashboard} ${styles.cardAmount}`}>
