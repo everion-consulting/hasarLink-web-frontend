@@ -13,14 +13,12 @@ import FormFooter from '../forms/FormFooter';
 export default function StepInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // ✅ Her render'da güncel location.state'i al
   const params = location.state || {};
 
+
   console.log("🔍 StepInfoScreen'e GELEN TÜM parametreler:", params);
-  console.log("🔍 Gelen kazaNitelik:", params.kazaNitelik);
-  console.log("🔍 Gelen insuranceSource:", params.insuranceSource);
-  console.log("🔍 Gelen selectedCompany:", params.selectedCompany);
-  console.log("🔍 Gelen samePerson:", params.samePerson);
-  console.log("🔍 Gelen karsiSamePerson:", params.karsiSamePerson);
   console.log("🔍 Gelen victimData:", params.victimData);
   console.log("🔍 Gelen driverData:", params.driverData);
   console.log("🔍 Gelen vehicleData:", params.vehicleData);
@@ -37,39 +35,56 @@ export default function StepInfoScreen() {
   const rawInsuranceSource = params?.insuranceSource || null;
   const kazaNitelik = params?.kazaNitelik || null;
 
-
-
   const insuranceSource = (() => {
-    // 1. Önce TEKLİ KAZA kontrolü
     if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
       return "bizim kasko";
     }
-    // 2. Sonra gelen değeri kontrol et
     if (rawInsuranceSource && ["karsi trafik", "bizim kasko", "karsi kasko"].includes(rawInsuranceSource)) {
       return rawInsuranceSource;
     }
-    // 3. Fallback değer
     return "bizim kasko";
   })();
 
-  console.log("🔍 Hesaplanan insuranceSource:", insuranceSource);
-  console.log("🔍 Gelen rawInsuranceSource:", rawInsuranceSource);
-  console.log("🔍 kazaNitelik:", kazaNitelik);
-
-  // Form verilerini doğru şekilde al - BURASI FONKSİYON İÇİNDE OLMALI
-  const [driverData, setDriverData] = useState(params?.driverData || {});
-  const [victimData, setVictimData] = useState(params?.victimData || {});
-  const [vehicleData, setVehicleData] = useState(params?.vehicleData || {});
-  const [insuredData, setInsuredData] = useState(params?.insuredData || {});
-  const [mechanicData, setMechanicData] = useState(params?.mechanicData || {});
-  const [serviceData, setServiceData] = useState(params?.serviceData || {});
-  const [damageData, setDamageData] = useState(params?.damageData || {});
-  const [opposingDriverData, setOpposingDriverData] = useState(params?.opposingDriverData || {});
+  // ✅ State'leri params'tan başlat VE params değişince güncelle
+  const [driverData, setDriverData] = useState({});
+  const [victimData, setVictimData] = useState({});
+  const [vehicleData, setVehicleData] = useState({});
+  const [insuredData, setInsuredData] = useState({});
+  const [mechanicData, setMechanicData] = useState({});
+  const [serviceData, setServiceData] = useState({});
+  const [damageData, setDamageData] = useState({});
+  const [opposingDriverData, setOpposingDriverData] = useState({});
 
   const [currentStep, setCurrentStep] = useState(startStep);
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
+
+  // ✅ KRİTİK: params değiştiğinde state'leri güncelle
+  useEffect(() => {
+    console.log("🔄 useEffect tetiklendi - params güncellendi");
+    console.log("📦 Yeni params.victimData:", params.victimData);
+    console.log("📦 Yeni params.driverData:", params.driverData);
+    console.log("📦 Yeni params.vehicleData:", params.vehicleData);
+
+    if (params.victimData) {
+      console.log("✅ victimData güncelleniyor:", params.victimData);
+      setVictimData(params.victimData);
+    }
+    if (params.driverData) {
+      console.log("✅ driverData güncelleniyor:", params.driverData);
+      setDriverData(params.driverData);
+    }
+    if (params.vehicleData) {
+      console.log("✅ vehicleData güncelleniyor:", params.vehicleData);
+      setVehicleData(params.vehicleData);
+    }
+    if (params.insuredData) setInsuredData(params.insuredData);
+    if (params.mechanicData) setMechanicData(params.mechanicData);
+    if (params.serviceData) setServiceData(params.serviceData);
+    if (params.damageData) setDamageData(params.damageData);
+    if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
+  }, [location.state]);
 
   const isTekliBizimKasko =
     kazaNitelik === "TEKLİ KAZA (BEYANLI)" &&
