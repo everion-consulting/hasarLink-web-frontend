@@ -1,3 +1,4 @@
+// DriverInfoScreen.jsx - TAMAMEN YENİDEN DÜZENLE
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormRenderer from "../forms/FormRenderer";
@@ -10,36 +11,61 @@ export default function DriverInfoScreen() {
   const location = useLocation();
   const [formValues, setFormValues] = useState({});
 
-  // Location'dan gelen verileri al
-  const { victimData, samePerson = false } = location.state || {};
+  // 🔥 KRİTİK: Tüm parametreleri location.state'den al
+  const { 
+    victimData, 
+    samePerson = false,
+    kazaNitelik,
+    selectedCompany,
+    insuranceSource,
+    karsiSamePerson,
+    // Diğer tüm parametreler
+    ...otherParams
+  } = location.state || {};
+
+  console.log('🚗 DriverInfoScreen - Gelen parametreler:', {
+    victimData,
+    samePerson,
+    kazaNitelik,
+    selectedCompany,
+    insuranceSource
+  });
 
   const steps = samePerson
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
-  const currentStep = 2; // Sürücü bilgileri 2. adım
+  const currentStep = 2;
 
   const handleSubmit = (driverData) => {
-    const payload = {
-      victim: victimData,
-      driver: driverData
+    console.log("🚗 Driver Info:", driverData);
+
+    // 🔥 KRİTİK: TÜM parametreleri bir sonraki sayfaya aktar
+    const navigationState = {
+      // Temel parametreler
+      kazaNitelik,
+      selectedCompany,
+      insuranceSource,
+      samePerson,
+      karsiSamePerson,
+      
+      // Form verileri
+      victimData: victimData, // ✅ Victim verilerini koru
+      driverData: driverData, // ✅ Yeni driver verileri
+      
+      // Diğer parametreler
+      ...otherParams
     };
-    console.log("Driver Info:", payload);
 
-    // Sonraki adıma geçiş (Araç Bilgileri)
+    console.log('📍 Navigating to /driver-victim-stepper with:', navigationState);
+
     navigate('/driver-victim-stepper', {
-      state: {
-        ...location.state,   
-        victimData,
-        driverData,
-        samePerson
-      }
+      state: navigationState
     });
-
   };
 
   const handleBack = () => {
-    navigate('/victim-info'); // Mağdur bilgilerine geri dön
+    navigate(-1); // Bir önceki sayfaya dön
   };
 
   const renderFormFooter = ({ submit, allValid }) => (
