@@ -293,6 +293,7 @@ export default function Dashboard() {
           <ul className={styles.ongoingList}>
             {counts.pending > 0 ? (
               <>
+              
                 <li>Devam eden dosya sayısı: {counts.pending}</li>
 
               </>
