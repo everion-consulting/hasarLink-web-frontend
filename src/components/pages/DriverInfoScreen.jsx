@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormRenderer from "../forms/FormRenderer";
 import driverFields from "../../constants/driverFields";
@@ -10,24 +10,31 @@ export default function DriverInfoScreen() {
   const location = useLocation();
   const [formValues, setFormValues] = useState({});
 
-  // ✅ Location'dan gelen TÜM verileri al
   const locationState = location.state || {};
-  const { victimData, samePerson = false } = locationState;
-  
-  console.log('🔍 DriverInfo - Gelen location.state:', locationState);
-  console.log('🔍 DriverInfo - victimData:', victimData);
+  const { victimData, samePerson = false, editMode = false, returnTo, returnStep } = locationState;
+
+  useEffect(() => {
+    if (locationState?.driverData) {
+
+      const oldData = { ...locationState.driverData };
+      if (oldData.driver_birth_date && oldData.driver_birth_date.includes("-")) {
+        const [y, m, d] = oldData.driver_birth_date.split("-");
+        oldData.driver_birth_date = `${d}.${m}.${y}`;
+      }
+
+      setFormValues(oldData);
+    }
+  }, [locationState]);
+
 
   const steps = samePerson
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
-  const currentStep = 2; // Sürücü bilgileri 2. adım
+  const currentStep = 2;
 
   const handleSubmit = (driverFormData) => {
-    console.log("✅ DriverInfo - Driver form verileri:", driverFormData);
-    console.log("📦 DriverInfo - Mevcut victimData:", victimData);
 
-    // Transform işlemlerini uygula
     const transformedDriverData = { ...driverFormData };
     driverFields.forEach(field => {
       if (field.transform && typeof field.transform === 'function' && driverFormData[field.name]) {
@@ -35,27 +42,30 @@ export default function DriverInfoScreen() {
       }
     });
 
-    console.log("✅ DriverInfo - Transform sonrası driverData:", transformedDriverData);
-
-    // ✅ KRİTİK: Tüm location.state'i koruyarak driver-victim-stepper'a gönder
     const navigationState = {
-      ...locationState,           // TÜM mevcut state'i koru (kazaNitelik, selectedCompany, insuranceSource vs.)
-      victimData: victimData,     // victimData'yı muhafaza et
-      driverData: transformedDriverData,  // Yeni driver verisini ekle
-      samePerson: samePerson
+      ...locationState,
+      victimData,
+      driverData: transformedDriverData,
+      samePerson
     };
 
-    console.log("🚀 DriverInfo -> VehicleInfo'ya gönderilen TÜM state:", navigationState);
-    console.log("📍 victimData korundu mu?", navigationState.victimData);
+    if (editMode) {
+      navigate(returnTo || '/step-info', {
+        state: {
+          ...navigationState,
+          startStep: returnStep || 2
+        }
+      });
+      return;
+    }
 
-    navigate('/driver-victim-stepper', {
-      state: navigationState
-    });
+    navigate('/driver-victim-stepper', { state: navigationState });
   };
 
+
   const handleBack = () => {
-    navigate('/victim-info', { 
-      state: locationState  // Geri dönerken de tüm state'i koru
+    navigate('/victim-info', {
+      state: locationState
     });
   };
 
