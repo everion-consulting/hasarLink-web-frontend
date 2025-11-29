@@ -1,11 +1,11 @@
-.upload-container {
+.uploadContainer {
   padding: 20px;
   max-width: 900px;
   margin: 0 auto;
 }
 
 /* Başlık */
-.page-title {
+.pageTitle {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 25px;
@@ -13,16 +13,16 @@
 }
 
 /* Kart */
-.upload-card {
+.uploadCard {
   background: white;
   padding: 18px;
   margin-bottom: 20px;
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Kart başlığı */
-.upload-card-header {
+.uploadCardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,12 +30,12 @@
   margin-bottom: 10px;
 }
 
-.upload-card-title {
+.uploadCardTitle {
   font-size: 16px;
   font-weight: 600;
 }
 
-.upload-button {
+.uploadButton {
   background: #133E87;
   color: white;
   padding: 8px 16px;
@@ -46,34 +46,34 @@
   margin-left: 12px;
 }
 
-.upload-button:hover {
+.uploadButton:hover {
   background: #0e326d;
 }
 
-.upload-button input {
+.uploadButton input {
   display: none;
 }
 
 /* BOŞ ALAN */
-.upload-empty {
+.uploadEmpty {
   color: #666;
   padding: 12px 0;
 }
 
 /* Grid yapısı — responsive */
-.preview-list {
+.previewList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
 
-.preview-item {
+.previewItem {
   position: relative;
 }
 
-.image-preview,
-.pdf-preview {
+.imagePreview,
+.pdfPreview {
   width: 100%;
   height: 140px;
   object-fit: cover;
@@ -83,7 +83,7 @@
 }
 
 /* PDF görünümü */
-.pdf-preview {
+.pdfPreview {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,7 +91,7 @@
   border: 2px dashed #ccc;
 }
 
-.pdf-preview span {
+.pdfPreview span {
   font-size: 12px;
   display: block;
   margin-top: 8px;
@@ -99,7 +99,7 @@
 }
 
 /* Silme butonu */
-.delete-btn {
+.deleteBtn {
   position: absolute;
   right: -8px;
   top: -8px;
@@ -114,15 +114,15 @@
 }
 
 /* Footer */
-.upload-footer {
+.uploadFooter {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   margin-top: 20px;
 }
 
-.back-btn,
-.next-btn {
+.backBtn,
+.nextBtn {
   flex: 1;
   padding: 14px;
   font-size: 15px;
@@ -132,26 +132,26 @@
   cursor: pointer;
 }
 
-.back-btn {
+.backBtn {
   background: #CBDCEB;
 }
 
-.next-btn {
+.nextBtn {
   background: #133E87;
   color: white;
 }
 
 /* Yükleme modal */
-.upload-overlay {
+.uploadOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.upload-modal {
+.uploadModal {
   background: white;
   padding: 20px 30px;
   border-radius: 10px;
@@ -160,35 +160,35 @@
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  .upload-container {
+  .uploadContainer {
     padding: 12px;
   }
 
-  .upload-card {
+  .uploadCard {
     padding: 14px;
   }
 
-  .page-title {
+  .pageTitle {
     font-size: 20px;
   }
 
-  .preview-list {
+  .previewList {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .next-btn,
-  .back-btn {
+  .nextBtn,
+  .backBtn {
     padding: 12px;
     font-size: 14px;
   }
 
-  .upload-card-header {
+  .uploadCardHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
 
-  .upload-button {
+  .uploadButton {
     width: 100%;
     text-align: center;
   }
@@ -196,12 +196,12 @@
 
 /* SMALL MOBILE */
 @media (max-width: 480px) {
-  .preview-list {
+  .previewList {
     grid-template-columns: repeat(1, 1fr);
   }
 
-  .image-preview,
-  .pdf-preview {
+  .imagePreview,
+  .pdfPreview {
     height: 160px;
   }
 }

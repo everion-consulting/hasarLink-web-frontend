@@ -4,6 +4,7 @@ import FormRenderer from "../forms/FormRenderer";
 import driverFields from "../../constants/driverFields";
 import Stepper from '../stepper/Stepper';
 import styles from './../../styles/victimInfoScreen.module.css';
+import FormFooter from "../forms/FormFooter";
 
 export default function DriverInfoScreen() {
   const navigate = useNavigate();
@@ -104,7 +105,13 @@ export default function DriverInfoScreen() {
               setValues={setFormValues}
               onSubmit={handleSubmit}
               submitLabel="DEVAM ET"
-              renderFooter={renderFormFooter}
+              renderFooter={({ submit, allValid }) => (
+                <FormFooter
+                  onBack={handleBack}
+                  onNext={submit}
+                  disabled={!allValid}
+                />
+              )}
             />
           </div>
         </div>

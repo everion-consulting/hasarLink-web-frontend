@@ -1,9 +1,11 @@
 // src/screens/file/DocumentUploaderScreen.jsx
 import React, { useState } from "react";
 import apiService from "../../services/apiServices";
-import "../../styles/documentUploaderScreen.css";
 
-// Web'de desteklenecek dosya türleri
+// ⬇️ ARTIK CSS MODULE
+import styles from "../../styles/documentUploaderScreen.module.css";
+import FormFooter from "../forms/FormFooter";
+
 const FILE_TYPES = [
   { id: "tutanak", title: "Anlaşmalı Tutanak" },
   { id: "magdur_arac_ruhsat", title: "Mağdur Araç Ruhsatı" },
@@ -14,7 +16,6 @@ const FILE_TYPES = [
   { id: "diger", title: "Diğer Evraklar" },
 ];
 
-// ✅ PROPS EKLEDİK
 const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   const [sections, setSections] = useState(
     FILE_TYPES.map((f) => ({ id: f.id, title: f.title, files: [] }))
@@ -23,7 +24,6 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
 
-  // 📌 Dosya ekleme
   const handleFileSelect = (e, sectionId) => {
     const files = Array.from(e.target.files);
 
@@ -31,26 +31,25 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
       prev.map((sec) =>
         sec.id === sectionId
           ? {
-              ...sec,
-              files: [
-                ...sec.files,
-                ...files.map((f) => ({
-                  id: `${sectionId}-${Date.now()}-${Math.random()}`,
-                  file: f,
-                  preview: f.type.includes("image")
-                    ? URL.createObjectURL(f)
-                    : null,
-                  name: f.name,
-                  type: f.type,
-                })),
-              ],
-            }
+            ...sec,
+            files: [
+              ...sec.files,
+              ...files.map((f) => ({
+                id: `${sectionId}-${Date.now()}-${Math.random()}`,
+                file: f,
+                preview: f.type.includes("image")
+                  ? URL.createObjectURL(f)
+                  : null,
+                name: f.name,
+                type: f.type,
+              })),
+            ],
+          }
           : sec
       )
     );
   };
 
-  // 📌 Silme
   const handleDelete = (sectionId, fileId) => {
     setSections((prev) =>
       prev.map((sec) =>
@@ -61,7 +60,6 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
     );
   };
 
-  // 📌 Backend’e gönderme
   const handleUpload = async () => {
     try {
       const submissionId = routeState.submissionId;
@@ -89,7 +87,6 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
         sections.map((s) => [s.id, s.files])
       );
 
-      // ❗ Artık burada navigate ETMİYORUZ
       if (onContinue) {
         onContinue({ documents: docs });
       }
@@ -102,13 +99,13 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   };
 
   return (
-    <div className="upload-container">
+    <div className={styles.uploadContainer}>
       {sections.map((section) => (
-        <div key={section.id} className="upload-card">
-          <div className="upload-card-header">
-            <div className="upload-card-title">{section.title}</div>
+        <div key={section.id} className={styles.uploadCard}>
+          <div className={styles.uploadCardHeader}>
+            <div className={styles.uploadCardTitle}>{section.title}</div>
 
-            <label className="upload-button">
+            <label className={styles.uploadButton}>
               + YÜKLE
               <input
                 type="file"
@@ -119,29 +116,29 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
             </label>
           </div>
 
-          <div className="upload-preview-area">
+          <div className={styles.uploadPreviewArea}>
             {section.files.length === 0 && (
-              <div className="upload-empty">Dosya yok</div>
+              <div className={styles.uploadEmpty}>Dosya yok</div>
             )}
 
             {section.files.length > 0 && (
-              <div className="preview-list">
+              <div className={styles.previewList}>
                 {section.files.map((item) => (
-                  <div key={item.id} className="preview-item">
+                  <div key={item.id} className={styles.previewItem}>
                     {item.type.includes("pdf") ? (
-                      <div className="pdf-preview">
+                      <div className={styles.pdfPreview}>
                         📄 <span>{item.name}</span>
                       </div>
                     ) : (
                       <img
                         src={item.preview}
-                        className="image-preview"
+                        className={styles.imagePreview}
                         alt=""
                       />
                     )}
 
                     <button
-                      className="delete-btn"
+                      className={styles.deleteBtn}
                       onClick={() => handleDelete(section.id, item.id)}
                     >
                       ×
@@ -154,21 +151,18 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
         </div>
       ))}
 
-      {/* Footer */}
-      <div className="upload-footer">
-        {/* ✅ GERİ BUTONU PARENT'IN onBack’ini çağırıyor */}
-        <button className="back-btn" onClick={onBack}>
-          ← GERİ DÖN
-        </button>
-
-        <button className="next-btn" onClick={handleUpload}>
-          DEVAM ET ↗
-        </button>
-      </div>
+      {/* --- BUTONLAR --- */}
+      <FormFooter
+        onBack={() => navigate(-1)}
+        onNext={handleUpload}
+        nextLabel="DEVAM ET"
+        backLabel="GERİ DÖN"
+        disabled={!isAllChosenForCurrentStep}
+      />
 
       {uploading && (
-        <div className="upload-overlay">
-          <div className="upload-modal">
+        <div className={styles.uploadOverlay}>
+          <div className={styles.uploadModal}>
             <div>Dosyalar Yükleniyor...</div>
             <div>
               {progress.current} / {progress.total}

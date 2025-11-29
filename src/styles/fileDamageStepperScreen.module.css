@@ -1,0 +1,98 @@
+/* GENEL EKRAN TASARIMI */
+.screenContainer {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f7fb;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.screenContainer.dark {
+    background-color: #111827;
+}
+
+/* ANA İÇERİK BÖLÜMÜ */
+.contentArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.sectionTitle {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.screenContainer.dark .pageTitle {
+    color: #f9fafb;
+}
+
+.formCard {
+    background-color: white;
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 627px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+/* --------------------------- */
+/* RESPONSIVE TASARIM */
+/* --------------------------- */
+
+/* TABLET (1024px ve altı) */
+@media (max-width: 1024px) {
+    .contentArea {
+        max-width: 700px;
+        padding: 32px 16px;
+    }
+
+    .pageTitle {
+        font-size: 26px;
+    }
+}
+
+/* 📌 BÜYÜK MOBİL & KÜÇÜK TABLET (768px ve altı) */
+@media (max-width: 768px) {
+    .contentArea {
+        max-width: 95%;
+        padding: 28px 12px;
+    }
+
+    .pageTitle {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+}
+
+/* 📌 KÜÇÜK MOBİL (480px ve altı) */
+@media (max-width: 480px) {
+    .contentArea {
+        padding: 24px 10px;
+    }
+
+    .pageTitle {
+        font-size: 22px;
+    }
+}
+
+/* 📌 EN KÜÇÜK MOBİL (370px ve altı – iPhone SE vb.) */
+@media (max-width: 370px) {
+    .pageTitle {
+        font-size: 20px;
+    }
+
+    .contentArea {
+        padding: 20px 8px;
+    }
+}

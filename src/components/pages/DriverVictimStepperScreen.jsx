@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../../styles/DriveVictimStepper.css';
+import styles from '../../styles/DriveVictimStepper.module.css';
 import FormRenderer from '../forms/FormRenderer';
 import vehicleFields from '../../constants/vehicleFields';
 import Stepper from '../stepper/Stepper';
+import FormFooter from '../forms/FormFooter';
 
 const DriverVictimStepperScreen = () => {
   const navigate = useNavigate();
@@ -109,37 +110,43 @@ const DriverVictimStepperScreen = () => {
   };
 
   const renderFormFooter = ({ submit, allValid }) => (
-    <div className="form-footer-web">
-      <button className="back-button-web" onClick={handleBack} type="button">
-        <span className="arrow-icon-left">←</span> GERİ DÖN
+    <div className={styles.formFooterWeb}>
+      <button className={styles.backButtonWeb} onClick={handleBack} type="button">
+        <span className={styles.arrowIconLeft}>←</span> GERİ DÖN
       </button>
       <button
-        className="next-button-web"
+        className={styles.nextButtonWeb}
         onClick={submit}
         disabled={!allValid}
         type="button"
       >
-        FORMU TAMAMLA <span className="arrow-icon">➔</span>
+        FORMU TAMAMLA <span className={styles.arrowIcon}>➔</span>
       </button>
     </div>
   );
 
   return (
-    <div className="screen-container-drive">
-      <div className="content-area">
+    <div className={styles.screenContainerDrive}>
+      <div className={styles.contentArea}>
         <Stepper steps={steps} currentStep={currentStep} />
 
-        <h2 className="section-title">Araç Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Araç Bilgileri</h2>
 
-        <div className="vehicle-form-card">
-          <div className="vehicle-form-section-content">
+        <div className={styles.vehicleFormCard}>
+          <div className={styles.vehicleFormSectionContent}>
             <FormRenderer
               key="vehicle"
               fields={vehicleFields}
               values={vehicleData}
               setValues={handleSetVehicleData}
               onSubmit={handleVehicleSubmit}
-              renderFooter={renderFormFooter}
+              renderFooter={({ submit, allValid }) => (
+                <FormFooter
+                  onBack={handleBack}
+                  onNext={submit}
+                  disabled={!allValid}
+                />
+              )}
             />
           </div>
         </div>
