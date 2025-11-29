@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import apiService from "../../services/apiServices";
 import { useNavigate } from 'react-router-dom';
-import '../../styles/EditFavori.css';
+import styles from '../../styles/EditFavori.module.css';
 
 const EditFavoritesScreen = () => {
     const [favoriteCompanies, setFavoriteCompanies] = useState([]);
@@ -115,7 +115,7 @@ const EditFavoritesScreen = () => {
     );
 
     const getImageStyle = (itemId) => {
-        const styles = {
+        const stylesMap = {
             1: { width: '150px', height: '75px' },
             2: { width: '160px', height: '80px' },
             3: { width: '150px', height: '75px' },
@@ -124,7 +124,7 @@ const EditFavoritesScreen = () => {
             6: { width: '110px', height: '60px' },
             7: { width: '130px', height: '60px' },
         };
-        return styles[itemId] || { width: '130px', height: '60px' };
+        return stylesMap[itemId] || { width: '130px', height: '60px' };
     };
 
     const renderCompanyItem = (item) => {
@@ -132,25 +132,25 @@ const EditFavoritesScreen = () => {
         return (
             <div
                 key={item.id}
-                className={`company-card ${isFav ? 'favorite-card' : ''}`}
+                className={`${styles.companyCard} ${isFav ? styles.favoriteCard : ''}`}
                 onClick={() => !loading && toggleFavorite(item.id)}
                 style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
             >
-                <div className="logo-container">
+                <div className={styles.logoContainer}>
                     {item.photo ? (
                         <img
                             src={item.photo}
                             alt={item.name}
                             style={getImageStyle(item.id)}
-                            className="company-logo"
+                            className={styles.companyLogo}
                         />
                     ) : (
-                        <div className="logo-placeholder">
-                            <span className="logo-text">{item.name.charAt(0)}</span>
+                        <div className={styles.logoPlaceholder}>
+                            <span className={styles.logoText}>{item.name.charAt(0)}</span>
                         </div>
                     )}
                 </div>
-                <div className="star-icon">
+                <div className={styles.starIcon}>
                     {isFav ? (
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="#F1B300">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -166,41 +166,41 @@ const EditFavoritesScreen = () => {
     };
 
     return (
-        <div className="container">
-            <div className="content">
+        <div className={styles.container}>
+            <div className={styles.content}>
                 {favoritesList.length > 0 && (
-                    <div className="section">
-                        <h2 className="section-title">
+                    <div className={styles.section}>
+                        <h2 className={styles.sectionTitle}>
                             Favori Sigorta Şirketlerim
                         </h2>
-                        <div className="grid">
+                        <div className={styles.grid}>
                             {favoritesList.map((item) => renderCompanyItem(item))}
                         </div>
                     </div>
                 )}
 
-                <div className="section">
-                    <h2 className="section-title-2">
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle2}>
                         Tüm Sigorta Şirketleri
                     </h2>
-                    <p className="section-description">
+                    <p className={styles.sectionDescription}>
                         Aşağıdaki sigorta şirketlerini yıldız simgesine dokunarak favorilerinize ekleyebilirsiniz.
                     </p>
                 </div>
 
-                <div className="grid">
+                <div className={styles.grid}>
                     {allCompaniesList.map((item) => renderCompanyItem(item))}
                 </div>
             </div>
 
-            <div className="bottom-container">
-                <button className="back-btn" onClick={() => navigate('/profile')}>
-                    <div className="arrow-circle">
+            <div className={styles.bottomContainer}>
+                <button className={styles.backBtn} onClick={() => navigate('/profile')}>
+                    <div className={styles.arrowCircle}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
                             <path d="M19 12H5M12 19l-7-7 7-7" />
                         </svg>
                     </div>
-                    <span className="back-btn-text">GERİ DÖN</span>
+                    <span className={styles.backBtnText}>GERİ DÖN</span>
                 </button>
             </div>
         </div>

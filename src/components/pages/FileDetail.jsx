@@ -1,8 +1,7 @@
-    import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
-import submissionService from "../../services/apiServices";
-import "../../styles/FileDetail.css";
+import styles from "../../styles/FileDetail.module.css";
 
 const FileDetail = () => {
   const { fileId } = useParams();
@@ -30,8 +29,7 @@ const FileDetail = () => {
           return;
         }
 
-        console.log("✅ Dosya Detayı:", res?.data);
-        setFileData(res?.data);
+        setFileData(res.data);
       } catch (err) {
         console.error("❌ Hata:", err);
       } finally {
@@ -48,11 +46,12 @@ const FileDetail = () => {
           return;
         }
 
-        const filesArray = Array.isArray(res?.data.files)
-          ? res?.data.files
-          : Array.isArray(res?.data.results)
-          ? res?.data.results
-          : [];
+        const filesArray =
+          Array.isArray(res?.data.files)
+            ? res.data.files
+            : Array.isArray(res?.data.results)
+            ? res.data.results
+            : [];
 
         const grouped = {};
         filesArray.forEach((f) => {
@@ -67,7 +66,7 @@ const FileDetail = () => {
 
         setFileImages(grouped);
       } catch (err) {
-        console.error("❌ Görsel fetch hatası:", err);
+        console.error("❌ Görsel getirme hatası:", err);
       }
     };
 
@@ -78,54 +77,54 @@ const FileDetail = () => {
   const renderInfoRow = (label, value) => {
     if (!value) return null;
     return (
-      <div className="info-row">
-        <span className="info-label">{label}:</span>
-        <span className="info-value">{value}</span>
+      <div className={styles.infoRow}>
+        <span className={styles.infoLabel}>{label}:</span>
+        <span className={styles.infoValue}>{value}</span>
       </div>
     );
   };
 
   if (loading) {
     return (
-      <div className="file-detail-container">
-        <div className="loading">Yükleniyor...</div>
+      <div className={styles.fileDetailContainer}>
+        <div className={styles.loading}>Yükleniyor...</div>
       </div>
     );
   }
 
   if (!fileData) {
     return (
-      <div className="file-detail-container">
-        <p className="no-data">Veri bulunamadı.</p>
+      <div className={styles.fileDetailContainer}>
+        <p className={styles.noData}>Veri bulunamadı.</p>
       </div>
     );
   }
 
   return (
-    <div className="file-detail-container">
-      <h1 className="page-title">Dosya Detayı</h1>
+    <div className={styles.fileDetailContainer}>
+      <h1 className={styles.pageTitle}>Dosya Detayı</h1>
 
-      <div className="detail-card">
-        <h2 className="section-title">Dosya Bilgileri</h2>
-        {renderInfoRow("Durum", statusMap[fileData.status] || fileData.status)}
+      <div className={styles.detailCard}>
+        <h2 className={styles.sectionTitle}>Dosya Bilgileri</h2>
+        {renderInfoRow("Durum", statusMap[fileData.status])}
         {renderInfoRow("Sigorta Şirketi", fileData.insurance_company_name)}
         {renderInfoRow("Oluşturulma Tarihi", fileData.created_at?.slice(0, 10))}
         {renderInfoRow("İşlenme Tarihi", fileData.processed_at?.slice(0, 10))}
         {renderInfoRow("Tamamlanma Tarihi", fileData.completed_at?.slice(0, 10))}
         {renderInfoRow("Atanan Memur", fileData.assigned_officer)}
 
-        <div className="separator"></div>
+        <div className={styles.separator}></div>
 
-        <h2 className="section-title">Sürücü Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Sürücü Bilgileri</h2>
         {renderInfoRow("Ad Soyad", fileData.driver_fullname)}
         {renderInfoRow("Doğum Tarihi", fileData.driver_birth_date)}
         {renderInfoRow("Email", fileData.driver_mail)}
         {renderInfoRow("Telefon", fileData.driver_phone)}
         {renderInfoRow("TC", fileData.driver_tc)}
 
-        <div className="separator"></div>
+        <div className={styles.separator}></div>
 
-        <h2 className="section-title">Mağdur Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
         {renderInfoRow("Ad Soyad", fileData.victim_fullname)}
         {renderInfoRow("Doğum Tarihi", fileData.victim_birth_date)}
         {renderInfoRow("İBAN", fileData.victim_iban)}
@@ -133,9 +132,9 @@ const FileDetail = () => {
         {renderInfoRow("Telefon", fileData.victim_phone)}
         {renderInfoRow("TC", fileData.victim_tc)}
 
-        <div className="separator"></div>
+        <div className={styles.separator}></div>
 
-        <h2 className="section-title">Araç Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Araç Bilgileri</h2>
         {renderInfoRow("Plaka", fileData.vehicle_plate)}
         {renderInfoRow("Araç Markası", fileData.vehicle_brand)}
         {renderInfoRow("Araç Modeli", fileData.vehicle_model)}
@@ -146,31 +145,33 @@ const FileDetail = () => {
         {renderInfoRow("Araç Kullanım Türü", fileData.vehicle_usage_type)}
         {renderInfoRow("Model Yılı", fileData.vehicle_year)}
 
-        <div className="separator"></div>
+        <div className={styles.separator}></div>
 
-        <h2 className="section-title">Kaza Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>Kaza Bilgileri</h2>
         {renderInfoRow("Kaza Tarihi", fileData.accident_date?.slice(0, 10))}
         {renderInfoRow("Kaza Yeri", fileData.accident_location)}
 
-        <div className="separator"></div>
+        <div className={styles.separator}></div>
 
-        <h2 className="section-title">Yüklenen Dosyalar</h2>
+        <h2 className={styles.sectionTitle}>Yüklenen Dosyalar</h2>
+
         {Object.keys(fileImages).length === 0 ? (
-          <p className="no-files">Henüz yüklenmiş dosya bulunmuyor.</p>
+          <p className={styles.noFiles}>Henüz yüklenmiş dosya bulunmuyor.</p>
         ) : (
           Object.entries(fileImages).map(([type, files]) => (
-            <div key={type} className="file-type-section">
-              <h3 className="file-type-title">{type.toUpperCase()}</h3>
-              <div className="file-images-grid">
+            <div key={type} className={styles.fileTypeSection}>
+              <h3 className={styles.fileTypeTitle}>{type.toUpperCase()}</h3>
+
+              <div className={styles.fileImagesGrid}>
                 {files.map((f) => (
-                  <div key={f.id} className="file-image-item">
+                  <div key={f.id} className={styles.fileImageItem}>
                     <img
                       src={f.url}
                       alt={f.name}
-                      className="file-thumbnail"
+                      className={styles.fileThumbnail}
                       onClick={() => setSelectedImage(f.url)}
                     />
-                    <p className="file-name">{f.name || "Dosya"}</p>
+                    <p className={styles.fileName}>{f.name || "Dosya"}</p>
                   </div>
                 ))}
               </div>
@@ -179,19 +180,27 @@ const FileDetail = () => {
         )}
       </div>
 
-      <div className="bottom-buttons">
-        <button className="back-button" onClick={() => navigate(-1)}>
+      <div className={styles.bottomButtons}>
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
           GERİ DÖN
         </button>
       </div>
 
       {selectedImage && (
-        <div className="image-modal" onClick={() => setSelectedImage(null)}>
-          <div className="modal-content">
-            <button className="close-modal" onClick={() => setSelectedImage(null)}>
+        <div className={styles.imageModal} onClick={() => setSelectedImage(null)}>
+          <div className={styles.modalContent}>
+            <button
+              className={styles.closeModal}
+              onClick={() => setSelectedImage(null)}
+            >
               ×
             </button>
-            <img src={selectedImage} alt="Büyük Görsel" className="modal-image" />
+
+            <img
+              src={selectedImage}
+              alt="Büyük Görsel"
+              className={styles.modalImage}
+            />
           </div>
         </div>
       )}

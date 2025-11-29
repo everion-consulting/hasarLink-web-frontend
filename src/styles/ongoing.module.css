@@ -1,3 +1,6 @@
+/* =========================================
+   BASE LAYOUT
+   ========================================= */
 .container {
   position: relative;
   min-height: 100vh;
@@ -8,7 +11,9 @@
   flex-direction: column;
 }
 
-/* HEADER */
+/* =========================================
+   HEADER
+   ========================================= */
 .header {
   position: relative;
   padding: 32px 16px 0;
@@ -18,26 +23,21 @@
   z-index: 10;
 }
 
-/* Kare geri butonu */
+/* Back Button (Square) */
 .backBtn {
-  position: relative;
-  z-index: 1;
   border: none;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   cursor: pointer;
-
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   padding: 0;
-
   border-radius: 8px;
-
-  font-size: 20px;
+  font-size: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   transition: background-color 0.15s ease, transform 0.15s ease;
+  margin-left: 30px;
 }
 
 .backBtn:hover {
@@ -45,34 +45,27 @@
   transform: translateY(-1px);
 }
 
-/* Başlık */
+/* Centered Title */
 .headerTitleCentered {
-  align-self: center;
   text-align: center;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin-top: 20px;
+  margin-bottom: 26px;
   font-size: 30px;
   font-weight: 700;
   color: #333333;
   line-height: 1.2;
 }
 
-/* CONTENT */
-.content {
-  position: relative;
-  z-index: 5;
-  padding: 0 16px 32px;
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
+/* =========================================
+   CONTENT AREA
+   ========================================= */
 .contentInner {
   width: 100%;
-  max-width: 480px;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-/* EMPTY STATE */
+/* EMPTY MESSAGE */
 .empty {
   padding: 32px 8px;
   text-align: center;
@@ -80,72 +73,80 @@
   color: #111827;
 }
 
-/* LIST & CARDS */
+/* LIST */
 .listWrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   margin-top: 12px;
+  width: 100%;
+  max-width: 700px;
+  justify-self: center;
+  padding-inline: 20px;
 }
 
+/* =========================================
+   CARD DESIGN
+   ========================================= */
 .fileContainer {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 18px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
+/* HEADER INSIDE CARD */
 .fileHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
-  gap: 8px;
+  gap: 12px;
 }
 
 .fileNumber {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #000000;
-  margin-bottom: 4px;
+  color: #000;
 }
 
 .insuranceInfo {
   font-size: 14px;
-  color: #000000;
+  color: #000;
 }
 
-/* info ikonu */
+/* Info Icon */
 .infoIconBtn {
   border: none;
   background: transparent;
-  padding: 3px;
-  border-radius: 999px;
+  padding: 4px;
   cursor: pointer;
+  border-radius: 50%;
 }
 
 .infoIconBtn:hover {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 .infoIconSvg {
-  width: 20px;
-  height: 20px;
-  color: #666666;
+  width: 22px;
+  height: 22px;
+  color: #666;
 }
 
-/* STATUS / FOOTER */
+/* =========================================
+   STATUS ROW
+   ========================================= */
 .statusRow {
-  margin-top: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .statusBadge {
-  flex-direction: row;
   border-radius: 10px;
   padding: 6px 12px;
   display: inline-flex;
@@ -156,28 +157,18 @@
   background-color: rgba(251, 192, 45, 0.7);
 }
 
-.approvedBadge {
-  background-color: rgba(67, 160, 71, 0.7);
-}
-
-.approvedBadgeRisk {
-  background-color: rgba(198, 40, 40, 0.7);
-}
-
-.processingBadgeText,
-.approvedBadgeText {
+.processingBadgeText {
   font-size: 12px;
+  color: #fff;
   font-weight: 600;
-  color: #ffffff;
 }
 
-/* Detay linki */
+/* Detail link */
 .detailLink {
   border: none;
   background: transparent;
-  padding: 0;
   cursor: pointer;
-  text-decoration: none;
+  padding: 0;
   align-self: flex-start;
 }
 
@@ -192,48 +183,28 @@
   opacity: 0.8;
 }
 
-/* ===========================
+/* =========================================
    RESPONSIVE
-   =========================== */
-
-/* Tablet ve küçük laptoplar */
+   ========================================= */
 @media (max-width: 1024px) {
-  .content {
-    padding: 0 12px 28px;
-  }
-
-  .contentInner {
-    max-width: 720px;
-  }
-
   .headerTitleCentered {
     font-size: 28px;
   }
 }
 
-/* Tablet & büyük telefonlar */
 @media (max-width: 768px) {
-  .content {
-    padding: 0 12px 24px;
-  }
-
-  .contentInner {
-    max-width: 100%;
-  }
-
   .headerTitleCentered {
-    font-size: 24px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    font-size: 26px;
+    margin-top: 16px;
   }
 
   .fileContainer {
-    padding: 14px;
+    padding: 16px;
   }
 
   .fileNumber,
   .insuranceInfo {
-    font-size: 13px;
+    font-size: 13.5px;
   }
 
   .detailLinkText {
@@ -243,26 +214,22 @@
   .backBtn {
     width: 50px;
     height: 50px;
-    font-size: 18px;
+    font-size: 20px;
+  }
+
+  .fileHeader {
+    gap: 10px;
   }
 }
 
-/* Küçük telefonlar */
 @media (max-width: 480px) {
   .headerTitleCentered {
     font-size: 22px;
-    margin-top: 16px;
-    margin-bottom: 16px;
-  }
-
-  .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    margin-top: 14px;
   }
 
   .fileContainer {
-    padding: 12px;
+    padding: 14px;
     border-radius: 10px;
   }
 
@@ -271,21 +238,19 @@
     align-items: flex-start;
   }
 
-  .infoIconBtn {
-    align-self: flex-end;
-  }
-
   .statusRow {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .detailLink {
-    align-self: flex-end;
+  .backBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
 
   .fileNumber,
   .insuranceInfo {
-    font-size: 12px;
+    font-size: 12.5px;
   }
 }

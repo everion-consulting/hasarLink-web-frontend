@@ -3,6 +3,8 @@
 =========================================== */
 .settingsPage {
     width: 100%;
+    max-width: 800px;
+    justify-self: center;
     min-height: 100vh;
     padding: 40px 24px;
     font-family: "Poppins", sans-serif;

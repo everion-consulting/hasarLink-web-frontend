@@ -1,35 +1,26 @@
-
-.rejected-back {
+.rejectedBack {
   position: relative;
   z-index: 1;
   border: none;
   background: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-
-
   width: 60px;
   height: 60px;
   padding: 0;
-
- 
   border-radius: 8px;
-
   font-size: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.rejected-back:hover {
+.rejectedBack:hover {
   background-color: #e5e7eb;
   transform: translateY(-1px);
 }
 
-
-/* 📦 Kart ve liste genel */
-.rejected-card {
+.rejectedCard {
   margin-top: 12px;
   width: 100%;
   max-width: 900px;
@@ -37,14 +28,13 @@
   margin-right: auto;
 }
 
-.rejected-list {
+.rejectedList {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-
-.rejected-item {
+.rejectedItem {
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   padding: 16px 14px;
@@ -54,23 +44,22 @@
   gap: 8px;
 }
 
-.rejected-item__row {
+.rejectedItemRow {
   display: flex;
   gap: 4px;
   font-size: 14px;
 }
 
-.rejected-item__label {
+.rejectedItemLabel {
   font-weight: 600;
   color: #111827;
 }
 
-.rejected-item__value {
+.rejectedItemValue {
   color: #111827;
 }
 
-
-.rejected-item__badge {
+.rejectedItemBadge {
   margin-top: 4px;
   padding: 8px 10px;
   border-radius: 8px;
@@ -80,25 +69,23 @@
   font-weight: 600;
 }
 
-
-.rejected-item__fields {
+.rejectedItemFields {
   margin-top: 6px;
 }
 
-.rejected-item__fields-title {
+.rejectedItemFieldsTitle {
   font-size: 13px;
   font-weight: 600;
   color: #111827;
   margin-bottom: 2px;
 }
 
-.rejected-item__fields-value {
+.rejectedItemFieldsValue {
   font-size: 13px;
   color: #b91c1c;
 }
 
-
-.rejected-item__link {
+.rejectedItemLink {
   margin-top: 8px;
   align-self: flex-start;
   border: none;
@@ -111,9 +98,8 @@
   cursor: pointer;
 }
 
-
-.rejected-loading,
-.rejected-empty {
+.rejectedLoading,
+.rejectedEmpty {
   padding: 32px 8px;
   text-align: center;
   color: #6b7280;
@@ -123,67 +109,71 @@
   align-items: center;
 }
 
-.rejected-spinner {
+.rejectedSpinner {
   width: 24px;
   height: 24px;
   border-radius: 999px;
   border: 3px solid #e5e7eb;
   border-top-color: #133e87;
-  animation: rejected-spin 0.7s linear infinite;
+  animation: rejectedSpin 0.7s linear infinite;
 }
 
-@keyframes rejected-spin {
+.rejectedHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 12px;
+  max-width: 600px;
+  justify-self: center;
+  align-content: center;
+}
+
+
+@keyframes rejectedSpin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* 📱 Responsive */
 @media (max-width: 1024px) {
-  .rejected-card {
+  .rejectedCard {
     max-width: 100%;
   }
 }
 
 @media (max-width: 768px) {
-  .rejected-card {
+  .rejectedCard {
     padding: 16px 14px;
     margin-top: 8px;
   }
 
-  .rejected-item {
+  .rejectedItem {
     padding: 14px 12px;
   }
 
-  .rejected-item__row {
+  .rejectedItemRow {
     flex-direction: column;
     font-size: 13px;
   }
 
-  .rejected-item__badge,
-  .rejected-item__fields-title,
-  .rejected-item__fields-value {
+  .rejectedItemBadge,
+  .rejectedItemFieldsTitle,
+  .rejectedItemFieldsValue {
     font-size: 12px;
   }
 
-  .rejected-item__link {
+  .rejectedItemLink {
     font-size: 13px;
-  }
-
-  .rejected-back-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-    margin-bottom: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .rejected-card {
+  .rejectedCard {
     padding: 14px 10px;
   }
 
-  .rejected-item {
+  .rejectedItem {
     padding: 12px 10px;
     border-radius: 10px;
   }

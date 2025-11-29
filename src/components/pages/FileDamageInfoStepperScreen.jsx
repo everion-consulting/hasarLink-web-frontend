@@ -14,7 +14,7 @@ const FileDamageInfoStepperScreen = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
-  const [formValid, setFormValid] = useState(false); // ✅ VALIDATION STATE
+  const [formValid, setFormValid] = useState(false); 
 
   const navigate = useNavigate();
   const location = useLocation();

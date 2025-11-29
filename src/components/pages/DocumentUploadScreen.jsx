@@ -1,8 +1,5 @@
-// src/screens/file/DocumentUploaderScreen.jsx
 import React, { useState } from "react";
 import apiService from "../../services/apiServices";
-
-// ⬇️ ARTIK CSS MODULE
 import styles from "../../styles/documentUploaderScreen.module.css";
 import FormFooter from "../forms/FormFooter";
 

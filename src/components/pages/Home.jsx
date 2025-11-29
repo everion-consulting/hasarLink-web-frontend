@@ -310,7 +310,7 @@ export default function Dashboard() {
               goToOngoing();
             }}
           >
-            YÜKLE
+            TÜMÜNÜ GÖR
           </button>
 
 

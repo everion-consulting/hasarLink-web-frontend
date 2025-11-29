@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import coreService from "../../services/coreService";
-import "../../styles/notificationScreen.css";
+import styles from "../../styles/notificationScreen.module.css";
 
 const NotificationsScreen = () => {
   const navigate = useNavigate();
@@ -116,20 +116,22 @@ const NotificationsScreen = () => {
       <div
         key={notification.id}
         className={
-          "notif-item" +
-          (!notification.is_read ? " notif-item--unread" : "") +
-          (isDeleting ? " notif-item--deleting" : "")
+          `${styles.notifItem} ` +
+          `${!notification.is_read ? styles.notifItemUnread : ""} ` +
+          `${isDeleting ? styles.notifItemDeleting : ""}`
         }
         onClick={() => openNotificationDetail(notification)}
       >
-        <div className="notif-item__left">
-          <div className="notif-item__icon" />
-          <div className="notif-item__text">
-            <div className="notif-item__title">
+        <div className={styles.notifItemLeft}>
+          <div className={styles.notifItemIcon} />
+          <div className={styles.notifItemText}>
+            <div className={styles.notifItemTitle}>
               {notification.title || "Yeni Bildirim"}
             </div>
-            <div className="notif-item__message">{notification.message}</div>
-            <div className="notif-item__time">
+            <div className={styles.notifItemMessage}>
+              {notification.message}
+            </div>
+            <div className={styles.notifItemTime}>
               {notification.time_ago ||
                 new Date(notification.created_at).toLocaleString("tr-TR")}
             </div>
@@ -137,7 +139,7 @@ const NotificationsScreen = () => {
         </div>
 
         <div
-          className="notif-item__delete"
+          className={styles.notifItemDelete}
           onClick={(e) => {
             e.stopPropagation();
             deleteNotification(notification.id);
@@ -150,31 +152,30 @@ const NotificationsScreen = () => {
   };
 
   return (
-    <div className="screen-container-drive">
-      <div className="content-area">
-        {/* Sol geri ok */}
-        <button
-          type="button"
-          className="notif-back-btn"
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
+    <div className={styles.notifPage}>
+      <div className={styles.contentArea}>
+        <div className={styles.notifHeader}>
+          <button
+            type="button"
+            className={styles.notifBackBtn}
+            onClick={() => navigate(-1)}
+          >
+            ←
+          </button>
 
-        {/* Başlık */}
-        <h1 className="page-title">BİLDİRİMLER</h1>
+          <h1 className={styles.pageTitle}>BİLDİRİMLER</h1>
+        </div>
 
-        {/* Ortadaki beyaz kart (Araç Bilgileri kartı gibi) */}
-        <div className="vehicle-form-card notif-card">
-          <div className="notif-card__header">
-            <div className="notif-card__section-left">
-              <span className="notif-card__section-title">Yeni</span>
-              <span className="notif-card__badge">{getUnreadCount()}</span>
+        <div className={`${styles.vehicleFormCard} ${styles.notifCard}`}>
+          <div className={styles.notifCardHeader}>
+            <div className={styles.notifCardSectionLeft}>
+              <span className={styles.notifCardSectionTitle}>Yeni</span>
+              <span className={styles.notifCardBadge}>{getUnreadCount()}</span>
             </div>
 
             <button
               type="button"
-              className="notif-card__mark-all"
+              className={styles.notifCardMarkAll}
               onClick={markAllAsRead}
             >
               Tümünü Okundu İşaretle
@@ -182,31 +183,33 @@ const NotificationsScreen = () => {
           </div>
 
           {loading && notifications.length === 0 ? (
-            <div className="notif-loading">
-              <div className="notif-spinner" />
+            <div className={styles.notifLoading}>
+              <div className={styles.notifSpinner} />
               <span>Yükleniyor...</span>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="notif-empty">Henüz bildiriminiz yok</div>
+            <div className={styles.notifEmpty}>Henüz bildiriminiz yok</div>
           ) : (
-            <div className="notif-list">
+            <div className={styles.notifList}>
               {notifications.map(renderNotificationItem)}
             </div>
           )}
         </div>
       </div>
 
-      {/* Detay modalı */}
       {modalVisible && selectedNotification && (
-        <div className="notif-modal-overlay" onClick={closeModal}>
+        <div
+          className={styles.notifModalOverlay}
+          onClick={closeModal}
+        >
           <div
-            className="notif-modal"
+            className={styles.notifModal}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="notif-modal__header">
+            <div className={styles.notifModalHeader}>
               <h2>Bildirim Detayı</h2>
               <button
-                className="notif-modal__close"
+                className={styles.notifModalClose}
                 onClick={closeModal}
                 type="button"
               >
@@ -214,24 +217,24 @@ const NotificationsScreen = () => {
               </button>
             </div>
 
-            <div className="notif-modal__body">
-              <div className="notif-detail">
-                <div className="notif-detail__label">Başlık</div>
-                <div className="notif-detail__value">
+            <div className={styles.notifModalBody}>
+              <div className={styles.notifDetail}>
+                <div className={styles.notifDetailLabel}>Başlık</div>
+                <div className={styles.notifDetailValue}>
                   {selectedNotification.title || "Yeni Bildirim"}
                 </div>
               </div>
 
-              <div className="notif-detail">
-                <div className="notif-detail__label">Mesaj</div>
-                <div className="notif-detail__message">
+              <div className={styles.notifDetail}>
+                <div className={styles.notifDetailLabel}>Mesaj</div>
+                <div className={styles.notifDetailMessage}>
                   {selectedNotification.message}
                 </div>
               </div>
 
-              <div className="notif-detail">
-                <div className="notif-detail__label">Tarih</div>
-                <div className="notif-detail__value">
+              <div className={styles.notifDetail}>
+                <div className={styles.notifDetailLabel}>Tarih</div>
+                <div className={styles.notifDetailValue}>
                   {new Date(
                     selectedNotification.created_at
                   ).toLocaleString("tr-TR", {
@@ -244,14 +247,13 @@ const NotificationsScreen = () => {
                 </div>
               </div>
 
-              <div className="notif-detail">
-                <div className="notif-detail__label">Durum</div>
+              <div className={styles.notifDetail}>
+                <div className={styles.notifDetailLabel}>Durum</div>
                 <div
                   className={
-                    "notif-detail__status" +
-                    (selectedNotification.is_read
-                      ? " notif-detail__status--read"
-                      : " notif-detail__status--unread")
+                    selectedNotification.is_read
+                      ? styles.notifDetailStatusRead
+                      : styles.notifDetailStatusUnread
                   }
                 >
                   {selectedNotification.is_read ? "Okundu" : "Okunmadı"}
@@ -259,10 +261,10 @@ const NotificationsScreen = () => {
               </div>
             </div>
 
-            <div className="notif-modal__footer">
+            <div className={styles.notifModalFooter}>
               <button
                 type="button"
-                className="notif-modal__btn notif-modal__btn--delete"
+                className={`${styles.notifModalBtn} ${styles.notifModalBtnDelete}`}
                 onClick={() => deleteNotification(selectedNotification.id)}
               >
                 Bildirimi Sil
@@ -270,7 +272,7 @@ const NotificationsScreen = () => {
 
               <button
                 type="button"
-                className="notif-modal__btn notif-modal__btn--primary"
+                className={`${styles.notifModalBtn} ${styles.notifModalBtnPrimary}`}
                 onClick={() => {
                   closeModal();
                   if (selectedNotification.object_id) {

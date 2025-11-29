@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 import apiService from "../../services/apiServices";
 
-
-import "../../styles/rejectedFileScreen.css";     
+// MODULE CSS
+import styles from "../../styles/rejectedFileScreen.module.css";
 
 const RejectedFilesScreen = () => {
   const navigate = useNavigate();
@@ -13,7 +13,6 @@ const RejectedFilesScreen = () => {
   const [fileNotifications, setFileNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 📦 reddedilen dosyaları çek
   useEffect(() => {
     const getFileNotifications = async () => {
       try {
@@ -21,7 +20,6 @@ const RejectedFilesScreen = () => {
         const res = await apiService.getRejectedSubmissions();
 
         if (!res.success) {
-          console.error("❌ Reddedilen dosyalar alınamadı:", res.message);
           window.alert(res.message || "Reddedilen dosyalar alınamadı.");
           setFileNotifications([]);
           return;
@@ -33,7 +31,6 @@ const RejectedFilesScreen = () => {
 
         setFileNotifications(list);
       } catch (error) {
-        console.error("Dosya bildirimleri alınırken hata:", error);
         window.alert("Reddedilen dosyalar alınırken bir hata oluştu.");
         setFileNotifications([]);
       } finally {
@@ -44,7 +41,6 @@ const RejectedFilesScreen = () => {
     getFileNotifications();
   }, []);
 
-  // 📦 Dosya detayına git
   const handleFileDetail = (item) => {
     navigate(`/reddedilen-dosyalar-detay/${item.submission_id}`, {
       state: {
@@ -55,27 +51,27 @@ const RejectedFilesScreen = () => {
   };
 
   const renderFileItem = (data) => (
-    <div key={data.submission_id} className="rejected-item">
-      <div className="rejected-item__row">
-        <span className="rejected-item__label">Araç Plaka:</span>
-        <span className="rejected-item__value">{data.plate || "-"}</span>
+    <div key={data.submission_id} className={styles.rejectedItem}>
+      <div className={styles.rejectedItemRow}>
+        <span className={styles.rejectedItemLabel}>Araç Plaka:</span>
+        <span className={styles.rejectedItemValue}>{data.plate || "-"}</span>
       </div>
 
-      <div className="rejected-item__row">
-        <span className="rejected-item__label">Tarih:</span>
-        <span className="rejected-item__value">{data.date || "-"}</span>
+      <div className={styles.rejectedItemRow}>
+        <span className={styles.rejectedItemLabel}>Tarih:</span>
+        <span className={styles.rejectedItemValue}>{data.date || "-"}</span>
       </div>
 
-      <div className="rejected-item__badge">
+      <div className={styles.rejectedItemBadge}>
         Red Nedeni: {data.message || "-"}
       </div>
 
       {!!data.fields?.length && (
-        <div className="rejected-item__fields">
-          <div className="rejected-item__fields-title">
+        <div className={styles.rejectedItemFields}>
+          <div className={styles.rejectedItemFieldsTitle}>
             Eksik / Hatalı Alanlar:
           </div>
-          <div className="rejected-item__fields-value">
+          <div className={styles.rejectedItemFieldsValue}>
             {data.fields.map((f) => f.label).join(", ")}
           </div>
         </div>
@@ -83,7 +79,7 @@ const RejectedFilesScreen = () => {
 
       <button
         type="button"
-        className="rejected-item__link"
+        className={styles.rejectedItemLink}
         onClick={() => handleFileDetail(data)}
       >
         Dosya Detayı Gör
@@ -91,32 +87,34 @@ const RejectedFilesScreen = () => {
     </div>
   );
 
-return (
+  return (
     <div className="screen-container-drive">
       <div className="content-area">
-        {/* Geri ok */}
-        <button
-          type="button"
-          className="rejected-back"
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
 
-        <h1 className="page-title">Reddedilen Dosyalar</h1>
+        <div className={styles.rejectedHeader}>
+          <button
+            type="button"
+            className={styles.rejectedBack}
+            onClick={() => navigate(-1)}
+          >
+            ←
+          </button>
 
-        <div className="vehicle-form-card rejected-card">
+          <h1 className="page-title">Reddedilen Dosyalar</h1>
+        </div>
+
+        <div className={styles.rejectedCard}>
           {loading ? (
-            <div className="rejected-loading">
-              <div className="rejected-spinner" />
+            <div className={styles.rejectedLoading}>
+              <div className={styles.rejectedSpinner} />
               <span>Yükleniyor...</span>
             </div>
           ) : fileNotifications.length === 0 ? (
-            <div className="rejected-empty">
+            <div className={styles.rejectedEmpty}>
               Henüz reddedilen dosyanız bulunmuyor.
             </div>
           ) : (
-            <div className="rejected-list">
+            <div className={styles.rejectedList}>
               {fileNotifications.map(renderFileItem)}
             </div>
           )}

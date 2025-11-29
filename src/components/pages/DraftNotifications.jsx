@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './DraftNotifications.css';
+import styles from './DraftNotifications.module.css';
 import apiService from '../../services/apiServices';
 
 const DraftNotifications = () => {
@@ -20,24 +20,26 @@ const DraftNotifications = () => {
 
     const fetchDraftsData = async (page) => {
         try {
-            console.log("Filtreleme parametreleri:", { page, selectedDate });
             const response = await apiService.getDrafts(page, null, null);
-            console.log("API'den gelen taslaklar:", response);
-            
-            let results = Array.isArray(response.data?.results) ? response.data.results : [];
+
+            let results = Array.isArray(response.data?.results)
+                ? response.data.results
+                : [];
+
             const count = response.data?.count || 0;
 
             if (selectedDate) {
-                results = results.filter(draft => {
-
-                    const draftDate = draft.created_at?.slice(0, 10); 
+                results = results.filter((draft) => {
+                    const draftDate = draft.created_at?.slice(0, 10);
                     return draftDate === selectedDate;
                 });
             }
-            
+
             setDrafts(results);
             setTotalCount(selectedDate ? results.length : count);
-            setTotalPages(Math.ceil((selectedDate ? results.length : count) / itemsPerPage));
+            setTotalPages(
+                Math.ceil((selectedDate ? results.length : count) / itemsPerPage)
+            );
         } catch (error) {
             console.error("Taslaklar alınırken hata:", error);
             setDrafts([]);
@@ -45,7 +47,7 @@ const DraftNotifications = () => {
     };
 
     const handleFilterChange = () => {
-        setCurrentPage(1); 
+        setCurrentPage(1);
         fetchDraftsData(1);
     };
 
@@ -103,6 +105,7 @@ const DraftNotifications = () => {
                     },
                     samePerson: draftDetail.is_driver_victim_same,
                     insuranceSource: draftDetail.insurance_source,
+
                     driverData: {
                         driver_fullname: draftDetail.driver_fullname,
                         driver_tc: draftDetail.driver_tc,
@@ -110,6 +113,7 @@ const DraftNotifications = () => {
                         driver_phone: draftDetail.driver_phone,
                         driver_birth_date: draftDetail.driver_birth_date,
                     },
+
                     victimData: {
                         victim_fullname: draftDetail.victim_fullname,
                         victim_tc: draftDetail.victim_tc,
@@ -121,6 +125,7 @@ const DraftNotifications = () => {
                         insured_policy_no: draftDetail.insured_policy_no,
                         insuredCarDocNo: draftDetail.insured_car_doc_no,
                     },
+
                     vehicleData: {
                         vehicle_brand: draftDetail.vehicle_brand,
                         vehicle_type: draftDetail.vehicle_type,
@@ -132,6 +137,7 @@ const DraftNotifications = () => {
                         vehicle_engine_no: draftDetail.vehicle_engine_no,
                         vehicle_year: draftDetail.vehicle_year,
                     },
+
                     insuredData: {
                         insured_fullname: draftDetail.insured_fullname,
                         insured_policy_no: draftDetail.insured_policy_no,
@@ -141,6 +147,7 @@ const DraftNotifications = () => {
                         insured_birth_date: draftDetail.insured_birth_date,
                         insured_plate: draftDetail.insured_plate,
                     },
+
                     mechanicData: {
                         repair_fullname: draftDetail.repair_fullname,
                         repair_birth_date: draftDetail.repair_birth_date,
@@ -150,6 +157,7 @@ const DraftNotifications = () => {
                         repair_state_city_city: draftDetail.service_state_city_city,
                         repair_address: draftDetail.repair_address,
                     },
+
                     serviceData: {
                         service_name: draftDetail.service_name,
                         service_tax_no: draftDetail.service_tax_no,
@@ -160,6 +168,7 @@ const DraftNotifications = () => {
                         service_iban: draftDetail.service_iban,
                         service_iban_name: draftDetail.service_iban_name,
                     },
+
                     damageData: {
                         damage_type: draftDetail.damage_type,
                         damage_description: draftDetail.damage_description,
@@ -169,6 +178,7 @@ const DraftNotifications = () => {
                         estimated_damage_amount: draftDetail.estimated_damage_amount,
                         official_report_type: draftDetail.official_report_type,
                     },
+
                     documents: draftDetail.files || {},
                 },
             });
@@ -179,32 +189,36 @@ const DraftNotifications = () => {
     };
 
     return (
-        <div className="draft-notifications">
-            <h1>Taslak Bildirimlerim</h1>
-            
-            {/* Date Filter Section */}
-            <div className="filter-section">
-                <div className="filter-inputs">
-                    <div className="filter-input-group">
-                        <label htmlFor="selectedDate">Tarih Seçin:</label>
+        <div className={styles.draftNotifications}>
+            <h1 className={styles.title}>Taslak Bildirimlerim</h1>
+
+            {/* Filter Section */}
+            <div className={styles.filterSection}>
+                <div className={styles.filterInputs}>
+                    <div className={styles.filterGroup}>
+                        <label htmlFor="selectedDate" className={styles.filterLabel}>
+                            Tarih Seçin:
+                        </label>
                         <input
                             type="date"
                             id="selectedDate"
+                            className={styles.filterDate}
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
                         />
                     </div>
                 </div>
-                <div className="filter-buttons">
-                    <button 
-                        className="filter-button" 
+
+                <div className={styles.filterButtons}>
+                    <button
+                        className={styles.filterButton}
                         onClick={handleFilterChange}
                         disabled={!selectedDate}
                     >
                         Filtrele
                     </button>
-                    <button 
-                        className="clear-filter-button" 
+                    <button
+                        className={styles.clearFilterButton}
                         onClick={handleClearFilters}
                         disabled={!selectedDate}
                     >
@@ -212,23 +226,34 @@ const DraftNotifications = () => {
                     </button>
                 </div>
             </div>
-            
+
             {totalCount > 0 && (
-                <p className="total-count">Toplam {totalCount} taslak bulundu.</p>
+                <p className={styles.totalCount}>
+                    Toplam {totalCount} taslak bulundu.
+                </p>
             )}
 
             <ul>
                 {drafts.length > 0 ? (
                     drafts.map((draft) => (
-                        <li key={draft.id} className="draft-item">
+                        <li key={draft.id} className={styles.draftItem}>
                             <div>
-                                <p>Araç Plaka: {draft.vehicle_plate || "-"}</p>
-                                <p>Kaza Tarihi: {draft.accident_date || "-"}</p>
-                                <p>Sigorta Şirketi: {draft.insurance_company_name || "-"}</p>
-                                <p>Oluşturulma: {draft.created_at?.slice(0, 10) || "-"}</p>
+                                <p className={styles.draftText}>
+                                    Araç Plaka: {draft.vehicle_plate || "-"}
+                                </p>
+                                <p className={styles.draftText}>
+                                    Kaza Tarihi: {draft.accident_date || "-"}
+                                </p>
+                                <p className={styles.draftText}>
+                                    Sigorta Şirketi: {draft.insurance_company_name || "-"}
+                                </p>
+                                <p className={styles.draftText}>
+                                    Oluşturulma: {draft.created_at?.slice(0, 10) || "-"}
+                                </p>
                             </div>
+
                             <button
-                                className="close-button"
+                                className={styles.closeButton}
                                 onClick={() => {
                                     setSelectedDraft(draft);
                                     setShowModal(true);
@@ -236,8 +261,14 @@ const DraftNotifications = () => {
                             >
                                 ×
                             </button>
-                            <div className="actions">
-                                <button className="continue-button" onClick={() => handleContinue(draft)}>TAMAMLA</button>
+
+                            <div className={styles.actions}>
+                                <button
+                                    className={styles.continueButton}
+                                    onClick={() => handleContinue(draft)}
+                                >
+                                    TAMAMLA
+                                </button>
                             </div>
                         </li>
                     ))
@@ -248,22 +279,28 @@ const DraftNotifications = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="pagination">
-                    <button 
-                        className="pagination-button"
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                <div className={styles.pagination}>
+                    <button
+                        className={styles.paginationButton}
+                        onClick={() =>
+                            setCurrentPage((prev) => Math.max(1, prev - 1))
+                        }
                         disabled={currentPage === 1}
                     >
                         ← Önceki
                     </button>
-                    
-                    <div className="pagination-info">
+
+                    <div className={styles.paginationInfo}>
                         Sayfa {currentPage} / {totalPages}
                     </div>
-                    
-                    <button 
-                        className="pagination-button"
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+
+                    <button
+                        className={styles.paginationButton}
+                        onClick={() =>
+                            setCurrentPage((prev) =>
+                                Math.min(totalPages, prev + 1)
+                            )
+                        }
                         disabled={currentPage === totalPages}
                     >
                         Sonraki →
@@ -271,14 +308,25 @@ const DraftNotifications = () => {
                 </div>
             )}
 
+            {/* MODAL */}
             {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
                         <h2>Taslak Silinsin mi?</h2>
                         <p>Bu taslağı kalıcı olarak silmek istediğinize emin misiniz?</p>
-                        <div className="modal-actions">
-                            <button className="cancel-button" onClick={() => setShowModal(false)}>Vazgeç</button>
-                            <button className="delete-button" onClick={() => handleDelete(selectedDraft.id)}>Sil</button>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelButton}
+                                onClick={() => setShowModal(false)}
+                            >
+                                Vazgeç
+                            </button>
+                            <button
+                                className={styles.deleteButton}
+                                onClick={() => handleDelete(selectedDraft.id)}
+                            >
+                                Sil
+                            </button>
                         </div>
                     </div>
                 </div>

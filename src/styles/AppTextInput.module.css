@@ -1,8 +1,8 @@
-.app-text-input {
+.appTextInput {
   width: 100%;
 }
 
-.input-label {
+.inputLabel {
   font-size: 13px;
   color: #5A5A5A;
   margin-bottom: 6px;
@@ -10,13 +10,13 @@
   display: block;
 }
 
-.required-indicator {
+.requiredIndicator {
   color: #C62828;
   font-weight: 700;
   margin-left: 2px;
 }
 
-.input-container {
+.inputContainer {
   display: flex;
   align-items: center;
   border: 1px solid #E3E3E3;
@@ -27,20 +27,20 @@
   position: relative;
 }
 
-.input-container:hover {
+.inputContainer:hover {
   border-color: #999;
 }
 
-.input-container:focus-within {
+.inputContainer:focus-within {
   border-color: #1E88E5;
   box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.1);
 }
 
-.input-container.error {
+.inputContainerError {
   border-color: #C62828;
 }
 
-.input-icon {
+.inputIcon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +54,7 @@
   stroke-width: 1.5;
 }
 
-.text-input {
+.textInput {
   flex: 1;
   padding: 10px 0;
   color: #222;
@@ -63,25 +63,25 @@
   outline: none;
   background: transparent;
   font-family: inherit;
-  resize: none; /* textarea için */
+  resize: none;
 }
 
-.text-input.with-icon {
+.textInputWithIcon {
   margin-left: 0;
 }
 
-.text-input.multiline {
+.textInputMultiline {
   resize: vertical;
   min-height: 40px;
   padding: 12px 0;
   line-height: 1.4;
 }
 
-.text-input::placeholder {
+.textInput::placeholder {
   color: #9E9E9E;
 }
 
-.action-button {
+.actionButton {
   padding-left: 8px;
   font-weight: 700;
   color: #1E88E5;
@@ -92,57 +92,56 @@
   white-space: nowrap;
 }
 
-.action-button:hover {
+.actionButton:hover {
   color: #1565C0;
   text-decoration: underline;
 }
 
-.error-text {
+.errorText {
   color: #C62828;
   font-size: 12px;
   margin-top: 6px;
 }
 
-.helper-text {
+.helperText {
   color: #8A8A8A;
   font-size: 12px;
   margin-top: 6px;
 }
 
-/* Dark theme */
-.app-text-input.dark .input-label {
+/* DARK MODE */
+.appTextInputDark .inputLabel {
   color: #fff;
 }
 
-.app-text-input.dark .input-container {
+.appTextInputDark .inputContainer {
   background-color: #222;
   border-color: #444;
 }
 
-.app-text-input.dark .text-input {
+.appTextInputDark .textInput {
   color: #fff;
   background-color: #222;
 }
 
-.app-text-input.dark .text-input::placeholder {
+.appTextInputDark .textInput::placeholder {
   color: #9E9E9E;
 }
 
-.app-text-input.dark .action-button {
+.appTextInputDark .actionButton {
   color: #64B5F6;
 }
 
-.app-text-input.dark .action-button:hover {
+.appTextInputDark .actionButton:hover {
   color: #42A5F5;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
-  .input-container {
+  .inputContainer {
     padding: 0 8px;
   }
-  
-  .text-input {
+
+  .textInput {
     font-size: 14px;
     padding: 8px 0;
   }

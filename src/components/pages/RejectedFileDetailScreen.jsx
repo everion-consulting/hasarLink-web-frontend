@@ -4,8 +4,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import apiService from "../../services/apiServices";
 import submissionService from "../../services/submissionService";
-import FancySelect from "../Dropdowns/FancySelect"
-import "../../styles/rejectedFileDetailScreen.css";
+import FancySelect from "../Dropdowns/FancySelect";
+import styles from "../../styles/rejectedFileDetailScreen.module.css";
 
 const FILE_TYPES = [
     { id: "tutanak", title: "Anlaşmalı Tutanak" },
@@ -18,69 +18,21 @@ const FILE_TYPES = [
 ];
 
 const EDITABLE_KEYS = [
-    // Dosya Bilgileri
-    "insurance_company_name",
-    "insurance_source",
-    "is_driver_victim_same",
-    // Sürücü
-    "driver_fullname",
-    "driver_tc",
-    "driver_phone",
-    "driver_mail",
-    "driver_birth_date",
-    // Mağdur
-    "victim_fullname",
-    "victim_tc",
-    "victim_phone",
-    "victim_mail",
-    "victim_birth_date",
-    "victim_iban",
-    // Araç
-    "vehicle_brand",
-    "vehicle_model",
-    "vehicle_type",
-    "vehicle_plate",
-    "vehicle_year",
-    "vehicle_usage_type",
-    "vehicle_license_no",
-    "vehicle_chassis_no",
-    "vehicle_engine_no",
-    // Sigortalı
-    "insured_fullname",
-    "insured_tc",
-    "insured_phone",
-    "insured_mail",
-    "insured_birth_date",
-    "insured_policy_no",
-    "insured_plate",
-    "insured_file_no",
-    // Tamirci
-    "repair_fullname",
-    "repair_birth_date",
-    "repair_tc",
-    "repair_phone",
-    "repair_city",
-    "repair_state_city_city",
-    "repair_address",
-    "repair_works",
-    // Servis
-    "service_name",
-    "service_phone",
-    "service_city",
-    "service_state_city_city",
-    "service_address",
-    "service_iban",
-    "service_iban_name",
-    "service_tax_no",
-    // Kaza
-    "damage_type",
-    "damage_description",
-    "accident_date",
-    "accident_location",
-    "official_report_type",
-    "estimated_damage_amount",
-    "policy_no",
+    "insurance_company_name","insurance_source","is_driver_victim_same",
+    "driver_fullname","driver_tc","driver_phone","driver_mail","driver_birth_date",
+    "victim_fullname","victim_tc","victim_phone","victim_mail","victim_birth_date","victim_iban",
+    "vehicle_brand","vehicle_model","vehicle_type","vehicle_plate","vehicle_year","vehicle_usage_type",
+    "vehicle_license_no","vehicle_chassis_no","vehicle_engine_no",
+    "insured_fullname","insured_tc","insured_phone","insured_mail","insured_birth_date",
+    "insured_policy_no","insured_plate","insured_file_no",
+    "repair_fullname","repair_birth_date","repair_tc","repair_phone","repair_city",
+    "repair_state_city_city","repair_address","repair_works",
+    "service_name","service_phone","service_city","service_state_city_city",
+    "service_address","service_iban","service_iban_name","service_tax_no",
+    "damage_type","damage_description","accident_date","accident_location",
+    "official_report_type","estimated_damage_amount","policy_no"
 ];
+
 
 const toBoolean = (v) => {
     if (v === true || v === false) return v;
@@ -105,8 +57,6 @@ const RejectedFileDetailScreen = () => {
     const [editMode, setEditMode] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [uploading, setUploading] = useState(false);
-
-    // 🔴 Eksik / Hatalı alanlar
     const [errorFields, setErrorFields] = useState([]);
 
     const [dropdownData, setDropdownData] = useState({
@@ -122,23 +72,19 @@ const RejectedFileDetailScreen = () => {
     const fileInputRef = useRef(null);
     const [uploadContext, setUploadContext] = useState(null);
 
-    // -------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------
+    // ---------------- NORMALIZE ----------------
     const normalizeForApi = (data) => {
         const out = {};
-
         for (const k of EDITABLE_KEYS) {
             if (!(k in data)) continue;
             const v = data[k];
             if (v === null || v === undefined || v === "") continue;
 
-            // Sigorta şirketi => id
             if (k === "insurance_company_name") {
                 const selected = dropdownData.insurance_company_name.find(
                     (opt) => opt.label === v || opt.value === v
                 );
-                if (selected && selected.id) out["insurance_company"] = selected.id;
+                if (selected?.id) out["insurance_company"] = selected.id;
                 continue;
             }
             if (k === "insurance_source") {
@@ -149,40 +95,33 @@ const RejectedFileDetailScreen = () => {
                 out["is_driver_victim_same"] = toBoolean(v);
                 continue;
             }
-
-            if (k === "vehicle_year" || k === "estimated_damage_amount") {
+            if (["vehicle_year","estimated_damage_amount"].includes(k)) {
                 const num = Number(v);
-                if (!Number.isNaN(num)) out[k] = num;
+                if (!isNaN(num)) out[k] = num;
                 continue;
             }
-
             out[k] = v;
         }
-
         return out;
     };
 
     const getFileUrl = (f) => f?.file_url || f?.file?.url || f?.url || null;
-    const getFileName = (f) =>
-        f?.name || f?.filename || getFileUrl(f)?.split("/").pop() || "Dosya";
-    const getUploadedAt = (f) =>
-        (f?.uploaded_at || "").slice(0, 16).replace("T", " ");
+    const getFileName = (f) => f?.name || f?.filename || getFileUrl(f)?.split("/").pop() || "Dosya";
+    const getUploadedAt = (f) => (f?.uploaded_at || "").slice(0, 16).replace("T", " ");
 
-    // 🔍 Bu alan hata mı?
     const isErrorField = (label, key) =>
         errorFields.some(
-            (f) => norm(f.key) === norm(key) || norm(f.label) === norm(label)
+            (f) =>
+                norm(f.key) === norm(key) ||
+                norm(f.label) === norm(label)
         );
 
-    // Bu grupta en az 1 hatalı alan var mı?
     const groupHasAnyVisible = (pairs) =>
         pairs.some(
             ({ label, key }) => errorFields.length === 0 || isErrorField(label, key)
         );
 
-    // -------------------------------------------------------
-    // Dropdown verileri
-    // -------------------------------------------------------
+    // ---------------- Dropdowns ----------------
     useEffect(() => {
         const fetchDropdowns = async () => {
             try {
@@ -190,24 +129,21 @@ const RejectedFileDetailScreen = () => {
                 const data = res?.data || {};
 
                 setDropdownData({
-                    insurance_company_name: (data.insurance_companies || []).map(
-                        (opt) => ({
-                            label: opt.name,
-                            value: opt.name,
-                            id: opt.id,
-                        })
-                    ),
+                    insurance_company_name: (data.insurance_companies || []).map((opt) => ({
+                        label: opt.name,
+                        value: opt.name,
+                        id: opt.id,
+                    })),
                     insurance_source: (data.sources || []).map((opt) => ({
                         label: opt,
                         value: opt,
                     })),
                     is_driver_victim_same: (data.is_same || []).map((opt) => ({
-                        label: opt === true ? "Evet" : "Hayır",
+                        label: opt ? "Evet" : "Hayır",
                         value: opt,
                     })),
                 });
             } catch (e) {
-                console.error(e);
                 setDropdownData({
                     insurance_company_name: [],
                     insurance_source: [],
@@ -215,25 +151,20 @@ const RejectedFileDetailScreen = () => {
                 });
             }
         };
-
         fetchDropdowns();
     }, []);
 
-    // -------------------------------------------------------
-    // Dosya detayını çek
-    // -------------------------------------------------------
+    // ---------------- File Detail ----------------
     const fetchFileDetail = async () => {
         if (!id) return;
         try {
             setLoading(true);
             const res = await apiService.getSubmissionDetail(id);
             if (!res.success) {
-                window.alert(res.message || "Dosya detayı alınırken hata oluştu.");
+                alert(res.message || "Dosya detayı alınamadı.");
                 return;
             }
             setFileData(res.data);
-        } catch (e) {
-            console.error(e);
         } finally {
             setLoading(false);
         }
@@ -241,42 +172,23 @@ const RejectedFileDetailScreen = () => {
 
     useEffect(() => {
         fetchFileDetail();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const setPendingStatus = async () => {
         try {
-            const res = await apiService.updateSubmission(id, { status: "PENDING" });
-            if (!res.success) {
-                window.alert(res.message || "Durum güncellenirken hata oluştu.");
-                return false;
-            }
-            setFileData((prev) => ({ ...prev, status: res?.data?.status || "PENDING" }));
+            const res = await apiService.updateSubmission(id,{status:"PENDING"});
+            if (!res.success) return false;
+            setFileData((p)=>({...p,status:"PENDING"}));
             await fetchFileDetail();
             return true;
-        } catch (e) {
-            console.error(e);
-            window.alert("Durum güncellenemedi.");
+        } catch {
             return false;
         }
     };
 
-    // -------------------------------------------------------
-    // 🔴 Eksik / Hatalı alanlar listesi (MOBİLDEKİYLE AYNI)
-    // -------------------------------------------------------
+    // ---------------- Error Fields ----------------
     useEffect(() => {
-        console.log("fileData.rejected_fields:", fileData?.rejected_fields);
-        console.log("routeFields (from list):", routeFields);
-
-        // 1) listeden gelen state
-        // 2) backend detaydan gelen rejected_fields
-        const fields =
-            routeFields ??
-            fileData?.rejected_fields ??
-            [];
-
-        console.log("fields used for errorFields:", fields);
-
+        const fields = routeFields ?? fileData?.rejected_fields ?? [];
         const names = (fields || []).map((f) => {
             if (typeof f === "string") return { key: f, label: f };
             return {
@@ -284,17 +196,13 @@ const RejectedFileDetailScreen = () => {
                 label: f.label || f.name || f.field || "Bilinmeyen Alan",
             };
         });
-
         setErrorFields(names);
     }, [fileData, routeFields]);
 
-
-    // -------------------------------------------------------
-    // Dosyaları kategorilere böl
-    // -------------------------------------------------------
+    // ---------------- Section Images ----------------
     useEffect(() => {
         if (!Array.isArray(fileData?.files)) {
-            setSections(FILE_TYPES.map((f) => ({ id: f.id, title: f.title, images: [] })));
+            setSections(FILE_TYPES.map((f)=>({id:f.id,title:f.title,images:[]})));
             return;
         }
 
@@ -316,45 +224,39 @@ const RejectedFileDetailScreen = () => {
         setSections(grouped);
     }, [fileData]);
 
-    // -------------------------------------------------------
-    // Form değişiklikleri
-    // -------------------------------------------------------
+    // ---------------- Handle Change ----------------
     const handleChange = (key, value) => {
         setFileData((prev) => ({ ...prev, [key]: value }));
     };
 
+    // ---------------- Update ----------------
     const handleUpdate = async () => {
         if (!fileData) return;
         try {
             setUpdating(true);
             const payload = normalizeForApi(fileData);
+            const res = await apiService.updateSubmission(id,payload);
 
-            const res = await apiService.updateSubmission(id, payload);
             if (!res.success) {
-                window.alert(res.message || "Dosya güncellenemedi.");
+                alert(res.message || "Güncelleme başarısız.");
                 return;
             }
 
             await setPendingStatus();
             await fetchFileDetail();
 
-            window.alert("Dosya başarıyla güncellendi ✅");
+            alert("Dosya başarıyla güncellendi.");
             setEditMode(false);
             navigate("/reddedilen-dosyalar");
-        } catch (e) {
-            console.error(e);
-            window.alert("Dosya güncellenemedi.");
         } finally {
             setUpdating(false);
         }
     };
 
-    // -------------------------------------------------------
-    // Upload / replace / delete
-    // -------------------------------------------------------
-    const triggerFileInput = (context) => {
-        setUploadContext(context);
-        if (fileInputRef.current) fileInputRef.current.click();
+    // ---------------- Upload / Replace ----------------
+    const triggerFileInput = (ctx) => {
+        setUploadContext(ctx);
+        fileInputRef.current?.click();
     };
 
     const handleFileInputChange = async (e) => {
@@ -378,30 +280,24 @@ const RejectedFileDetailScreen = () => {
 
                 const res = await submissionService.uploadFile(form);
                 if (!res.success) {
-                    window.alert(res.message || "Dosya yüklenemedi.");
+                    alert(res.message || "Dosya yüklenemedi.");
                     return;
                 }
-                await fetchFileDetail();
-                await setPendingStatus();
-                window.alert("Dosya eklendi.");
             }
 
-            if (action === "replace" && fileId) {
+            if (action === "replace") {
                 form.append("file_type", sectionId.replace(/_/g, " "));
                 form.append("file", file);
 
                 const res = await apiService.replaceFile(fileId, form);
                 if (!res.success) {
-                    window.alert(res.message || "Dosya değiştirilemedi.");
+                    alert(res.message || "Dosya değiştirilemedi.");
                     return;
                 }
-                await fetchFileDetail();
-                await setPendingStatus();
-                window.alert("Dosya değiştirildi.");
             }
-        } catch (err) {
-            console.error(err);
-            window.alert("Dosya işlemi sırasında hata oluştu.");
+
+            await fetchFileDetail();
+            await setPendingStatus();
         } finally {
             setUploading(false);
         }
@@ -415,69 +311,46 @@ const RejectedFileDetailScreen = () => {
                 setUploading(true);
                 const res = await submissionService.deleteFile(fileId);
                 if (!res.success) {
-                    window.alert(res.message || "Dosya silinemedi.");
+                    alert(res.message || "Silme işlemi başarısız.");
                     return;
                 }
+
                 await fetchFileDetail();
                 await setPendingStatus();
-                window.alert("Dosya silindi.");
-            } catch (e) {
-                console.error(e);
-                window.alert("Dosya silinemedi.");
             } finally {
                 setUploading(false);
             }
         })();
     };
 
-    // -------------------------------------------------------
-    // Field renderer – SADECE hatalı alanları gösteren yapı
-    // -------------------------------------------------------
+    // ---------------- Render Field ----------------
     const renderField = (label, key, editable) => {
         const value = fileData?.[key] ?? "";
         const isErr = isErrorField(label, key);
 
-        // Dropdown alanları
-        // Dropdown alanları
         if (
             editMode &&
             editable &&
-            ["insurance_company_name", "insurance_source", "is_driver_victim_same"].includes(
-                key
-            )
+            ["insurance_company_name","insurance_source","is_driver_victim_same"].includes(key)
         ) {
             let options = dropdownData[key] || [];
             if (options.length && typeof options[0] === "string") {
-                options = options.map((opt) => ({ label: opt, value: opt }));
+                options = options.map((o) => ({ label: o, value: o }));
             }
-
-            const displayValue = value ?? "";
-
-            // FancySelect değişim handler'ı
-            const handleSelectChange = (val) => {
-                // is_driver_victim_same backend’de boolean olabilir, ama FancySelect string de gönderebilir
-                if (key === "is_driver_victim_same") {
-                    // val true/false/"" gelebilir
-                    handleChange(key, val);
-                } else {
-                    handleChange(key, val);
-                }
-            };
 
             return (
                 <div
                     key={key}
-                    className={"frd-info-row" + (isErr ? " frd-info-row--error" : "")}
+                    className={`${styles.frdInfoRow} ${isErr ? styles.frdInfoRowError : ""}`}
                 >
-                    <div className="frd-info-label">{label}:</div>
+                    <div className={styles.frdInfoLabel}>{label}:</div>
 
                     <div style={{ flex: 1 }}>
                         <FancySelect
                             options={options}
-                            value={displayValue}
-                            onChange={handleSelectChange}
+                            value={value}
+                            onChange={(val)=>handleChange(key,val)}
                             placeholder="Seçiniz"
-                            isDisabled={false}
                             maxW="100%"
                         />
                     </div>
@@ -485,32 +358,31 @@ const RejectedFileDetailScreen = () => {
             );
         }
 
-
         return (
             <div
                 key={key}
-                className={"frd-info-row" + (isErr ? " frd-info-row--error" : "")}
+                className={`${styles.frdInfoRow} ${isErr ? styles.frdInfoRowError : ""}`}
             >
-                <div className="frd-info-label">{label}:</div>
+                <div className={styles.frdInfoLabel}>{label}:</div>
 
                 {editMode && editable ? (
                     <input
-                        className={"frd-input" + (isErr ? " frd-input--error" : "")}
+                        className={`${styles.frdInput} ${isErr ? styles.frdInputError : ""}`}
                         value={value}
-                        onChange={(e) => handleChange(key, e.target.value)}
+                        onChange={(e)=>handleChange(key,e.target.value)}
                     />
                 ) : (
                     <div
-                        className={
-                            "frd-info-value" + (isErr ? " frd-info-value--error" : "")
-                        }
+                        className={`${styles.frdInfoValue} ${
+                            isErr ? styles.frdInfoValueError : ""
+                        }`}
                     >
                         {key === "is_driver_victim_same"
                             ? value === true || value === "true"
                                 ? "Evet"
                                 : value === false || value === "false"
-                                    ? "Hayır"
-                                    : "-"
+                                ? "Hayır"
+                                : "-"
                             : value || "-"}
                     </div>
                 )}
@@ -518,30 +390,27 @@ const RejectedFileDetailScreen = () => {
         );
     };
 
-    // 🔎 Hatalı değilse hiç render etme
     const renderFieldFiltered = (label, key, editable = true) => {
         if (errorFields.length > 0 && !isErrorField(label, key)) return null;
         return renderField(label, key, editable);
     };
 
-    // Grup içinde en az 1 hatalı alan varsa grubu göster
     const renderGroup = (title, pairs) => {
         if (!groupHasAnyVisible(pairs)) return null;
+
         return (
-            <div className="frd-group">
-                <h3 className="frd-section-title">{title}</h3>
-                {pairs.map(({ label, key }) => renderFieldFiltered(label, key, true))}
+            <div className={styles.frdGroup}>
+                <h3 className={styles.frdSectionTitle}>{title}</h3>
+                {pairs.map(({label,key})=>renderFieldFiltered(label,key,true))}
             </div>
         );
     };
 
-    // -------------------------------------------------------
-    // Loading / boş
-    // -------------------------------------------------------
+    // ---------------- LOADING ----------------
     if (loading) {
         return (
-            <div className="screen-container-drive frd-loading-screen">
-                <div className="frd-loading-spinner" />
+            <div className={`screen-container-drive ${styles.frdLoadingScreen}`}>
+                <div className={styles.frdLoadingSpinner} />
                 <p>Veriler yükleniyor...</p>
             </div>
         );
@@ -549,12 +418,12 @@ const RejectedFileDetailScreen = () => {
 
     if (!fileData) {
         return (
-            <div className="screen-container-drive frd-loading-screen">
+            <div className={`screen-container-drive ${styles.frdLoadingScreen}`}>
                 <p>Veri bulunamadı.</p>
                 <button
                     type="button"
-                    className="frd-btn frd-btn-light"
-                    onClick={() => navigate(-1)}
+                    className={`${styles.frdBtn} ${styles.frdBtnLight}`}
+                    onClick={()=>navigate(-1)}
                 >
                     GERİ DÖN
                 </button>
@@ -562,136 +431,135 @@ const RejectedFileDetailScreen = () => {
         );
     }
 
-    // -------------------------------------------------------
-    // UI
-    // -------------------------------------------------------
+    // ---------------- UI ----------------
     return (
-        <div className="screen-container-drive frd-screen">
-            <div className="content-area frd-content-area">
+        <div className={`screen-container-drive ${styles.frdScreen}`}>
+            <div className={`content-area ${styles.frdContentArea}`}>
+
                 <button
                     type="button"
-                    className="rejected-back"
-                    onClick={() => navigate(-1)}
+                    className={styles.rejectedBack}
+                    onClick={()=>navigate(-1)}
                 >
                     ←
                 </button>
 
-                <h1 className="page-title frd-page-title">Dosya Detayı</h1>
+                <h1 className={`page-title ${styles.frdPageTitle}`}>
+                    Dosya Detayı
+                </h1>
 
-                <div className="vehicle-form-card frd-card">
-                    {/* 🔴 Eksik / Hatalı Alanlar kutusu */}
+                <div className={`vehicle-form-card ${styles.frdCard}`}>
+
                     {errorFields.length > 0 && (
-                        <div className="frd-error-box">
-                            <div className="frd-error-title">Eksik / Hatalı Alanlar:</div>
-                            <ul className="frd-error-list">
-                                {errorFields.map((f, idx) => (
+                        <div className={styles.frdErrorBox}>
+                            <div className={styles.frdErrorTitle}>Eksik / Hatalı Alanlar:</div>
+                            <ul className={styles.frdErrorList}>
+                                {errorFields.map((f, idx)=>(
                                     <li key={idx}>• {f.label || f.key}</li>
                                 ))}
                             </ul>
                         </div>
                     )}
 
-                    <div className="frd-card-header">
-                        <h2 className="frd-card-header-title">Bilgiler</h2>
+                    <div className={styles.frdCardHeader}>
+                        <h2 className={styles.frdCardHeaderTitle}>Bilgiler</h2>
+
                         <button
                             type="button"
-                            className="frd-edit-btn"
-                            onClick={() => setEditMode((prev) => !prev)}
+                            className={styles.frdEditBtn}
+                            onClick={()=>setEditMode((p)=>!p)}
                         >
                             {editMode ? "Düzenlemeyi Bitir" : "Düzenle"}
                         </button>
                     </div>
 
-                    {/* 🔻 Bundan sonrası SADECE hatalı alanları gösterir */}
                     {renderGroup("Dosya Bilgileri", [
-                        { label: "Sigorta Şirketi", key: "insurance_company_name" },
-                        { label: "Sigorta Kaynağı", key: "insurance_source" },
-                        { label: "Sürücü ve Mağdur Aynı mı", key: "is_driver_victim_same" },
+                        {label:"Sigorta Şirketi", key:"insurance_company_name"},
+                        {label:"Sigorta Kaynağı", key:"insurance_source"},
+                        {label:"Sürücü ve Mağdur Aynı mı", key:"is_driver_victim_same"},
                     ])}
 
                     {renderGroup("Sürücü Bilgileri", [
-                        { label: "Ad Soyad", key: "driver_fullname" },
-                        { label: "TC", key: "driver_tc" },
-                        { label: "Telefon", key: "driver_phone" },
-                        { label: "Mail", key: "driver_mail" },
-                        { label: "Doğum Tarihi", key: "driver_birth_date" },
+                        {label:"Ad Soyad", key:"driver_fullname"},
+                        {label:"TC", key:"driver_tc"},
+                        {label:"Telefon", key:"driver_phone"},
+                        {label:"Mail", key:"driver_mail"},
+                        {label:"Doğum Tarihi", key:"driver_birth_date"},
                     ])}
 
                     {renderGroup("Mağdur Bilgileri", [
-                        { label: "Ad Soyad", key: "victim_fullname" },
-                        { label: "TC", key: "victim_tc" },
-                        { label: "Telefon", key: "victim_phone" },
-                        { label: "Mail", key: "victim_mail" },
-                        { label: "Doğum Tarihi", key: "victim_birth_date" },
-                        { label: "IBAN", key: "victim_iban" },
+                        {label:"Ad Soyad", key:"victim_fullname"},
+                        {label:"TC", key:"victim_tc"},
+                        {label:"Telefon", key:"victim_phone"},
+                        {label:"Mail", key:"victim_mail"},
+                        {label:"Doğum Tarihi", key:"victim_birth_date"},
+                        {label:"IBAN", key:"victim_iban"},
                     ])}
 
                     {renderGroup("Araç Bilgileri", [
-                        { label: "Marka", key: "vehicle_brand" },
-                        { label: "Model", key: "vehicle_model" },
-                        { label: "Tip", key: "vehicle_type" },
-                        { label: "Plaka", key: "vehicle_plate" },
-                        { label: "Yıl", key: "vehicle_year" },
-                        { label: "Kullanım Tipi", key: "vehicle_usage_type" },
-                        { label: "Ruhsat No", key: "vehicle_license_no" },
-                        { label: "Şasi No", key: "vehicle_chassis_no" },
-                        { label: "Motor No", key: "vehicle_engine_no" },
+                        {label:"Marka", key:"vehicle_brand"},
+                        {label:"Model", key:"vehicle_model"},
+                        {label:"Tip", key:"vehicle_type"},
+                        {label:"Plaka", key:"vehicle_plate"},
+                        {label:"Yıl", key:"vehicle_year"},
+                        {label:"Kullanım Tipi", key:"vehicle_usage_type"},
+                        {label:"Ruhsat No", key:"vehicle_license_no"},
+                        {label:"Şasi No", key:"vehicle_chassis_no"},
+                        {label:"Motor No", key:"vehicle_engine_no"},
                     ])}
 
                     {renderGroup("Sigortalı Bilgileri", [
-                        { label: "Ad Soyad", key: "insured_fullname" },
-                        { label: "TC", key: "insured_tc" },
-                        { label: "Telefon", key: "insured_phone" },
-                        { label: "Mail", key: "insured_mail" },
-                        { label: "Doğum Tarihi", key: "insured_birth_date" },
-                        { label: "Poliçe No", key: "insured_policy_no" },
-                        { label: "Plaka", key: "insured_plate" },
-                        { label: "Dosya No", key: "insured_file_no" },
+                        {label:"Ad Soyad", key:"insured_fullname"},
+                        {label:"TC", key:"insured_tc"},
+                        {label:"Telefon", key:"insured_phone"},
+                        {label:"Mail", key:"insured_mail"},
+                        {label:"Doğum Tarihi", key:"insured_birth_date"},
+                        {label:"Poliçe No", key:"insured_policy_no"},
+                        {label:"Plaka", key:"insured_plate"},
+                        {label:"Dosya No", key:"insured_file_no"},
                     ])}
 
                     {renderGroup("Tamirci Bilgileri", [
-                        { label: "Ad Soyad", key: "repair_fullname" },
-                        { label: "Doğum Tarihi", key: "repair_birth_date" },
-                        { label: "TC", key: "repair_tc" },
-                        { label: "Telefon", key: "repair_phone" },
-                        { label: "Şehir", key: "repair_city" },
-                        { label: "İl/İlçe", key: "repair_state_city_city" },
-                        { label: "Adres", key: "repair_address" },
-                        { label: "Yapılan İşler", key: "repair_works" },
+                        {label:"Ad Soyad", key:"repair_fullname"},
+                        {label:"Doğum Tarihi", key:"repair_birth_date"},
+                        {label:"TC", key:"repair_tc"},
+                        {label:"Telefon", key:"repair_phone"},
+                        {label:"Şehir", key:"repair_city"},
+                        {label:"İl/İlçe", key:"repair_state_city_city"},
+                        {label:"Adres", key:"repair_address"},
+                        {label:"Yapılan İşler", key:"repair_works"},
                     ])}
 
                     {renderGroup("Servis Bilgileri", [
-                        { label: "Servis Adı", key: "service_name" },
-                        { label: "Telefon", key: "service_phone" },
-                        { label: "IBAN", key: "service_iban" },
-                        { label: "IBAN Adı", key: "service_iban_name" },
-                        { label: "Şehir", key: "service_city" },
-                        { label: "İl/İlçe", key: "service_state_city_city" },
-                        { label: "Adres", key: "service_address" },
-                        { label: "Vergi No", key: "service_tax_no" },
+                        {label:"Servis Adı", key:"service_name"},
+                        {label:"Telefon", key:"service_phone"},
+                        {label:"IBAN", key:"service_iban"},
+                        {label:"IBAN Adı", key:"service_iban_name"},
+                        {label:"Şehir", key:"service_city"},
+                        {label:"İl/İlçe", key:"service_state_city_city"},
+                        {label:"Adres", key:"service_address"},
+                        {label:"Vergi No", key:"service_tax_no"},
                     ])}
 
                     {renderGroup("Kaza Bilgileri", [
-                        { label: "Hasar Türü", key: "damage_type" },
-                        { label: "Hasar Bölgesi", key: "damage_description" },
-                        { label: "Kaza Tarihi", key: "accident_date" },
-                        { label: "Kaza Yeri", key: "accident_location" },
-                        { label: "Rapor Türü", key: "official_report_type" },
-                        { label: "Tahmini Hasar", key: "estimated_damage_amount" },
-                        { label: "Poliçe No", key: "policy_no" },
+                        {label:"Hasar Türü", key:"damage_type"},
+                        {label:"Hasar Bölgesi", key:"damage_description"},
+                        {label:"Kaza Tarihi", key:"accident_date"},
+                        {label:"Kaza Yeri", key:"accident_location"},
+                        {label:"Rapor Türü", key:"official_report_type"},
+                        {label:"Tahmini Hasar", key:"estimated_damage_amount"},
+                        {label:"Poliçe No", key:"policy_no"},
                     ])}
 
-                    {/* Dosyalar kısmı aynı kalabilir */}
                     <div
-                        className={
-                            "frd-files-card" +
-                            (!fileData.files || fileData.files.length === 0
-                                ? " frd-files-card--empty"
-                                : "")
-                        }
+                        className={`${styles.frdFilesCard} ${
+                            !fileData.files || fileData.files.length === 0
+                                ? styles.frdFilesCardEmpty
+                                : ""
+                        }`}
                     >
-                        <div className="frd-card-header frd-files-header">
-                            <h2 className="frd-card-header-title">
+                        <div className={`${styles.frdCardHeader} ${styles.frdFilesHeader}`}>
+                            <h2 className={styles.frdCardHeaderTitle}>
                                 {!fileData.files || fileData.files.length === 0
                                     ? "📁 Henüz Dosya Yüklenmemiş"
                                     : "Yüklenen Dosyalar"}
@@ -700,27 +568,29 @@ const RejectedFileDetailScreen = () => {
 
                         {!editMode ? (
                             <>
-                                {Array.isArray(fileData.files) && fileData.files.length > 0 ? (
+                                {fileData.files?.length > 0 ? (
                                     fileData.files.map((f, idx) => {
                                         const url = getFileUrl(f);
                                         return (
                                             <div
                                                 key={f.id || `${idx}-${url}`}
-                                                className="frd-file-row"
+                                                className={styles.frdFileRow}
                                             >
-                                                <div className="frd-file-main">
-                                                    <div className="frd-file-name">
+                                                <div className={styles.frdFileMain}>
+                                                    <div className={styles.frdFileName}>
                                                         {getFileName(f)}
                                                     </div>
+
                                                     {getUploadedAt(f) && (
-                                                        <div className="frd-file-date">
+                                                        <div className={styles.frdFileDate}>
                                                             Yüklendi: {getUploadedAt(f)}
                                                         </div>
                                                     )}
                                                 </div>
+
                                                 {url && (
                                                     <a
-                                                        className="frd-file-link"
+                                                        className={styles.frdFileLink}
                                                         href={url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
@@ -732,7 +602,7 @@ const RejectedFileDetailScreen = () => {
                                         );
                                     })
                                 ) : (
-                                    <p className="frd-no-files">
+                                    <p className={styles.frdNoFiles}>
                                         Bu dosya için henüz hiçbir belge yüklenmemiş.
                                     </p>
                                 )}
@@ -746,49 +616,50 @@ const RejectedFileDetailScreen = () => {
                                     return (
                                         <div
                                             key={sec.id}
-                                            className={
-                                                "frd-file-section" +
-                                                (hasAny ? "" : " frd-file-section--empty")
-                                            }
+                                            className={`${styles.frdFileSection} ${
+                                                hasAny ? "" : styles.frdFileSectionEmpty
+                                            }`}
                                         >
-                                            <div className="frd-file-section-header">
+                                            <div className={styles.frdFileSectionHeader}>
                                                 <span>{sec.title}</span>
                                                 {!hasAny && (
-                                                    <span className="frd-file-badge">Eksik</span>
+                                                    <span className={styles.frdFileBadge}>Eksik</span>
                                                 )}
                                             </div>
 
                                             {hasAny ? (
-                                                <div className="frd-file-current">
-                                                    <span className="frd-file-name">
+                                                <div className={styles.frdFileCurrent}>
+                                                    <span className={styles.frdFileName}>
                                                         {getFileName(first.raw)}
                                                     </span>
+
                                                     {getUploadedAt(first.raw) && (
-                                                        <span className="frd-file-date">
+                                                        <span className={styles.frdFileDate}>
                                                             Yüklendi: {getUploadedAt(first.raw)}
                                                         </span>
                                                     )}
+
                                                     {first.url && (
                                                         <a
                                                             href={first.url}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="frd-file-link"
+                                                            className={styles.frdFileLink}
                                                         >
                                                             Aç / İndir
                                                         </a>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <p className="frd-no-files">
+                                                <p className={styles.frdNoFiles}>
                                                     Bu kategori için dosya yok.
                                                 </p>
                                             )}
 
-                                            <div className="frd-file-actions">
+                                            <div className={styles.frdFileActions}>
                                                 <button
                                                     type="button"
-                                                    className="frd-btn frd-btn-primary"
+                                                    className={`${styles.frdBtn} ${styles.frdBtnPrimary}`}
                                                     disabled={uploading}
                                                     onClick={() =>
                                                         triggerFileInput({
@@ -804,7 +675,7 @@ const RejectedFileDetailScreen = () => {
                                                     <>
                                                         <button
                                                             type="button"
-                                                            className="frd-btn frd-btn-warning"
+                                                            className={`${styles.frdBtn} ${styles.frdBtnWarning}`}
                                                             disabled={uploading}
                                                             onClick={() =>
                                                                 triggerFileInput({
@@ -819,9 +690,11 @@ const RejectedFileDetailScreen = () => {
 
                                                         <button
                                                             type="button"
-                                                            className="frd-btn frd-btn-danger"
+                                                            className={`${styles.frdBtn} ${styles.frdBtnDanger}`}
                                                             disabled={uploading}
-                                                            onClick={() => handleDeleteFile(first.id)}
+                                                            onClick={() =>
+                                                                handleDeleteFile(first.id)
+                                                            }
                                                         >
                                                             {uploading ? "İşleniyor..." : "SİL"}
                                                         </button>
@@ -835,11 +708,11 @@ const RejectedFileDetailScreen = () => {
                         )}
                     </div>
 
-                    <div className="frd-footer-buttons">
+                    <div className={styles.frdFooterButtons}>
                         {editMode && (
                             <button
                                 type="button"
-                                className="frd-btn frd-btn-primary frd-btn-full"
+                                className={`${styles.frdBtn} ${styles.frdBtnPrimary} ${styles.frdBtnFull}`}
                                 onClick={handleUpdate}
                                 disabled={updating}
                             >
@@ -849,8 +722,8 @@ const RejectedFileDetailScreen = () => {
 
                         <button
                             type="button"
-                            className="frd-btn frd-btn-light frd-btn-full"
-                            onClick={() => navigate(-1)}
+                            className={`${styles.frdBtn} ${styles.frdBtnLight} ${styles.frdBtnFull}`}
+                            onClick={()=>navigate(-1)}
                         >
                             GERİ DÖN
                         </button>
@@ -860,7 +733,7 @@ const RejectedFileDetailScreen = () => {
                 <input
                     type="file"
                     ref={fileInputRef}
-                    style={{ display: "none" }}
+                    style={{ display:"none" }}
                     onChange={handleFileInputChange}
                 />
             </div>
