@@ -8,7 +8,7 @@
   width: 100%;
   max-width: 600px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
+  margin: 0 auto 30px;
 }
 
 .vehicleFormSectionContent {
@@ -32,8 +32,10 @@
 }
 
 .contentArea {
-  overflow: visible !important;
-  /* 🔥 ÖNEMLİ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
 }
 
 /* Form row düzenlemeleri */
@@ -47,10 +49,10 @@
 
 /* Form Footer Stilleri */
 .formFooterWeb {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    gap: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 20px;
 }
 
 .backButtonWeb {

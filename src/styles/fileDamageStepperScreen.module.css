@@ -11,6 +11,17 @@
     padding: 20px;
 }
 
+/* FORM KARTI */
+.formCard {
+    background-color: white;
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 627px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
 .screenContainer.dark {
     background-color: #111827;
 }
@@ -34,16 +45,6 @@
 
 .screenContainer.dark .pageTitle {
     color: #f9fafb;
-}
-
-.formCard {
-    background-color: white;
-    border-radius: 20px;
-    padding: 40px;
-    width: 100%;
-    max-width: 627px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
 }
 
 /* --------------------------- */

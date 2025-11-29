@@ -11,6 +11,7 @@
   gap: 12px;
   max-width: 800px;
   margin-inline: auto;
+  margin-bottom: 40px;
 }
 
 /* === BUTTON === */
@@ -21,7 +22,8 @@
   justify-content: center;
   gap: 12px;
 
-  padding: 15px 50px; /* accidentType ile aynı */
+  padding: 15px 50px;
+  /* accidentType ile aynı */
   border-radius: 12px;
   border: none;
 
@@ -30,8 +32,10 @@
 
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 20px;   /* accidentType ile aynı */
-  line-height: 28px; /* accidentType ile aynı */
+  font-size: 20px;
+  /* accidentType ile aynı */
+  line-height: 28px;
+  /* accidentType ile aynı */
 }
 
 /* === BACK BUTTON === */

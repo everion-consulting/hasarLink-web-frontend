@@ -14,11 +14,10 @@ const FileDamageInfoStepperScreen = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
+  const [formValid, setFormValid] = useState(false); // ✅ VALIDATION STATE
 
   const navigate = useNavigate();
   const location = useLocation();
-  const submissionId = localStorage.getItem("submissionId");
-
   const routeState = location.state || {};
   const { directToDocuments = false } = routeState;
 
@@ -129,6 +128,7 @@ const FileDamageInfoStepperScreen = () => {
           {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
         </h1>
 
+        {/* --- FORM KARTI --- */}
         <div className={styles.formCard}>
           <div className={styles.formCardSection}>
             {currentStep === 1 && (
@@ -137,13 +137,7 @@ const FileDamageInfoStepperScreen = () => {
                 values={damageData}
                 setValues={setDamageData}
                 onSubmit={handleSubmitDamageInfo}
-                renderFooter={({ submit, allValid }) => (
-                  <FormFooter
-                    onBack={handleBackPress}
-                    onNext={submit}
-                    disabled={!allValid}
-                  />
-                )}
+                onFormChange={({ allValid }) => setFormValid(allValid)}
               />
             )}
 
@@ -160,9 +154,26 @@ const FileDamageInfoStepperScreen = () => {
             )}
           </div>
         </div>
+
+        {/* --- FORMUN TAM DIŞINDA FOOTER --- */}
+        {currentStep === 1 && (
+          <FormFooter
+            onBack={handleBackPress}
+            onNext={() => {
+              const form = document.querySelector("form");
+              if (form) {
+                form.dispatchEvent(
+                  new Event("submit", { cancelable: true, bubbles: true })
+                );
+              }
+            }}
+            disabled={!formValid}
+          />
+        )}
       </div>
     </div>
   );
+
 };
 
 export default FileDamageInfoStepperScreen;
