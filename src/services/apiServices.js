@@ -133,7 +133,7 @@ const apiService = {
 
   async uploadFile(formData) {
     return await fetchData(
-      `${PATH}/files/`,
+      `${PATH}/submissions/files/`,
       'POST',
       formData,
       'multipart/form-data',
