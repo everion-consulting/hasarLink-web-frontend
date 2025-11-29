@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Success from '../images/sonresim.png';
 import styles from '../../styles/successScreen.module.css';
+import BackIcon from "../../components/images/back.svg";
+import ContinueIcon from "../../components/images/continue.svg";
 
 const SuccessScreen = () => {
     const navigate = useNavigate();
@@ -28,41 +30,59 @@ const SuccessScreen = () => {
                 <p className={styles.successSubtitle}>İşleminiz başarıyla tamamlandı.</p>
 
                 {/* Bilgi kutuları */}
-                <div className={styles.infoBox}>
-                    <span className={styles.infoLabel}>Dosya No</span>
-                    <span className={styles.infoValue}>{fileName}</span>
+                <div className={styles.infoGrid}>
+                    <div className={styles.infoBox}>
+                        <span className={styles.infoLabel}>Dosya No</span>
+                        <span className={styles.infoValue}>{fileName}</span>
+                    </div>
+
+                    <div className={styles.infoBox}>
+                        <span className={styles.infoLabel}>Sigorta Şirketi</span>
+                        <span className={styles.infoValue}>{companyName}</span>
+                    </div>
+
+                    <div className={`${styles.infoBox} ${styles.fullWidthBox}`}>
+                        <span className={styles.infoLabel}>Evraklar</span>
+                        <span className={styles.infoValue}>{documentCount} Evrak Yüklendi</span>
+                    </div>
                 </div>
 
-                <div className={styles.infoBox}>
-                    <span className={styles.infoLabel}>Sigorta Şirketi</span>
-                    <span className={styles.infoValue}>{companyName}</span>
-                </div>
-
-                <div className={styles.infoBox}>
-                    <span className={styles.infoLabel}>Evraklar</span>
-                    <span className={styles.infoValue}>{documentCount} Evrak Yüklendi</span>
-                </div>
 
                 {/* Resim */}
                 <div className={styles.successImageArea}>
-                    <img 
-                        src={Success} 
-                        className={styles.successIllustration} 
-                        alt="success-illustration" 
+                    <img
+                        src={Success}
+                        className={styles.successIllustration}
+                        alt="success-illustration"
                     />
                 </div>
 
-                {/* Butonlar */}
-                <div className={styles.buttonArea}>
-                    <button className={`${styles.btn} ${styles.btnBack}`} onClick={handleGoHome}>
-                        <ArrowLeft size={18} />
-                        ANA SAYFAYA DÖN
+                <div className={styles.footerButtonsColumn}>
+
+                    {/* ANA SAYFAYA DÖN */}
+                    <button
+                        className={styles.backBtn}
+                        onClick={handleGoHome}
+                    >
+                        <div className={styles.iconCircle}>
+                            <img src={BackIcon} alt="geri" />
+                        </div>
+
+                        <span className={styles.btnText}>ANA SAYFAYA DÖN</span>
                     </button>
 
-                    <button className={`${styles.btn} ${styles.btnFile}`} onClick={handleNewFile}>
-                        YENİ DOSYA BİLDİR
-                        <ArrowRight size={18} />
+                    {/* YENİ DOSYA BİLDİR */}
+                    <button
+                        className={styles.nextBtn}
+                        onClick={handleNewFile}
+                    >
+                        <span className={styles.btnText}>YENİ DOSYA BİLDİR</span>
+
+                        <div className={styles.iconCircle}>
+                            <img src={ContinueIcon} alt="devam" />
+                        </div>
                     </button>
+
                 </div>
 
             </div>

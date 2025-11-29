@@ -1,7 +1,7 @@
 /* Arka Plan */
 .successWrapper {
     width: 100%;
-  
+
     display: flex;
     justify-content: center;
     padding-top: 30px;
@@ -14,53 +14,76 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20px;
 }
 
 /* Başlık */
 .successTitle {
-    font-size: 32px;
-    font-weight: 800;
-    color: #000;
+    font-size: 50px;
+    line-height: 60px;
+    font-weight: 400;
+    color: #333;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 10px;
+}
+
+.successSubtitle {
+    font-size: 25px;
+    line-height: 30px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 20px;
     text-align: center;
     font-family: "Poppins", sans-serif;
 }
 
-.successSubtitle {
-    font-size: 16px;
-    color: #555;
-    margin-top: -4px;
-    margin-bottom: 28px;
-}
-
 /* Info Box */
 .infoBox {
-    width: 440px;
     background: #FFFFFF;
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     padding: 14px 20px;
-    margin-bottom: 14px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     text-align: center;
     box-sizing: border-box;
 }
 
+/* GRID LAYOUT */
+.infoGrid {
+    width: 100%;
+    max-width: 440px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 14px;
+    margin-bottom: 20px;
+}
+
+.fullWidthBox {
+    grid-column: span 2;
+}
+
+.infoBox {
+    width: 100%;
+}
+
 .infoLabel {
-    font-size: 14px;
-    color: #444;
+    font-size: 20px;
+    line-height: 25px;
+    color: #000;
     font-weight: 500;
 }
 
 .infoValue {
-    font-size: 18px;
+    font-size: 24px;
+    line-height: 30px;
     font-weight: 700;
     color: #133E87;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 /* Resim */
@@ -69,48 +92,86 @@
 }
 
 .successIllustration {
-    width: 260px;
+    width: 300px;
     height: auto;
 }
 
-/* Butonlar */
-.buttonArea {
+.footerButtonsColumn {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     gap: 14px;
-    width: 340px;
+    margin-block: 40px;
 }
 
-/* Ortak Buton */
-.btn {
+/* ORTAK BUTON TARZI */
+.backBtn,
+.nextBtn {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 14px;
-    cursor: pointer;
+    gap: -12px;
+    padding: 15px;
+    border-radius: 14px;
     border: none;
+    cursor: pointer;
     font-family: "Poppins", sans-serif;
-
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: .2s;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    transition: 0.2s ease;
 }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+/* --- GERİ BUTONU --- */
+.backBtn {
+    background: #D8E4F2;
+    color: #1E293B;
 }
 
-/* Geri Butonu */
-.btnBack {
-    color: #000;
+.backBtn:hover {
+    background: #c5d8ed;
 }
 
-/* Yeni Dosya Butonu */
-.btnFile {
-    background: #608BC1;
-    color: #fff;
+/* --- YENİ DOSYA BİLDİR BUTONU --- */
+.nextBtn {
+    background: #133E87;
+    color: white;
+}
+
+.nextBtn:hover {
+    background: #0f2f6b;
+}
+
+/* --- İKON BUBBLE --- */
+.iconCircle {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconCircle img {
+    width: 16px;
+    height: 16px;
+}
+
+/* ORTA YAZI HİZALAMA */
+.btnText {
+    flex: 1;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .footerButtonsColumn {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-block: 40px;
+    }
 }

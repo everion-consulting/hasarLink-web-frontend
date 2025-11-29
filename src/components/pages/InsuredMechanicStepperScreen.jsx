@@ -15,10 +15,13 @@ export default function InsuredMechanicStepperScreen() {
     const navigate = useNavigate();
     const location = useLocation();
     const { profileDetail, fetchProfile } = useProfile();
+    const [insuredValid, setInsuredValid] = useState(false);
+    const [opposingValid, setOpposingValid] = useState(false);
+    const [serviceValid, setServiceValid] = useState(false);
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
-    
+
     const {
         insuranceSource,
         karsiSamePerson,
@@ -49,7 +52,7 @@ export default function InsuredMechanicStepperScreen() {
         kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi trafik";
 
    
-    const shouldShowOpposingDriver = insuranceSource === 'karsi trafik' && karsiSamePerson === false;
+    const shouldShowOpposingDriver = (insuranceSource === 'karsi trafik' || insuranceSource === 'karsi kasko') && karsiSamePerson === false;
 
     console.log('🔍 Karşı Sürücü Durumu:', {
         insuranceSource,
@@ -57,7 +60,7 @@ export default function InsuredMechanicStepperScreen() {
         shouldShowOpposingDriver
     });
 
-  
+
     const calculateSteps = () => {
         console.log('📊 calculateSteps çalıştı');
         console.log('  kazaNitelik:', kazaNitelik);
@@ -65,19 +68,19 @@ export default function InsuredMechanicStepperScreen() {
         console.log('  karsiSamePerson:', karsiSamePerson);
         console.log('  shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
-        
+
         if (isTekliBizimKasko) {
             console.log('✅ TEKLİ KAZA -> SADECE Servis');
             return ['Servis Bilgileri'];
         }
 
-        
+
         if (shouldShowOpposingDriver) {
             console.log('✅ KARŞI TRAFİK + FARKLI KİŞİ -> Sigortalı + Karşı Sürücü + Servis');
             return ['Sigortalı Bilgileri', 'Karşı Sürücü Bilgileri', 'Servis Bilgileri'];
         }
 
-        
+
         console.log('✅ DİĞER -> Sigortalı + Servis');
         return ['Sigortalı Bilgileri', 'Servis Bilgileri'];
     };
@@ -104,7 +107,7 @@ export default function InsuredMechanicStepperScreen() {
     const [cityOptions, setCityOptions] = useState([]);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
-    
+
     const serviceFields = useMemo(() => {
         return serviceField.map(f => {
             if (f.type === 'row') {
@@ -118,26 +121,26 @@ export default function InsuredMechanicStepperScreen() {
                 };
             }
 
-            
+
             return f.name === 'service_city'
                 ? { ...f, options: cityOptions }
                 : f;
         });
     }, [cityOptions]);
 
-   
+
     const formatDateToDDMMYYYY = (dateStr) => {
         if (!dateStr) return '';
-        
+
         if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
             return dateStr;
         }
-        
+
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
             const [year, month, day] = dateStr.split('-');
             return `${day}.${month}.${year}`;
         }
-        
+
         return dateStr;
     };
 
@@ -197,7 +200,7 @@ export default function InsuredMechanicStepperScreen() {
     useEffect(() => {
         if (location.state) {
             console.log('🔄 Route state verileri yükleniyor:', location.state);
-            
+
             if (location.state.insuredData) {
                 console.log('✅ insuredData yükleniyor:', location.state.insuredData);
                 setInsuredData(location.state.insuredData);
@@ -265,7 +268,7 @@ export default function InsuredMechanicStepperScreen() {
     const handleInsuredSubmit = (values) => {
         console.log('✅ Sigortalı formu tamamlandı:', values);
         setInsuredData(values);
-        
+
         // Sonraki adıma geç - NATIVE'DEKİ MANTIK
         if (shouldShowOpposingDriver) {
             setCurrentStep(2); // Karşı sürücü bilgilerine geç
@@ -279,7 +282,7 @@ export default function InsuredMechanicStepperScreen() {
     const handleOpposingDriverSubmit = (values) => {
         console.log('✅ Karşı sürücü formu tamamlandı:', values);
         setOpposingDriverData(values);
-        
+
         // Servis bilgilerine geç
         const serviceStepIndex = steps.findIndex(step => step === 'Servis Bilgileri');
         setCurrentStep(serviceStepIndex + 1);
@@ -289,7 +292,7 @@ export default function InsuredMechanicStepperScreen() {
         console.log('✅ Servis formu tamamlandı:', values);
         setServiceData(values);
 
-        
+
         try {
             const profileUpdateData = {
                 repair_fullname: values.repair_fullname,
@@ -308,7 +311,7 @@ export default function InsuredMechanicStepperScreen() {
 
             console.log('📤 Profil güncelleniyor:', profileUpdateData);
             const res = await apiService.updateProfileDetail(profileUpdateData);
-            
+
             if (res.success) {
                 console.log('✅ Profil başarıyla güncellendi');
             } else {
@@ -318,7 +321,7 @@ export default function InsuredMechanicStepperScreen() {
             console.error('❌ Profil güncelleme hatası:', error);
         }
 
-       
+
         const navigationState = {
             ...location.state,
             kazaNitelik,
@@ -327,8 +330,8 @@ export default function InsuredMechanicStepperScreen() {
             samePerson,
             karsiSamePerson,
             startStep: editMode ? returnStep : 3,
-            
-           
+
+
             insuredData: insuredData,
             serviceData: values,
             opposingDriverData: opposingDriverData,
@@ -344,7 +347,7 @@ export default function InsuredMechanicStepperScreen() {
             const targetRoute = returnTo || 'step-info';
             navigate(`/${targetRoute}`, { state: navigationState });
         } else {
-            navigate('/step-info', { 
+            navigate('/step-info', {
                 state: {
                     ...navigationState,
                     startStep: 3
@@ -444,11 +447,11 @@ export default function InsuredMechanicStepperScreen() {
         );
     };
 
-    
+
     const renderCurrentForm = () => {
         console.log('🎨 RENDER - currentStep:', currentStep, 'steps:', steps, 'shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
-       
+
         if (isTekliBizimKasko && currentStep === 1) {
             return (
                 <FormRenderer
@@ -456,12 +459,12 @@ export default function InsuredMechanicStepperScreen() {
                     values={serviceData}
                     setValues={setServiceData}
                     onSubmit={handleServiceSubmit}
-                    renderFooter={renderFormFooter}
+                    onFormChange={({ allValid }) => setServiceValid(allValid)}
                 />
             );
         }
 
-        
+
         if (currentStep === 1) {
             return (
                 <FormRenderer
@@ -469,12 +472,12 @@ export default function InsuredMechanicStepperScreen() {
                     values={insuredData}
                     setValues={setInsuredData}
                     onSubmit={handleInsuredSubmit}
-                    renderFooter={renderInsuredFormFooter}
+                    onFormChange={({ allValid }) => setInsuredValid(allValid)}
                 />
             );
         }
 
-      
+
         if (currentStep === 2 && shouldShowOpposingDriver) {
             console.log('✅ Karşı sürücü formu render ediliyor');
             return (
@@ -483,19 +486,19 @@ export default function InsuredMechanicStepperScreen() {
                     values={opposingDriverData}
                     setValues={setOpposingDriverData}
                     onSubmit={handleOpposingDriverSubmit}
-                    renderFooter={renderFormFooter}
+                    onFormChange={({ allValid }) => setOpposingValid(allValid)}
                 />
             );
         }
 
-       
+
         return (
             <FormRenderer
                 fields={serviceFields}
                 values={serviceData}
                 setValues={setServiceData}
                 onSubmit={handleServiceSubmit}
-                renderFooter={renderFormFooter}
+                onFormChange={({ allValid }) => setServiceValid(allValid)}
             />
         );
     };
@@ -527,6 +530,47 @@ export default function InsuredMechanicStepperScreen() {
                         {renderCurrentForm()}
                     </div>
                 </div>
+                {/* === FOOTER === */}
+
+                {currentStep === 1 && (
+                    <FormFooter
+                        onBack={handleBack}
+                        onNext={() => {
+                            const form = document.querySelector("form");
+                            if (form) {
+                                form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+                            }
+                        }}
+                        disabled={!insuredValid}
+                    />
+                )}
+
+                {currentStep === 2 && shouldShowOpposingDriver && (
+                    <FormFooter
+                        onBack={handleBack}
+                        onNext={() => {
+                            const form = document.querySelector("form");
+                            if (form) {
+                                form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+                            }
+                        }}
+                        disabled={!opposingValid}
+                    />
+                )}
+
+                {((currentStep === 2 && !shouldShowOpposingDriver) || currentStep === 3) && (
+                    <FormFooter
+                        onBack={handleBack}
+                        onNext={() => {
+                            const form = document.querySelector("form");
+                            if (form) {
+                                form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+                            }
+                        }}
+                        disabled={!serviceValid}
+                    />
+                )}
+
             </div>
         </div>
     );

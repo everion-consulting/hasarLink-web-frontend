@@ -4,10 +4,11 @@ import {
   User,
   Users,
   Navigation,
-  Shield,
-  ArrowRight,
-  Info,
-  ArrowLeft
+  ShieldCheck,
+  ShieldAlert,
+  UserCheck,
+  UserX,
+  Info
 } from 'lucide-react';
 import Stepper from '../stepper/Stepper';
 import styles from '../../styles/insuranceStepper.module.css';
@@ -70,7 +71,10 @@ export default function InsuranceStepper() {
     user: User,
     users: Users,
     navigation: Navigation,
-    shield: Shield,
+    shieldCheck: ShieldCheck,
+    shieldAlert: ShieldAlert,
+    userCheck: UserCheck,
+    userX: UserX
   };
 
   const getSafeParams = useCallback((s1 = step1Selection, s2 = step2Selection, s3 = step3Selection) => {
@@ -267,17 +271,19 @@ export default function InsuranceStepper() {
                     onPress={() => handleStep2Select('karsi trafik')}
                     iconName="navigation"
                   />
+
                   <OptionCard
                     title="Bizim Kasko"
                     selected={step2Selection === 'bizim kasko'}
                     onPress={() => handleStep2Select('bizim kasko')}
-                    iconName="shield"
+                    iconName="shieldCheck"
                   />
+
                   <OptionCard
                     title="Karşı Kasko"
                     selected={step2Selection === 'karsi kasko'}
                     onPress={() => handleStep2Select('karsi kasko')}
-                    iconName="shield"
+                    iconName="shieldAlert"
                   />
                 </>
               )}
@@ -289,14 +295,15 @@ export default function InsuranceStepper() {
                     subs="Karşı tarafın ruhsat sahibi ve sürücüsü aynı"
                     selected={step3Selection === 'yes'}
                     onPress={() => handleStep3Select('yes')}
-                    iconName="user"
+                    iconName="userCheck"
                   />
+
                   <OptionCard
                     title="Hayır, farklı kişi"
                     subs="Karşı tarafın ruhsat sahibi ve sürücüsü farklı"
                     selected={step3Selection === 'no'}
                     onPress={() => handleStep3Select('no')}
-                    iconName="users"
+                    iconName="userX"
                   />
                 </>
               )}

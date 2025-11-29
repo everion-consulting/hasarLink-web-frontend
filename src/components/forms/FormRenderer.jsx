@@ -1,3 +1,4 @@
+// src/components/forms/FormRenderer.jsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   maskPhone,
@@ -14,9 +15,7 @@ import {
   toDDMMYYYY,
   toYYYYMMDD,
 } from "../utils/formatter";
-import FormFooter from "./FormFooter";
 import AppTextInput from "../input templates/AppTextInput";
-
 
 import {
   ChevronDownIcon,
@@ -32,28 +31,25 @@ import {
   QrCodeIcon,
   Cog6ToothIcon,
   ListBulletIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
-import "../../styles/formRenderer.css";
+import styles from "../../styles/formRenderer.module.css";
 
 export default function FormRenderer({
   fields,
   values,
   setValues,
   onSubmit,
-  submitLabel,
-  renderFooter,
+  onFormChange,
 }) {
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [currentDropdown, setCurrentDropdown] = useState(null);
   const [searchText, setSearchText] = useState("");
-
-
 
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
-
 
   function applyMask(type, v) {
     if (!v) return v;
@@ -63,17 +59,14 @@ export default function FormRenderer({
     if (type === "iban") return normalizeIBAN(v);
 
     if (type === "chassisNo") {
-
       return String(v).toUpperCase().replace(/\s+/g, "");
     }
     if (type === "vehicle_plate") {
       return String(v).toUpperCase().replace(/\s+/g, "");
     }
 
-
     return v;
   }
-
 
   function getInputType(type) {
     if (type === "email") return "email";
@@ -91,8 +84,8 @@ export default function FormRenderer({
     return "text";
   }
 
-  function validateField(f, v) {
-    const isEmpty = !String(v).trim();
+  function validateField(f, v, formValues) {
+    const isEmpty = !String(v ?? "").trim();
 
     if (f.required && isEmpty) {
       return "Bu alan zorunludur";
@@ -103,10 +96,14 @@ export default function FormRenderer({
     }
 
     if (f.type === "email" && v && !validateEmail(v)) return "Geçerli e-mail girin";
-    if (f.type === "phone" && v && !validatePhone(v)) return "Telefon 0 (5xx) xxx xx xx olmalı";
-    if (f.type === "tckn" && v && !validateTCKN(v)) return "TCKN 11 hane olmalı";
-    if (f.type === "iban" && v && !validateIBAN(v)) return "IBAN 'TR' + 24 hane olmalı";
-    if (f.type === "date" && v && !validateDateYMD(v)) return "Tarih DD.MM.YYYY olmalı";
+    if (f.type === "phone" && v && !validatePhone(v))
+      return "Telefon 0 (5xx) xxx xx xx olmalı";
+    if (f.type === "tckn" && v && !validateTCKN(v))
+      return "TCKN 11 hane olmalı";
+    if (f.type === "iban" && v && !validateIBAN(v))
+      return "IBAN 'TR' + 24 hane olmalı";
+    if (f.type === "date" && v && !validateDateYMD(v))
+      return "Tarih DD.MM.YYYY olmalı";
     if (f.type === "datetime" && v) {
       const [datePart, timePart] = String(v).split(" ");
       const isTimeValid = timePart && /^\d{2}:\d{2}$/.test(timePart);
@@ -119,26 +116,56 @@ export default function FormRenderer({
       return "Şasi No 17 karakter olmalı ve I, O, Q harflerini içeremez";
     }
 
-    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
+    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v))
+      return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
+
     if (f.type === "vehicle_plate" && v && !validatePlate(v)) {
       return "Plaka en fazla 9 karakter olmalı ve en az 1 rakam içermeli";
     }
 
-
-    if (f.validate) return f.validate(v, values);
+    if (f.validate) return f.validate(v, formValues);
     return null;
+  }
+
+  function validateAllFields(valuesToCheck = values) {
+    const nextErrors = {};
+    let isValid = true;
+
+    for (const f of fields) {
+      if (f.type === "title") continue;
+
+      if (f.type === "row" && Array.isArray(f.children)) {
+        for (const child of f.children) {
+          const val = valuesToCheck[child.name] ?? "";
+          const error = validateField(child, val, valuesToCheck);
+          if (error) {
+            isValid = false;
+            nextErrors[child.name] = error;
+          }
+        }
+        continue;
+      }
+
+      const val = valuesToCheck[f.name] ?? "";
+      const error = validateField(f, val, valuesToCheck);
+      if (error) {
+        isValid = false;
+        nextErrors[f.name] = error;
+      }
+    }
+
+    return { errors: nextErrors, isValid };
   }
 
   function handleChange(name, type, value, formatter) {
     let actualValue = value;
-    if (value && typeof value === 'object' && value.target) {
+    if (value && typeof value === "object" && value.target) {
       actualValue = value.target.value;
     }
 
-    // Sayısal alanlar için filtreleme
-    if (type === 'tckn' || type === 'number') {
-      actualValue = String(actualValue).replace(/[^0-9]/g, '');
-      if (type === 'tckn') {
+    if (type === "tckn" || type === "number") {
+      actualValue = String(actualValue).replace(/[^0-9]/g, "");
+      if (type === "tckn") {
         actualValue = actualValue.slice(0, 11);
       }
     }
@@ -149,41 +176,58 @@ export default function FormRenderer({
       finalValue = formatter(finalValue);
     }
 
-    setValues(prevValues => ({
-      ...prevValues,
-      [name]: finalValue
-    }));
+    setValues((prevValues) => {
+      const updated = {
+        ...prevValues,
+        [name]: finalValue,
+      };
+
+      const { isValid } = validateAllFields(updated);
+      onFormChange?.({ allValid: isValid });
+
+      return updated;
+    });
+  }
+
+  function handleBlur(name) {
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    const { errors: allErrors, isValid } = validateAllFields(values);
+    setErrors(allErrors);
+    onFormChange?.({ allValid: isValid });
   }
 
   function handleDropdownSelect(name, value) {
-    console.log(`🎯 Dropdown SELECTED: ${name} = ${value}`);
-
-    setValues(prevValues => {
-      const newValues = {
+    setValues((prevValues) => {
+      const updated = {
         ...prevValues,
-        [name]: value
+        [name]: value,
       };
-      console.log('📝 Updated values:', newValues);
-      return newValues;
+
+      const { errors: allErrors, isValid } = validateAllFields(updated);
+
+      setTouched((prev) => ({ ...prev, [name]: true }));
+      setErrors(allErrors);
+      onFormChange?.({ allValid: isValid });
+
+      return updated;
     });
 
     setCurrentDropdown(null);
     setSearchText("");
   }
 
-  // 🔥 Click outside için useEffect
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        console.log('🖱️ Clicked outside dropdown');
         setCurrentDropdown(null);
         setSearchText("");
       }
     }
 
     if (currentDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [currentDropdown]);
 
@@ -207,82 +251,71 @@ export default function FormRenderer({
     return undefined;
   }
 
-  function submit() {
-    const nextErrors = {};
-    for (const f of fields) {
-      if (f.type === "title" || f.type === "row") {
-        if (f.type === "row" && f.children) {
-          for (const child of f.children) {
-            const e = validateField(child, values[child.name] ?? "");
-            if (e) nextErrors[child.name] = e;
-          }
-        }
-        continue;
+  function handleFormSubmit(e) {
+    e.preventDefault();
+
+    const allTouched = {};
+    fields.forEach((f) => {
+      if (f.type === "row" && Array.isArray(f.children)) {
+        f.children.forEach((c) => {
+          allTouched[c.name] = true;
+        });
+      } else if (f.type !== "title") {
+        allTouched[f.name] = true;
       }
+    });
+    setTouched(allTouched);
 
-      const e = validateField(f, values[f.name] ?? "");
-      if (e) nextErrors[f.name] = e;
-    }
-    setErrors(nextErrors);
+    const { errors: allErrors, isValid } = validateAllFields(values);
+    setErrors(allErrors);
+    onFormChange?.({ allValid: isValid });
 
-    console.log('Submit - Errors:', nextErrors);
-    console.log('Submit - Values:', values);
-
-    if (Object.keys(nextErrors).length === 0) {
+    if (isValid && onSubmit) {
       onSubmit(values);
     }
   }
 
-  const allValid = fields.every((f) => {
-    if (f.type === "title") return true;
-    if (f.type === "row") {
-      return f.children.every(child => {
-        const error = validateField(child, values[child.name] ?? "");
-        return !error; // Hata yoksa true döner
-      });
-    }
-
-    // Diğer field türleri için
-    const error = validateField(f, values[f.name] ?? "");
-    return !error; // Hata yoksa true döner
-  });
-
   const renderDropdown = (field) => {
-    const currentValue = values[field.name];
+    const currentValue = values[field.name] ?? "";
     const isOpen = currentDropdown === field.name;
+    const showError = touched[field.name] && errors[field.name];
 
     return (
       <div
         key={field.name}
-        className="form-field"
+        className={styles.formField}
         ref={isOpen ? dropdownRef : null}
       >
         {field.label && (
-          <label className="form-label">
+          <label className={styles.formLabel}>
             {field.label}
-            {field.required && <span className="required-indicator"> *</span>}
+            {field.required && <span className={styles.requiredIndicator}> *</span>}
           </label>
         )}
 
         <div
-          className={`dropdown-trigger ${isOpen ? 'active' : ''}`}
+          className={`${styles.dropdownTrigger} ${isOpen ? styles.active : ""
+            }`}
           onClick={(e) => {
             e.stopPropagation();
-            console.log(`🖱️ Dropdown trigger clicked: ${field.name}`);
             setCurrentDropdown(isOpen ? null : field.name);
             setSearchText("");
           }}
         >
-          <span className={`dropdown-value ${!currentValue ? 'placeholder' : ''}`}>
+          <span
+            className={`${styles.dropdownValue} ${!currentValue ? styles.placeholder : ""
+              }`}
+          >
             {currentValue
-              ? field.options?.find(opt => opt.value === currentValue)?.label || currentValue
+              ? field.options?.find((opt) => opt.value === currentValue)?.label ||
+              currentValue
               : field.placeholder || "Seçiniz"}
           </span>
-          <ChevronDownIcon className="dropdown-icon" />
+          <ChevronDownIcon className={styles.dropdownIcon} />
         </div>
 
         {isOpen && (
-          <div className="dropdown-menu open">
+          <div className={`${styles.dropdownMenu} ${styles.open}`}>
             {field.options && field.options.length > 0 && (
               <>
                 <input
@@ -290,20 +323,21 @@ export default function FormRenderer({
                   placeholder="Ara..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  className="dropdown-search"
+                  className={styles.dropdownSearch}
                 />
-                <div className="dropdown-options">
+                <div className={styles.dropdownOptions}>
                   {field.options
-                    .filter(opt =>
-                      opt.label.toLowerCase().includes(searchText.toLowerCase())
+                    .filter((opt) =>
+                      opt.label
+                        .toLowerCase()
+                        .includes(searchText.toLowerCase())
                     )
                     .map((item) => (
                       <div
                         key={item.value}
-                        className="dropdown-option"
+                        className={styles.dropdownOption}
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(`🖱️ Option clicked: ${field.name} = ${item.value}`);
                           handleDropdownSelect(field.name, item.value);
                         }}
                       >
@@ -314,7 +348,7 @@ export default function FormRenderer({
               </>
             )}
             <button
-              className="dropdown-close"
+              className={styles.dropdownClose}
               onClick={(e) => {
                 e.stopPropagation();
                 setCurrentDropdown(null);
@@ -325,18 +359,18 @@ export default function FormRenderer({
             </button>
           </div>
         )}
-        {errors[field.name] && <span className="error-text">{errors[field.name]}</span>}
+        {showError && <span className={styles.errorText}>{errors[field.name]}</span>}
       </div>
     );
   };
 
   return (
-    <div className="form-renderer">
-      <div className="form-container">
+    <form className={styles.formRenderer} onSubmit={handleFormSubmit}>
+      <div className={styles.formContainer}>
         {fields.map((f) => {
           if (f.type === "title") {
             return (
-              <h3 key={f.label} className="form-title">
+              <h3 key={f.label} className={styles.formTitle}>
                 {f.label}
               </h3>
             );
@@ -344,42 +378,62 @@ export default function FormRenderer({
 
           if (f.type === "row") {
             return (
-              <div key={f.name} className="form-row">
+              <div key={f.name} className={styles.formRow}>
                 {f.children.map((childField) => {
-                  const IconComponent = childField.icon ?? getFieldIcon(childField.name, childField.type);
+                  const IconComponent =
+                    childField.icon ??
+                    getFieldIcon(childField.name, childField.type);
+                  const currentValue = values[childField.name] ?? "";
+                  const showError =
+                    touched[childField.name] && errors[childField.name];
 
                   if (childField.type === "date") {
-                    const currentValue = values[childField.name] || "";
-
                     return (
-                      <div key={childField.name} className="form-field">
-                        <label className="form-label">
+                      <div key={childField.name} className={styles.formField}>
+                        <label className={styles.formLabel}>
                           {childField.label}
-                          {childField.required && <span className="required-indicator"> *</span>}
+                          {childField.required && (
+                            <span className={styles.requiredIndicator}> *</span>
+                          )}
                         </label>
 
-                        <div className="date-input-wrapper">
+                        <div className={styles.dateInputWrapper}>
                           <input
                             type="date"
-                            ref={(el) => (dateRefs.current[childField.name] = el)}
+                            ref={(el) =>
+                              (dateRefs.current[childField.name] = el)
+                            }
                             name={childField.name}
-                            value={currentValue ? toYYYYMMDD(currentValue) : ""}
+                            value={
+                              currentValue ? toYYYYMMDD(currentValue) : ""
+                            }
                             onChange={(e) => {
                               const selectedDate = e.target.value;
                               if (selectedDate) {
-                                const formattedDate = toDDMMYYYY(selectedDate);
-                                handleChange(childField.name, childField.type, formattedDate);
+                                const formattedDate =
+                                  toDDMMYYYY(selectedDate);
+                                handleChange(
+                                  childField.name,
+                                  childField.type,
+                                  formattedDate
+                                );
                               } else {
-                                handleChange(childField.name, childField.type, "");
+                                handleChange(
+                                  childField.name,
+                                  childField.type,
+                                  ""
+                                );
                               }
                             }}
-                            className="native-date-input"
+                            onBlur={() => handleBlur(childField.name)}
+                            className={styles.nativeDateInput}
                           />
 
                           <div
-                            className="date-trigger"
+                            className={styles.dateTrigger}
                             onClick={() => {
-                              const input = dateRefs.current[childField.name];
+                              const input =
+                                dateRefs.current[childField.name];
                               if (input) {
                                 if (input.showPicker) {
                                   input.showPicker();
@@ -389,116 +443,163 @@ export default function FormRenderer({
                               }
                             }}
                           >
-                            {IconComponent && <IconComponent className="field-icon" />}
-                            <span className={`date-value ${!currentValue ? 'placeholder' : ''}`}>
+                            {IconComponent && (
+                              <IconComponent className={styles.fieldIcon} />
+                            )}
+                            <span
+                              className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                                }`}
+                            >
                               {currentValue || "gg.aa.yyyy"}
                             </span>
                           </div>
                         </div>
 
-                        {errors[childField.name] && (
-                          <span className="error-text">{errors[childField.name]}</span>
+                        {showError && (
+                          <span className={styles.errorText}>
+                            {errors[childField.name]}
+                          </span>
                         )}
                       </div>
                     );
                   }
+
                   if (childField.type === "datetime") {
-                    const currentValue = values[childField.name] || "";
-                    const [datePart = "", timePart = ""] = currentValue.split(" ");
+                    const [datePart = "", timePart = ""] =
+                      currentValue.split(" ");
 
                     return (
-                      <div key={childField.name} className="form-field">
-                        <label className="form-label">
+                      <div key={childField.name} className={styles.formField}>
+                        <label className={styles.formLabel}>
                           {childField.label}
-                          {childField.required && <span className="required-indicator"> *</span>}
+                          {childField.required && (
+                            <span className={styles.requiredIndicator}>
+                              {" "}
+                              *
+                            </span>
+                          )}
                         </label>
 
-                        <div className="date-input-wrapper">
-                          {/* Gizli tarih inputu */}
+                        <div className={styles.dateInputWrapper}>
                           <input
                             type="date"
-                            ref={(el) => (dateRefs.current[childField.name] = el)}
+                            ref={(el) =>
+                              (dateRefs.current[childField.name] = el)
+                            }
                             name={`${childField.name}_date`}
                             value={datePart ? toYYYYMMDD(datePart) : ""}
                             onChange={(e) => {
-                              const selectedDate = e.target.value; // YYYY-MM-DD
+                              const selectedDate = e.target.value;
                               let final = "";
                               if (selectedDate) {
-                                const formattedDate = toDDMMYYYY(selectedDate); // DD.MM.YYYY
-                                final = timePart ? `${formattedDate} ${timePart}` : formattedDate;
+                                const formattedDate =
+                                  toDDMMYYYY(selectedDate);
+                                final = timePart
+                                  ? `${formattedDate} ${timePart}`
+                                  : formattedDate;
                               }
-                              handleChange(childField.name, childField.type, final);
+                              handleChange(
+                                childField.name,
+                                childField.type,
+                                final
+                              );
 
-                              // Tarihi seçince saat picker'ını otomatik aç
-                              const timeInput = timeRefs.current[childField.name];
+                              const timeInput =
+                                timeRefs.current[childField.name];
                               if (timeInput) {
-                                if (timeInput.showPicker) timeInput.showPicker();
+                                if (timeInput.showPicker)
+                                  timeInput.showPicker();
                                 else timeInput.focus();
                               }
                             }}
-                            className="native-date-input"
+                            onBlur={() => handleBlur(childField.name)}
+                            className={styles.nativeDateInput}
                           />
 
-                          {/* Gizli saat inputu */}
                           <input
                             type="time"
-                            ref={(el) => (timeRefs.current[childField.name] = el)}
+                            ref={(el) =>
+                              (timeRefs.current[childField.name] = el)
+                            }
                             name={`${childField.name}_time`}
                             value={timePart}
                             onChange={(e) => {
-                              const selectedTime = e.target.value; // HH:MM
+                              const selectedTime = e.target.value;
                               let final = "";
                               if (selectedTime) {
-                                final = datePart ? `${datePart} ${selectedTime}` : ` ${selectedTime}`;
+                                final = datePart
+                                  ? `${datePart} ${selectedTime}`
+                                  : ` ${selectedTime}`;
                               } else {
                                 final = datePart || "";
                               }
-                              handleChange(childField.name, childField.type, final);
+                              handleChange(
+                                childField.name,
+                                childField.type,
+                                final
+                              );
                             }}
-                            className="native-date-input"
+                            onBlur={() => handleBlur(childField.name)}
+                            className={styles.nativeDateInput}
                           />
 
-                          {/* Kullanıcının gördüğü trigger */}
                           <div
-                            className="date-trigger"
+                            className={styles.dateTrigger}
                             onClick={() => {
-                              const input = dateRefs.current[childField.name];
+                              const input =
+                                dateRefs.current[childField.name];
                               if (input) {
-                                if (input.showPicker) input.showPicker();
+                                if (input.showPicker)
+                                  input.showPicker();
                                 else input.focus();
                               }
                             }}
                           >
-                            {ClockIcon && <ClockIcon className="field-icon" />}
-                            <span className={`date-value ${!currentValue ? "placeholder" : ""}`}>
+                            {IconComponent && (
+                              <IconComponent className={styles.fieldIcon} />
+                            )}
+                            <span
+                              className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                                }`}
+                            >
                               {currentValue || "Tarih ve saat seçiniz"}
                             </span>
                           </div>
                         </div>
 
-                        {errors[childField.name] && (
-                          <span className="error-text">{errors[childField.name]}</span>
+                        {showError && (
+                          <span className={styles.errorText}>
+                            {errors[childField.name]}
+                          </span>
                         )}
                       </div>
                     );
                   }
-
 
                   if (childField.type === "dropdown") {
                     return renderDropdown(childField);
                   }
 
                   return (
-                    <div key={childField.name} className="form-field">
+                    <div key={childField.name} className={styles.formField}>
                       <AppTextInput
                         label={childField.label}
                         placeholder={childField.placeholder}
                         iconComponent={IconComponent}
-                        value={values[childField.name]}
+                        value={values[childField.name] ?? ""}
                         onChange={(e) =>
-                          handleChange(childField.name, childField.type, e.target.value, childField.formatter)
+                          handleChange(
+                            childField.name,
+                            childField.type,
+                            e.target.value,
+                            childField.formatter
+                          )
                         }
-                        error={errors[childField.name]}
+                        onBlur={() => handleBlur(childField.name)}
+                        error={
+                          touched[childField.name] &&
+                          errors[childField.name]
+                        }
                         helperText={childField.helperText}
                         maxLength={childField.maxLength}
                         type={getInputType(childField.type)}
@@ -516,18 +617,21 @@ export default function FormRenderer({
             return renderDropdown(f);
           }
 
-          if (f.type === "date") {
-            const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
-            const currentValue = values[f.name] || "";
+          const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
+          const currentValue = values[f.name] ?? "";
+          const showError = touched[f.name] && errors[f.name];
 
+          if (f.type === "date") {
             return (
-              <div key={f.name} className="form-field">
-                <label className="form-label">
+              <div key={f.name} className={styles.formField}>
+                <label className={styles.formLabel}>
                   {f.label}
-                  {f.required && <span className="required-indicator"> *</span>}
+                  {f.required && (
+                    <span className={styles.requiredIndicator}> *</span>
+                  )}
                 </label>
 
-                <div className="date-input-wrapper">
+                <div className={styles.dateInputWrapper}>
                   <input
                     type="date"
                     ref={(el) => (dateRefs.current[f.name] = el)}
@@ -542,11 +646,12 @@ export default function FormRenderer({
                         handleChange(f.name, f.type, "");
                       }
                     }}
-                    className="native-date-input"
+                    onBlur={() => handleBlur(f.name)}
+                    className={styles.nativeDateInput}
                   />
 
                   <div
-                    className="date-trigger"
+                    className={styles.dateTrigger}
                     onClick={() => {
                       const input = dateRefs.current[f.name];
                       if (input) {
@@ -558,38 +663,44 @@ export default function FormRenderer({
                       }
                     }}
                   >
-                    {IconComponent && <IconComponent className="field-icon" />}
-                    <span className={`date-value ${!currentValue ? 'placeholder' : ''}`}>
+                    {IconComponent && (
+                      <IconComponent className={styles.fieldIcon} />
+                    )}
+                    <span
+                      className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                        }`}
+                    >
                       {currentValue || "gg.aa.yyyy"}
                     </span>
                   </div>
                 </div>
 
-                {errors[f.name] && <span className="error-text">{errors[f.name]}</span>}
+                {showError && (
+                  <span className={styles.errorText}>{errors[f.name]}</span>
+                )}
               </div>
             );
           }
+
           if (f.type === "datetime") {
-            const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
-            const currentValue = values[f.name] || "";
             const [datePart = "", timePart = ""] = currentValue.split(" ");
 
             return (
-              <div key={f.name} className="form-field">
-                <label className="form-label">
+              <div key={f.name} className={styles.formField}>
+                <label className={styles.formLabel}>
                   {f.label}
-                  {f.required && <span className="required-indicator">*</span>}
+                  {f.required && (
+                    <span className={styles.requiredIndicator}>*</span>
+                  )}
                 </label>
 
-                <div className="date-input-wrapper">
-
-                  {/* GİZLİ TARİH INPUTU */}
+                <div className={styles.dateInputWrapper}>
                   <input
                     type="date"
                     ref={(el) => (dateRefs.current[f.name] = el)}
                     value={datePart ? toYYYYMMDD(datePart) : ""}
                     onChange={(e) => {
-                      const selectedDate = e.target.value; 
+                      const selectedDate = e.target.value;
 
                       if (selectedDate) {
                         const formatted = toDDMMYYYY(selectedDate);
@@ -598,7 +709,8 @@ export default function FormRenderer({
                         setTimeout(() => {
                           const timeInput = timeRefs.current[f.name];
                           if (timeInput) {
-                            if (timeInput.showPicker) timeInput.showPicker();
+                            if (timeInput.showPicker)
+                              timeInput.showPicker();
                             else timeInput.focus();
                           }
                         }, 200);
@@ -606,28 +718,10 @@ export default function FormRenderer({
                         handleChange(f.name, f.type, "");
                       }
                     }}
-                    onBlur={() => {
-                      const current = values[f.name] || "";
-                      const [date, time] = current.split(" ");
-                      if (date && !time) {
-                        setTimeout(() => {
-                          if (!values[f.name]?.includes(" ")) {
-                            setErrors(prev => ({
-                              ...prev,
-                              [f.name]: `Lütfen ${f.label} için saat seçiniz`
-                            }));
-                            // Değeri temizle
-                            handleChange(f.name, f.type, "");
-                            const dateInput = dateRefs.current[f.name];
-                            if (dateInput) dateInput.value = "";
-                          }
-                        }, 300);
-                      }
-                    }}
-                    className="native-date-input"
+                    onBlur={() => handleBlur(f.name)}
+                    className={styles.nativeDateInput}
                   />
 
-                  {/* GİZLİ SAAT INPUTU */}
                   <input
                     type="time"
                     ref={(el) => (timeRefs.current[f.name] = el)}
@@ -637,32 +731,30 @@ export default function FormRenderer({
 
                       if (selected) {
                         if (datePart) {
-                          // Hem tarih hem saat var, birleştir
-                          handleChange(f.name, f.type, `${datePart} ${selected}`);
-                          // Hatayı temizle
-                          setErrors(prev => {
+                          handleChange(
+                            f.name,
+                            f.type,
+                            `${datePart} ${selected}`
+                          );
+                          setErrors((prev) => {
                             const newErrors = { ...prev };
                             delete newErrors[f.name];
                             return newErrors;
                           });
                         } else {
-                          // Saat var ama tarih yok, uyar
-                          setErrors(prev => ({
+                          setErrors((prev) => ({
                             ...prev,
-                            [f.name]: `Lütfen önce ${f.label} için tarih seçiniz`
+                            [f.name]: `Lütfen önce ${f.label} için tarih seçiniz`,
                           }));
-                          // Saati temizle
                           handleChange(f.name, f.type, "");
                           const timeInput = timeRefs.current[f.name];
                           if (timeInput) timeInput.value = "";
                         }
                       } else {
-                        // Saat temizlendi, sadece tarihi bırak veya tamamen temizle
                         if (datePart) {
-                          // Tarih varsa uyar
-                          setErrors(prev => ({
+                          setErrors((prev) => ({
                             ...prev,
-                            [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                            [f.name]: `Lütfen ${f.label} için saat seçiniz`,
                           }));
                           handleChange(f.name, f.type, "");
                         } else {
@@ -670,75 +762,62 @@ export default function FormRenderer({
                         }
                       }
                     }}
-                    onBlur={() => {
-                      // Saat inputundan çıkıldığında kontrol et
-                      const current = values[f.name] || "";
-                      const [date, time] = current.split(" ");
-                      if (date && !time) {
-                        setTimeout(() => {
-                          setErrors(prev => ({
-                            ...prev,
-                            [f.name]: `Lütfen ${f.label} için saat seçiniz`
-                          }));
-                          // Değeri temizle
-                          handleChange(f.name, f.type, "");
-                          // Date inputu da temizle
-                          const dateInput = dateRefs.current[f.name];
-                          if (dateInput) dateInput.value = "";
-                        }, 100);
-                      }
-                    }}
-                    className="native-time-input"
+                    onBlur={() => handleBlur(f.name)}
+                    className={styles.nativeTimeInput}
                   />
 
-                  {/* GÖRÜNEN TRIGGER */}
                   <div
-                    className="date-trigger"
+                    className={styles.dateTrigger}
                     onClick={() => {
                       const di = dateRefs.current[f.name];
                       const ti = timeRefs.current[f.name];
                       const current = values[f.name] || "";
                       const [date, time] = current.split(" ");
-                      
-                      // Eğer tarih var ama saat yoksa, önce uyar sonra saati aç
+
                       if (date && !time) {
-                        setErrors(prev => ({
+                        setErrors((prev) => ({
                           ...prev,
-                          [f.name]: `Lütfen ${f.label} için saat seçiniz`
+                          [f.name]: `Lütfen ${f.label} için saat seçiniz`,
                         }));
                         if (ti) {
                           if (ti.showPicker) ti.showPicker();
                           else ti.focus();
                         }
                       } else {
-                        // Normal akış: tarihi aç
                         if (di) di.showPicker ? di.showPicker() : di.focus();
                       }
                     }}
                   >
-                    {IconComponent && <IconComponent className="field-icon" />}
-                    <span className={`date-value ${!currentValue ? "placeholder" : ""}`}>
+                    {IconComponent && (
+                      <IconComponent className={styles.fieldIcon} />
+                    )}
+                    <span
+                      className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                        }`}
+                    >
                       {currentValue || "Tarih ve saat seçiniz"}
                     </span>
                   </div>
                 </div>
 
-                {errors[f.name] && <span className="error-text">{errors[f.name]}</span>}
+                {showError && (
+                  <span className={styles.errorText}>{errors[f.name]}</span>
+                )}
               </div>
             );
           }
 
-
-
-          const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
           return (
             <AppTextInput
               key={f.name}
               label={f.label}
               placeholder={f.placeholder}
               iconComponent={IconComponent}
-              value={values[f.name]}
-              onChange={(e) => handleChange(f.name, f.type, e.target.value, f.formatter)}
+              value={values[f.name] ?? ""}
+              onChange={(e) =>
+                handleChange(f.name, f.type, e.target.value, f.formatter)
+              }
+              onBlur={() => handleBlur(f.name)}
               disabled={f.editable === false}
               rightAction={f.rightAction ?? null}
               maxLength={f.maxLength}
@@ -747,25 +826,13 @@ export default function FormRenderer({
               type={f.keyboardType ?? getInputType(f.type)}
               inputMode={getInputMode(f.type)}
               secureTextEntry={f.type === "password" || f.secureTextEntry}
-              error={errors[f.name]}
+              error={touched[f.name] && errors[f.name]}
               helperText={f.helperText}
               required={f.required}
             />
           );
         })}
-
-        {typeof renderFooter === "function" ? (
-          renderFooter({ submit, allValid, values, errors })
-        ) : (
-          <FormFooter
-            onBack={() => console.log("Back pressed (default)")}
-            onNext={submit}
-            nextLabel={submitLabel}
-            disabled={!allValid}
-          />
-        )}
       </div>
-    </div>
+    </form>
   );
 }
-

@@ -15,8 +15,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const selectedCompany = locationState.selectedCompany;
   const insuranceSource = locationState.insuranceSource;
   const karsiSamePerson = locationState.karsiSamePerson;
-
-  useEffect(() => {
+    useEffect(() => {
     if (locationState?.victimData) {
       console.log("🟢 Düzenleme modunda — eski victimData forma set edildi:", locationState.victimData);
 
@@ -45,7 +44,6 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   }, [locationState]);
 
 
-
   console.log('🔍 VictimInfoStepper - Gelen parametreler:', {
     kazaNitelik,
     selectedCompany,
@@ -56,6 +54,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
   const [isCompany, setIsCompany] = useState(false);
   const [formValues, setFormValues] = useState({});
+  const [formValid, setFormValid] = useState(false);   // 🔥 VALID STATE BURADA
 
   const steps = samePerson
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
@@ -137,6 +136,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   return (
     <div className={styles.screenContainer}>
       <div className={styles.contentArea}>
+
         <Stepper steps={steps} currentStep={1} />
 
         <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
@@ -150,16 +150,22 @@ const VictimInfoStepper = ({ samePerson = false }) => {
               setValues={setFormValues}
               onSubmit={handleFormSubmit}
               submitLabel="DEVAM ET"
-              renderFooter={({ submit, allValid }) => (
-                <FormFooter
-                  onBack={handleBack}
-                  onNext={submit}
-                  disabled={!allValid}
-                />
-              )}
+              onFormChange={({ allValid }) => setFormValid(allValid)}
             />
           </div>
         </div>
+
+        <FormFooter
+          onBack={handleBack}
+          onNext={() => {
+            const form = document.querySelector('form');
+            if (form) {
+              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          }}
+          disabled={!formValid}
+        />
+
       </div>
     </div>
   );

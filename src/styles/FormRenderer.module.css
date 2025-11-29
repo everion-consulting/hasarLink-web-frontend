@@ -1,0 +1,306 @@
+.formRenderer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: visible;
+}
+
+.formTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 8px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  overflow: visible;
+}
+
+.nativeTimeInput {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: visible;
+}
+
+.formLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+/* 🔵 TARİH ALANI */
+.dateInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dateTrigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.dateTrigger:hover {
+  border-color: #3b82f6;
+}
+
+.dateTrigger:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.fieldIcon {
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.dateValue {
+  font-size: 14px;
+  color: #1f2937;
+  flex: 1;
+  text-align: left;
+  pointer-events: none;
+}
+
+.placeholder {
+  color: #9ca3af !important;
+}
+
+/* HIDDEN NATIVE DATE INPUT */
+.nativeDateInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  background: transparent;
+}
+
+.nativeDateInput::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+}
+
+/* 🔽 DROPDOWN */
+.dropdownTrigger {
+  position: relative;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  transition: all 0.2s ease;
+  width: 100%;
+  z-index: 2;
+}
+
+.dropdownTrigger:hover {
+  border-color: #3b82f6;
+}
+
+.active {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  z-index: 9998;
+}
+
+.dropdownValue {
+  flex: 1;
+  font-size: 14px;
+  color: #1f2937;
+  text-align: left;
+}
+
+.dropdownIcon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 9999;
+  max-height: 300px;
+  overflow: hidden;
+  display: none;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+.open {
+  display: block !important;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownSearch {
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+  font-size: 14px;
+  background: #f9fafb;
+}
+
+.dropdownOptions {
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+}
+
+.dropdownOption {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.15s ease;
+}
+
+.dropdownOption:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.dropdownClose {
+  padding: 12px 16px;
+  background-color: #f8fafc;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.dropdownClose:hover {
+  background-color: #f1f5f9;
+  color: #374151;
+}
+
+/* ❌ ERROR TEXT */
+.errorText {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* HATA DURUMU */
+.formField.hasError .dropdownTrigger,
+.formField.hasError .dateTrigger {
+  border-color: #dc2626;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .formRenderer {
+    padding: 0 16px;
+  }
+
+  .dropdownMenu {
+    position: fixed;
+    top: 50%;
+    left: 16px;
+    right: 16px;
+    transform: translateY(-50%);
+    max-height: 80vh;
+    z-index: 99999;
+  }
+}
+
+@media (max-width: 480px) {
+  .formTitle {
+    font-size: 16px;
+  }
+
+  .dropdownTrigger,
+  .dateTrigger {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .dropdownOption {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+}

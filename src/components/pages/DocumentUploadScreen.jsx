@@ -99,76 +99,75 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   };
 
   return (
-    <div className={styles.uploadContainer}>
-      {sections.map((section) => (
-        <div key={section.id} className={styles.uploadCard}>
-          <div className={styles.uploadCardHeader}>
-            <div className={styles.uploadCardTitle}>{section.title}</div>
+    <div>
+      <div className={styles.uploadContainer}>
+        {sections.map((section) => (
+          <div key={section.id} className={styles.uploadCard}>
+            <div className={styles.uploadCardHeader}>
+              <div className={styles.uploadCardTitle}>{section.title}</div>
 
-            <label className={styles.uploadButton}>
-              + YÜKLE
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                multiple
-                onChange={(e) => handleFileSelect(e, section.id)}
-              />
-            </label>
+              <label className={styles.uploadButton}>
+                + YÜKLE
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  multiple
+                  onChange={(e) => handleFileSelect(e, section.id)}
+                />
+              </label>
+            </div>
+
+            <div className={styles.uploadPreviewArea}>
+              {section.files.length === 0 && (
+                <div className={styles.uploadEmpty}>Dosya yok</div>
+              )}
+
+              {section.files.length > 0 && (
+                <div className={styles.previewList}>
+                  {section.files.map((item) => (
+                    <div key={item.id} className={styles.previewItem}>
+                      {item.type.includes("pdf") ? (
+                        <div className={styles.pdfPreview}>
+                          📄 <span>{item.name}</span>
+                        </div>
+                      ) : (
+                        <img
+                          src={item.preview}
+                          className={styles.imagePreview}
+                          alt=""
+                        />
+                      )}
+
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDelete(section.id, item.id)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-
-          <div className={styles.uploadPreviewArea}>
-            {section.files.length === 0 && (
-              <div className={styles.uploadEmpty}>Dosya yok</div>
-            )}
-
-            {section.files.length > 0 && (
-              <div className={styles.previewList}>
-                {section.files.map((item) => (
-                  <div key={item.id} className={styles.previewItem}>
-                    {item.type.includes("pdf") ? (
-                      <div className={styles.pdfPreview}>
-                        📄 <span>{item.name}</span>
-                      </div>
-                    ) : (
-                      <img
-                        src={item.preview}
-                        className={styles.imagePreview}
-                        alt=""
-                      />
-                    )}
-
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => handleDelete(section.id, item.id)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+        ))}
+        {uploading && (
+          <div className={styles.uploadOverlay}>
+            <div className={styles.uploadModal}>
+              <div>Dosyalar Yükleniyor...</div>
+              <div>
+                {progress.current} / {progress.total}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      ))}
-
-      {/* --- BUTONLAR --- */}
+        )}
+      </div>
       <FormFooter
         onBack={() => navigate(-1)}
         onNext={handleUpload}
         nextLabel="DEVAM ET"
         backLabel="GERİ DÖN"
       />
-
-      {uploading && (
-        <div className={styles.uploadOverlay}>
-          <div className={styles.uploadModal}>
-            <div>Dosyalar Yükleniyor...</div>
-            <div>
-              {progress.current} / {progress.total}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

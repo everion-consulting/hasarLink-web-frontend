@@ -9,10 +9,11 @@ import FormFooter from '../forms/FormFooter';
 const DriverVictimStepperScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [formValid, setFormValid] = useState(false);
 
   // ✅ Location.state'den TÜM verileri al
   const locationState = location.state || {};
-  
+
   const {
     victimData = {},
     driverData = {},
@@ -89,12 +90,12 @@ const DriverVictimStepperScreen = () => {
     const completeData = {
       // Mevcut tüm location.state'i koru
       ...locationState,
-      
+
       // Form verilerini ekle/güncelle
       victimData: victimData,           // ✅ victimData'yı muhafaza et
       driverData: driverData,           // ✅ driverData'yı muhafaza et
       vehicleData: transformedVehicleData,  // ✅ Yeni vehicle verisini ekle
-      
+
       // StepInfo için gerekli
       startStep: 2,
     };
@@ -140,16 +141,20 @@ const DriverVictimStepperScreen = () => {
               values={vehicleData}
               setValues={handleSetVehicleData}
               onSubmit={handleVehicleSubmit}
-              renderFooter={({ submit, allValid }) => (
-                <FormFooter
-                  onBack={handleBack}
-                  onNext={submit}
-                  disabled={!allValid}
-                />
-              )}
+              onFormChange={({ allValid }) => setFormValid(allValid)}
             />
           </div>
         </div>
+        <FormFooter
+          onBack={handleBack}
+          onNext={() => {
+            const form = document.querySelector("form");
+            if (form) {
+              form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+            }
+          }}
+          disabled={!formValid}
+        />
       </div>
     </div>
   );
