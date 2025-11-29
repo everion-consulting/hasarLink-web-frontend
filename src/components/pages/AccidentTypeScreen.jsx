@@ -35,20 +35,33 @@ export default function AccidentTypeScreen() {
     const location = useLocation();
 
     const selectedCompany = location.state?.selectedCompany || null;
-    const [selected, setSelected] = useState(null);
+    const preSelected = location.state?.preSelectedAccidentType || null;
+
+    const [selected, setSelected] = useState(preSelected);
 
     const onSave = () => {
         if (!selected) return alert("Lütfen bir kaza tipi seçiniz.");
 
+        const isEdit = location.state?.editMode === true;
+        const returnTo = location.state?.returnTo || '/step-info';
+
+        const params = {
+            ...location.state,
+            kazaNitelik: selected,
+            startStep: location.state?.returnStep || 1,
+            selectedCompany: selectedCompany,
+        };
+
+        if (isEdit) {
+            navigate(returnTo, { state: params });
+            return;
+        }
+
         navigate('/insurance-stepper', {
-            state: {
-                ...location.state,
-                kazaNitelik: selected,
-                startStep: 1,
-                selectedCompany: selectedCompany,
-            }
+            state: params
         });
     };
+
 
     return (
         <div className={styles.accidentTypePage}>

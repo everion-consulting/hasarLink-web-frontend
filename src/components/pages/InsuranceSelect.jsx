@@ -20,7 +20,8 @@ export default function InsuranceSelect() {
     const params = location.state || {};
 
     const [search, setSearch] = useState("");
-    const [selectedCompany, setSelectedCompany] = useState(null);
+    const preSelected = location.state?.preSelectedCompanyId || null;
+    const [selectedCompany, setSelectedCompany] = useState(preSelected);
 
     const favoriteList = profileDetail?.favorite_insurance_companies || [];
     const list = Array.isArray(allCompaniesList) ? allCompaniesList : [];

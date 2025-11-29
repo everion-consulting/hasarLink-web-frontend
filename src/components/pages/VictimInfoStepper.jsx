@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './../../styles/victimInfoScreen.module.css';
 import FormRenderer from '../forms/FormRenderer';
 import { getVictimFields } from '../../constants/victimFields';
@@ -8,14 +8,44 @@ import FormFooter from '../forms/FormFooter';
 
 const VictimInfoStepper = ({ samePerson = false }) => {
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   const locationState = location.state || {};
   const kazaNitelik = locationState.kazaNitelik;
   const selectedCompany = locationState.selectedCompany;
   const insuranceSource = locationState.insuranceSource;
   const karsiSamePerson = locationState.karsiSamePerson;
-  
+
+  useEffect(() => {
+    if (locationState?.victimData) {
+      console.log("🟢 Düzenleme modunda — eski victimData forma set edildi:", locationState.victimData);
+
+      setFormValues(prev => ({
+        ...prev,
+        ...locationState.victimData
+      }));
+
+      if (locationState.victimData?.isCompany !== undefined) {
+        setIsCompany(locationState.victimData.isCompany);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (locationState?.victimData) {
+      const victim = { ...locationState.victimData };
+
+      if (victim.victim_birth_date && victim.victim_birth_date.includes("-")) {
+        const [y, m, d] = victim.victim_birth_date.split("-");
+        victim.victim_birth_date = `${d}.${m}.${y}`;
+      }
+
+      setFormValues(victim);
+    }
+  }, [locationState]);
+
+
+
   console.log('🔍 VictimInfoStepper - Gelen parametreler:', {
     kazaNitelik,
     selectedCompany,
@@ -46,43 +76,46 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
   const handleFormSubmit = (values) => {
     console.log('✅ VictimInfoStepper - Ham form verileri:', values);
-    
-    // Transform işlemlerini uygula
+
     const transformedValues = { ...values };
-    
+
     victimFields.forEach(field => {
       if (field.transform && typeof field.transform === 'function' && values[field.name]) {
-        console.log(`🔄 VictimInfo - Transforming ${field.name}:`, values[field.name]);
         transformedValues[field.name] = field.transform(values[field.name]);
-        console.log(`✅ VictimInfo - Transform sonrası ${field.name}:`, transformedValues[field.name]);
       }
     });
 
-    console.log('✅ VictimInfoStepper - Transform sonrası victimData:', transformedValues);
+    const editMode = locationState.editMode || false;
+    const returnTo = locationState.returnTo || null;
+    const returnStep = locationState.returnStep || null;
 
-    // ✅ Tüm parametreleri bir sonraki adıma ilet
-    const navigationState = {
-      // Mevcut location.state'i koru
-      ...locationState,
-      
-      // Transform edilmiş victim verisini ekle
-      victimData: transformedValues,
-      
-      // Temel parametreler (eğer locationState'de yoksa)
-      kazaNitelik: kazaNitelik,
-      selectedCompany: selectedCompany,
-      insuranceSource: insuranceSource,
-      samePerson: samePerson,
-      karsiSamePerson: karsiSamePerson,
-    };
+    // 🎯 Eğer düzenle modundaysan → StepInfo’ya geri gönder!
+    if (editMode && returnTo) {
+      navigate(`/${returnTo}`, {
+        state: {
+          ...locationState,
+          victimData: transformedValues,
+          startStep: returnStep || 2
+        }
+      });
 
-    console.log('🚀 VictimInfo -> DriverInfo\'ya gönderilen TÜM state:', navigationState);
-    console.log('📍 victimData:', navigationState.victimData);
+      return; // ❗ normal akışı durdur
+    }
 
+    // 🚀 Normal akış
     navigate('/driver-info', {
-      state: navigationState
+      state: {
+        ...locationState,
+        victimData: transformedValues,
+        kazaNitelik,
+        selectedCompany,
+        insuranceSource,
+        samePerson,
+        karsiSamePerson,
+      }
     });
   };
+
 
   const renderVictimTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
@@ -100,7 +133,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
       </div>
     </div>
   );
-  
+
   return (
     <div className={styles.screenContainer}>
       <div className={styles.contentArea}>

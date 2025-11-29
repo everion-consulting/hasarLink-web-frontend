@@ -44,14 +44,21 @@ export default function InsuranceStepper() {
     }
   );
 
-  const [step3Selection, setStep3Selection] = useState(
-    () => (editMode && preSelectedStep3) ? preSelectedStep3 : null
-  );
+  const [step3Selection, setStep3Selection] = useState(() => {
+    if (!editMode) return null;
+    if (preSelectedStep3 === 'yes') return 'yes';
+    if (preSelectedStep3 === 'no') return 'no';
+    return null;
+  });
+
 
   const stepNames =
     kazaNitelik === 'TEKLİ KAZA (BEYANLI)'
       ? ['Adım 1']
-      : ['Adım 1', 'Adım 2', ...((step2Selection === 'karsi trafik' || step2Selection === 'karsi kasko') ? ['Adım 3'] : [])];
+      : ['Adım 1', 'Adım 2', ...(step2Selection === 'karsi trafik' || step2Selection === 'karsi kasko'
+        ? ['Adım 3']
+        : [])
+      ];
 
   useEffect(() => {
     if (editMode) {
@@ -143,15 +150,19 @@ export default function InsuranceStepper() {
           : false;
 
   const handleContinue = () => {
+
+    // 🔥 Düzenleme modunda kullanıcı seçim yapar yapmaz direkt onay sayfasına git
+    if (editMode) {
+      const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
+      navigate('/step-info', { state: safeParams });   
+      return;
+    }
+
     // Tekli kaza durumu:
     if (kazaNitelik === 'TEKLİ KAZA (BEYANLI)' && step1Selection) {
       const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
 
-      if (editMode && returnTo) {
-        navigate(returnTo, { state: safeParams });
-      } else {
-        navigate('/step-info', { state: safeParams });
-      }
+      navigate('/step-info', { state: safeParams });
       return;
     }
 
@@ -163,23 +174,14 @@ export default function InsuranceStepper() {
         setCurrentStep(3);
       } else {
         const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
-
-        if (editMode && returnTo) {
-          navigate(returnTo, { state: safeParams });
-        } else {
-          navigate('/step-info', { state: safeParams });
-        }
+        navigate('/step-info', { state: safeParams });
       }
     } else if (currentStep === 3 && step3Selection) {
       const safeParams = getSafeParams(step1Selection, step2Selection, step3Selection);
-
-      if (editMode && returnTo) {
-        navigate(returnTo, { state: safeParams });
-      } else {
-        navigate('/step-info', { state: safeParams });
-      }
+      navigate('/step-info', { state: safeParams });
     }
   };
+
 
   return (
     <div className={styles.insuranceStepperPage}>
@@ -300,7 +302,7 @@ export default function InsuranceStepper() {
               )}
             </div>
           </div>
-          
+
           {/* --- BUTONLAR --- */}
           <FormFooter
             onBack={() => navigate(-1)}

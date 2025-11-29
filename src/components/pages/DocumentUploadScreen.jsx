@@ -157,7 +157,6 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
         onNext={handleUpload}
         nextLabel="DEVAM ET"
         backLabel="GERİ DÖN"
-        disabled={!isAllChosenForCurrentStep}
       />
 
       {uploading && (

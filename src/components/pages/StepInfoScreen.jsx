@@ -61,47 +61,20 @@ export default function StepInfoScreen() {
   const [submissionId, setSubmissionId] = useState(null);
 
 
-
   useEffect(() => {
-    console.log("🔄 useEffect tetiklendi - params güncellendi");
-    console.log("📦 Yeni params.victimData:", params.victimData);
-    console.log("📦 Yeni params.driverData:", params.driverData);
-    console.log("📦 Yeni params.vehicleData:", params.vehicleData);
-    console.log("📦 Yeni params.serviceData:", params.serviceData); // ✅ BU SATIRI EKLEYİN
-    console.log("📦 Yeni params.insuredData:", params.insuredData); // ✅ BU SATIRI EKLEYİN
+    if (!location.state) return;
 
-    if (params.victimData) {
-      console.log("✅ victimData güncelleniyor:", params.victimData);
-      setVictimData(params.victimData);
-    }
-    if (params.driverData) {
-      console.log("✅ driverData güncelleniyor:", params.driverData);
-      setDriverData(params.driverData);
-    }
-    if (params.vehicleData) {
-      console.log("✅ vehicleData güncelleniyor:", params.vehicleData);
-      setVehicleData(params.vehicleData);
-    }
-    if (params.insuredData) {
-      console.log("✅ insuredData güncelleniyor:", params.insuredData);
-      setInsuredData(params.insuredData);
-    }
-    if (params.serviceData) {
-      console.log("✅ serviceData güncelleniyor:", params.serviceData);
-      setServiceData(params.serviceData);
-      // ✅ serviceData'dan mechanicData'ya da aktarım yap
-      setMechanicData(prev => ({
-        ...prev,
-        repair_fullname: params.serviceData.repair_fullname,
-        repair_birth_date: params.serviceData.repair_birth_date,
-        repair_tc: params.serviceData.repair_tc,
-        repair_phone: params.serviceData.repair_phone,
-      }));
-    }
+    if (params.victimData) setVictimData(params.victimData);
+    if (params.driverData) setDriverData(params.driverData);
+    if (params.vehicleData) setVehicleData(params.vehicleData);
+    if (params.insuredData) setInsuredData(params.insuredData);
+    if (params.serviceData) setServiceData(params.serviceData);
     if (params.mechanicData) setMechanicData(params.mechanicData);
     if (params.damageData) setDamageData(params.damageData);
     if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
+
   }, [location.state]);
+
 
   const isTekliBizimKasko =
     kazaNitelik === "TEKLİ KAZA (BEYANLI)" &&
@@ -747,7 +720,19 @@ export default function StepInfoScreen() {
         navigate('/accident-type', {
           state: {
             ...baseParams,
+            preSelectedAccidentType: kazaNitelik,
+            editMode: true,
+            returnTo: '/step-info',
+            returnStep: currentStep
+          }
+        });
+        break;
+
+        navigate('/accident-type', {
+          state: {
+            ...baseParams,
             kazaNitelik: kazaNitelik || null,
+            preSelectedAccidentType: kazaNitelik,
           }
         });
         break;
@@ -756,6 +741,7 @@ export default function StepInfoScreen() {
           state: {
             ...baseParams,
             returnTo: 'StepInfoScreen',
+            preSelectedCompanyId: selectedCompany?.id,
             returnStep: currentStep
           }
         });
@@ -784,25 +770,51 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusStep: 3,
-            preSelectedStep3: karsiSamePerson ? 'yes' : 'no',
+            preSelectedStep3:
+              karsiSamePerson === true ? 'yes' :
+                karsiSamePerson === false ? 'no' :
+                  null,
             returnTo: '/step-info',
             returnStep: currentStep
           }
         });
         break;
       case 'victim_info':
-      case 'driver_info':
-      case 'vehicle_info':
         navigate('/victim-info', {
           state: {
             ...baseParams,
             editMode: true,
-            focusSection: editKey,
+            focusSection: 'victim_info',
+            returnTo: '/step-info',
+            returnStep: currentStep
+          }
+        });
+        break;
+
+      case 'driver_info':
+        navigate('/driver-info', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: 'driver_info',
+            returnTo: '/step-info',
+            returnStep: currentStep
+          }
+        });
+        break;
+
+      case 'vehicle_info':
+        navigate('/driver-victim-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusSection: 'vehicle_info',
             returnTo: 'step-info',
             returnStep: currentStep
           }
         });
         break;
+
       case 'insured_info':
       case 'mechanic_info':
       case 'karsi_driver_info':
@@ -845,19 +857,6 @@ export default function StepInfoScreen() {
         break;
     }
   };
-
-  useEffect(() => {
-    if (params) {
-      console.log("🔁 StepInfoScreen parametreleri yenilendi:", params);
-      if (params.driverData) setDriverData(params.driverData);
-      if (params.victimData) setVictimData(params.victimData);
-      if (params.vehicleData) setVehicleData(params.vehicleData);
-      if (params.insuredData) setInsuredData(params.insuredData);
-      if (params.mechanicData) setMechanicData(params.mechanicData);
-      if (params.serviceData) setServiceData(params.serviceData);
-      if (params.damageData) setDamageData(params.damageData);
-    }
-  }, [params]);
 
   const ApprovedStepComponent = () => (
     <div className={styles.approvedContainer}>

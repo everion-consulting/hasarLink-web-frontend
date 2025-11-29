@@ -49,7 +49,7 @@ export default function InsuredMechanicStepperScreen() {
         kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi trafik";
 
    
-    const shouldShowOpposingDriver = (insuranceSource === 'karsi trafik' || insuranceSource === 'karsi kasko') && karsiSamePerson === false;
+    const shouldShowOpposingDriver = insuranceSource === 'karsi trafik' && karsiSamePerson === false;
 
     console.log('🔍 Karşı Sürücü Durumu:', {
         insuranceSource,
