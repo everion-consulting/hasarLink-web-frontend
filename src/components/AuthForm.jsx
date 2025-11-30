@@ -26,133 +26,117 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
 
   const navigate = useNavigate();
 
-  // 📌 Gizlilik Politikası Metni
+  // 📌 KVKK AYDINLATMA METNİ - HasarLink
   const policyText = `
-<b>Son Güncelleme Tarihi:</b> 2025<br><br>
-Bu Gizlilik Politikası, HasarLink Web Uygulaması (“Uygulama”) tarafından ...
-<b>Son Güncelleme Tarihi:</b> 2025<br><br>
+<b>KVKK AYDINLATMA METNİ</b><br>
+<b>HasarLink – Araç Kaza Dosya Takip Uygulaması</b><br><br>
 
-Bu Gizlilik Politikası, HasarLink Web Uygulaması (“Uygulama”) tarafından sunulan
-hizmetler kapsamında işlenen kişisel verilerin toplanması, kullanılması, saklanması,
-paylaşılması ve korunmasına ilişkin esasları açıklar.<br>
-Uygulamayı kullanarak bu politikayı kabul etmiş sayılırsınız.<br><br>
+<b>Veri Sorumlusu:</b> Everion Consulting<br>
+<b>Uygulama:</b> HasarLink – Araç Kaza Dosya Takip Uygulaması<br>
+<b>E-posta:</b> kvkk@everionconsulting.com<br>
+<b>Telefon:</b> [Telefon numaranız]<br>
+<b>Adres:</b> [Şirket adresiniz]<br>
+<b>KEP Adresi:</b> [KEP adresiniz - varsa]<br><br>
 
-<b>1. Toplanan Kişisel Veriler</b><br>
-Uygulama, hizmet sunumu sırasında aşağıdaki veri kategorilerini toplayabilir:<br><br>
+Everion Consulting ("Şirket") olarak, HasarLink uygulaması aracılığıyla işlediğimiz kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında korumakta ve aşağıda açıklanan şartlarda işlemekteyiz.<br><br>
 
-<b>1.1 Kimlik Bilgileri</b><br>
-• Ad, soyad<br>
-• T.C. kimlik numarası (gerekmesi hâlinde)<br>
-• Doğum tarihi<br>
-• Araç plakası<br>
-• Ehliyet ve ruhsat bilgileri<br><br>
+<b>1. Kişisel Verilerin İşlenme Amaçları</b><br>
+• Araç kaza dosya bildiriminin oluşturulması ve yönetilmesi<br>
+• Sigorta şirketlerine iletilecek bilgilerin ve belgelerin toplanması<br>
+• Kullanıcı bilgilendirme ve dosya durumu süreçlerinin yürütülmesi<br>
+• Eksik evrak süreçlerinin yönetilmesi<br>
+• Uygulama güvenliği, erişim doğrulama, log kayıtları<br>
+• Müşteri destek hizmetleri<br>
+• Yasal yükümlülüklerin yerine getirilmesi<br>
+• Hizmet kalitesinin artırılması ve istatistiksel analizler<br><br>
 
-<b>1.2 İletişim Bilgileri</b><br>
-• Telefon numarası<br>
-• E-posta adresi<br>
-• Adres bilgileri<br>
-• Servis/işletme iletişim bilgileri<br><br>
+<b>2. İşlenen Kişisel Veri Kategorileri</b><br><br>
 
-<b>1.3 Araç ve Kaza Bilgileri</b><br>
-• Araç marka, model, plaka<br>
-• Kaza türü, niteliği, yeri ve zamanı<br>
-• Kaza fotoğrafları<br>
-• Karşı taraf bilgileri<br><br>
+<b>2.1 Standart Kişisel Veriler</b><br>
+• Ad, soyad, T.C. kimlik numarası<br>
+• Telefon numarası, e-posta, adres<br>
+• Araç plaka, marka, model, yıl, ruhsat bilgileri<br>
+• Kaza tarihi, konumu, taraf bilgileri<br>
+• Fotoğraflar, tutanaklar, belgeler<br>
+• IP adresi, cihaz bilgisi, log kayıtları<br>
+• Banka bilgileri (ödeme yapılması durumunda)<br><br>
 
-<b>1.4 Konum Bilgisi</b><br>
-• Kaza yeri konumu<br>
-• Kullanıcı tarafından paylaşılan anlık konum<br><br>
+<b>2.2 Özel Nitelikli Veriler</b><br>
+• Yaralanmalı kazalarda sağlık verileri (yalnızca açık rıza ile)<br><br>
 
-<b>1.5 Cihaz ve Kullanım Bilgileri</b><br>
-• IP adresi<br>
-• Cihaz modeli, tarayıcı bilgisi, işletim sistemi<br>
-• Uygulama sürümü ve oturum bilgileri<br>
-• Hata kayıtları (loglar)<br>
-• Çerez ve kullanım analitiği verileri<br><br>
+<b>3. Kişisel Verilerin Toplanma Yöntemi ve Hukuki Sebep</b><br>
+<b>3.1 Toplama Yöntemi:</b><br>
+• Uygulama formları<br>
+• Kullanıcı tarafından yüklenen fotoğraf ve belgeler<br>
+• Çağrı merkezi ve destek kayıtları<br>
+• Sistem logları ve teknik veri kayıtları<br><br>
 
-<b>2. Kişisel Verilerin İşlenme Amaçları</b><br>
-Toplanan veriler aşağıdaki amaçlarla işlenebilir:<br><br>
+<b>3.2 Hukuki Sebepler:</b><br>
+• Sözleşmenin kurulması ve ifası<br>
+• Kanuni yükümlülüklerin yerine getirilmesi<br>
+• Meşru menfaat<br>
+• Açık rıza (özel nitelikli veriler için)<br><br>
 
-• Hasar dosyası oluşturmak ve sigorta şirketlerine iletmek<br>
-• Kaza değerlendirme ve raporlama süreçlerini yürütmek<br>
-• Kullanıcı profili oluşturmak ve doğrulamak<br>
-• Servis/işletme yönlendirmesi yapmak<br>
-• Kullanıcı destek hizmetlerini sağlamak<br>
-• Uygulama performansını artırmak ve hata kayıtlarını analiz etmek<br>
-• Güvenlik, kötüye kullanımın önlenmesi ve log takibi<br>
-• Yasal yükümlülüklerin yerine getirilmesi<br><br>
+<b>4. Kişisel Verilerin Aktarılması</b><br>
 
-<b>3. Kişisel Verilerin Paylaşılması</b><br><br>
+<b>4.1 Yurt İçi Aktarımlar</b><br>
+• Sigorta şirketleri<br>
+• Eksperler<br>
+• Yetkili kamu kurumları<br>
+• Hukuk danışmanları<br>
+• Bankalar<br><br>
 
-<b>3.1 Sigorta Şirketleri</b><br>
-• Hasar dosyalarının değerlendirilmesi için ilgili bilgiler paylaşılır.<br><br>
+<b>4.2 Yurt Dışı Aktarımlar</b><br>
+• Bulut hizmet sağlayıcıları (AWS/Azure/Google Cloud vb.)<br>
+• Aktarımlar şifreleme ve sözleşmeler ile korunmaktadır<br><br>
 
-<b>3.2 Yetkili Servisler ve İş Ortakları</b><br>
-• Araç onarım süreçlerinin yürütülmesi ve servis yönlendirmeleri<br><br>
+<b>5. Kişisel Verilerin Saklama Süresi</b><br>
+• Kaza dosya bilgileri: 10 yıl<br>
+• Kimlik ve iletişim verileri: 10 yıl<br>
+• Finansal kayıtlar: 10 yıl<br>
+• Log kayıtları: 2 yıl<br>
+• Pazarlama izinleri: Geri çekilene kadar<br><br>
 
-<b>3.3 Yasal Otoriteler</b><br>
-• Mahkemeler, emniyet birimleri ve diğer resmi makamlar<br>
-• Resmî taleplere istinaden gerekli bilgi paylaşımı yapılabilir<br><br>
+<b>6. Otomatik Karar Verme</b><br>
+Uygulamada otomatik karar verme yapılmamaktadır.<br><br>
 
-<b>3.4 Hizmet Sağlayıcılar</b><br>
-• Sunucu (hosting) hizmetleri<br>
-• Veri güvenliği sağlayıcıları<br>
-• SMS/e-posta gönderim sistemleri<br>
-• Analitik ve log takip hizmetleri<br><br>
+<b>7. Çocukların Verileri</b><br>
+Uygulama 18 yaş altına yönelik değildir.<br><br>
 
-Kişisel veriler hiçbir şekilde reklam amaçlı üçüncü kişilere satılmaz.<br><br>
+<b>8. Uygulama İçi Analitik</b><br>
+Sadece anonim kullanım verileri toplanır.<br><br>
 
-<b>4. Veri Saklama Süresi</b><br>
-Kişisel veriler:<br>
-• Hizmet sunumu devam ettiği sürece,<br>
-• Yasal zorunluluklarda belirtilen süre boyunca,<br>
-saklanır. Süre dolduğunda veriler silinir, yok edilir veya anonimleştirilir.<br><br>
+<b>9. KVKK Kapsamındaki Haklarınız</b><br>
+• Bilgi talep etme<br>
+• Düzeltme<br>
+• Silme / yok etme<br>
+• İtiraz etme<br>
+• Tazminat talep etme<br><br>
 
-<b>5. Kullanıcı Hakları</b><br>
-KVKK kapsamında kullanıcılar şu haklara sahiptir:<br><br>
+<b>10. Başvuru Yöntemleri</b><br>
+E-posta: kvkk@everionconsulting.com<br>
+Adres: [Şirket adresiniz]<br>
+KEP: [KEP adresi – varsa]<br>
+Uygulama içi KVKK formu<br><br>
 
-• Kişisel verilerinin işlenip işlenmediğini öğrenme<br>
-• İşlendi ise buna ilişkin bilgi talep etme<br>
-• Verilerin düzeltilmesini isteme<br>
-• Silinmesini veya yok edilmesini talep etme<br>
-• Verilerin aktarıldığı kişi veya kurumları öğrenme<br>
-• İşlenmesine itiraz etme<br>
-• Zarara uğraması hâlinde tazminat talep etme<br><br>
-
-Bu talepler, uygulama içerisindeki iletişim kanallarından iletilebilir.<br><br>
-
-<b>6. Güvenlik Önlemleri</b><br>
-Kişisel verilerinizin korunması için alınan önlemler:<br><br>
-
-• SSL/TLS şifreleme<br>
-• Güvenli sunucu altyapıları<br>
-• Erişim yetkilendirme ve kontrol mekanizmaları<br>
+<b>11. Güvenlik Önlemleri</b><br>
+• Veri şifreleme<br>
+• Erişim kontrolü<br>
+• Güvenlik testleri<br>
 • Log yönetimi<br>
-• Güvenlik duvarı ve saldırı tespit önlemleri<br>
-• Veri yedekleme politikaları<br><br>
+• Gizlilik sözleşmeleri<br><br>
 
-<b>7. Çerezler ve Analitik Kullanımı</b><br>
-Uygulama üzerinde:<br><br>
+<b>12. Aydınlatma Metni Güncellemeleri</b><br>
+Güncellemeler uygulama içi bildirim veya e-posta yoluyla duyurulur.<br><br>
 
-• Performans ölçümü<br>
-• Kullanıcı deneyimi geliştirme<br>
-• Hata tespiti<br>
-amaçlı çerez ve analitik araçlar kullanılır.<br>
-Bu veriler reklam amacıyla kullanılmaz.<br><br>
+<b>Son Güncelleme Tarihi:</b> 2025<br><br>
 
-<b>8. Gizlilik Politikasında Değişiklikler</b><br>
-Bu politika gerektiğinde güncellenebilir. Güncel sürüm uygulama üzerinden erişilebilir olacaktır.<br><br>
-
-<b>9. İletişim</b><br>
-HasarLink Destek Ekibi<br>
-E-posta: destek@hasarlink.com<br>
-Web: www.hasarlink.com<br><br>
-...
 <b>İletişim</b><br>
-HasarLink Destek Ekibi<br>
-E-posta: destek@hasarlink.com<br>
-Web: www.hasarlink.com<br><br>
-  `;
+E-posta: kvkk@everionconsulting.com<br>
+Adres: [Şirket adresiniz]<br>
+© 2024 Everion Consulting - HasarLink<br>
+`;
+
 
   useEffect(() => {
     if (type === "login") {
