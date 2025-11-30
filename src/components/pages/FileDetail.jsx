@@ -50,8 +50,8 @@ const FileDetail = () => {
           Array.isArray(res?.data.files)
             ? res.data.files
             : Array.isArray(res?.data.results)
-            ? res.data.results
-            : [];
+              ? res.data.results
+              : [];
 
         const grouped = {};
         filesArray.forEach((f) => {
@@ -181,7 +181,10 @@ const FileDetail = () => {
       </div>
 
       <div className={styles.bottomButtons}>
-        <button className={styles.backButton} onClick={() => navigate(-1)}>
+        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+          <span className={styles.contactBtnIcon}>
+            <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+          </span>
           GERİ DÖN
         </button>
       </div>

@@ -238,7 +238,7 @@ export default function Profile() {
                             <p className={styles.noFavorites}>Favori şirket yok</p>
                         )}
 
-                         {favoriteCompanies.slice(0, 6).map((id) => {
+                        {favoriteCompanies.slice(0, 6).map((id) => {
                             const comp = allCompaniesList?.find(c => c.id === id);
                             if (!comp) return null;
 
@@ -294,8 +294,11 @@ export default function Profile() {
 
             {/* Geri dön butonu */}
             <div className={styles.bottomButtonContainer}>
-                <button className={styles.backHomeBtn} onClick={() => navigate("/")}>
-                    ANASAYFAYA DÖN →
+                <button className={styles.backBtn} onClick={() => navigate("/")}>
+                    ANASAYFAYA DÖN
+                    <span className={styles.contactBtnIcon}>
+                        <img src="/src/assets/images/right-icon-white.svg" alt="Geri" />
+                    </span>
                 </button>
             </div>
 

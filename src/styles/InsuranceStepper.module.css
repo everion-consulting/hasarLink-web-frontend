@@ -47,7 +47,7 @@
   width: 100%;
   overflow: hidden;
   border: 1px solid #e0e6ed;
-  border-bottom: none; 
+  border-bottom: none;
   margin-bottom: 24px;
 }
 
@@ -89,7 +89,7 @@
   width: 100%;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
-  margin-top: -1px; 
+  margin-top: -1px;
 }
 
 /* Alt Şeritteki Şirket Adı */
@@ -102,7 +102,7 @@
 }
 
 .companyNameAccidentInsurance {
-  display: none; 
+  display: none;
 }
 
 
@@ -166,55 +166,55 @@
 
 /* === EACH CARD === */
 .optionCard {
-    display: flex;
-    align-items: center;
-    border-radius: 20px;
-    border: 1px solid #E5E7EB;
-    padding: 24px 22px;
-    cursor: pointer;
-    transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  border: 1px solid #E5E7EB;
+  padding: 24px 22px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .optionCard:hover {
-    border-color: #CBD5E1;
-    background: #F3F6FA;
-    transform: translateY(-2px);
+  border-color: #CBD5E1;
+  background: #F3F6FA;
+  transform: translateY(-2px);
 }
 
 /* Selected */
 .optionCard.selected {
-    border-color: #133E87;
-    background: #EBF2FF;
+  border-color: #133E87;
+  background: #EBF2FF;
 }
 
 /* === ICON === */
 .optionIcon {
-    width: 46px;
-    height: 46px;
-    margin-right: 20px;
-    object-fit: contain;
-    flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  margin-right: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 /* === TEXT BLOCK === */
 .optionTextContent {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .optionTitle {
-    font-size: 18px;
-    line-height: 22px;
-    font-weight: 400;
-    color: #333;
-    margin-bottom: 6px;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #333;
+  margin-bottom: 6px;
 }
 
 .optionSubs {
-    font-size: 15px;
-    line-height: 22px;
-    font-weight: 400;
-    color: #A0A0A0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #A0A0A0;
 }
 
 .optionContentWrapper {
@@ -239,10 +239,12 @@
 .footerButton {
   flex: 1;
   padding: 15px 20px;
-  background-color: #E6F0F9; /* Açık mavi arka plan */
+  background-color: #E6F0F9;
+  /* Açık mavi arka plan */
   border: none;
   border-radius: 12px;
-  color: #3b82f6; /* Mavi metin rengi */
+  color: #3b82f6;
+  /* Mavi metin rengi */
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -266,7 +268,8 @@
   justify-content: center;
   gap: 12px;
 
-  padding: 15px 50px; /* accidentType ile aynı */
+  padding: 15px 50px;
+  /* accidentType ile aynı */
   border-radius: 12px;
   border: none;
 
@@ -275,8 +278,10 @@
 
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 20px;   /* accidentType ile aynı */
-  line-height: 28px; /* accidentType ile aynı */
+  font-size: 20px;
+  /* accidentType ile aynı */
+  line-height: 28px;
+  /* accidentType ile aynı */
 }
 
 /* === BACK BUTTON === */
@@ -308,8 +313,8 @@
 
 /* === ICON CIRCLE (DAİRE) === */
 .iconCircle {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   display: flex;
@@ -397,7 +402,7 @@
     border-radius: 12px;
     margin-bottom: 32px;
   }
-  
+
   .companyNameFooter {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;

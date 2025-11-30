@@ -14,21 +14,20 @@
 /* TITLES */
 /* ============================= */
 .pageTitle {
-  font-size: clamp(20px, 3vw, 28px);
-  font-weight: bold;
-  text-align: center;
+  font-size: 50px;
+  line-height: 60px;
+  letter-spacing: 3px;
+  font-weight: 600;
   margin-bottom: 20px;
   color: #333;
-  position: relative;
-  z-index: 1;
+  text-align: center;
 }
 
 .sectionTitle {
   font-size: clamp(16px, 2.5vw, 20px);
   font-weight: 600;
   color: #000;
-  margin-bottom: 12px;
-  margin-top: 18px;
+  margin-block: 8px;
   position: relative;
   z-index: 1;
 }
@@ -150,20 +149,44 @@
   margin-bottom: 40px;
 }
 
-.backButton {
+.backBtn {
   background-color: #CBDCEB;
   color: #000;
   border: none;
-  padding: 12px 28px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.3s;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: 'Poppins', sans-serif;
 }
 
-.backButton:hover {
+.backBtn:hover {
   opacity: 0.8;
+}
+
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.contactBtnIcon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.backBtn .contactBtnIcon {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+  width: 14px;
+  height: 14px;
 }
 
 /* ============================= */
@@ -213,4 +236,12 @@
 
 .closeModal:hover {
   background-color: rgba(255, 255, 255, 0.45);
+}
+
+/* MOBİL GÖRÜNÜM*/
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 30px;
+    line-height: 35px;
+  }
 }

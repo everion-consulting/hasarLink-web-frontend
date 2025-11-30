@@ -128,13 +128,13 @@
     background: #fff;
     border-radius: 16px;
     padding: 1.5rem 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .cardTitleRow {
@@ -326,27 +326,50 @@
    BOTTOM HOME BUTTON
 ==================================================== */
 .bottomButtonContainer {
-    text-align: center;
-    max-width: 1110px;
-    margin: 0 auto;
+    width: 100%;
 }
 
-.backHomeBtn {
+.backBtn {
     background: #133E87;
     color: #fff;
-    padding: 1rem 3rem;
-    border-radius: 12px;
     border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    font-family: 'Poppins', sans-serif;
+    margin-inline: auto;
 }
 
-.backHomeBtn:hover {
+.backBtn:hover {
     transform: translateY(-2px);
     background: #0f3470;
 }
 
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.contactBtnIcon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.backBtn .contactBtnIcon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+    width: 14px;
+    height: 14px;
+}
 
 /* ====================================================
    MODALS
@@ -354,7 +377,7 @@
 .modalOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -433,7 +456,7 @@
 }
 
 /* iki row arasına çizgi */
-.row + .row {
+.row+.row {
     border-top: 1px solid #E5E7EB;
 }
 
@@ -453,8 +476,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ====================================================

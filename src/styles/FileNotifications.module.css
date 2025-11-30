@@ -190,6 +190,7 @@
 @media (max-width: 480px) {
   .fileNotifications h1 {
     font-size: 30px;
+    line-height: 35px;
   }
 
   /* GRID yapısı */
