@@ -43,6 +43,7 @@ export default function FormRenderer({
   onFormChange,
 }) {
   const [errors, setErrors] = useState({});
+  const [touchedFields, setTouchedFields] = useState({});
   const [touched, setTouched] = useState({});
   const [currentDropdown, setCurrentDropdown] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -59,6 +60,10 @@ export default function FormRenderer({
     if (type === "iban") return normalizeIBAN(v);
 
     if (type === "chassisNo") {
+      return String(v).toUpperCase().replace(/\s+/g, "");
+    }
+
+    if (type === "licenseSerialNo") {
       return String(v).toUpperCase().replace(/\s+/g, "");
     }
     if (type === "vehicle_plate") {
@@ -107,23 +112,29 @@ export default function FormRenderer({
     if (f.type === "datetime" && v) {
       const [datePart, timePart] = String(v).split(" ");
       const isTimeValid = timePart && /^\d{2}:\d{2}$/.test(timePart);
-      if (!validateDateYMD(datePart) || !isTimeValid) {
-        return "Tarih ve saat DD.MM.YYYY SS:DD olmalı";
+      // if (!validateDateYMD(datePart) || !isTimeValid) {
+      //   return "Tarih ve saat DD.MM.YYYY SS:DD olmalı";
+      // }
+    }
+
+    if (f.type === "chassisNo" && v) {
+      if (!validateChassisNo(v)) {
+        return "Şasi No 17 karakter olmalı, I/O/Q harfleri içeremez ve sayı-harf karışık olmalıdır";
       }
     }
 
-    if (f.type === "chassisNo" && v && !validateChassisNo(v)) {
-      return "Şasi No 17 karakter olmalı ve I, O, Q harflerini içeremez";
+    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Lütfen ruhsat seri no 2 büyük harf + 6 rakam giriniz (ör: AB123456)";
+
+    if (f.type === "vehicle_plate" && v) {
+      if (!validatePlate(v)) {
+        return "Plaka en az 1 rakam içermeli ve en fazla 9 karakter olmalı";
+      }
     }
 
-    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v))
-      return "Ruhsat Seri No: 2 büyük harf + 6 rakam olmalı";
-
-    if (f.type === "vehicle_plate" && v && !validatePlate(v)) {
-      return "Plaka en fazla 9 karakter olmalı ve en az 1 rakam içermeli";
+    if (f.validate) {
+      return f.validate(v, values);
     }
 
-    if (f.validate) return f.validate(v, formValues);
     return null;
   }
 
@@ -170,52 +181,93 @@ export default function FormRenderer({
       }
     }
 
+    if (name === 'vehicle_year') {
+      actualValue = String(actualValue).replace(/[^0-9]/g, '');
+      actualValue = actualValue.slice(0, 4);
+    }
+
+    if (type === 'licenseSerialNo') {
+      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
+
+      const letters = actualValue.slice(0, 2).replace(/[^A-Z]/g, '');
+      const numbers = actualValue.slice(2, 8).replace(/[^0-9]/g, '');
+      actualValue = letters + numbers;
+    }
+
+
+    if (type === 'chassisNo') {
+      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
+
+      actualValue = actualValue.replace(/[^A-HJ-NPR-Z0-9]/g, '');
+      actualValue = actualValue.slice(0, 17);
+    }
+
+
+    if (type === 'vehicle_plate') {
+      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
+
+      actualValue = actualValue.replace(/[^A-Z0-9]/g, '');
+      actualValue = actualValue.slice(0, 9);
+    }
+
     let finalValue = applyMask(type, actualValue);
 
     if (formatter && typeof formatter === "function") {
       finalValue = formatter(finalValue);
     }
 
-    setValues((prevValues) => {
-      const updated = {
-        ...prevValues,
-        [name]: finalValue,
-      };
-
-      const { isValid } = validateAllFields(updated);
-      onFormChange?.({ allValid: isValid });
-
-      return updated;
-    });
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: finalValue,
+    }));
   }
 
-  function handleBlur(name) {
-    setTouched((prev) => ({ ...prev, [name]: true }));
+  function handleBlur(name, type) {
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }));
 
-    const { errors: allErrors, isValid } = validateAllFields(values);
-    setErrors(allErrors);
+    const field = fields.find(f => f.name === name) ||
+      fields.find(f => f.type === 'row')?.children?.find(c => c.name === name);
+
+    if (field) {
+      const currentValue = values[name] ?? "";
+      const error = validateField(field, currentValue);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error || undefined
+      }));
+    }
+
+    // Form geçerliliğini kontrol et ve callback'i tetikle
+    const { isValid } = validateAllFields(values);
     onFormChange?.({ allValid: isValid });
   }
 
   function handleDropdownSelect(name, value) {
-    setValues((prevValues) => {
-      const updated = {
-        ...prevValues,
-        [name]: value,
-      };
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
 
-      const { errors: allErrors, isValid } = validateAllFields(updated);
-
-      setTouched((prev) => ({ ...prev, [name]: true }));
-      setErrors(allErrors);
-      onFormChange?.({ allValid: isValid });
-
-      return updated;
-    });
+    setTouchedFields((prev) => ({ ...prev, [name]: true }));
 
     setCurrentDropdown(null);
     setSearchText("");
+
+    // Form geçerliliğini kontrol et ve callback'i tetikle
+    setTimeout(() => {
+      const { isValid } = validateAllFields({ ...values, [name]: value });
+      onFormChange?.({ allValid: isValid });
+    }, 0);
   }
+
+  // Form yüklendiğinde veya values değiştiğinde geçerliliği kontrol et
+  useEffect(() => {
+    const { isValid } = validateAllFields(values);
+    onFormChange?.({ allValid: isValid });
+  }, [values, fields]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -264,7 +316,7 @@ export default function FormRenderer({
         allTouched[f.name] = true;
       }
     });
-    setTouched(allTouched);
+    setTouchedFields(allTouched);
 
     const { errors: allErrors, isValid } = validateAllFields(values);
     setErrors(allErrors);
@@ -278,7 +330,7 @@ export default function FormRenderer({
   const renderDropdown = (field) => {
     const currentValue = values[field.name] ?? "";
     const isOpen = currentDropdown === field.name;
-    const showError = touched[field.name] && errors[field.name];
+    const showError = touchedFields[field.name] && errors[field.name];
 
     return (
       <div
@@ -359,7 +411,7 @@ export default function FormRenderer({
             </button>
           </div>
         )}
-        {showError && <span className={styles.errorText}>{errors[field.name]}</span>}
+        {touchedFields[field.name] && errors[field.name] && <span className={styles.errorText}>{errors[field.name]}</span>}
       </div>
     );
   };
@@ -385,7 +437,7 @@ export default function FormRenderer({
                     getFieldIcon(childField.name, childField.type);
                   const currentValue = values[childField.name] ?? "";
                   const showError =
-                    touched[childField.name] && errors[childField.name];
+                    touchedFields[childField.name] && errors[childField.name];
 
                   if (childField.type === "date") {
                     return (
@@ -425,7 +477,7 @@ export default function FormRenderer({
                                 );
                               }
                             }}
-                            onBlur={() => handleBlur(childField.name)}
+                            onBlur={() => handleBlur(childField.name, childField.type)}
                             className={styles.nativeDateInput}
                           />
 
@@ -512,7 +564,34 @@ export default function FormRenderer({
                                 else timeInput.focus();
                               }
                             }}
-                            onBlur={() => handleBlur(childField.name)}
+                            onBlur={(e) => {
+                              const currentValue = values[childField.name] || "";
+                              const [date, time] = currentValue.split(" ");
+                              
+                              // Tarih seçildi ama saat seçilmedi
+                              if (date && !time) {
+                                // 500ms bekle, eğer kullanıcı saat seçmediyse tarihi sıfırla
+                                setTimeout(() => {
+                                  const latestValue = values[childField.name] || "";
+                                  const [latestDate, latestTime] = latestValue.split(" ");
+                                  
+                                  if (latestDate && !latestTime) {
+                                    handleChange(childField.name, childField.type, "");
+                                    setTouchedFields(prev => ({ ...prev, [childField.name]: true }));
+                                    setErrors((prev) => ({
+                                      ...prev,
+                                      [childField.name]: "Lütfen tarih ve saati seçiniz",
+                                    }));
+                                    
+                                    // Date input'u sıfırla
+                                    const dateInput = dateRefs.current[childField.name];
+                                    if (dateInput) dateInput.value = "";
+                                  }
+                                }, 500);
+                              }
+                              
+                              handleBlur(childField.name, childField.type);
+                            }}
                             className={styles.nativeDateInput}
                           />
 
@@ -539,10 +618,9 @@ export default function FormRenderer({
                                 final
                               );
                             }}
-                            onBlur={() => handleBlur(childField.name)}
+                            onBlur={() => handleBlur(childField.name, childField.type)}
                             className={styles.nativeDateInput}
                           />
-
                           <div
                             className={styles.dateTrigger}
                             onClick={() => {
@@ -567,7 +645,7 @@ export default function FormRenderer({
                           </div>
                         </div>
 
-                        {showError && (
+                        {touchedFields[childField.name] && errors[childField.name] && (
                           <span className={styles.errorText}>
                             {errors[childField.name]}
                           </span>
@@ -595,10 +673,9 @@ export default function FormRenderer({
                             childField.formatter
                           )
                         }
-                        onBlur={() => handleBlur(childField.name)}
+                        onBlur={() => handleBlur(childField.name, childField.type)}
                         error={
-                          touched[childField.name] &&
-                          errors[childField.name]
+                          touchedFields[childField.name] ? errors[childField.name] : undefined
                         }
                         helperText={childField.helperText}
                         maxLength={childField.maxLength}
@@ -619,7 +696,7 @@ export default function FormRenderer({
 
           const IconComponent = f.icon ?? getFieldIcon(f.name, f.type);
           const currentValue = values[f.name] ?? "";
-          const showError = touched[f.name] && errors[f.name];
+          const showError = touchedFields[f.name] && errors[f.name];
 
           if (f.type === "date") {
             return (
@@ -646,7 +723,7 @@ export default function FormRenderer({
                         handleChange(f.name, f.type, "");
                       }
                     }}
-                    onBlur={() => handleBlur(f.name)}
+                    onBlur={() => handleBlur(f.name, f.type)}
                     className={styles.nativeDateInput}
                   />
 
@@ -675,7 +752,7 @@ export default function FormRenderer({
                   </div>
                 </div>
 
-                {showError && (
+                {touchedFields[f.name] && errors[f.name] && (
                   <span className={styles.errorText}>{errors[f.name]}</span>
                 )}
               </div>
@@ -718,7 +795,34 @@ export default function FormRenderer({
                         handleChange(f.name, f.type, "");
                       }
                     }}
-                    onBlur={() => handleBlur(f.name)}
+                    onBlur={(e) => {
+                      const currentValue = values[f.name] || "";
+                      const [date, time] = currentValue.split(" ");
+                      
+                      // Tarih seçildi ama saat seçilmedi
+                      if (date && !time) {
+                        // 500ms bekle, eğer kullanıcı saat seçmediyse tarihi sıfırla
+                        setTimeout(() => {
+                          const latestValue = values[f.name] || "";
+                          const [latestDate, latestTime] = latestValue.split(" ");
+                          
+                          if (latestDate && !latestTime) {
+                            handleChange(f.name, f.type, "");
+                            setTouchedFields(prev => ({ ...prev, [f.name]: true }));
+                            setErrors((prev) => ({
+                              ...prev,
+                              [f.name]: "Lütfen tarih ve saati seçiniz",
+                            }));
+                            
+                            // Date input'u sıfırla
+                            const dateInput = dateRefs.current[f.name];
+                            if (dateInput) dateInput.value = "";
+                          }
+                        }, 500);
+                      }
+                      
+                      handleBlur(f.name, f.type);
+                    }}
                     className={styles.nativeDateInput}
                   />
 
@@ -762,7 +866,7 @@ export default function FormRenderer({
                         }
                       }
                     }}
-                    onBlur={() => handleBlur(f.name)}
+                    onBlur={() => handleBlur(f.name, f.type)}
                     className={styles.nativeTimeInput}
                   />
 
@@ -800,7 +904,7 @@ export default function FormRenderer({
                   </div>
                 </div>
 
-                {showError && (
+                {touchedFields[f.name] && errors[f.name] && (
                   <span className={styles.errorText}>{errors[f.name]}</span>
                 )}
               </div>
@@ -817,7 +921,7 @@ export default function FormRenderer({
               onChange={(e) =>
                 handleChange(f.name, f.type, e.target.value, f.formatter)
               }
-              onBlur={() => handleBlur(f.name)}
+              onBlur={() => handleBlur(f.name, f.type)}
               disabled={f.editable === false}
               rightAction={f.rightAction ?? null}
               maxLength={f.maxLength}
@@ -826,7 +930,7 @@ export default function FormRenderer({
               type={f.keyboardType ?? getInputType(f.type)}
               inputMode={getInputMode(f.type)}
               secureTextEntry={f.type === "password" || f.secureTextEntry}
-              error={touched[f.name] && errors[f.name]}
+              error={touchedFields[f.name] ? errors[f.name] : undefined}
               helperText={f.helperText}
               required={f.required}
             />

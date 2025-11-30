@@ -6,6 +6,7 @@ export default function AppTextInput({
   error,
   value,
   onChange,
+  onBlur,
   placeholder,
   helperText,
   rightAction,
@@ -71,9 +72,8 @@ export default function AppTextInput({
 
   return (
     <div
-      className={`${styles.appTextInput} ${
-        isDark ? styles.appTextInputDark : ""
-      }`}
+      className={`${styles.appTextInput} ${isDark ? styles.appTextInputDark : ""
+        }`}
       style={style}
     >
       {label && (
@@ -84,9 +84,8 @@ export default function AppTextInput({
       )}
 
       <div
-        className={`${styles.inputContainer} ${
-          error ? styles.inputContainerError : ""
-        }`}
+        className={`${styles.inputContainer} ${error ? styles.inputContainerError : ""
+          }`}
       >
         {IconComponent && (
           <div className={styles.inputIcon}>
@@ -99,11 +98,11 @@ export default function AppTextInput({
 
         {multiline ? (
           <textarea
-            className={`${styles.textInput} ${
-              IconComponent ? styles.textInputWithIcon : ""
-            } ${styles.textInputMultiline}`}
+            className={`${styles.textInput} ${IconComponent ? styles.textInputWithIcon : ""
+              } ${styles.textInputMultiline}`}
             value={value}
             onChange={inputProps.onChange}
+            onBlur={onBlur}
             placeholder={placeholder}
             maxLength={inputProps.maxLength}
             rows={rows}
@@ -114,11 +113,11 @@ export default function AppTextInput({
           <input
             type={inputType}
             inputMode={inputMode}
-            className={`${styles.textInput} ${
-              IconComponent ? styles.textInputWithIcon : ""
-            }`}
+            className={`${styles.textInput} ${IconComponent ? styles.textInputWithIcon : ""
+              }`}
             value={value}
             onChange={inputProps.onChange}
+            onBlur={onBlur}
             placeholder={placeholder}
             maxLength={inputProps.maxLength}
             style={inputStyle}

@@ -95,6 +95,7 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
     }
   };
 
+  const isAllChosenForCurrentStep = sections.some(section => section.files.length > 0);
   return (
     <div>
       <div className={styles.uploadContainer}>

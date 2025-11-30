@@ -58,7 +58,16 @@ export function validateChassisNo(value) {
   // 17 karakter, I O Q yok, sadece A-H J-N P R-Z ve 0-9
   const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/;
 
-  return vinRegex.test(vin);
+  if (!vinRegex.test(vin)) return false;
+
+  // Tamamen sayı veya tamamen harf kontrolü
+  const isAllNumbers = /^[0-9]{17}$/.test(vin);
+  const isAllLetters = /^[A-HJ-NPR-Z]{17}$/.test(vin);
+
+  // Tamamen sayı veya tamamen harf ise geçersiz
+  if (isAllNumbers || isAllLetters) return false;
+
+  return true;
 }
 
 export const validateLicenseSerialNo = (s = "") => {
@@ -149,9 +158,15 @@ export function validatePlate(value) {
   const v = String(value).toUpperCase().replace(/\s+/g, "");
 
   // En fazla 9 karakter, en az 1 rakam olmalı
-  const regex = /^(?=.*\d)[A-Z0-9]{1,9}$/;
+  if (v.length > 9) return false;
+  
+  // En az bir rakam içermeli
+  if (!/\d/.test(v)) return false;
+  
+  // Sadece harf ve rakam içermeli
+  if (!/^[A-Z0-9]+$/.test(v)) return false;
 
-  return regex.test(v);
+  return true;
 }
 
 // -------------------
