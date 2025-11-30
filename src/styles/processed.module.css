@@ -82,9 +82,12 @@
 ========================================= */
 .vehicleFormCard {
   background-color: #fff;
+  border: 1px solid #eaeaea;
   border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
 }
 
 /* =========================================
@@ -94,23 +97,12 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-top: 12px;
 }
 
 .empty {
   text-align: center;
   font-size: 16px;
   color: #333;
-}
-
-/* =========================================
-   FILE CONTAINER
-========================================= */
-.fileContainer {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
 }
 
 /* =========================================
@@ -131,8 +123,9 @@
 }
 
 /* =========================================
-   INFO + EYE CHIP
-========================================= */
+   EYE CHIP — EKLENDİ
+============================================ */
+
 .headerActions {
   display: flex;
   align-items: center;
@@ -143,36 +136,37 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
+  background: #ffffff;
   border: 1.5px solid #d7dce2;
   border-radius: 40px;
   padding: 6px 10px;
   cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
   max-width: 44px;
   overflow: hidden;
   white-space: nowrap;
-  transition: 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
 }
 
 .detailChip:hover {
   max-width: 190px;
-  background: #eef3fa;
-  border-color: #b9c4d6;
+  background: #f0f3f9;
+  border-color: #b7bfd0;
   transform: translateX(-6px);
 }
 
 .eyeIcon {
   color: #133E87;
+  flex-shrink: 0;
 }
 
 .detailText {
   opacity: 0;
   transform: translateX(20px);
-  transition: 0.3s;
-  color: #133E87;
   font-size: 14px;
   font-weight: 600;
+  color: #133E87;
+  transition: all 0.35s ease;
 }
 
 .detailChip:hover .detailText {
@@ -222,6 +216,14 @@
   font-weight: 600;
 }
 
+.fileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
 /* =========================================
    RESPONSIVE
 ========================================= */
@@ -239,6 +241,10 @@
     padding: 12px 22px;
     font-size: 16px;
     min-width: 150px;
+  }
+
+  .fileHeader {
+    gap: 10px;
   }
 }
 

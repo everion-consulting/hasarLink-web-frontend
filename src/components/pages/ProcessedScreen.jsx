@@ -126,14 +126,6 @@ const ProcessedScreen = () => {
           <div className={`${styles.statusBadge} ${statusInfo.badgeClass}`}>
             <span className={statusInfo.textClass}>{statusInfo.text}</span>
           </div>
-
-          <button
-            type="button"
-            className={styles.detailLink}
-            onClick={() => handleFileDetail(data.id, data.file_number)}
-          >
-            <span className={styles.detailLinkText}>Dosya Detayı Gör</span>
-          </button>
         </div>
       </div>
     );

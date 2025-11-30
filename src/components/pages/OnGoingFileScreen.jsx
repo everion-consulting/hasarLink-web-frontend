@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { Eye } from "lucide-react"; // 🔹 EKLENDİ
+import { Eye } from "lucide-react";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/ongoing.module.css";
 
