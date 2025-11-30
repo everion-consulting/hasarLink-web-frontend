@@ -1,7 +1,8 @@
+// src/screens/file/OnGoingFilesScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-
+import { Eye } from "lucide-react"; // 🔹 EKLENDİ
 import apiService from "../../services/apiServices";
 import styles from "../../styles/ongoing.module.css";
 
@@ -26,8 +27,8 @@ const OnGoingFilesScreen = () => {
           const safeArray = Array.isArray(payload?.results)
             ? payload.results
             : Array.isArray(payload)
-            ? payload
-            : [];
+              ? payload
+              : [];
 
           const normalized = safeArray.map((data) => ({
             id: data.submission_id ?? Math.random().toString(),
@@ -73,29 +74,48 @@ const OnGoingFilesScreen = () => {
     return (
       <div key={data.id} className={styles.fileContainer}>
         <div className={styles.fileHeader}>
-          <div>
-            <p className={styles.fileNumber}>
-              Araç Plaka: {data.vehicle_plate}
+          <div className={styles.fileDetails}>
+            <p>
+              <strong>Araç Plaka:</strong> {data.vehicle_plate}
             </p>
-            <p className={styles.fileNumber}>
-              Kaza Tarihi: {data.accident_date}
+
+            <p>
+              <strong>Kaza Tarihi:</strong> {data.accident_date}
             </p>
-            <p className={styles.fileNumber}>
-              Araç Model: {data.vehicle_model}
+
+            <p>
+              <strong>Araç Model:</strong> {data.vehicle_model}
             </p>
-            <p className={styles.insuranceInfo}>
-              {data.insurance_company_name}{" "}
-              <span>- {data.created_at?.slice(0, 10)}</span>
+
+            <p>
+              <strong>{data.insurance_company_name}</strong>
+              <span> - {data.created_at?.slice(0, 10)}</span>
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.infoIconBtn}
-            aria-label="Detay"
-          >
-            <InformationCircleIcon className={styles.infoIconSvg} />
-          </button>
+          {/* EK: Sağ üstte Eye chip + mevcut info butonu */}
+          <div className={styles.headerActions}>
+            {/* Eye chip – hover’da “Dosya Detayı Gör” açılır */}
+            <button
+              type="button"
+              className={styles.detailChip}
+              onClick={() =>
+                handleFileDetail(data.id, data.file_number)
+              }
+            >
+              <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+              <span className={styles.detailText}>Dosya Detayı Gör</span>
+            </button>
+
+            {/* Senin mevcut info butonun – HİÇ DEĞİŞMEDİ, sadece wrapper içine alındı */}
+            <button
+              type="button"
+              className={styles.infoIconBtn}
+              aria-label="Detay"
+            >
+              <InformationCircleIcon className={styles.infoIconSvg} />
+            </button>
+          </div>
         </div>
 
         <div className={styles.statusRow}>
@@ -106,16 +126,6 @@ const OnGoingFilesScreen = () => {
               {statusInfo.text}
             </span>
           </div>
-
-          <button
-            type="button"
-            className={styles.detailLink}
-            onClick={() =>
-              handleFileDetail(data.id, data.file_number)
-            }
-          >
-            <span className={styles.detailLinkText}>Dosya Detayı Gör</span>
-          </button>
         </div>
       </div>
     );
@@ -123,24 +133,15 @@ const OnGoingFilesScreen = () => {
 
   return (
     // Arkaplan + kart yapısı diğer sayfalarla aynı
-    <div className={`screen-container-drive ${styles.container}`}>
-      <div className="content-area">
-        {/* Ok butonu */}
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
-
+    <div className={`${styles.screenContainerDrive} ${styles.container}`}>
+      <div className={styles.contentArea}>
         {/* Başlık */}
         <h1 className={styles.headerTitleCentered}>
           İşlemi Devam Edenler
         </h1>
 
         {/* Büyük beyaz kart */}
-        <div className="vehicle-form-card">
+        <div className={styles.vehicleFormCard}>
           {fileNotifications.length > 0 ? (
             <div className={styles.listWrapper}>
               {fileNotifications.map(renderFileItem)}
@@ -150,6 +151,14 @@ const OnGoingFilesScreen = () => {
               <p>Henüz dosya bildiriminiz yok.</p>
             </div>
           )}
+        </div>
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
+          </button>
         </div>
       </div>
     </div>

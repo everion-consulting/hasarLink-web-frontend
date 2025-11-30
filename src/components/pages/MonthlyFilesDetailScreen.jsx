@@ -1,13 +1,10 @@
 // src/screens/file/MonthlyFilesDetailScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import styles from "../../styles/monthlyFiles.module.css";
 import apiService from "../../services/apiServices";
-
-import { InformationCircleIcon, BellIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { Bars3Icon } from "@heroicons/react/24/solid";
-
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Eye } from "lucide-react";
 
 const MonthlyFilesDetailScreen = () => {
   const navigate = useNavigate();
@@ -63,6 +60,7 @@ const MonthlyFilesDetailScreen = () => {
       },
     });
   };
+
   const renderFileItem = (data) => {
     const statusMap = {
       PENDING: {
@@ -92,64 +90,59 @@ const MonthlyFilesDetailScreen = () => {
     return (
       <div key={data.id} className={styles.fileCard}>
         <div className={styles.fileHeader}>
-          <div>
+          <div className={styles.fileDetails}>
             <p className={styles.fileText}>
-              <span className={styles.fileLabel}>Araç Plaka:</span>{" "}
-              {data.vehicle_plate}
+              <span className={styles.fileLabel}>Araç Plaka:</span> {data.vehicle_plate}
             </p>
             <p className={styles.fileText}>
-              <span className={styles.fileLabel}>Kaza Tarihi:</span>{" "}
-              {data.accident_date}
+              <span className={styles.fileLabel}>Kaza Tarihi:</span> {data.accident_date}
             </p>
             <p className={styles.fileText}>
-              <span className={styles.fileLabel}>Araç Model:</span>{" "}
-              {data.vehicle_model}
+              <span className={styles.fileLabel}>Araç Model:</span> {data.vehicle_model}
             </p>
+
             <p className={styles.insuranceInfo}>
-              {data.insurance_company_name} - {data.created_at?.slice(0, 10)}
+              <strong>{data.insurance_company_name}</strong> – {data.created_at?.slice(0, 10)}
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.infoIcon}
-            onClick={() => console.log("Info clicked for", data.id)}
-          >
-            <InformationCircleIcon width={20} height={20} />
-          </button>
+          {/* SAĞ ÜSTTE: Göz Chip + Info icon */}
+          <div className={styles.headerActions}>
+
+            {/* Eye chip */}
+            <button
+              className={styles.detailChip}
+              onClick={() => handleFileDetail(data.id, data.file_number)}
+            >
+              <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+              <span className={styles.detailText}>Dosya Detayı Gör</span>
+            </button>
+
+            {/* Info icon */}
+            <button
+              type="button"
+              className={styles.infoIcon}
+              onClick={() => console.log("Info clicked", data.id)}
+            >
+              <InformationCircleIcon width={20} height={20} />
+            </button>
+
+          </div>
         </div>
 
         <div className={styles.statusRow}>
           <div className={`${styles.statusBadge} ${statusInfo.badgeClass}`}>
             <span className={styles.statusBadgeText}>{statusInfo.text}</span>
           </div>
-
-          <button
-            type="button"
-            className={styles.detailLink}
-            onClick={() => handleFileDetail(data.id, data.file_number)}
-          >
-            Dosya Detayı Gör
-          </button>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="screen-container-drive">
-      <div className="content-area">
-        {/* Geri ok */}
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
+    <div className={styles.screenContainerDrive}>
+      <div className={styles.contentArea}>
         <div className={styles.container}>
-
-
           {/* İçerik */}
           <main className={styles.content}>
             <div className={styles.listWrapper}>
@@ -165,10 +158,17 @@ const MonthlyFilesDetailScreen = () => {
             </div>
           </main>
         </div>
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
+          </button>
+        </div>
       </div>
     </div>
   );
-
 };
 
 export default MonthlyFilesDetailScreen;

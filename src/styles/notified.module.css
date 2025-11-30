@@ -1,66 +1,102 @@
-.container {
+/* ================================
+   ROOT CONTAINER
+================================ */
+
+.screenContainerDrive {
   position: relative;
   min-height: 100vh;
   background-color: transparent;
-  color: #333333;
+  color: #333;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-/* (İstersen ileride kullanırsın, şu an JSX'te yok) */
-.background {
-  position: absolute;
-  inset: 0;
-  height: 380px;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.bgSvg {
+.contentArea {
   width: 100%;
-  height: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-/* Geri butonu */
-.backBtn {
-  position: relative;
-  z-index: 1;
-  border: none;
-  background: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
+/* ============================================
+   GERİ DÖN BUTTON
+============================================ */
 
-  width: 60px;
-  height: 60px;
-  padding: 0;
-
-  border-radius: 8px;
-
-  font-size: 20px;
-  display: inline-flex;
+.btnArea button {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  border: none;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
 
-  transition: background-color 0.15s ease, transform 0.15s ease;
+.backBtn {
+  background: #CBDCEB;
+  color: #1E293B;
+  margin-inline: auto;
 }
 
 .backBtn:hover {
-  background-color: #e5e7eb;
-  transform: translateY(-1px);
+  background: #b9cee4;
+}
+
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.contactBtnIcon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.backBtn .contactBtnIcon {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+  width: 14px;
+  height: 14px;
 }
 
 .headerTitleCentered {
-  align-self: center;
   text-align: center;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin: 24px 0;
   font-size: 30px;
   font-weight: 700;
-  color: #333333;
+  color: #333;
   line-height: 1.2;
 }
 
-/* Ana içerik kartının içindeki liste */
+
+/* ================================
+   MAIN WHITE CARD
+================================ */
+
+.vehicleFormCard {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ================================
+   LIST WRAPPER
+================================ */
+
 .listWrapper {
   display: flex;
   flex-direction: column;
@@ -68,20 +104,20 @@
   margin-top: 12px;
 }
 
-/* Boş durum */
 .empty {
-  margin-top: 40px;
   text-align: center;
   font-size: 16px;
-  color: #111827;
+  color: #333;
 }
 
-/* Her bir dosya kartı */
+/* ================================
+   FILE CARD
+================================ */
+
 .fileContainer {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 16px;
-  margin-bottom: 16px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
 }
 
@@ -90,25 +126,53 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 12px;
-  gap: 8px;
+  gap: 10px;
 }
 
-.fileNumber {
-  font-size: 14px;
+/* Ana detay satır yapısı */
+.fileDetails p {
+  font-size: 15px;
+  color: #222;
+  line-height: 1.6;
+  margin: 0 0 8px 0;
+}
+
+/* Yazı stili */
+.fileText {
+  font-size: 16px;
+  color: #000;
+}
+
+.fileLabel {
   font-weight: 600;
-  color: #000000;
-  margin-bottom: 4px;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
 }
 
+.fileDetails p strong {
+  font-weight: 600;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Sigorta bilgisi de aynı hizaya oturur */
 .insuranceInfo {
   font-size: 14px;
-  color: #000000;
+  color: #000;
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-/* info ikonu */
+/* ================================
+   INFO ICON
+================================ */
+
 .infoIconBtn {
-  border: none;
   background: transparent;
+  border: none;
   padding: 3px;
   border-radius: 999px;
   cursor: pointer;
@@ -121,10 +185,14 @@
 .infoIconSvg {
   width: 20px;
   height: 20px;
-  color: #666666;
+  color: #666;
 }
 
-/* STATUS / FOOTER */
+
+/* ================================
+   STATUS ROW
+================================ */
+
 .statusRow {
   margin-top: 8px;
   display: flex;
@@ -134,14 +202,13 @@
 }
 
 .statusBadge {
-  flex-direction: row;
-  border-radius: 10px;
-  padding: 6px 12px;
   display: inline-flex;
   align-items: center;
+  border-radius: 10px;
+  padding: 6px 12px;
 }
 
-/* Durum renkleri */
+/* Status Colors */
 .processingBadge {
   background-color: rgba(251, 192, 45, 0.7);
 }
@@ -158,10 +225,14 @@
 .approvedBadgeText {
   font-size: 12px;
   font-weight: 600;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Detay linki */
+
+/* ================================
+   DETAIL LINK (Dosya Detayı Gör)
+================================ */
+
 .detailLink {
   border: none;
   background: transparent;
@@ -182,31 +253,19 @@
   opacity: 0.8;
 }
 
-/* ===========================
+
+/* ================================
    RESPONSIVE
-   =========================== */
+================================ */
 
-/* Tablet ve daha küçük laptoplarda kart alanını biraz daralt */
-@media (max-width: 1024px) {
-  .headerTitleCentered {
-    font-size: 26px;
-  }
-
-  .fileContainer {
-    padding: 14px;
-  }
-}
-
-/* Tablet & büyük telefon */
+/* TABLET */
 @media (max-width: 768px) {
+  .contentArea {
+    padding: 10px;
+  }
+
   .headerTitleCentered {
     font-size: 24px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .fileContainer {
-    padding: 14px;
   }
 
   .fileNumber,
@@ -218,32 +277,29 @@
     font-size: 13px;
   }
 
-  /* aracın bulunduğu kartları biraz daha sıkı tutalım */
-  .listWrapper {
-    gap: 10px;
-    margin-top: 10px;
+  .backBtn {
+    padding: 12px 22px;
+    font-size: 16px;
+    line-height: 20px;
+    min-width: 150px;
   }
 
-  .backBtn {
-    width: 50px;
-    height: 50px;
-    font-size: 18px;
+  .contactBtnIcon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .contactBtnIcon img {
+    width: 12px;
+    height: 12px;
   }
 }
 
-/* Küçük telefon */
+/* MOBILE */
 @media (max-width: 480px) {
   .headerTitleCentered {
     font-size: 20px;
-    line-height: 1.3;
-    margin-top: 16px;
-    margin-bottom: 16px;
-  }
-
-  .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    margin: 16px 0;
   }
 
   .fileContainer {
@@ -272,5 +328,21 @@
   .fileNumber,
   .insuranceInfo {
     font-size: 12px;
+  }
+
+  .backBtn {
+    padding: 10px 18px;
+    font-size: 15px;
+    min-width: 140px;
+  }
+
+  .contactBtnIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .contactBtnIcon img {
+    width: 11px;
+    height: 11px;
   }
 }

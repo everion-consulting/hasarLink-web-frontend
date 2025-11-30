@@ -63,7 +63,7 @@ const FileNotifications = () => {
           {/* 🔹 Diğer bilgiler altta */}
           <p><strong>Kaza Tarihi:</strong> {data.accident_date?.slice(0, 10) || "-"}</p>
           <p><strong>Araç Model:</strong> {data.vehicle_model || "-"}</p>
-          <p>{data.insurance_company_name || "-"} - {data.accident_date?.slice(0, 10) || ""}</p>
+          <p><strong>{data.insurance_company_name || "-"}</strong> - {data.accident_date?.slice(0, 10) || ""}</p>
         </div>
 
         <div className={styles.fileStatusRow}>

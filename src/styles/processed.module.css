@@ -1,228 +1,271 @@
-.container {
+/* =========================================
+   ROOT LAYOUT
+========================================= */
+.screenContainerDrive {
   position: relative;
   min-height: 100vh;
   background-color: transparent;
-  color: #333333;
+  color: #333;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-
-.header {
-  position: relative;
-  padding: 32px 16px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 10;
+.contentArea {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
+/* =========================================
+   BACK BUTTON (RESPONSIVE)
+========================================= */
+.btnArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.btnArea button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 600;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  min-width: 180px;
+}
 
 .backBtn {
-  position: relative;
-  z-index: 1;
-  border: none;
-  background: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-
-  width: 60px;
-  height: 60px;
-  padding: 0;
-
-  border-radius: 8px;
-
-  font-size: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  background: #CBDCEB;
+  color: #1E293B;
+  margin-inline: auto;
 }
 
 .backBtn:hover {
-  background-color: #e5e7eb;
-  transform: translateY(-1px);
+  background: #b9cee4;
 }
 
+.contactBtnIcon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
 
+.backBtn .contactBtnIcon {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* =========================================
+   TITLE
+========================================= */
 .headerTitleCentered {
-  align-self: center;
   text-align: center;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin: 24px 0;
   font-size: 30px;
   font-weight: 700;
-  color: #333333;
+  color: #333;
   line-height: 1.2;
 }
 
-
-.content {
-  position: relative;
-  z-index: 5;
-  padding: 0 16px 32px;
-  flex: 1;
-  display: flex;
-  justify-content: center;
+/* =========================================
+   WHITE CARD
+========================================= */
+.vehicleFormCard {
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.contentInner {
-  width: 100%;
-  max-width: 480px;
-}
-
-
-.empty {
-  padding: 32px 8px;
-  text-align: center;
-  font-size: 16px;
-  color: #111827;
-}
-
-
+/* =========================================
+   LIST
+========================================= */
 .listWrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   margin-top: 12px;
 }
 
+.empty {
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+}
+
+/* =========================================
+   FILE CONTAINER
+========================================= */
 .fileContainer {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 18px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
 }
 
-.fileHeader {
+/* =========================================
+   DETAILS (HIZALAMA)
+========================================= */
+.fileDetails p {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
   gap: 8px;
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #444;
 }
 
-.fileNumber {
+.fileDetails p strong {
+  min-width: 130px;
+  display: inline-block;
+  font-weight: 700;
+}
+
+/* =========================================
+   INFO + EYE CHIP
+========================================= */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.detailChip:hover {
+  max-width: 190px;
+  background: #eef3fa;
+  border-color: #b9c4d6;
+  transform: translateX(-6px);
+}
+
+.eyeIcon {
+  color: #133E87;
+}
+
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: 0.3s;
+  color: #133E87;
   font-size: 14px;
   font-weight: 600;
-  color: #000000;
-  margin-bottom: 4px;
 }
 
-.insuranceInfo {
-  font-size: 14px;
-  color: #000000;
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
 }
-
 
 .infoIconBtn {
   border: none;
   background: transparent;
-  padding: 3px;
-  border-radius: 999px;
+  padding: 4px;
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .infoIconBtn:hover {
-  background-color: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .infoIconSvg {
-  width: 20px;
-  height: 20px;
-  color: #666666;
+  width: 22px;
+  height: 22px;
+  color: #666;
 }
 
-
+/* =========================================
+   STATUS
+========================================= */
 .statusRow {
-  margin-top: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
 }
 
 .statusBadge {
-  flex-direction: row;
-  border-radius: 10px;
   padding: 6px 12px;
-  display: inline-flex;
-  align-items: center;
+  border-radius: 10px;
 }
-
 
 .processingBadge {
-  background-color: rgba(58, 174, 179, 0.7);
+  background: rgba(58, 174, 179, 0.7);
 }
 
-.approvedBadge {
-  background-color: rgba(67, 160, 71, 0.7);
-}
-
-.approvedBadgeRisk {
-  background-color: rgba(198, 40, 40, 0.7);
-}
-
-.processingBadgeText,
-.approvedBadgeText {
+.processingBadgeText {
+  color: #fff;
   font-size: 12px;
   font-weight: 600;
-  color: #ffffff;
 }
 
+/* =========================================
+   RESPONSIVE
+========================================= */
 
-.detailLink {
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: none;
-  align-self: flex-start;
-}
-
-.detailLinkText {
-  font-size: 14px;
-  color: #133e87;
-  font-weight: 500;
-  text-decoration: underline;
-}
-
-.detailLink:hover .detailLinkText {
-  opacity: 0.8;
-}
-
-/* RESPONSIVE */
-@media (min-width: 768px) {
-  .backBtn {
-    width: 60px;
-    height: 60px;
-    font-size: 20px;
+@media (max-width: 768px) {
+  .headerTitleCentered {
+    font-size: 26px;
   }
 
-  .headerTitleCentered {
-    font-size: 30px;
+  .fileDetails p strong {
+    min-width: 110px;
+  }
+
+  .backBtn {
+    padding: 12px 22px;
+    font-size: 16px;
+    min-width: 150px;
   }
 }
 
 @media (max-width: 480px) {
-  .headerTitleCentered {
-    font-size: 22px;
+  .fileDetails p {
+    flex-direction: column;
+    gap: 0;
   }
 
-  .fileNumber {
-    font-size: 13px;
+  .fileDetails p strong {
+    min-width: auto;
+  }
+
+  .fileHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .statusRow {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
 
   .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    padding: 10px 18px;
+    font-size: 15px;
+    min-width: 140px;
   }
 }

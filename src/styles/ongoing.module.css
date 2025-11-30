@@ -1,71 +1,95 @@
 /* =========================================
-   BASE LAYOUT
+   ROOT LAYOUT
    ========================================= */
-.container {
+
+.screenContainerDrive {
   position: relative;
   min-height: 100vh;
   background-color: transparent;
-  color: #333333;
+  color: #333;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-/* =========================================
-   HEADER
-   ========================================= */
-.header {
-  position: relative;
-  padding: 32px 16px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 10;
+.contentArea {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-/* Back Button (Square) */
-.backBtn {
-  border: none;
-  background: rgba(255, 255, 255, 0.92);
-  cursor: pointer;
-  width: 58px;
-  height: 58px;
-  padding: 0;
-  border-radius: 8px;
-  font-size: 22px;
-  display: inline-flex;
-  align-items: center;
+/* =========================================
+   GERİ DÖN BUTTON
+============================================ */
+.btnArea {
+  display: flex;
   justify-content: center;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-  margin-left: 30px;
+  margin-top: 32px;
+}
+
+.btnArea button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 600;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  min-width: 180px;
+}
+
+.backBtn {
+  background: #CBDCEB;
+  color: #1E293B;
+  margin-inline: auto;
 }
 
 .backBtn:hover {
-  background-color: #e5e7eb;
-  transform: translateY(-1px);
+  background: #b9cee4;
 }
 
-/* Centered Title */
+/* =========================================
+   ICON CIRCLE
+============================================ */
+
+.contactBtnIcon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.backBtn .contactBtnIcon {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+  width: 14px;
+  height: 14px;
+}
+
+/* Ortalanmış başlık */
 .headerTitleCentered {
   text-align: center;
   margin-top: 20px;
   margin-bottom: 26px;
   font-size: 30px;
   font-weight: 700;
-  color: #333333;
+  color: #333;
   line-height: 1.2;
 }
 
 /* =========================================
-   CONTENT AREA
-   ========================================= */
-.contentInner {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-}
+   CONTENT LIST
+============================================ */
 
-/* EMPTY MESSAGE */
 .empty {
   padding: 32px 8px;
   text-align: center;
@@ -73,43 +97,48 @@
   color: #111827;
 }
 
-/* LIST */
 .listWrapper {
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-top: 12px;
   width: 100%;
-  max-width: 700px;
-  justify-self: center;
-  padding-inline: 20px;
 }
 
 /* =========================================
-   CARD DESIGN
-   ========================================= */
+   CARD
+============================================ */
+
 .fileContainer {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
 }
 
-/* HEADER INSIDE CARD */
 .fileHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+  margin-bottom: 8px;
 }
 
-.fileNumber {
+.fileDetails p {
+  margin: 0 0 8px 0;
   font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.fileDetails p strong {
   font-weight: 600;
-  color: #000;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
 }
 
 .insuranceInfo {
@@ -117,7 +146,10 @@
   color: #000;
 }
 
-/* Info Icon */
+/* =========================================
+   INFO ICON
+============================================ */
+
 .infoIconBtn {
   border: none;
   background: transparent;
@@ -137,8 +169,9 @@
 }
 
 /* =========================================
-   STATUS ROW
-   ========================================= */
+   STATUS
+============================================ */
+
 .statusRow {
   display: flex;
   justify-content: space-between;
@@ -163,7 +196,10 @@
   font-weight: 600;
 }
 
-/* Detail link */
+/* =========================================
+   DETAIL LINK
+============================================ */
+
 .detailLink {
   border: none;
   background: transparent;
@@ -184,14 +220,68 @@
 }
 
 /* =========================================
+   EYE CHIP — EKLENDİ
+============================================ */
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+  max-width: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
+}
+
+.detailChip:hover {
+  max-width: 190px;
+  background: #f0f3f9;
+  border-color: #b7bfd0;
+  transform: translateX(-6px);
+}
+
+.eyeIcon {
+  color: #133E87;
+  flex-shrink: 0;
+}
+
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  font-size: 14px;
+  font-weight: 600;
+  color: #133E87;
+  transition: all 0.35s ease;
+}
+
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =========================================
    RESPONSIVE
-   ========================================= */
+============================================ */
+
 @media (max-width: 1024px) {
   .headerTitleCentered {
     font-size: 28px;
   }
 }
 
+/* -------- TABLET -------- */
 @media (max-width: 768px) {
   .headerTitleCentered {
     font-size: 26px;
@@ -211,10 +301,18 @@
     font-size: 13px;
   }
 
+  /* 🔥 BACK BUTTON OVERRIDE — KÜÇÜLMEYİ DÜZELTİR */
   .backBtn {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
+    width: auto !important;
+    height: auto !important;
+    padding: 12px 22px;
+    font-size: 16px;
+    min-width: 150px;
+  }
+
+  .contactBtnIcon {
+    width: 30px;
+    height: 30px;
   }
 
   .fileHeader {
@@ -222,6 +320,7 @@
   }
 }
 
+/* -------- MOBILE -------- */
 @media (max-width: 480px) {
   .headerTitleCentered {
     font-size: 22px;
@@ -243,10 +342,18 @@
     align-items: flex-start;
   }
 
+  /* 🔥 MOBIL BACK BUTTON OVERRIDE */
   .backBtn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    width: auto !important;
+    height: auto !important;
+    padding: 10px 18px;
+    font-size: 15px;
+    min-width: 140px;
+  }
+
+  .contactBtnIcon {
+    width: 28px;
+    height: 28px;
   }
 
   .fileNumber,

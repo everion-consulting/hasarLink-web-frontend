@@ -22,8 +22,8 @@ const NotifiedScreen = () => {
           const safeArray = Array.isArray(payload)
             ? payload
             : Array.isArray(payload?.results)
-            ? payload.results
-            : [];
+              ? payload.results
+              : [];
 
           const normalized = safeArray.map((data) => ({
             id: data.submission_id ?? Math.random().toString(),
@@ -50,7 +50,6 @@ const NotifiedScreen = () => {
   }, []);
 
   const handleFileDetail = (fileId, fileNumber) => {
-    console.log(`Dosya Detayı: ${fileNumber} (ID: ${fileId})`);
     navigate(`/file-detail/${fileId}`, {
       state: {
         fileId,
@@ -90,46 +89,37 @@ const NotifiedScreen = () => {
     return (
       <div key={data.id} className={styles.fileContainer}>
         <div className={styles.fileHeader}>
-          <div>
-            <p className={styles.fileNumber}>
-              Araç Plaka: {data.vehicle_plate}
+          <div className={styles.fileDetails}>
+            <p className={styles.fileText}>
+              <span className={styles.fileLabel}>Araç Plaka:</span> {data.vehicle_plate}
             </p>
-            <p className={styles.fileNumber}>
-              Kaza Tarihi: {data.accident_date}
+            <p className={styles.fileText}>
+              <span className={styles.fileLabel}>Kaza Tarihi:</span> {data.accident_date}
             </p>
-            <p className={styles.fileNumber}>
-              Araç Model: {data.vehicle_model}
+            <p className={styles.fileText}>
+              <span className={styles.fileLabel}>Araç Model:</span> {data.vehicle_model}
             </p>
+
             <p className={styles.insuranceInfo}>
               {data.insurance_company_name}{" "}
               <span>- {data.created_at?.slice(0, 10)}</span>
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.infoIconBtn}
-            aria-label="Detay"
-          >
+          <button type="button" className={styles.infoIconBtn} aria-label="Detay">
             <InformationCircleIcon className={styles.infoIconSvg} />
           </button>
         </div>
 
         <div className={styles.statusRow}>
-          <div
-            className={`${styles.statusBadge} ${statusInfo.badgeClass}`}
-          >
-            <span className={statusInfo.textClass}>
-              {statusInfo.text}
-            </span>
+          <div className={`${styles.statusBadge} ${statusInfo.badgeClass}`}>
+            <span className={statusInfo.textClass}>{statusInfo.text}</span>
           </div>
 
           <button
             type="button"
             className={styles.detailLink}
-            onClick={() =>
-              handleFileDetail(data.id, data.file_number)
-            }
+            onClick={() => handleFileDetail(data.id, data.file_number)}
           >
             <span className={styles.detailLinkText}>Dosya Detayı Gör</span>
           </button>
@@ -139,23 +129,11 @@ const NotifiedScreen = () => {
   };
 
   return (
-    <div className={`screen-container-drive ${styles.container}`}>
-      <div className="content-area">
-        {/* Geri ok + başlık (Rejected ile birebir) */}
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
+    <div className={styles.screenContainerDrive}>
+      <div className={styles.contentArea}>
+        <h1 className={styles.headerTitleCentered}>Bildirim Yapılanlar</h1>
 
-        <h1 className={styles.headerTitleCentered}>
-          Bildirim Yapılanlar
-        </h1>
-
-        {/* Büyük beyaz kart (Rejected’teki vehicle-form-card + rejected-card yapısına benzer) */}
-        <div className="vehicle-form-card">
+        <div className={styles.vehicleFormCard}>
           {fileNotifications.length > 0 ? (
             <div className={styles.listWrapper}>
               {fileNotifications.map(renderFileItem)}
@@ -166,7 +144,16 @@ const NotifiedScreen = () => {
             </div>
           )}
         </div>
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
+          </button>
+        </div>
       </div>
+
     </div>
   );
 };

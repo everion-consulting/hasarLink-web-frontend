@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Eye } from "lucide-react"; // 🔹 EKLENDİ
 
 import apiService from "../../services/apiServices";
 import styles from "../../styles/processed.module.css";
@@ -22,8 +23,8 @@ const ProcessedScreen = () => {
           const safeArray = Array.isArray(payload)
             ? payload
             : Array.isArray(payload?.results)
-            ? payload.results
-            : [];
+              ? payload.results
+              : [];
 
           const normalized = safeArray.map((data) => ({
             id: data.submission_id ?? Math.random().toString(),
@@ -83,35 +84,46 @@ const ProcessedScreen = () => {
     return (
       <div key={data.id} className={styles.fileContainer}>
         <div className={styles.fileHeader}>
-          <div>
-            <p className={styles.fileNumber}>
-              Araç Plaka: {data.vehicle_plate}
-            </p>
-            <p className={styles.fileNumber}>
-              Kaza Tarihi: {data.accident_date}
-            </p>
-            <p className={styles.fileNumber}>
-              Araç Model: {data.vehicle_model}
-            </p>
-            <p className={styles.insuranceInfo}>
-              {data.insurance_company_name}{" "}
-              <span>- {data.created_at?.slice(0, 10)}</span>
+
+          {/* 🔹 FileDetails düzenlendi */}
+          <div className={styles.fileDetails}>
+            <p><strong>Araç Plaka:</strong> {data.vehicle_plate}</p>
+            <p><strong>Kaza Tarihi:</strong> {data.accident_date}</p>
+            <p><strong>Araç Model:</strong> {data.vehicle_model}</p>
+
+            <p>
+              <strong>{data.insurance_company_name}</strong>
+              <span> - {data.created_at?.slice(0, 10)}</span>
             </p>
           </div>
 
-          <button
-            type="button"
-            className={styles.infoIconBtn}
-            aria-label="Detay"
-          >
-            <InformationCircleIcon className={styles.infoIconSvg} />
-          </button>
+          {/* 🔹 Sağ üst Eye Chip + Info Icon */}
+          <div className={styles.headerActions}>
+
+            {/* Eye Chip */}
+            <button
+              className={styles.detailChip}
+              onClick={() =>
+                handleFileDetail(data.id, data.file_number)
+              }
+            >
+              <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+              <span className={styles.detailText}>Dosya Detayı Gör</span>
+            </button>
+
+            {/* Info Icon */}
+            <button
+              type="button"
+              className={styles.infoIconBtn}
+              aria-label="Detay"
+            >
+              <InformationCircleIcon className={styles.infoIconSvg} />
+            </button>
+          </div>
         </div>
 
         <div className={styles.statusRow}>
-          <div
-            className={`${styles.statusBadge} ${statusInfo.badgeClass}`}
-          >
+          <div className={`${styles.statusBadge} ${statusInfo.badgeClass}`}>
             <span className={statusInfo.textClass}>{statusInfo.text}</span>
           </div>
 
@@ -128,23 +140,12 @@ const ProcessedScreen = () => {
   };
 
   return (
-    // 🔴 Bildirim Yapılanlar ile aynı dış yapı
-    <div className={`screen-container-drive ${styles.container}`}>
-      <div className="content-area">
-        {/* Geri ok */}
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate(-1)}
-        >
-          ←
-        </button>
+    <div className={styles.screenContainerDrive}>
+      <div className={styles.contentArea}>
 
-        {/* Başlık */}
         <h1 className={styles.headerTitleCentered}>İşleme Alınanlar</h1>
 
-        {/* Büyük beyaz kart */}
-        <div className="vehicle-form-card">
+        <div className={styles.vehicleFormCard}>
           {fileNotifications.length > 0 ? (
             <div className={styles.listWrapper}>
               {fileNotifications.map(renderFileItem)}
@@ -155,6 +156,16 @@ const ProcessedScreen = () => {
             </div>
           )}
         </div>
+
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
+          </button>
+        </div>
+
       </div>
     </div>
   );
