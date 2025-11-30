@@ -1,10 +1,7 @@
 // src/screens/file/RejectedFilesScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import apiService from "../../services/apiServices";
-
-// MODULE CSS
 import styles from "../../styles/rejectedFileScreen.module.css";
 
 const RejectedFilesScreen = () => {
@@ -88,21 +85,15 @@ const RejectedFilesScreen = () => {
   );
 
   return (
-    <div className="screen-container-drive">
-      <div className="content-area">
+    <div className={styles.screenContainer}>
+      <div className={styles.contentArea}>
 
+        {/* HEADER */}
         <div className={styles.rejectedHeader}>
-          <button
-            type="button"
-            className={styles.rejectedBack}
-            onClick={() => navigate(-1)}
-          >
-            ←
-          </button>
-
-          <h1 className="page-title">Reddedilen Dosyalar</h1>
+          <h1 className={styles.pageTitle}>Reddedilen Dosyalar</h1>
         </div>
 
+        {/* MAIN CARD */}
         <div className={styles.rejectedCard}>
           {loading ? (
             <div className={styles.rejectedLoading}>
@@ -118,6 +109,14 @@ const RejectedFilesScreen = () => {
               {fileNotifications.map(renderFileItem)}
             </div>
           )}
+        </div>
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
+          </button>
         </div>
       </div>
     </div>
