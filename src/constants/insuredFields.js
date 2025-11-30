@@ -18,7 +18,6 @@ import {
   IdentificationIcon,
   CheckBadgeIcon,
 } from '@heroicons/react/24/outline';
-import { formatPlate } from '../components/utils/formatter';
 
 
 const insuredField = [
@@ -59,7 +58,20 @@ const insuredField = [
   },
   { name: "insured_mail", label: "E-Mail", type: "email", placeholder: "mailiniz@gmail.com" },
   {
-    name: "insured_plate", label: "Karşı Araç Plaka", type: "text", placeholder: "34 ABC 123", formatter: formatPlate, required: true
+    name: "insured_plate",
+    label: "Karşı Araç Plaka",
+    type: "vehicle_plate",
+    placeholder: "34 ABC 123",
+    required: true,
+    maxLength: 9,
+    validate: (value) => {
+      if (!value) return null;
+      const v = String(value).toUpperCase().replace(/\s+/g, "");
+      if (v.length > 9) return "Plaka en fazla 9 karakter olmalı";
+      if (!/\d/.test(v)) return "Plaka en az 1 rakam içermeli";
+      if (!/^[A-Z0-9]+$/.test(v)) return "Plaka sadece harf ve rakam içerebilir";
+      return null;
+    }
   },
   // { name: "insured_policy_no", label: "Poliçe No", type: "text", placeholder: "Poliçe numaranızı giriniz", required: true },
   {
@@ -69,7 +81,6 @@ const insuredField = [
     type: "text",
     required: false,
     icon: IdentificationIcon,
-    formatter: formatPlate,
   },
   {
     name: "insured_policy_no",
@@ -77,8 +88,18 @@ const insuredField = [
     type: "text",
     placeholder: "AXA-2024-123456",
     icon: CheckBadgeIcon,
-    formatter: formatPlate,
-    required: true
+    required: true,
+    validate: (value) => {
+      if (!value) return null;
+      const v = String(value).trim();
+      // En az 5 karakter olmalı
+      if (v.length < 5) return "Poliçe no en az 5 karakter olmalı";
+      // En az 1 rakam içermeli
+      if (!/\d/.test(v)) return "Poliçe no en az 1 rakam içermeli";
+      // En az 1 harf içermeli
+      if (!/[a-zA-Z]/.test(v)) return "Poliçe no en az 1 harf içermeli";
+      return null;
+    }
   },
 ];
 
