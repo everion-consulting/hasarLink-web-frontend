@@ -204,7 +204,7 @@ export default function StepInfoScreen() {
           insured_policy_no: insuredData.insured_policy_no,
           insured_file_no: insuredData.insured_file_no,
           repair_fullname: serviceData.repair_fullname,
-          // repair_birth_date: toYYYYMMDD(mechanicData.repair_birth_date),
+          repair_birth_date: toYYYYMMDD(serviceData.repair_birth_date),
           repair_tc: serviceData.repair_tc,
           repair_phone: serviceData.repair_phone,
           service_name: serviceData.service_name,
