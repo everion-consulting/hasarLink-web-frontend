@@ -1,3 +1,72 @@
+/* Üst satır: plaka solda, chip sağda */
+.fileTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Bu satırdaki p'nin boşlukları düzgün olsun */
+.fileTopRow p {
+  margin: 0;
+}
+
+/* CHIP STİLİ */
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #ffffff;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  /* premium yuvarlak */
+
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  max-width: 44px;
+  /* sadece ikon görünür */
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
+}
+
+/* Hover görünümü */
+.detailChip:hover {
+  max-width: 190px;
+  /* sola doğru genişler */
+  background: #f0f3f9;
+  border-color: #b7bfd0;
+}
+
+/* Göz ikonu */
+.eyeIcon {
+  color: #133E87;
+  flex-shrink: 0;
+}
+
+/* Yazı – başlangıçta gizli */
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  /* sağdan sola slide */
+  font-size: 14px;
+  font-weight: 600;
+  color: #133E87;
+  transition: all 0.35s ease;
+}
+
+/* Hover’da yazı görünür + sola akar */
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .fileNotifications {
   min-height: 100vh;
   padding: 2rem;
@@ -6,47 +75,62 @@
   text-align: center;
 }
 
+/* Başlık */
+.fileNotifications h1 {
+  font-size: 50px;
+  line-height: 60px;
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* GRID yapısı */
 .fileList {
   list-style: none;
   padding: 0;
   margin: 0;
-  position: relative;
-  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  gap: 24px;
 }
 
+/* Kart */
 .fileItem {
   background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 640px;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
 }
 
+.fileItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+
+/* Detay alanı */
 .fileDetails {
-  text-align: left;
-  margin-bottom: 12px;
-  padding-right: 20px;
+  margin-bottom: 16px;
 }
 
 .fileDetails p {
-  margin: 0 0 6px 0;
-  font-size: 16px;
-  color: #333;
-  line-height: 1.5;
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
 }
 
 .fileDetails p strong {
-  font-weight: bold;
-  min-width: 100px;
+  font-weight: 600;
+  color: #222;
+  min-width: 120px;
   display: inline-block;
 }
 
+/* Status + Buton alanı */
 .fileStatusRow {
   display: flex;
   justify-content: space-between;
@@ -54,45 +138,85 @@
   margin-top: 12px;
 }
 
+/* Status badge */
 .fileStatus {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: 600;
   color: #fff;
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: 8px;
   display: inline-block;
+  white-space: nowrap;
 }
 
+/* Status renkler */
 .statusPending {
-  background-color: #fbc02d;
+  background-color: #FBC02D;
 }
 
 .statusInProgress {
-  background-color: #0288d1;
+  background-color: #0277BD;
 }
 
 .statusRejected {
-  background-color: #d32f2f;
+  background-color: #D32F2F;
 }
 
 .statusCompleted {
-  background-color: #388e3c;
+  background-color: #2E7D32;
 }
 
 .statusError {
-  background-color: #ff5722;
+  background-color: #FF7043;
 }
 
+/* Buton */
 .fileDetailButton {
   color: #133E87;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
   text-decoration: underline;
   padding: 0;
 }
 
 .fileDetailButton:hover {
-  opacity: 0.8;
+  opacity: 0.7;
+}
+
+/* Mobil iyileştirme */
+@media (max-width: 480px) {
+  .fileNotifications h1 {
+    font-size: 30px;
+  }
+
+  /* GRID yapısı */
+  .fileList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .fileItem {
+    padding: 16px;
+  }
+
+  .fileDetails p {
+    font-size: 14px;
+  }
+
+  .fileStatusRow {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .fileDetailButton {
+    font-size: 13px;
+  }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/FileNotifications.module.css";
+import { Eye } from "lucide-react";
 
 const FileNotifications = () => {
   const [fileNotifications, setFileNotifications] = useState([]);
@@ -27,7 +28,6 @@ const FileNotifications = () => {
   const handleFileDetail = (fileId) => {
     navigate(`/file-detail/${fileId}`);
   };
-
   const renderFileItem = (data) => {
     const statusMap = {
       PENDING: { text: "Başvurunuz Beklemede", className: styles.statusPending },
@@ -45,7 +45,22 @@ const FileNotifications = () => {
     return (
       <li key={data.id} className={styles.fileItem}>
         <div className={styles.fileDetails}>
-          <p><strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}</p>
+          {/* 🔹 ÜST SATIR: Plaka solda, chip sağda */}
+          <div className={styles.fileTopRow}>
+            <p>
+              <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
+            </p>
+
+            <button
+              className={styles.detailChip}
+              onClick={() => handleFileDetail(data.id)}
+            >
+              <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+              <span className={styles.detailText}>Dosya Detayı Gör</span>
+            </button>
+          </div>
+
+          {/* 🔹 Diğer bilgiler altta */}
           <p><strong>Kaza Tarihi:</strong> {data.accident_date?.slice(0, 10) || "-"}</p>
           <p><strong>Araç Model:</strong> {data.vehicle_model || "-"}</p>
           <p>{data.insurance_company_name || "-"} - {data.accident_date?.slice(0, 10) || ""}</p>
@@ -55,17 +70,11 @@ const FileNotifications = () => {
           <div className={`${styles.fileStatus} ${statusInfo.className}`}>
             {statusInfo.text}
           </div>
-
-          <button
-            className={styles.fileDetailButton}
-            onClick={() => handleFileDetail(data.id)}
-          >
-            Dosya Detayı Gör
-          </button>
         </div>
       </li>
     );
   };
+
 
   return (
     <div className={styles.fileNotifications}>
