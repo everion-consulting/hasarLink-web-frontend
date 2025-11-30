@@ -10,7 +10,6 @@ import {
   validateIBAN,
   validateDateYMD,
   validatePlate,
-  validateChassisNo,
   validateLicenseSerialNo,
   toDDMMYYYY,
   toYYYYMMDD,
@@ -51,6 +50,17 @@ export default function FormRenderer({
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
+
+  function findFieldByName(fieldName) {
+    for (const field of fields) {
+      if (field.name === fieldName) return field;
+      if (field.type === "row" && Array.isArray(field.children)) {
+        const child = field.children.find((c) => c.name === fieldName);
+        if (child) return child;
+      }
+    }
+    return null;
+  }
 
   function applyMask(type, v) {
     if (!v) return v;
@@ -118,8 +128,14 @@ export default function FormRenderer({
     }
 
     if (f.type === "chassisNo" && v) {
-      if (!validateChassisNo(v)) {
-        return "Şasi No 17 karakter olmalı, I/O/Q harfleri içeremez ve sayı-harf karışık olmalıdır";
+      const vin = String(v).toUpperCase().replace(/\s+/g, "");
+      const invalidLength = vin.length !== 17;
+      const invalidChars = /[^A-HJ-NPR-Z0-9]/.test(vin);
+      const hasLetter = /[A-Z]/.test(vin);
+      const hasNumber = /\d/.test(vin);
+
+      if (invalidLength || invalidChars || !hasLetter || !hasNumber) {
+        return "Rakam ve Harf karışık 17 hane olmalı";
       }
     }
 
@@ -228,8 +244,7 @@ export default function FormRenderer({
       [name]: true
     }));
 
-    const field = fields.find(f => f.name === name) ||
-      fields.find(f => f.type === 'row')?.children?.find(c => c.name === name);
+    const field = findFieldByName(name);
 
     if (field) {
       const currentValue = values[name] ?? "";
@@ -240,7 +255,6 @@ export default function FormRenderer({
       }));
     }
 
-    // Form geçerliliğini kontrol et ve callback'i tetikle
     const { isValid } = validateAllFields(values);
     onFormChange?.({ allValid: isValid });
   }
@@ -256,14 +270,13 @@ export default function FormRenderer({
     setCurrentDropdown(null);
     setSearchText("");
 
-    // Form geçerliliğini kontrol et ve callback'i tetikle
     setTimeout(() => {
       const { isValid } = validateAllFields({ ...values, [name]: value });
       onFormChange?.({ allValid: isValid });
     }, 0);
   }
 
-  // Form yüklendiğinde veya values değiştiğinde geçerliliği kontrol et
+
   useEffect(() => {
     const { isValid } = validateAllFields(values);
     onFormChange?.({ allValid: isValid });
@@ -568,9 +581,7 @@ export default function FormRenderer({
                               const currentValue = values[childField.name] || "";
                               const [date, time] = currentValue.split(" ");
                               
-                              // Tarih seçildi ama saat seçilmedi
                               if (date && !time) {
-                                // 500ms bekle, eğer kullanıcı saat seçmediyse tarihi sıfırla
                                 setTimeout(() => {
                                   const latestValue = values[childField.name] || "";
                                   const [latestDate, latestTime] = latestValue.split(" ");
@@ -583,7 +594,6 @@ export default function FormRenderer({
                                       [childField.name]: "Lütfen tarih ve saati seçiniz",
                                     }));
                                     
-                                    // Date input'u sıfırla
                                     const dateInput = dateRefs.current[childField.name];
                                     if (dateInput) dateInput.value = "";
                                   }
@@ -798,10 +808,8 @@ export default function FormRenderer({
                     onBlur={(e) => {
                       const currentValue = values[f.name] || "";
                       const [date, time] = currentValue.split(" ");
-                      
-                      // Tarih seçildi ama saat seçilmedi
+
                       if (date && !time) {
-                        // 500ms bekle, eğer kullanıcı saat seçmediyse tarihi sıfırla
                         setTimeout(() => {
                           const latestValue = values[f.name] || "";
                           const [latestDate, latestTime] = latestValue.split(" ");
@@ -814,7 +822,6 @@ export default function FormRenderer({
                               [f.name]: "Lütfen tarih ve saati seçiniz",
                             }));
                             
-                            // Date input'u sıfırla
                             const dateInput = dateRefs.current[f.name];
                             if (dateInput) dateInput.value = "";
                           }
