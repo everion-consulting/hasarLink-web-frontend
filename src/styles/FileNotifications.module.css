@@ -17,34 +17,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   background: #ffffff;
   border: 1.5px solid #d7dce2;
   border-radius: 40px;
-  /* premium yuvarlak */
-
   padding: 6px 10px;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
-
   max-width: 44px;
-  /* sadece ikon görünür */
   overflow: hidden;
   white-space: nowrap;
   position: relative;
-
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
 }
 
-/* Hover görünümü */
 .detailChip:hover {
   max-width: 190px;
-  /* sola doğru genişler */
   background: #f0f3f9;
   border-color: #b7bfd0;
 }
 
-/* Göz ikonu */
 .eyeIcon {
   color: #133E87;
   flex-shrink: 0;
@@ -54,7 +45,6 @@
 .detailText {
   opacity: 0;
   transform: translateX(20px);
-  /* sağdan sola slide */
   font-size: 14px;
   font-weight: 600;
   color: #133E87;
@@ -186,7 +176,7 @@
   opacity: 0.7;
 }
 
-/* Mobil iyileştirme */
+/* MOBİL*/
 @media (max-width: 480px) {
   .fileNotifications h1 {
     font-size: 30px;

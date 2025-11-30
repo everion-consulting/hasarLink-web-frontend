@@ -1,196 +1,363 @@
+/* =========================================
+   ROOT LAYOUT
+========================================= */
 .draftNotifications {
   padding: 20px;
-  font-family: Arial, sans-serif;
-  max-width: 600px;
+  max-width: 1000px;
   margin: 0 auto;
+  font-family: 'Poppins', sans-serif;
 }
 
+/* =========================================
+   TITLE
+========================================= */
 .title {
-  font-size: 20px;
-  margin-bottom: 20px;
   text-align: center;
+  margin: 24px 0;
+  font-size: 30px;
+  font-weight: 700;
   color: #333;
+  line-height: 1.2;
 }
 
-.draftItem {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.draftTexts { width: 100%; }
-
-.draftText {
-  margin: 5px 0;
-  font-size: 16px;
-  color: #333;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  margin-top: 15px;
-}
-
-.continueButton {
-  background-color: #133E87;
-  color: white;
-  width: 100%;
-  text-align: center;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.continueButton:hover {
-  background-color: #0f2a5c;
-}
-
-.closeButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: transparent;
-  color: #b91c1c;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.closeButton:hover {
-  color: #8b0000;
-}
-
-/* Filter Section */
+/* =========================================
+   FILTER SECTION – MODERNIZED
+========================================= */
 .filterSection {
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ebeef2;
 }
 
-.filterInputs {
+.filterRow {
   display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
+  justify-content: space-between;
   align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 250px;
+  gap: 8px;
 }
 
 .filterLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Input wrap for better visual style */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d7e2;
+  background: #fdfdfd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  width: 240px;
+  transition: 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: #133e87;
+  box-shadow: 0 0 0 3px rgba(19, 62, 135, 0.15);
 }
 
 .filterDate {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: none;
+  outline: none;
+  width: 100%;
   font-size: 14px;
+  background: transparent;
+  color: #111;
 }
 
-.filterButtons {
+.buttonGroup {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
+/* Blue Primary Button */
 .filterButton {
   background-color: #133E87;
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  transition: 0.2s ease;
+  border: none;
 }
 
+.filterButton:disabled {
+  background-color: #b4c2d4;
+  cursor: not-allowed;
+}
+
+.filterButton:not(:disabled):hover {
+  background-color: #0f2d66;
+}
+
+/* Gray Button */
 .clearFilterButton {
-  background-color: #6c757d;
+  background-color: #adb5bd;
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  border: none;
 }
 
+.clearFilterButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clearFilterButton:not(:disabled):hover {
+  background-color: #8d949b;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buttonGroup {
+    width: 100%;
+  }
+
+  .filterButton,
+  .clearFilterButton {
+    flex: 1;
+  }
+}
+
+/* =========================================
+   GRID LIST FOR CARDS – RESPONSIVE & FIXED
+========================================= */
+.gridWrapper {
+  list-style: none;
+  padding: 20px 0 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* 🔥 Düzeltilmiş */
+  gap: 22px;
+}
+
+/* Tablet için daha dengeli sütun genişliği */
+@media (min-width: 600px) {
+  .gridWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Desktop geniş ekranlar */
+@media (min-width: 1024px) {
+  .gridWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  }
+}
+
+
+.noFileText {
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+}
+
+/* =========================================
+   CARD DESIGN
+========================================= */
+.draftItem {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: 0.2s ease;
+}
+
+.draftItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+
+.draftTexts {
+  width: 100%;
+}
+
+.draftTexts strong {
+  font-weight: 600;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
+}
+
+.draftText {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* =========================================
+   DELETE (X) BUTTON – CHIP STYLE
+========================================= */
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  padding: 8px;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s ease;
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.closeButton:hover {
+  background: #e5e7eb;
+  color: #b91c1c;
+}
+
+/* =========================================
+   ACTION BUTTON (TAMAMLA)
+========================================= */
+.actions {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.continueButton {
+  background: #133E87;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-size: 20px;
+  line-height: 25px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.continueButton:hover {
+  background: #0f2a5c;
+}
+
+/* =========================================
+   TOTAL COUNT
+========================================= */
 .totalCount {
   text-align: center;
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 15px;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 1px;
 }
 
-/* Pagination */
+/* =========================================
+   PAGINATION
+========================================= */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  margin-top: 30px;
-  padding: 20px 0;
+  gap: 18px;
+  padding: 30px 0;
 }
 
 .paginationButton {
-  background-color: #133E87;
-  color: white;
+  background: #133E87;
+  color: #fff;
   padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .paginationInfo {
   font-size: 15px;
-  color: #333;
-  font-weight: 500;
+  font-weight: 600;
+  color: #374151;
 }
 
-/* Modal */
+/* =========================================
+   MODAL
+========================================= */
 .modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  z-index: 999;
 }
 
 .modalContent {
-  background:white;
-  padding:20px;
-  border-radius:8px;
-  width:50%;
-  text-align:center;
+  background: #fff;
+  padding: 26px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 .modalActions {
-  display:flex;
-  justify-content:space-between;
-  margin-top:20px;
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .cancelButton {
-  background-color:#CBDCEB;
-  padding:10px 20px;
-  border-radius:5px;
+  background: #CBDCEB;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 .deleteButton {
-  background-color:#b91c1c;
-  padding:10px 20px;
-  border-radius:5px;
-  color:white;
+  background: #dc2626;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
 }

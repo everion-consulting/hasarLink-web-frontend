@@ -45,7 +45,7 @@ const FileNotifications = () => {
     return (
       <li key={data.id} className={styles.fileItem}>
         <div className={styles.fileDetails}>
-          {/* 🔹 ÜST SATIR: Plaka solda, chip sağda */}
+          {/* ÜST SATIR: Plaka solda, chip sağda */}
           <div className={styles.fileTopRow}>
             <p>
               <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
@@ -60,7 +60,7 @@ const FileNotifications = () => {
             </button>
           </div>
 
-          {/* 🔹 Diğer bilgiler altta */}
+          {/* Diğer bilgiler altta */}
           <p><strong>Kaza Tarihi:</strong> {data.accident_date?.slice(0, 10) || "-"}</p>
           <p><strong>Araç Model:</strong> {data.vehicle_model || "-"}</p>
           <p><strong>{data.insurance_company_name || "-"}</strong> - {data.accident_date?.slice(0, 10) || ""}</p>

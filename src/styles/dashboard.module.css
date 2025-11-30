@@ -417,7 +417,7 @@
   }
 
   .cardBottomRightButton {
-    width: 100%;         
+    width: 100%;
   }
 
   .cardBottomRightTitleTop {
@@ -475,7 +475,6 @@
   .dashGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* 2 kolonlu layout */
     gap: 16px;
     padding: 20px;
   }

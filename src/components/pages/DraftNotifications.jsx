@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { XCircle } from "lucide-react";
 import styles from './DraftNotifications.module.css';
 import apiService from '../../services/apiServices';
 
@@ -194,38 +195,44 @@ const DraftNotifications = () => {
 
             {/* Filter Section */}
             <div className={styles.filterSection}>
-                <div className={styles.filterInputs}>
+                <div className={styles.filterRow}>
                     <div className={styles.filterGroup}>
                         <label htmlFor="selectedDate" className={styles.filterLabel}>
                             Tarih Seçin:
                         </label>
-                        <input
-                            type="date"
-                            id="selectedDate"
-                            className={styles.filterDate}
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                        />
+
+                        <div className={styles.inputWrapper}>
+                            <input
+                                type="date"
+                                id="selectedDate"
+                                className={styles.filterDate}
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Buttons - Same row */}
+                    <div className={styles.buttonGroup}>
+                        <button
+                            className={styles.filterButton}
+                            onClick={handleFilterChange}
+                            disabled={!selectedDate}
+                        >
+                            Filtrele
+                        </button>
+
+                        <button
+                            className={styles.clearFilterButton}
+                            onClick={handleClearFilters}
+                            disabled={!selectedDate}
+                        >
+                            Filtreyi Temizle
+                        </button>
                     </div>
                 </div>
-
-                <div className={styles.filterButtons}>
-                    <button
-                        className={styles.filterButton}
-                        onClick={handleFilterChange}
-                        disabled={!selectedDate}
-                    >
-                        Filtrele
-                    </button>
-                    <button
-                        className={styles.clearFilterButton}
-                        onClick={handleClearFilters}
-                        disabled={!selectedDate}
-                    >
-                        Filtreyi Temizle
-                    </button>
-                </div>
             </div>
+
 
             {totalCount > 0 && (
                 <p className={styles.totalCount}>
@@ -233,25 +240,27 @@ const DraftNotifications = () => {
                 </p>
             )}
 
-            <ul>
+            {/* GRID LIST → KARTLAR */}
+            <ul className={styles.gridWrapper}>
                 {drafts.length > 0 ? (
                     drafts.map((draft) => (
                         <li key={draft.id} className={styles.draftItem}>
-                            <div>
+                            <div className={styles.draftTexts}>
                                 <p className={styles.draftText}>
-                                    Araç Plaka: {draft.vehicle_plate || "-"}
+                                    <strong>Araç Plaka: </strong>{draft.vehicle_plate || "-"}
                                 </p>
                                 <p className={styles.draftText}>
-                                    Kaza Tarihi: {draft.accident_date || "-"}
+                                    <strong>Kaza Tarihi: </strong>{draft.accident_date || "-"}
                                 </p>
                                 <p className={styles.draftText}>
-                                    Sigorta Şirketi: {draft.insurance_company_name || "-"}
+                                    <strong>Sigorta Şirketi: </strong>{draft.insurance_company_name || "-"}
                                 </p>
                                 <p className={styles.draftText}>
-                                    Oluşturulma: {draft.created_at?.slice(0, 10) || "-"}
+                                    <strong>Oluşturulma: </strong>{draft.created_at?.slice(0, 10) || "-"}
                                 </p>
                             </div>
 
+                            {/* X Icon */}
                             <button
                                 className={styles.closeButton}
                                 onClick={() => {
@@ -259,7 +268,7 @@ const DraftNotifications = () => {
                                     setShowModal(true);
                                 }}
                             >
-                                ×
+                                <XCircle size={20} />
                             </button>
 
                             <div className={styles.actions}>
@@ -273,7 +282,7 @@ const DraftNotifications = () => {
                         </li>
                     ))
                 ) : (
-                    <p>Henüz taslak bildirim bulunmuyor.</p>
+                    <p className={styles.noFileText}>Henüz taslak bildirim bulunmuyor.</p>
                 )}
             </ul>
 
