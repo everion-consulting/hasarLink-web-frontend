@@ -160,7 +160,9 @@ const NotificationsScreen = () => {
             className={styles.notifBackBtn}
             onClick={() => navigate(-1)}
           >
-            ←
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
           </button>
 
           <h1 className={styles.pageTitle}>BİLDİRİMLER</h1>
