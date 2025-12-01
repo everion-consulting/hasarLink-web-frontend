@@ -13,13 +13,13 @@ const DraftNotifications = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [selectedDate, setSelectedDate] = useState('');
 
-    // 🔥 GENEL ARAMA FİLTRESİ
+    // GENEL ARAMA FİLTRESİ
     const [searchText, setSearchText] = useState('');
 
     const itemsPerPage = 20;
     const navigate = useNavigate();
 
-    // 🔥 Türkçe karakter normalize fonksiyonu
+    // Türkçe karakter normalize fonksiyonu
     const normalize = (str) =>
         str
             ?.toString()
@@ -35,7 +35,7 @@ const DraftNotifications = () => {
 
     useEffect(() => {
         fetchDraftsData(currentPage);
-    }, [currentPage, selectedDate, searchText]); // 🔥 searchText eklendi
+    }, [currentPage, selectedDate, searchText]); // searchText eklendi
 
     const fetchDraftsData = async (page) => {
         try {
@@ -277,7 +277,7 @@ const DraftNotifications = () => {
                         </div>
                     </div>
 
-                    {/* 🔥 GENEL ARAMA FİLTRESİ */}
+                    {/* GENEL ARAMA FİLTRESİ */}
                     <div className={styles.filterGroup}>
                         <label className={styles.filterLabel}>Genel Arama:</label>
 
