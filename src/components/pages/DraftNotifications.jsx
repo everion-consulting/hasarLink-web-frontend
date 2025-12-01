@@ -11,13 +11,30 @@ const DraftNotifications = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+
     const [selectedDate, setSelectedDate] = useState('');
+    const [searchText, setSearchText] = useState('');  // 🔥 Yeni genel filtre state'i
+
     const itemsPerPage = 20;
     const navigate = useNavigate();
 
+    // 🔥 Türkçe karakterleri normalize eden fonksiyon
+    const normalize = (str) =>
+        str
+            ?.toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ı/g, "i")
+            .replace(/ğ/g, "g")
+            .replace(/ü/g, "u")
+            .replace(/ş/g, "s")
+            .replace(/ö/g, "o")
+            .replace(/ç/g, "c");
+
     useEffect(() => {
         fetchDraftsData(currentPage);
-    }, [currentPage, selectedDate]);
+    }, [currentPage, selectedDate, searchText]); // 🔥 searchText eklendi
 
     const fetchDraftsData = async (page) => {
         try {
@@ -29,6 +46,7 @@ const DraftNotifications = () => {
 
             const count = response.data?.count || 0;
 
+            // TARİH FİLTRESİ
             if (selectedDate) {
                 results = results.filter((draft) => {
                     const draftDate = draft.created_at?.slice(0, 10);
@@ -36,11 +54,28 @@ const DraftNotifications = () => {
                 });
             }
 
+            // GENEL ARAMA FİLTRESİ
+            if (searchText.trim() !== "") {
+                const n = normalize(searchText);
+
+                results = results.filter((draft) => {
+                    const plate = normalize(draft.vehicle_plate || "");
+                    const accident = normalize(draft.accident_date || "");
+                    const insurance = normalize(draft.insurance_company_name || "");
+                    const created = normalize((draft.created_at || "").slice(0, 10));
+
+                    const combined = `${plate} ${accident} ${insurance} ${created}`;
+                    return combined.includes(n);
+                });
+            }
+
             setDrafts(results);
-            setTotalCount(selectedDate ? results.length : count);
+            setTotalCount(selectedDate || searchText ? results.length : count);
+
             setTotalPages(
-                Math.ceil((selectedDate ? results.length : count) / itemsPerPage)
+                Math.ceil((selectedDate || searchText ? results.length : count) / itemsPerPage)
             );
+
         } catch (error) {
             console.error("Taslaklar alınırken hata:", error);
             setDrafts([]);
@@ -54,6 +89,7 @@ const DraftNotifications = () => {
 
     const handleClearFilters = () => {
         setSelectedDate('');
+        setSearchText(''); // 🔥 genel filtre temizlendi
         setCurrentPage(1);
     };
 
@@ -62,7 +98,6 @@ const DraftNotifications = () => {
             await apiService.deleteDraft(draftId);
             setDrafts(drafts.filter((draft) => draft.id !== draftId));
             setShowModal(false);
-
             fetchDraftsData(currentPage);
         } catch (error) {
             console.error("Taslak silinirken hata:", error);
@@ -193,9 +228,13 @@ const DraftNotifications = () => {
         <div className={styles.draftNotifications}>
             <h1 className={styles.title}>Taslak Bildirimlerim</h1>
 
-            {/* Filter Section */}
+            {/* ===========================
+                FILTER SECTION
+            ============================== */}
             <div className={styles.filterSection}>
                 <div className={styles.filterRow}>
+
+                    {/* TARİH FİLTRESİ */}
                     <div className={styles.filterGroup}>
                         <label htmlFor="selectedDate" className={styles.filterLabel}>
                             Tarih Seçin:
@@ -212,12 +251,27 @@ const DraftNotifications = () => {
                         </div>
                     </div>
 
-                    {/* Buttons - Same row */}
+                    {/* 🔥 GENEL ARAMA FİLTRESİ */}
+                    <div className={styles.filterGroup}>
+                        <label className={styles.filterLabel}>Genel Arama:</label>
+
+                        <div className={styles.inputWrapper}>
+                            <input
+                                type="text"
+                                placeholder="Plaka, şirket, tarih..."
+                                className={styles.filterDate}
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* BUTTONS */}
                     <div className={styles.buttonGroup}>
                         <button
                             className={styles.filterButton}
                             onClick={handleFilterChange}
-                            disabled={!selectedDate}
+                            disabled={!selectedDate && !searchText}
                         >
                             Filtrele
                         </button>
@@ -225,7 +279,7 @@ const DraftNotifications = () => {
                         <button
                             className={styles.clearFilterButton}
                             onClick={handleClearFilters}
-                            disabled={!selectedDate}
+                            disabled={!selectedDate && !searchText}
                         >
                             Filtreyi Temizle
                         </button>
@@ -233,14 +287,13 @@ const DraftNotifications = () => {
                 </div>
             </div>
 
-
             {totalCount > 0 && (
                 <p className={styles.totalCount}>
                     Toplam {totalCount} taslak bulundu.
                 </p>
             )}
 
-            {/* GRID LIST → KARTLAR */}
+            {/* KART GRID */}
             <ul className={styles.gridWrapper}>
                 {drafts.length > 0 ? (
                     drafts.map((draft) => (
@@ -260,7 +313,6 @@ const DraftNotifications = () => {
                                 </p>
                             </div>
 
-                            {/* X Icon */}
                             <button
                                 className={styles.closeButton}
                                 onClick={() => {
@@ -286,7 +338,7 @@ const DraftNotifications = () => {
                 )}
             </ul>
 
-            {/* Pagination */}
+            {/* PAGINATION */}
             {totalPages > 1 && (
                 <div className={styles.pagination}>
                     <button
