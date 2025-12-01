@@ -1,17 +1,26 @@
 /* =========================================
    ROOT LAYOUT
 ========================================= */
-.onGoingFiles {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-  font-family: 'Poppins', sans-serif;
+.screenContainer {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+}
+
+.contentArea {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* =========================================
-   TITLE
+   HEADER
 ========================================= */
-.title {
+.pageTitle {
   text-align: center;
   margin: 24px 0;
   font-size: 30px;
@@ -21,7 +30,250 @@
 }
 
 /* =========================================
-   FILTER SECTION – MODERNIZED
+   BACK BUTTON
+========================================= */
+.btnArea button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.backBtn {
+  background: #CBDCEB;
+  color: #1E293B;
+  margin-inline: auto;
+}
+
+.backBtn:hover {
+  background: #b9cee4;
+}
+
+/* =========================================
+   ICON CIRCLE
+========================================= */
+.contactBtnIcon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.backBtn .contactBtnIcon {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contactBtnIcon img {
+  width: 14px;
+  height: 14px;
+}
+
+/* =========================================
+   MAIN CARD
+========================================= */
+.rejectedCard {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  border: 1px solid #ebeef2;
+}
+
+/* =========================================
+   LIST
+========================================= */
+.rejectedList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* =========================================
+   CARD HEADER (Left + Right Eye Icon)
+========================================= */
+.rejectedHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.rejectedLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* =========================================
+   CARD ROWS
+========================================= */
+.rejectedItemRow {
+  display: flex;
+  gap: 6px;
+  font-size: 15px;
+  color: #333;
+}
+
+.rejectedItemLabel {
+  font-weight: 600;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
+}
+
+.rejectedItemValue {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* =========================================
+   STATUS BADGE
+========================================= */
+.rejectedItemBadge {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.statusBadge {
+  flex-direction: row;
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pendingBadge {
+  background-color: rgba(251, 192, 45, 0.7);
+}
+
+.processingBadgeText {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* =========================================
+   EMPTY & LOADING
+========================================= */
+.rejectedLoading,
+.rejectedEmpty {
+  padding: 40px 8px;
+  text-align: center;
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.rejectedSpinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #133e87;
+  animation: rejectedSpin 0.7s linear infinite;
+}
+
+/* Spinner */
+@keyframes rejectedSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   EYE CHIP — sağ üst için optimize edildi
+========================================= */
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.detailChip:hover {
+  max-width: 180px;
+  background: #eef3fa;
+  border-color: #b9c4d6;
+  transform: translateX(-6px);
+}
+
+.eyeIcon {
+  color: #133E87;
+  flex-shrink: 0;
+}
+
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: 0.3s ease;
+  color: #133E87;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 768px) {
+  .rejectedItem {
+    padding: 16px 12px;
+  }
+
+  .rejectedItemRow {
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .rejectedHeaderRow {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .rejectedItemLabel {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rejectedCard {
+    padding: 16px;
+  }
+}
+
+/* =========================================
+   FİLTRELEME BÖLÜMÜ
 ========================================= */
 .filterSection {
   background: #ffffff;
@@ -52,7 +304,6 @@
   color: #1a1a1a;
 }
 
-/* Input wrap for better visual style */
 .inputWrapper {
   display: flex;
   align-items: center;
@@ -81,9 +332,11 @@
 .buttonGroup {
   display: flex;
   gap: 12px;
+  align-items: flex-end;
+  height: 42px;
 }
 
-/* Blue Primary Button */
+/* Mavi Filtrele Butonu */
 .filterButton {
   background-color: #133E87;
   color: white;
@@ -93,9 +346,9 @@
   line-height: 20px;
   letter-spacing: 1px;
   font-weight: 400;
-  transition: 0.2s ease;
   border: none;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .filterButton:disabled {
@@ -107,7 +360,7 @@
   background-color: #0f2d66;
 }
 
-/* Gray Button */
+/* Gri Temizle Butonu */
 .clearFilterButton {
   background-color: #adb5bd;
   color: white;
@@ -119,6 +372,7 @@
   font-weight: 400;
   border: none;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .clearFilterButton:disabled {
@@ -128,151 +382,6 @@
 
 .clearFilterButton:not(:disabled):hover {
   background-color: #8d949b;
-}
-
-/* Responsive */
-@media (max-width: 720px) {
-  .filterRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .inputWrapper {
-    width: 100%;
-  }
-
-  .buttonGroup {
-    width: 100%;
-  }
-
-  .filterButton,
-  .clearFilterButton {
-    flex: 1;
-  }
-}
-
-/* =========================================
-   GRID LIST FOR CARDS – RESPONSIVE & FIXED
-========================================= */
-.gridWrapper {
-  list-style: none;
-  padding: 20px 0 40px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 22px;
-}
-
-/* Tablet için daha dengeli sütun genişliği */
-@media (min-width: 600px) {
-  .gridWrapper {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
-}
-
-/* Desktop geniş ekranlar */
-@media (min-width: 1024px) {
-  .gridWrapper {
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  }
-}
-
-.noFileText {
-  font-size: 18px;
-  line-height: 20px;
-  letter-spacing: 1px;
-  text-align: center;
-  grid-column: 1 / -1;
-  padding: 40px 0;
-  color: #666;
-}
-
-/* =========================================
-   CARD DESIGN
-========================================= */
-.fileItem {
-  position: relative;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 20px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  transition: 0.2s ease;
-}
-
-.fileItem:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
-}
-
-.fileTexts {
-  width: 100%;
-}
-
-.fileTexts strong {
-  font-weight: 600;
-  color: #222;
-  min-width: 140px;
-  display: inline-block;
-}
-
-.fileText {
-  margin: 0 0 10px 0;
-  font-size: 15px;
-  color: #444;
-  line-height: 1.6;
-}
-
-/* =========================================
-   STATUS ROW
-========================================= */
-.statusRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.statusBadge {
-  border-radius: 10px;
-  padding: 6px 12px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.pendingBadge {
-  background-color: rgba(251, 192, 45, 0.7);
-}
-
-.processingBadgeText {
-  font-size: 12px;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* =========================================
-   DETAIL BUTTON
-========================================= */
-.detailButton {
-  background: #133E87;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: 0.2s ease;
-}
-
-.detailButton:hover {
-  background: #0f2a5c;
 }
 
 /* =========================================
@@ -285,33 +394,7 @@
   line-height: 20px;
   letter-spacing: 1px;
   margin-bottom: 20px;
-}
-
-/* =========================================
-   LOADING
-========================================= */
-.loadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  gap: 20px;
-  grid-column: 1 / -1;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #133E87;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  padding: 10px 0;
 }
 
 /* =========================================
@@ -323,6 +406,7 @@
   align-items: center;
   gap: 18px;
   padding: 30px 0;
+  margin-top: 20px;
 }
 
 .paginationButton {
@@ -352,124 +436,81 @@
 }
 
 /* =========================================
-   GERİ DÖN BUTTON
-============================================ */
-.btnArea {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
-}
-
-.btnArea button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.2s ease;
-  font-weight: 600;
-  font-size: 18px;
-  font-family: 'Poppins', sans-serif;
-  min-width: 180px;
-}
-
-.backBtn {
-  background: #CBDCEB;
-  color: #1E293B;
-  margin-inline: auto;
-}
-
-.backBtn:hover {
-  background: #b9cee4;
-}
-
-/* =========================================
-   ICON CIRCLE
-============================================ */
-.contactBtnIcon {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.backBtn .contactBtnIcon {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.contactBtnIcon img {
-  width: 14px;
-  height: 14px;
-}
-
-/* =========================================
-   RESPONSIVE
-============================================ */
-@media (max-width: 768px) {
-  .title {
-    font-size: 26px;
-    margin-top: 16px;
+   RESPONSIVE FİLTRELEME
+========================================= */
+@media (max-width: 720px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .fileItem {
+  .inputWrapper {
+    width: 100%;
+  }
+
+  .buttonGroup {
+    width: 100%;
+  }
+
+  .filterButton,
+  .clearFilterButton {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterSection {
+    padding: 18px;
+  }
+
+  .filterRow {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterSection {
     padding: 16px;
   }
 
-  .statusRow {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
+  .filterLabel {
+    font-size: 14px;
   }
 
-  .detailButton {
-    width: 100%;
-    justify-content: center;
+  .filterDate {
+    font-size: 13px;
   }
 
-  .backBtn {
-    padding: 12px 22px;
+  .filterButton,
+  .clearFilterButton {
+    padding: 10px 18px;
     font-size: 16px;
-    min-width: 150px;
   }
+}
 
-  .contactBtnIcon {
-    width: 30px;
-    height: 30px;
-  }
-
+/* =========================================
+   PAGINATION RESPONSIVE
+========================================= */
+@media (max-width: 768px) {
   .pagination {
     flex-direction: column;
     gap: 15px;
   }
 }
 
-@media (max-width: 480px) {
-  .title {
-    font-size: 22px;
-    margin-top: 14px;
-  }
+/* =========================================
+   ITEM CARD
+========================================= */
+.rejectedItem {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
+}
 
-  .fileItem {
-    padding: 14px;
-    border-radius: 10px;
-  }
-
-  .fileTexts strong {
-    min-width: 120px;
-  }
-
-  .backBtn {
-    padding: 10px 18px;
-    font-size: 15px;
-    min-width: 140px;
-  }
-
-  .contactBtnIcon {
-    width: 28px;
-    height: 28px;
-  }
+.rejectedItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
 }

@@ -1,8 +1,7 @@
 // src/screens/file/OnGoingFilesScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { Eye, Search, X, Calendar } from "lucide-react";
+import { Eye } from "lucide-react";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/ongoing.module.css";
 
@@ -49,14 +48,14 @@ const OnGoingFilesScreen = () => {
 
     // Eğer DD.MM.YYYY formatındaysa (örn: "29.11.2025")
     if (dateStr.includes('.')) {
-      const datePart = dateStr.split(' ')[0]; // "29.11.2025 20:12" -> "29.11.2025"
+      const datePart = dateStr.split(' ')[0];
       const [dd, mm, yyyy] = datePart.split('.');
       return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
     }
 
     // Eğer YYYY-MM-DD formatındaysa
     if (dateStr.includes('-')) {
-      return dateStr.split(' ')[0]; // "2025-11-29 20:12:00" -> "2025-11-29"
+      return dateStr.split(' ')[0];
     }
 
     return dateStr;
@@ -66,15 +65,12 @@ const OnGoingFilesScreen = () => {
   const formatDateForDisplay = (dateStr) => {
     if (!dateStr) return "-";
 
-    // Sadece tarih kısmını al
     const datePart = dateStr.split(' ')[0];
 
-    // Eğer DD.MM.YYYY formatındaysa
     if (datePart.includes('.')) {
       return datePart;
     }
 
-    // Eğer YYYY-MM-DD formatındaysa
     if (datePart.includes('-')) {
       const [yyyy, mm, dd] = datePart.split('-');
       return `${dd}.${mm}.${yyyy}`;
@@ -116,7 +112,6 @@ const OnGoingFilesScreen = () => {
           file_number: data.file_number ?? "-",
           damage_type: data.damage_type ?? "-",
           estimated_amount: data.estimated_damage_amount ?? "-",
-          // API'den gelen created_at'i parse ediyoruz
           created_at_formatted: formatDateForDisplay(data.created_at),
           created_at_yyyy_mm_dd: formatDateToYYYYMMDD(data.created_at),
         }));
@@ -186,230 +181,199 @@ const OnGoingFilesScreen = () => {
     });
   };
 
-  const renderFileItem = (data) => {
-    const statusInfo = {
-      text: "Başvurunuz Beklemede",
-      badgeClass: styles.pendingBadge,
-      textClass: styles.processingBadgeText,
-    };
-
-    return (
-      <div key={data.id} className={styles.fileItem}>
-        <div className={styles.fileTexts}>
-          <p className={styles.fileText}>
-            <strong>Araç Plaka: </strong>{data.vehicle_plate || "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Kaza Tarihi: </strong>{data.accident_date || "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Araç Model: </strong>{data.vehicle_model || "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Hasar Türü: </strong>{data.damage_type || "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Tahmini Tutar: </strong>{data.estimated_amount ? `${data.estimated_amount} TL` : "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Şirket: </strong>{data.insurance_company_name || "-"}
-          </p>
-          <p className={styles.fileText}>
-            <strong>Oluşturulma: </strong>{data.created_at_formatted || "-"}
-          </p>
-        </div>
-
-        <div className={styles.statusRow}>
-          <div className={`${styles.statusBadge} ${statusInfo.badgeClass}`}>
-            <span className={statusInfo.textClass}>
-              {statusInfo.text}
-            </span>
-          </div>
-          
-          <div className={styles.actions}>
-            <button
-              className={styles.detailButton}
-              onClick={() => handleFileDetail(data.id, data.file_number)}
-            >
-              <Eye size={18} style={{ marginRight: 8 }} />
-              Dosya Detayı Gör
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className={styles.onGoingFiles}>
-      <h1 className={styles.title}>İşlemi Devam Edenler</h1>
+    <div className={styles.screenContainer}>
+      <div className={styles.contentArea}>
+        <div className={styles.rejectedHeader}>
+          <h1 className={styles.pageTitle}>İşlemi Devam Edenler</h1>
+        </div>
 
-      {/* Filter Section */}
-      <div className={styles.filterSection}>
-        <div className={styles.filterRow}>
-          {/* TARİH FİLTRESİ */}
-          <div className={styles.filterGroup}>
-            <label htmlFor="selectedDate" className={styles.filterLabel}>
-              Tarih Seçin:
-            </label>
-            <div className={styles.inputWrapper}>
-              <input
-                type="date"
-                id="selectedDate"
-                className={styles.filterDate}
-                value={selectedDate}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+        {/* 🔹 FİLTRELEME BÖLÜMÜ */}
+        <div className={styles.filterSection}>
+          <div className={styles.filterRow}>
+            {/* TARİH FİLTRESİ */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="selectedDate" className={styles.filterLabel}>
+                Tarih Seçin:
+              </label>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="date"
+                  id="selectedDate"
+                  className={styles.filterDate}
+                  value={selectedDate}
+                  onChange={(e) => {
+                    setSelectedDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* GENEL ARAMA FİLTRESİ */}
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Genel Arama:</label>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                placeholder="Plaka, şirket, model..."
-                className={styles.filterDate}
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+            {/* GENEL ARAMA FİLTRESİ */}
+            <div className={styles.filterGroup}>
+              <label className={styles.filterLabel}>Genel Arama:</label>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="text"
+                  placeholder="Plaka, şirket, model..."
+                  className={styles.filterDate}
+                  value={searchText}
+                  onChange={(e) => {
+                    setSearchText(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* BUTTONS */}
-          <div className={styles.buttonGroup}>
-            <button
-              className={styles.filterButton}
-              onClick={handleFilterChange}
-              disabled={!selectedDate && !searchText}
-            >
-              Filtrele
-            </button>
-            <button
-              className={styles.clearFilterButton}
-              onClick={handleClearFilters}
-              disabled={!selectedDate && !searchText}
-            >
-              Filtreyi Temizle
-            </button>
+            {/* BUTONLAR */}
+            <div className={styles.buttonGroup}>
+              <button
+                className={styles.filterButton}
+                onClick={handleFilterChange}
+                disabled={!selectedDate && !searchText}
+              >
+                Filtrele
+              </button>
+              <button
+                className={styles.clearFilterButton}
+                onClick={handleClearFilters}
+                disabled={!selectedDate && !searchText}
+              >
+                Filtreyi Temizle
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {totalCount > 0 && (
-        <p className={styles.totalCount}>
-          Toplam {totalCount} dosya bulundu.
-        </p>
-      )}
-
-      {/* GRID LIST → KARTLAR */}
-      <ul className={styles.gridWrapper}>
-        {isLoading ? (
-          <div className={styles.loadingContainer}>
-            <div className={styles.spinner}></div>
-            <p>Dosyalar yükleniyor...</p>
-          </div>
-        ) : filteredFiles.length > 0 ? (
-          filteredFiles.map((file) => (
-            <li key={file.id} className={styles.fileItem}>
-              <div className={styles.fileTexts}>
-                <p className={styles.fileText}>
-                  <strong>Araç Plaka: </strong>{file.vehicle_plate || "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Kaza Tarihi: </strong>{file.accident_date || "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Araç Model: </strong>{file.vehicle_model || "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Hasar Türü: </strong>{file.damage_type || "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Tahmini Tutar: </strong>{file.estimated_amount ? `${file.estimated_amount} TL` : "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Şirket: </strong>{file.insurance_company_name || "-"}
-                </p>
-                <p className={styles.fileText}>
-                  <strong>Oluşturulma: </strong>{file.created_at_formatted || "-"}
-                </p>
-              </div>
-
-              <div className={styles.statusRow}>
-                <div className={`${styles.statusBadge} ${styles.pendingBadge}`}>
-                  <span className={styles.processingBadgeText}>
-                    Başvurunuz Beklemede
-                  </span>
-                </div>
-                
-                <div className={styles.actions}>
-                  <button
-                    className={styles.detailButton}
-                    onClick={() => handleFileDetail(file.id, file.file_number)}
-                  >
-                    <Eye size={18} style={{ marginRight: 8 }} />
-                    Dosya Detayı Gör
-                  </button>
-                </div>
-              </div>
-            </li>
-          ))
-        ) : (
-          <p className={styles.noFileText}>
-            {fileNotifications.length === 0 
-              ? "Henüz işlemi devam eden dosya bulunmuyor." 
-              : "Filtreleme kriterlerinize uygun dosya bulunamadı."}
+        {totalCount > 0 && (
+          <p className={styles.totalCount}>
+            Toplam {totalCount} dosya bulundu.
           </p>
         )}
-      </ul>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            className={styles.paginationButton}
-            onClick={() =>
-              setCurrentPage((prev) => Math.max(1, prev - 1))
-            }
-            disabled={currentPage === 1}
-          >
-            ← Önceki
-          </button>
+        <div className={styles.rejectedCard}>
+          {isLoading ? (
+            <div className={styles.rejectedLoading}>
+              <div className={styles.rejectedSpinner} />
+              <span>Yükleniyor...</span>
+            </div>
+          ) : filteredFiles.length === 0 ? (
+            <div className={styles.rejectedEmpty}>
+              {fileNotifications.length === 0 
+                ? "Henüz işlemi devam eden dosya bulunmuyor." 
+                : "Filtreleme kriterlerinize uygun dosya bulunamadı."}
+            </div>
+          ) : (
+            <div className={styles.rejectedList}>
+              {filteredFiles.map((file) => (
+                <div key={file.id} className={styles.rejectedItem}>
+                  {/* 🔹 HEADER (Left data + Right Eye icon) */}
+                  <div className={styles.rejectedHeaderRow}>
+                    <div className={styles.rejectedLeft}>
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Araç Plaka:</span>
+                        <span className={styles.rejectedItemValue}>{file.vehicle_plate || "-"}</span>
+                      </div>
 
-          <div className={styles.paginationInfo}>
-            Sayfa {currentPage} / {totalPages}
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Kaza Tarihi:</span>
+                        <span className={styles.rejectedItemValue}>{file.accident_date || "-"}</span>
+                      </div>
+
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Araç Model:</span>
+                        <span className={styles.rejectedItemValue}>{file.vehicle_model || "-"}</span>
+                      </div>
+
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Hasar Türü:</span>
+                        <span className={styles.rejectedItemValue}>{file.damage_type || "-"}</span>
+                      </div>
+
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Tahmini Tutar:</span>
+                        <span className={styles.rejectedItemValue}>
+                          {file.estimated_amount ? `${file.estimated_amount} TL` : "-"}
+                        </span>
+                      </div>
+
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Şirket:</span>
+                        <span className={styles.rejectedItemValue}>{file.insurance_company_name || "-"}</span>
+                      </div>
+
+                      <div className={styles.rejectedItemRow}>
+                        <span className={styles.rejectedItemLabel}>Oluşturulma:</span>
+                        <span className={styles.rejectedItemValue}>{file.created_at_formatted || "-"}</span>
+                      </div>
+                    </div>
+
+                    {/* 🔹 Eye chip sağ üstte */}
+                    <button
+                      type="button"
+                      className={styles.detailChip}
+                      onClick={() => handleFileDetail(file.id, file.file_number)}
+                    >
+                      <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+                      <span className={styles.detailText}>Dosya Detayı Gör</span>
+                    </button>
+                  </div>
+
+                  {/* 🔹 DURUM BADGE */}
+                  <div className={styles.rejectedItemBadge}>
+                    <div className={`${styles.statusBadge} ${styles.pendingBadge}`}>
+                      <span className={styles.processingBadgeText}>
+                        Başvurunuz Beklemede
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 🔹 SAYFALAMA */}
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            <button
+              className={styles.paginationButton}
+              onClick={() =>
+                setCurrentPage((prev) => Math.max(1, prev - 1))
+              }
+              disabled={currentPage === 1}
+            >
+              ← Önceki
+            </button>
+
+            <div className={styles.paginationInfo}>
+              Sayfa {currentPage} / {totalPages}
+            </div>
+
+            <button
+              className={styles.paginationButton}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(totalPages, prev + 1)
+                )
+              }
+              disabled={currentPage === totalPages}
+            >
+              Sonraki →
+            </button>
           </div>
+        )}
 
-          <button
-            className={styles.paginationButton}
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min(totalPages, prev + 1)
-              )
-            }
-            disabled={currentPage === totalPages}
-          >
-            Sonraki →
+        <div className={styles.btnArea}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <span className={styles.contactBtnIcon}>
+              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+            </span>
+            GERİ DÖN
           </button>
         </div>
-      )}
-
-      {/* Geri Dön Butonu */}
-      <div className={styles.btnArea}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          <span className={styles.contactBtnIcon}>
-            <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
-          </span>
-          GERİ DÖN
-        </button>
       </div>
     </div>
   );
