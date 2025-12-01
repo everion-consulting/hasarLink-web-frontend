@@ -23,29 +23,69 @@ const DraftNotifications = () => {
         try {
             const response = await apiService.getDrafts(page, null, null);
 
-            let results = Array.isArray(response.data?.results)
-                ? response.data.results
-                : [];
+            const raw = response.data ?? response;
 
-            const count = response.data?.count || 0;
+            let allDrafts = [];
+            let backendCount = 0;
+            let isBackendPaginated = false;
 
+            if (Array.isArray(raw)) {
+
+                allDrafts = raw;
+                backendCount = raw.length;
+            } else {
+
+                if (Array.isArray(raw.results)) {
+                    allDrafts = raw.results;
+                    backendCount = typeof raw.count === "number" ? raw.count : raw.results.length;
+                    isBackendPaginated = true;
+                } else if (Array.isArray(raw.queryset)) {
+
+                    allDrafts = raw.queryset;
+                    backendCount = raw.queryset.length;
+                } else {
+                    allDrafts = [];
+                    backendCount = 0;
+                }
+            }
+
+
+            let filtered = allDrafts;
             if (selectedDate) {
-                results = results.filter((draft) => {
+                filtered = filtered.filter((draft) => {
                     const draftDate = draft.created_at?.slice(0, 10);
                     return draftDate === selectedDate;
                 });
             }
 
-            setDrafts(results);
-            setTotalCount(selectedDate ? results.length : count);
-            setTotalPages(
-                Math.ceil((selectedDate ? results.length : count) / itemsPerPage)
-            );
+
+            const totalForPagination = selectedDate
+                ? filtered.length
+                : backendCount || filtered.length;
+
+
+            if (isBackendPaginated) {
+                setDrafts(filtered);
+                setTotalCount(totalForPagination);
+                setTotalPages(Math.ceil(totalForPagination / itemsPerPage));
+            } else {
+
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const pageItems = filtered.slice(startIndex, endIndex);
+
+                setDrafts(pageItems);
+                setTotalCount(totalForPagination);
+                setTotalPages(Math.ceil(totalForPagination / itemsPerPage));
+            }
         } catch (error) {
             console.error("Taslaklar alınırken hata:", error);
             setDrafts([]);
+            setTotalCount(0);
+            setTotalPages(1);
         }
     };
+
 
     const handleFilterChange = () => {
         setCurrentPage(1);
