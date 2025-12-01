@@ -81,18 +81,6 @@
 }
 
 /* =========================================
-   MAIN CARD
-========================================= */
-.rejectedCard {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
-  border: 1px solid #ebeef2;
-}
-
-/* =========================================
    LIST
 ========================================= */
 .rejectedList {
@@ -263,12 +251,6 @@
 
   .rejectedItemLabel {
     min-width: 100px;
-  }
-}
-
-@media (max-width: 480px) {
-  .rejectedCard {
-    padding: 16px;
   }
 }
 
