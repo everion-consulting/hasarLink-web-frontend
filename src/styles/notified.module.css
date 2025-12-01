@@ -16,7 +16,16 @@
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 2rem;
+}
+
+.totalCount {
+  text-align: center;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
 }
 
 /* ============================================
@@ -85,23 +94,29 @@
    MAIN WHITE CARD
 ================================ */
 
-.vehicleFormCard {
+.fileContainer {
   background-color: #fff;
   padding: 24px;
   border-radius: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
+.vehicleFormCard {
+  display: flex;
+  flex-direction: column;
+}
 
 /* ================================
    LIST WRAPPER
 ================================ */
 
 .listWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  gap: 24px;
 }
 
 .empty {
@@ -110,16 +125,187 @@
   color: #333;
 }
 
+/* =========================================
+   FILTER SECTION
+========================================= */
+.filterSection {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ebeef2;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Input wrap for better visual style */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d7e2;
+  background: #fdfdfd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  width: 240px;
+  transition: 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: #133e87;
+  box-shadow: 0 0 0 3px rgba(19, 62, 135, 0.15);
+}
+
+.filterDate {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+  color: #111;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+/* Blue Primary Button */
+.filterButton {
+  background-color: #133E87;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  transition: 0.2s ease;
+  border: none;
+}
+
+.filterButton:disabled {
+  background-color: #b4c2d4;
+  cursor: not-allowed;
+}
+
+.filterButton:not(:disabled):hover {
+  background-color: #0f2d66;
+}
+
+/* Gray Button */
+.clearFilterButton {
+  background-color: #adb5bd;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  border: none;
+}
+
+.clearFilterButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clearFilterButton:not(:disabled):hover {
+  background-color: #8d949b;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buttonGroup {
+    width: 100%;
+  }
+
+  .filterButton,
+  .clearFilterButton {
+    flex: 1;
+  }
+}
+
+/* =========================================
+   EYE CHIP — EKLENDİ
+============================================ */
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+  max-width: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
+}
+
+.detailChip:hover {
+  max-width: 190px;
+  background: #f0f3f9;
+  border-color: #b7bfd0;
+  transform: translateX(-6px);
+}
+
+.eyeIcon {
+  color: #133E87;
+  flex-shrink: 0;
+}
+
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  font-size: 14px;
+  font-weight: 600;
+  color: #133E87;
+  transition: all 0.35s ease;
+}
+
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
 /* ================================
    FILE CARD
 ================================ */
-
-.fileContainer {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-}
 
 .fileHeader {
   display: flex;
@@ -344,5 +530,14 @@
   .contactBtnIcon img {
     width: 11px;
     height: 11px;
+  }
+
+  .listWrapper {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
   }
 }
