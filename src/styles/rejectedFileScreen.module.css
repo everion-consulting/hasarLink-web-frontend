@@ -49,10 +49,9 @@
   transform: translateY(-2px);
 }
 
-/* ============================================
-   GERİ DÖN BUTTON
-============================================ */
-
+/* =========================================
+   BACK BUTTON
+========================================= */
 .btnArea button {
   display: flex;
   align-items: center;
@@ -80,9 +79,9 @@
   background: #b9cee4;
 }
 
-/* ============================================
-   ICON CIRCLE (CTA ile %100 aynı)
-============================================ */
+/* =========================================
+   ICON CIRCLE
+========================================= */
 .contactBtnIcon {
   width: 34px;
   height: 34px;
@@ -102,13 +101,13 @@
 }
 
 /* =========================================
-   MAIN CARD WRAPPER
+   MAIN CARD
 ========================================= */
 .rejectedCard {
   width: 100%;
   background: #ffffff;
   border-radius: 16px;
-  padding: 24px 28px;
+  padding: 20px;
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
   border: 1px solid #ebeef2;
 }
@@ -123,23 +122,18 @@
 }
 
 /* =========================================
-   ITEM (CARD)
+   CARD HEADER (Left + Right Eye Icon)
 ========================================= */
-.rejectedItem {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 18px 16px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+.rejectedHeaderRow {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: 0.15s ease;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.rejectedItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
+.rejectedLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 /* =========================================
@@ -153,22 +147,24 @@
 }
 
 .rejectedItemLabel {
-  font-weight: 700;
+  font-weight: 600;
+  color: #222;
   min-width: 120px;
   display: inline-block;
-  color: #111827;
 }
 
 .rejectedItemValue {
-  font-weight: 500;
-  color: #111827;
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
 }
 
 /* =========================================
-   BADGE (RED REASON)
+   RED BADGE
 ========================================= */
 .rejectedItemBadge {
-  margin-top: 4px;
+  margin-top: 8px;
   padding: 10px 12px;
   border-radius: 10px;
   background-color: rgba(198, 40, 40, 0.12);
@@ -181,14 +177,14 @@
    FIELDS SECTION
 ========================================= */
 .rejectedItemFields {
-  margin-top: 6px;
+  margin-top: 10px;
 }
 
 .rejectedItemFieldsTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: #222;
+  min-width: 120px;
+  display: inline-block;
 }
 
 .rejectedItemFieldsValue {
@@ -198,7 +194,7 @@
 }
 
 /* =========================================
-   LINK BUTTON
+   OLD LINK (Artık kullanılmıyor ama silinmedi)
 ========================================= */
 .rejectedItemLink {
   margin-top: 10px;
@@ -240,7 +236,7 @@
   animation: rejectedSpin 0.7s linear infinite;
 }
 
-/* Spinner Animation */
+/* Spinner */
 @keyframes rejectedSpin {
   to {
     transform: rotate(360deg);
@@ -248,13 +244,54 @@
 }
 
 /* =========================================
+   EYE CHIP — sağ üst için optimize edildi
+========================================= */
+.detailChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1.5px solid #d7dce2;
+  border-radius: 40px;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 44px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.detailChip:hover {
+  max-width: 180px;
+  background: #eef3fa;
+  border-color: #b9c4d6;
+  transform: translateX(-6px);
+}
+
+.eyeIcon {
+  color: #133E87;
+  flex-shrink: 0;
+}
+
+.detailText {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: 0.3s ease;
+  color: #133E87;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detailChip:hover .detailText {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =========================================
    RESPONSIVE
 ========================================= */
 @media (max-width: 768px) {
-  .rejectedCard {
-    padding: 20px;
-  }
-
   .rejectedItem {
     padding: 16px 12px;
   }
@@ -262,6 +299,12 @@
   .rejectedItemRow {
     flex-direction: column;
     font-size: 14px;
+  }
+
+  .rejectedHeaderRow {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 

@@ -1,6 +1,7 @@
 // src/screens/file/RejectedFilesScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react"; 
 import apiService from "../../services/apiServices";
 import styles from "../../styles/rejectedFileScreen.module.css";
 
@@ -49,20 +50,38 @@ const RejectedFilesScreen = () => {
 
   const renderFileItem = (data) => (
     <div key={data.submission_id} className={styles.rejectedItem}>
-      <div className={styles.rejectedItemRow}>
-        <span className={styles.rejectedItemLabel}>Araç Plaka:</span>
-        <span className={styles.rejectedItemValue}>{data.plate || "-"}</span>
+
+      {/* 🔹 HEADER (Left data + Right Eye icon) */}
+      <div className={styles.rejectedHeaderRow}>
+        <div className={styles.rejectedLeft}>
+          <div className={styles.rejectedItemRow}>
+            <span className={styles.rejectedItemLabel}>Araç Plaka:</span>
+            <span className={styles.rejectedItemValue}>{data.plate || "-"}</span>
+          </div>
+
+          <div className={styles.rejectedItemRow}>
+            <span className={styles.rejectedItemLabel}>Tarih:</span>
+            <span className={styles.rejectedItemValue}>{data.date || "-"}</span>
+          </div>
+        </div>
+
+        {/* 🔹 Eye chip sağ üstte */}
+        <button
+          type="button"
+          className={styles.detailChip}
+          onClick={() => handleFileDetail(data)}
+        >
+          <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+          <span className={styles.detailText}>Dosya Detayı Gör</span>
+        </button>
       </div>
 
-      <div className={styles.rejectedItemRow}>
-        <span className={styles.rejectedItemLabel}>Tarih:</span>
-        <span className={styles.rejectedItemValue}>{data.date || "-"}</span>
-      </div>
-
+      {/* 🔹 RED NEDENİ */}
       <div className={styles.rejectedItemBadge}>
         Red Nedeni: {data.message || "-"}
       </div>
 
+      {/* 🔹 Fields */}
       {!!data.fields?.length && (
         <div className={styles.rejectedItemFields}>
           <div className={styles.rejectedItemFieldsTitle}>
@@ -73,27 +92,16 @@ const RejectedFilesScreen = () => {
           </div>
         </div>
       )}
-
-      <button
-        type="button"
-        className={styles.rejectedItemLink}
-        onClick={() => handleFileDetail(data)}
-      >
-        Dosya Detayı Gör
-      </button>
     </div>
   );
 
   return (
     <div className={styles.screenContainer}>
       <div className={styles.contentArea}>
-
-        {/* HEADER */}
         <div className={styles.rejectedHeader}>
           <h1 className={styles.pageTitle}>Reddedilen Dosyalar</h1>
         </div>
 
-        {/* MAIN CARD */}
         <div className={styles.rejectedCard}>
           {loading ? (
             <div className={styles.rejectedLoading}>
@@ -110,6 +118,7 @@ const RejectedFilesScreen = () => {
             </div>
           )}
         </div>
+
         <div className={styles.btnArea}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>
             <span className={styles.contactBtnIcon}>
