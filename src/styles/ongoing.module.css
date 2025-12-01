@@ -1,22 +1,354 @@
 /* =========================================
    ROOT LAYOUT
-   ========================================= */
-
-.screenContainerDrive {
-  position: relative;
-  min-height: 100vh;
-  background-color: transparent;
-  color: #333;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+========================================= */
+.onGoingFiles {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Poppins', sans-serif;
 }
 
-.contentArea {
+/* =========================================
+   TITLE
+========================================= */
+.title {
+  text-align: center;
+  margin: 24px 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* =========================================
+   FILTER SECTION – MODERNIZED
+========================================= */
+.filterSection {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ebeef2;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Input wrap for better visual style */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d7e2;
+  background: #fdfdfd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  width: 240px;
+  transition: 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: #133e87;
+  box-shadow: 0 0 0 3px rgba(19, 62, 135, 0.15);
+}
+
+.filterDate {
+  border: none;
+  outline: none;
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 16px;
+  font-size: 14px;
+  background: transparent;
+  color: #111;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+/* Blue Primary Button */
+.filterButton {
+  background-color: #133E87;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  transition: 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.filterButton:disabled {
+  background-color: #b4c2d4;
+  cursor: not-allowed;
+}
+
+.filterButton:not(:disabled):hover {
+  background-color: #0f2d66;
+}
+
+/* Gray Button */
+.clearFilterButton {
+  background-color: #adb5bd;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+}
+
+.clearFilterButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clearFilterButton:not(:disabled):hover {
+  background-color: #8d949b;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inputWrapper {
+    width: 100%;
+  }
+
+  .buttonGroup {
+    width: 100%;
+  }
+
+  .filterButton,
+  .clearFilterButton {
+    flex: 1;
+  }
+}
+
+/* =========================================
+   GRID LIST FOR CARDS – RESPONSIVE & FIXED
+========================================= */
+.gridWrapper {
+  list-style: none;
+  padding: 20px 0 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+/* Tablet için daha dengeli sütun genişliği */
+@media (min-width: 600px) {
+  .gridWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+/* Desktop geniş ekranlar */
+@media (min-width: 1024px) {
+  .gridWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  }
+}
+
+.noFileText {
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 40px 0;
+  color: #666;
+}
+
+/* =========================================
+   CARD DESIGN
+========================================= */
+.fileItem {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: 0.2s ease;
+}
+
+.fileItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+
+.fileTexts {
+  width: 100%;
+}
+
+.fileTexts strong {
+  font-weight: 600;
+  color: #222;
+  min-width: 140px;
+  display: inline-block;
+}
+
+.fileText {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* =========================================
+   STATUS ROW
+========================================= */
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.statusBadge {
+  border-radius: 10px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pendingBadge {
+  background-color: rgba(251, 192, 45, 0.7);
+}
+
+.processingBadgeText {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* =========================================
+   DETAIL BUTTON
+========================================= */
+.detailButton {
+  background: #133E87;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: 0.2s ease;
+}
+
+.detailButton:hover {
+  background: #0f2a5c;
+}
+
+/* =========================================
+   TOTAL COUNT
+========================================= */
+.totalCount {
+  text-align: center;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* =========================================
+   LOADING
+========================================= */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 20px;
+  grid-column: 1 / -1;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #133E87;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =========================================
+   PAGINATION
+========================================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 0;
+}
+
+.paginationButton {
+  background: #133E87;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #0f2d66;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationInfo {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
 }
 
 /* =========================================
@@ -56,7 +388,6 @@
 /* =========================================
    ICON CIRCLE
 ============================================ */
-
 .contactBtnIcon {
   width: 34px;
   height: 34px;
@@ -75,236 +406,31 @@
   height: 14px;
 }
 
-/* Ortalanmış başlık */
-.headerTitleCentered {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 26px;
-  font-size: 30px;
-  font-weight: 700;
-  color: #333;
-  line-height: 1.2;
-}
-
-/* =========================================
-   CONTENT LIST
-============================================ */
-
-.empty {
-  padding: 32px 8px;
-  text-align: center;
-  font-size: 16px;
-  color: #111827;
-}
-
-.listWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 12px;
-  width: 100%;
-}
-
-/* =========================================
-   CARD
-============================================ */
-
-.fileContainer {
-  background-color: #fff;
-  border: 1px solid #eaeaea;
-  border-radius: 14px;
-  padding: 20px;
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: 0.2s ease;
-}
-
-.fileHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.fileDetails p {
-  margin: 0 0 8px 0;
-  font-size: 15px;
-  color: #444;
-  line-height: 1.6;
-}
-
-.fileDetails p strong {
-  font-weight: 600;
-  color: #222;
-  min-width: 120px;
-  display: inline-block;
-}
-
-.insuranceInfo {
-  font-size: 14px;
-  color: #000;
-}
-
-/* =========================================
-   INFO ICON
-============================================ */
-
-.infoIconBtn {
-  border: none;
-  background: transparent;
-  padding: 4px;
-  cursor: pointer;
-  border-radius: 50%;
-}
-
-.infoIconBtn:hover {
-  background-color: rgba(0, 0, 0, 0.06);
-}
-
-.infoIconSvg {
-  width: 22px;
-  height: 22px;
-  color: #666;
-}
-
-/* =========================================
-   STATUS
-============================================ */
-
-.statusRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.statusBadge {
-  border-radius: 10px;
-  padding: 6px 12px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.pendingBadge {
-  background-color: rgba(251, 192, 45, 0.7);
-}
-
-.processingBadgeText {
-  font-size: 12px;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* =========================================
-   DETAIL LINK
-============================================ */
-
-.detailLink {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
-  align-self: flex-start;
-}
-
-.detailLinkText {
-  font-size: 14px;
-  color: #133e87;
-  font-weight: 500;
-  text-decoration: underline;
-}
-
-.detailLink:hover .detailLinkText {
-  opacity: 0.8;
-}
-
-/* =========================================
-   EYE CHIP — EKLENDİ
-============================================ */
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.detailChip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #ffffff;
-  border: 1.5px solid #d7dce2;
-  border-radius: 40px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
-  max-width: 44px;
-  overflow: hidden;
-  white-space: nowrap;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
-}
-
-.detailChip:hover {
-  max-width: 190px;
-  background: #f0f3f9;
-  border-color: #b7bfd0;
-  transform: translateX(-6px);
-}
-
-.eyeIcon {
-  color: #133E87;
-  flex-shrink: 0;
-}
-
-.detailText {
-  opacity: 0;
-  transform: translateX(20px);
-  font-size: 14px;
-  font-weight: 600;
-  color: #133E87;
-  transition: all 0.35s ease;
-}
-
-.detailChip:hover .detailText {
-  opacity: 1;
-  transform: translateX(0);
-}
-
 /* =========================================
    RESPONSIVE
 ============================================ */
-
-@media (max-width: 1024px) {
-  .headerTitleCentered {
-    font-size: 28px;
-  }
-}
-
-/* -------- TABLET -------- */
 @media (max-width: 768px) {
-  .headerTitleCentered {
+  .title {
     font-size: 26px;
     margin-top: 16px;
   }
 
-  .fileContainer {
+  .fileItem {
     padding: 16px;
   }
 
-  .fileNumber,
-  .insuranceInfo {
-    font-size: 13.5px;
+  .statusRow {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
   }
 
-  .detailLinkText {
-    font-size: 13px;
+  .detailButton {
+    width: 100%;
+    justify-content: center;
   }
 
-  /* 🔥 BACK BUTTON OVERRIDE — KÜÇÜLMEYİ DÜZELTİR */
   .backBtn {
-    width: auto !important;
-    height: auto !important;
     padding: 12px 22px;
     font-size: 16px;
     min-width: 150px;
@@ -315,37 +441,28 @@
     height: 30px;
   }
 
-  .fileHeader {
-    gap: 10px;
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
   }
 }
 
-/* -------- MOBILE -------- */
 @media (max-width: 480px) {
-  .headerTitleCentered {
+  .title {
     font-size: 22px;
     margin-top: 14px;
   }
 
-  .fileContainer {
+  .fileItem {
     padding: 14px;
     border-radius: 10px;
   }
 
-  .fileHeader {
-    flex-direction: column;
-    align-items: flex-start;
+  .fileTexts strong {
+    min-width: 120px;
   }
 
-  .statusRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  /* 🔥 MOBIL BACK BUTTON OVERRIDE */
   .backBtn {
-    width: auto !important;
-    height: auto !important;
     padding: 10px 18px;
     font-size: 15px;
     min-width: 140px;
@@ -354,10 +471,5 @@
   .contactBtnIcon {
     width: 28px;
     height: 28px;
-  }
-
-  .fileNumber,
-  .insuranceInfo {
-    font-size: 12.5px;
   }
 }
