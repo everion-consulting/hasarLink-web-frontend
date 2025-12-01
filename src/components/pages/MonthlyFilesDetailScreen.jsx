@@ -1,4 +1,3 @@
-// src/screens/file/MonthlyFilesDetailScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/monthlyFiles.module.css";
@@ -9,8 +8,8 @@ import { Eye } from "lucide-react";
 const MonthlyFilesDetailScreen = () => {
   const navigate = useNavigate();
 
-  const [fileNotifications, setFileNotifications] = useState([]);   // tüm kayıtlar
-  const [displayedFiles, setDisplayedFiles] = useState([]);         // filtre+sayfalama sonrası
+  const [fileNotifications, setFileNotifications] = useState([]);  
+  const [displayedFiles, setDisplayedFiles] = useState([]);         
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +19,7 @@ const MonthlyFilesDetailScreen = () => {
 
   const itemsPerPage = 20;
 
-  // Türkçe karakter normalize
+  
   const normalize = (str) =>
     str
       ?.toString()
@@ -33,6 +32,44 @@ const MonthlyFilesDetailScreen = () => {
       .replace(/ş/g, "s")
       .replace(/ö/g, "o")
       .replace(/ç/g, "c");
+
+  
+  const formatDateToYYYYMMDD = (dateStr) => {
+    if (!dateStr) return "";
+
+    const datePart = dateStr.split(" ")[0]; 
+
+   
+    if (datePart.includes(".")) {
+      const [dd, mm, yyyy] = datePart.split(".");
+      return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+    }
+
+    
+    if (datePart.includes("-")) {
+      return datePart;
+    }
+
+    return dateStr;
+  };
+
+ 
+  const formatDateForDisplay = (dateStr) => {
+    if (!dateStr) return "-";
+
+    const datePart = dateStr.split(" ")[0];
+
+    if (datePart.includes(".")) {
+      return datePart;
+    }
+
+    if (datePart.includes("-")) {
+      const [yyyy, mm, dd] = datePart.split("-");
+      return `${dd}.${mm}.${yyyy}`;
+    }
+
+    return dateStr;
+  };
 
   useEffect(() => {
     const getFileNotifications = async () => {
@@ -49,16 +86,21 @@ const MonthlyFilesDetailScreen = () => {
             ? payload.results
             : [];
 
-          const normalized = safeArray.map((data) => ({
-            id: data.submission_id,
-            vehicle_plate: data.plate ?? "-",
-            insurance_company_name: data.insurance_company_name ?? "-",
-            vehicle_model: data.vehicle_model ?? "-",
-            accident_date: data.accident_date ?? "-",
-            created_at: data.created_at ?? "-",
-            status: data.status ?? "IN_PROGRESS",
-            file_number: data.file_number ?? "-",
-          }));
+          const normalized = safeArray.map((data) => {
+            const createdRaw = data.created_at ?? "-";
+            return {
+              id: data.submission_id,
+              vehicle_plate: data.plate ?? "-",
+              insurance_company_name: data.insurance_company_name ?? "-",
+              vehicle_model: data.vehicle_model ?? "-",
+              accident_date: data.accident_date ?? "-",
+              created_at: createdRaw,
+              created_at_formatted: formatDateForDisplay(createdRaw),
+              created_at_yyyy_mm_dd: formatDateToYYYYMMDD(createdRaw),
+              status: data.status ?? "IN_PROGRESS",
+              file_number: data.file_number ?? "-",
+            };
+          });
 
           setFileNotifications(normalized);
         } else {
@@ -73,26 +115,27 @@ const MonthlyFilesDetailScreen = () => {
     getFileNotifications();
   }, []);
 
-  // 🔥 Filtre + sayfalama
+  
   useEffect(() => {
     let filtered = [...fileNotifications];
 
-    // Tarih filtresi (created_at'e göre, yoksa accident_date)
+    
     if (selectedDate) {
       filtered = filtered.filter((file) => {
-        const baseDate = (file.created_at || file.accident_date) ?? "";
-        const fileDate = baseDate.slice(0, 10);
-        return fileDate === selectedDate;
+        const baseDate =
+          file.created_at_yyyy_mm_dd ||
+          (file.accident_date ? file.accident_date.slice(0, 10) : "");
+        return baseDate === selectedDate;
       });
     }
 
-    // Genel arama filtresi
+   
     if (searchText.trim() !== "") {
       const n = normalize(searchText);
 
       filtered = filtered.filter((file) => {
         const combined = normalize(
-          `${file.vehicle_plate} ${file.accident_date} ${file.insurance_company_name} ${file.vehicle_model} ${file.created_at}`
+          `${file.vehicle_plate} ${file.accident_date} ${file.insurance_company_name} ${file.vehicle_model} ${file.created_at} ${file.file_number}`
         );
         return combined.includes(n);
       });
@@ -178,7 +221,7 @@ const MonthlyFilesDetailScreen = () => {
 
             <p className={styles.insuranceInfo}>
               <strong>{data.insurance_company_name}</strong> –{" "}
-              {data.created_at?.slice(0, 10)}
+              {data.created_at_formatted}
             </p>
           </div>
 
@@ -218,7 +261,7 @@ const MonthlyFilesDetailScreen = () => {
             <div className={styles.listWrapper}>
               <h1 className={styles.pageTitle}>Bu Ay Bildirilen Dosyalar</h1>
 
-              {/* 🔥 TASLAK/İŞLEME ALINANLAR İLE AYNI FİLTRE ALANI */}
+            
               <div className={styles.filterSection}>
                 <div className={styles.filterRow}>
                   {/* TARİH FİLTRESİ */}

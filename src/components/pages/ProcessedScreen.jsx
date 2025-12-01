@@ -1,4 +1,3 @@
-// src/components/pages/ProcessedScreen.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
@@ -10,10 +9,10 @@ import styles from "../../styles/processed.module.css";
 const ProcessedScreen = () => {
   const navigate = useNavigate();
 
-  const [fileNotifications, setFileNotifications] = useState([]);   // 🔹 Tüm kayıtlar
-  const [displayedFiles, setDisplayedFiles] = useState([]);         // 🔹 Sayfalanmış + filtrelenmiş kayıtlar
+  const [fileNotifications, setFileNotifications] = useState([]);   
+  const [displayedFiles, setDisplayedFiles] = useState([]);         
 
-  // 🔥 Filtre & sayfalama stateleri (DraftNotifications ile aynı mantık)
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -22,7 +21,7 @@ const ProcessedScreen = () => {
 
   const itemsPerPage = 20;
 
-  // 🔥 Türkçe karakter normalize fonksiyonu
+ 
   const normalize = (str) =>
     str
       ?.toString()
@@ -35,6 +34,46 @@ const ProcessedScreen = () => {
       .replace(/ş/g, "s")
       .replace(/ö/g, "o")
       .replace(/ç/g, "c");
+
+  
+  const formatDateToYYYYMMDD = (dateStr) => {
+    if (!dateStr) return "";
+
+    const datePart = dateStr.split(" ")[0]; 
+
+    
+    if (datePart.includes(".")) {
+      const [dd, mm, yyyy] = datePart.split(".");
+      return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+    }
+
+   
+    if (datePart.includes("-")) {
+      return datePart;
+    }
+
+    return dateStr;
+  };
+
+  
+  const formatDateForDisplay = (dateStr) => {
+    if (!dateStr) return "-";
+
+    const datePart = dateStr.split(" ")[0];
+
+    
+    if (datePart.includes(".")) {
+      return datePart;
+    }
+
+    
+    if (datePart.includes("-")) {
+      const [yyyy, mm, dd] = datePart.split("-");
+      return `${dd}.${mm}.${yyyy}`;
+    }
+
+    return dateStr;
+  };
 
   useEffect(() => {
     const getFileNotifications = async () => {
@@ -51,16 +90,27 @@ const ProcessedScreen = () => {
             ? payload.results
             : [];
 
-          const normalized = safeArray.map((data) => ({
-            id: data.submission_id ?? Math.random().toString(),
-            vehicle_plate: data.plate ?? "-",
-            insurance_company_name: data.insurance_company_name ?? "-",
-            vehicle_model: data.vehicle_model ?? "-",
-            accident_date: data.accident_date ?? "-",
-            created_at: data.created_at ?? "-",
-            status: data.status ?? "IN_PROGRESS",
-            file_number: data.file_number ?? "-",
-          }));
+          const normalized = safeArray.map((data) => {
+            const createdRaw = data.created_at ?? "-";
+            const accidentRaw = data.accident_date ?? "-";
+
+            return {
+              id: data.submission_id ?? Math.random().toString(),
+              vehicle_plate: data.plate ?? "-",
+              insurance_company_name: data.insurance_company_name ?? "-",
+              vehicle_model: data.vehicle_model ?? "-",
+
+              accident_date: accidentRaw,
+              accident_date_formatted: formatDateForDisplay(accidentRaw),
+
+              created_at: createdRaw,
+              created_at_formatted: formatDateForDisplay(createdRaw),
+              created_at_yyyy_mm_dd: formatDateToYYYYMMDD(createdRaw),
+
+              status: data.status ?? "IN_PROGRESS",
+              file_number: data.file_number ?? "-",
+            };
+          });
 
           setFileNotifications(normalized);
         } else {
@@ -75,19 +125,21 @@ const ProcessedScreen = () => {
     getFileNotifications();
   }, []);
 
-  // 🔥 Filtre + sayfalama hesaplama (DraftNotifications mantığına benzer)
+  
   useEffect(() => {
     let filtered = [...fileNotifications];
 
-    // 🔹 Tarih filtresi (created_at'e göre)
+    // 🔹 Tarih filtresi (öncelik created_at, yoksa accident_date)
     if (selectedDate) {
       filtered = filtered.filter((file) => {
-        const fileDate = file.created_at?.slice(0, 10);
-        return fileDate === selectedDate;
+        const baseDate =
+          file.created_at_yyyy_mm_dd ||
+          (file.accident_date ? file.accident_date.slice(0, 10) : "");
+        return baseDate === selectedDate;
       });
     }
 
-    // 🔹 Genel arama filtresi
+  
     if (searchText.trim() !== "") {
       const n = normalize(searchText);
 
@@ -162,7 +214,7 @@ const ProcessedScreen = () => {
               <strong>Araç Plaka:</strong> {data.vehicle_plate}
             </p>
             <p>
-              <strong>Kaza Tarihi:</strong> {data.accident_date}
+              <strong>Kaza Tarihi:</strong> {data.accident_date_formatted || "-"}
             </p>
             <p>
               <strong>Araç Model:</strong> {data.vehicle_model}
@@ -170,7 +222,7 @@ const ProcessedScreen = () => {
 
             <p>
               <strong>{data.insurance_company_name}</strong>
-              <span> - {data.created_at?.slice(0, 10)}</span>
+              <span> - {data.created_at_formatted}</span>
             </p>
           </div>
 
@@ -207,7 +259,7 @@ const ProcessedScreen = () => {
       <div className={styles.contentArea}>
         <h1 className={styles.headerTitleCentered}>İşleme Alınanlar</h1>
 
-        {/* 🔥 FİLTRE BÖLÜMÜ (DraftNotifications'dan alınan yapı) */}
+       
         <div className={styles.filterSection}>
           <div className={styles.filterRow}>
             {/* TARİH FİLTRESİ */}
