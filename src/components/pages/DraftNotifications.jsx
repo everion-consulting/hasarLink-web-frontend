@@ -12,17 +12,34 @@ const DraftNotifications = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [selectedDate, setSelectedDate] = useState('');
+
+    // 🔥 GENEL ARAMA FİLTRESİ
+    const [searchText, setSearchText] = useState('');
+
     const itemsPerPage = 20;
     const navigate = useNavigate();
 
+    // 🔥 Türkçe karakter normalize fonksiyonu
+    const normalize = (str) =>
+        str
+            ?.toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ı/g, "i")
+            .replace(/ğ/g, "g")
+            .replace(/ü/g, "u")
+            .replace(/ş/g, "s")
+            .replace(/ö/g, "o")
+            .replace(/ç/g, "c");
+
     useEffect(() => {
         fetchDraftsData(currentPage);
-    }, [currentPage, selectedDate]);
+    }, [currentPage, selectedDate, searchText]); // 🔥 searchText eklendi
 
     const fetchDraftsData = async (page) => {
         try {
             const response = await apiService.getDrafts(page, null, null);
-
             const raw = response.data ?? response;
 
             let allDrafts = [];
@@ -30,17 +47,14 @@ const DraftNotifications = () => {
             let isBackendPaginated = false;
 
             if (Array.isArray(raw)) {
-
                 allDrafts = raw;
                 backendCount = raw.length;
             } else {
-
                 if (Array.isArray(raw.results)) {
                     allDrafts = raw.results;
                     backendCount = typeof raw.count === "number" ? raw.count : raw.results.length;
                     isBackendPaginated = true;
                 } else if (Array.isArray(raw.queryset)) {
-
                     allDrafts = raw.queryset;
                     backendCount = raw.queryset.length;
                 } else {
@@ -49,8 +63,9 @@ const DraftNotifications = () => {
                 }
             }
 
-
             let filtered = allDrafts;
+
+            // 🔥 TARİH FİLTRESİ
             if (selectedDate) {
                 filtered = filtered.filter((draft) => {
                     const draftDate = draft.created_at?.slice(0, 10);
@@ -58,18 +73,27 @@ const DraftNotifications = () => {
                 });
             }
 
+            // 🔥 GENEL ARAMA FİLTRESİ
+            if (searchText.trim() !== "") {
+                const n = normalize(searchText);
 
-            const totalForPagination = selectedDate
+                filtered = filtered.filter((draft) => {
+                    const combined = normalize(
+                        `${draft.vehicle_plate} ${draft.accident_date} ${draft.insurance_company_name} ${draft.created_at}`
+                    );
+                    return combined.includes(n);
+                });
+            }
+
+            const totalForPagination = (selectedDate || searchText)
                 ? filtered.length
                 : backendCount || filtered.length;
-
 
             if (isBackendPaginated) {
                 setDrafts(filtered);
                 setTotalCount(totalForPagination);
                 setTotalPages(Math.ceil(totalForPagination / itemsPerPage));
             } else {
-
                 const startIndex = (page - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
                 const pageItems = filtered.slice(startIndex, endIndex);
@@ -86,7 +110,6 @@ const DraftNotifications = () => {
         }
     };
 
-
     const handleFilterChange = () => {
         setCurrentPage(1);
         fetchDraftsData(1);
@@ -94,6 +117,7 @@ const DraftNotifications = () => {
 
     const handleClearFilters = () => {
         setSelectedDate('');
+        setSearchText(''); // 🔥 Genel arama reset
         setCurrentPage(1);
     };
 
@@ -102,7 +126,6 @@ const DraftNotifications = () => {
             await apiService.deleteDraft(draftId);
             setDrafts(drafts.filter((draft) => draft.id !== draftId));
             setShowModal(false);
-
             fetchDraftsData(currentPage);
         } catch (error) {
             console.error("Taslak silinirken hata:", error);
@@ -236,6 +259,8 @@ const DraftNotifications = () => {
             {/* Filter Section */}
             <div className={styles.filterSection}>
                 <div className={styles.filterRow}>
+
+                    {/* TARİH FİLTRESİ */}
                     <div className={styles.filterGroup}>
                         <label htmlFor="selectedDate" className={styles.filterLabel}>
                             Tarih Seçin:
@@ -252,12 +277,27 @@ const DraftNotifications = () => {
                         </div>
                     </div>
 
-                    {/* Buttons - Same row */}
+                    {/* 🔥 GENEL ARAMA FİLTRESİ */}
+                    <div className={styles.filterGroup}>
+                        <label className={styles.filterLabel}>Genel Arama:</label>
+
+                        <div className={styles.inputWrapper}>
+                            <input
+                                type="text"
+                                placeholder="Plaka, şirket, tarih..."
+                                className={styles.filterDate}
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* BUTTONS */}
                     <div className={styles.buttonGroup}>
                         <button
                             className={styles.filterButton}
                             onClick={handleFilterChange}
-                            disabled={!selectedDate}
+                            disabled={!selectedDate && !searchText}
                         >
                             Filtrele
                         </button>
@@ -265,14 +305,13 @@ const DraftNotifications = () => {
                         <button
                             className={styles.clearFilterButton}
                             onClick={handleClearFilters}
-                            disabled={!selectedDate}
+                            disabled={!selectedDate && !searchText}
                         >
                             Filtreyi Temizle
                         </button>
                     </div>
                 </div>
             </div>
-
 
             {totalCount > 0 && (
                 <p className={styles.totalCount}>
