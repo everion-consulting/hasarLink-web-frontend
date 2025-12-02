@@ -4,7 +4,6 @@ import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 import RightIconWhite from "../images/rightIcon.svg";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    if (totalPages <= 1) return null;
 
     return (
         <div className={styles.pagination}>
