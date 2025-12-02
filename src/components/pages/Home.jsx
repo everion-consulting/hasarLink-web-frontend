@@ -187,7 +187,7 @@ export default function Dashboard() {
           onClick={() => navigate("/notified-screen")}
           style={{ cursor: "pointer" }}
         >
-          <h3 className={styles.cardDashboardHeading}>BİLDİRİMİ YAPILANLAR</h3>
+          <h3 className={styles.cardDashboardHeading}>BİLDİRİMİ YAPILANLARRR</h3>
 
           <p className={styles.cardDashboardCount}>
             <span className={styles.cardDashboardCountNumber}>
