@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/FileNotifications.module.css";
 import { Eye } from "lucide-react";
-import Pagination from "../pagination/Pagination";
+import Pagination from "../pagination/Pagination.jsx";
 
 const FileNotifications = () => {
   const [fileNotifications, setFileNotifications] = useState([]);   // tüm kayıtlar
