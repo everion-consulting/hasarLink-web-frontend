@@ -1,6 +1,8 @@
 
 const API_BASE_URL = "https://dosya-bildirim-vrosq.ondigitalocean.app";
 
+const PROTECTED_ENDPOINTS = ['/api/', '/core/'];
+
 export async function fetchData(
   endpoint,
   method = "GET",
@@ -9,6 +11,17 @@ export async function fetchData(
 ) {
   try {
     const token = localStorage.getItem("authToken");
+    
+    const isProtected = PROTECTED_ENDPOINTS.some(prefix => endpoint.startsWith(prefix));
+    if (isProtected && (!token || token === "undefined" || token === "null")) {
+      console.log("🔒 Token olmadan korumalı endpoint'e erişim engellendi:", endpoint);
+      return {
+        success: false,
+        status: 401,
+        message: "Giriş gerekli",
+        data: null,
+      };
+    }
 
     const headers = {
       Accept: "application/json",
