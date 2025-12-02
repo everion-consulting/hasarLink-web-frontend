@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { XCircle } from "lucide-react";
 import styles from './DraftNotifications.module.css';
 import apiService from '../../services/apiServices';
+import Pagination from '../pagination/Pagination';
 
 const DraftNotifications = () => {
     const [drafts, setDrafts] = useState([]);
@@ -365,36 +366,11 @@ const DraftNotifications = () => {
                 )}
             </ul>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className={styles.pagination}>
-                    <button
-                        className={styles.paginationButton}
-                        onClick={() =>
-                            setCurrentPage((prev) => Math.max(1, prev - 1))
-                        }
-                        disabled={currentPage === 1}
-                    >
-                        ← Önceki
-                    </button>
-
-                    <div className={styles.paginationInfo}>
-                        Sayfa {currentPage} / {totalPages}
-                    </div>
-
-                    <button
-                        className={styles.paginationButton}
-                        onClick={() =>
-                            setCurrentPage((prev) =>
-                                Math.min(totalPages, prev + 1)
-                            )
-                        }
-                        disabled={currentPage === totalPages}
-                    >
-                        Sonraki →
-                    </button>
-                </div>
-            )}
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+            />
 
             {/* MODAL */}
             {showModal && (

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/ongoing.module.css";
+import Pagination from "../pagination/Pagination";
 
 const OnGoingFilesScreen = () => {
   const navigate = useNavigate();
@@ -261,8 +262,8 @@ const OnGoingFilesScreen = () => {
             </div>
           ) : filteredFiles.length === 0 ? (
             <div className={styles.rejectedEmpty}>
-              {fileNotifications.length === 0 
-                ? "Henüz işlemi devam eden dosya bulunmuyor." 
+              {fileNotifications.length === 0
+                ? "Henüz işlemi devam eden dosya bulunmuyor."
                 : "Filtreleme kriterlerinize uygun dosya bulunamadı."}
             </div>
           ) : (
@@ -335,36 +336,11 @@ const OnGoingFilesScreen = () => {
           )}
         </div>
 
-        {/* 🔹 SAYFALAMA */}
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button
-              className={styles.paginationButton}
-              onClick={() =>
-                setCurrentPage((prev) => Math.max(1, prev - 1))
-              }
-              disabled={currentPage === 1}
-            >
-              ← Önceki
-            </button>
-
-            <div className={styles.paginationInfo}>
-              Sayfa {currentPage} / {totalPages}
-            </div>
-
-            <button
-              className={styles.paginationButton}
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(totalPages, prev + 1)
-                )
-              }
-              disabled={currentPage === totalPages}
-            >
-              Sonraki →
-            </button>
-          </div>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
 
         <div className={styles.btnArea}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>

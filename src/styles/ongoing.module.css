@@ -4,7 +4,7 @@
 .screenContainer {
   width: 100%;
   min-height: 100vh;
-  padding: 20px 16px 40px;
+  padding: 2rem;
   display: flex;
   justify-content: center;
   background: transparent;
@@ -84,9 +84,12 @@
    LIST
 ========================================= */
 .rejectedList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  gap: 24px;
 }
 
 /* =========================================
@@ -467,6 +470,10 @@
   .clearFilterButton {
     padding: 10px 18px;
     font-size: 16px;
+  }
+
+  .rejectedList {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
 

@@ -5,14 +5,15 @@ import { Eye } from "lucide-react";
 
 import apiService from "../../services/apiServices";
 import styles from "../../styles/processed.module.css";
+import Pagination from "../pagination/Pagination";
 
 const ProcessedScreen = () => {
   const navigate = useNavigate();
 
-  const [fileNotifications, setFileNotifications] = useState([]);   
-  const [displayedFiles, setDisplayedFiles] = useState([]);         
+  const [fileNotifications, setFileNotifications] = useState([]);
+  const [displayedFiles, setDisplayedFiles] = useState([]);
 
- 
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -21,7 +22,7 @@ const ProcessedScreen = () => {
 
   const itemsPerPage = 20;
 
- 
+
   const normalize = (str) =>
     str
       ?.toString()
@@ -35,19 +36,19 @@ const ProcessedScreen = () => {
       .replace(/ö/g, "o")
       .replace(/ç/g, "c");
 
-  
+
   const formatDateToYYYYMMDD = (dateStr) => {
     if (!dateStr) return "";
 
-    const datePart = dateStr.split(" ")[0]; 
+    const datePart = dateStr.split(" ")[0];
 
-    
+
     if (datePart.includes(".")) {
       const [dd, mm, yyyy] = datePart.split(".");
       return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
     }
 
-   
+
     if (datePart.includes("-")) {
       return datePart;
     }
@@ -55,18 +56,18 @@ const ProcessedScreen = () => {
     return dateStr;
   };
 
-  
+
   const formatDateForDisplay = (dateStr) => {
     if (!dateStr) return "-";
 
     const datePart = dateStr.split(" ")[0];
 
-    
+
     if (datePart.includes(".")) {
       return datePart;
     }
 
-    
+
     if (datePart.includes("-")) {
       const [yyyy, mm, dd] = datePart.split("-");
       return `${dd}.${mm}.${yyyy}`;
@@ -87,8 +88,8 @@ const ProcessedScreen = () => {
           const safeArray = Array.isArray(payload)
             ? payload
             : Array.isArray(payload?.results)
-            ? payload.results
-            : [];
+              ? payload.results
+              : [];
 
           const normalized = safeArray.map((data) => {
             const createdRaw = data.created_at ?? "-";
@@ -125,11 +126,11 @@ const ProcessedScreen = () => {
     getFileNotifications();
   }, []);
 
-  
+
   useEffect(() => {
     let filtered = [...fileNotifications];
 
-    // 🔹 Tarih filtresi (öncelik created_at, yoksa accident_date)
+    // Tarih filtresi (öncelik created_at, yoksa accident_date)
     if (selectedDate) {
       filtered = filtered.filter((file) => {
         const baseDate =
@@ -139,7 +140,7 @@ const ProcessedScreen = () => {
       });
     }
 
-  
+
     if (searchText.trim() !== "") {
       const n = normalize(searchText);
 
@@ -259,7 +260,7 @@ const ProcessedScreen = () => {
       <div className={styles.contentArea}>
         <h1 className={styles.headerTitleCentered}>İşleme Alınanlar</h1>
 
-       
+
         <div className={styles.filterSection}>
           <div className={styles.filterRow}>
             {/* TARİH FİLTRESİ */}
@@ -333,38 +334,11 @@ const ProcessedScreen = () => {
             </div>
           )}
         </div>
-
-        {/* SAYFALAMA */}
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button
-              className={styles.paginationButton}
-              onClick={() =>
-                setCurrentPage((prev) => Math.max(1, prev - 1))
-              }
-              disabled={currentPage === 1}
-            >
-              ← Önceki
-            </button>
-
-            <div className={styles.paginationInfo}>
-              Sayfa {currentPage} / {totalPages}
-            </div>
-
-            <button
-              className={styles.paginationButton}
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(totalPages, prev + 1)
-                )
-              }
-              disabled={currentPage === totalPages}
-            >
-              Sonraki →
-            </button>
-          </div>
-        )}
-
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
         <div className={styles.btnArea}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>
             <span className={styles.contactBtnIcon}>
