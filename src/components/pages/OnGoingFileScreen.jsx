@@ -5,6 +5,7 @@ import { Eye } from "lucide-react";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/ongoing.module.css";
 import Pagination from "../pagination/Pagination";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 
 const OnGoingFilesScreen = () => {
   const navigate = useNavigate();
@@ -345,7 +346,7 @@ const OnGoingFilesScreen = () => {
         <div className={styles.btnArea}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>
             <span className={styles.contactBtnIcon}>
-              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+              <img src={LeftIconBlack} alt="Geri" />
             </span>
             GERİ DÖN
           </button>
