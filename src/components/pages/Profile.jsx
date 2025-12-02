@@ -110,7 +110,12 @@ export default function Profile() {
     useEffect(() => {
         const getFiles = async () => {
             const res = await apiService.getAllSubmissions();
-            if (res.success) setFileNotifications(res.data.results);
+            if (res.success) {
+                const notifications = res.data?.results || res.data || [];
+                setFileNotifications(notifications);
+            } else {
+                console.error("Dosya Bildirimleri Çekilmedi:", res);
+            }
         };
         getFiles();
     }, []);
