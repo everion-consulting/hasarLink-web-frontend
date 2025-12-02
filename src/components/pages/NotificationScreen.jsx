@@ -46,6 +46,7 @@ const NotificationsScreen = () => {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
         );
+        window.dispatchEvent(new Event("notificationsUpdated"));
       } else {
         window.alert(response.message || "Bildirim okundu olarak işaretlenemedi");
       }
@@ -73,6 +74,7 @@ const NotificationsScreen = () => {
 
       if (response.success) {
         setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+        window.dispatchEvent(new Event("notificationsUpdated"));
         window.alert("Tüm bildirimler okundu işaretlendi");
       } else {
         window.alert(response.message || "İşlem başarısız oldu");
@@ -99,6 +101,7 @@ const NotificationsScreen = () => {
         if (selectedNotification && selectedNotification.id === id) {
           closeModal();
         }
+        window.dispatchEvent(new Event("notificationsUpdated"));
       } else {
         window.alert(response.message || "Bildirim silinemedi");
       }
