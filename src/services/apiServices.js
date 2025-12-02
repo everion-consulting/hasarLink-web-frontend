@@ -24,9 +24,18 @@ const apiService = {
   },
 
 
-  async getAllSubmissions() {
-    return await fetchData(`${PATH}/submissions/`, 'GET');
+  async getAllSubmissions(isCompleted = null) {
+    let url = `${PATH}/submissions/`;
+
+    if (isCompleted !== false) {
+      url += `?is_completed=true`;
+    } else if (isCompleted === false) {
+      url += `?is_completed=false`;
+    }
+
+    return await fetchData(url, 'GET');
   },
+
 
   async getSubmissionDetail(fileId) {
     return await fetchData(`${PATH}/submissions/${fileId}/`, 'GET');
