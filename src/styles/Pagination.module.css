@@ -1,0 +1,77 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Ortak stil */
+.paginationButton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Önceki buton - soft */
+.prevBtn {
+    background: #CBDCEB;
+    color: #1E293B;
+}
+
+.prevBtn:hover:not(:disabled) {
+    background: #e7f1f9;
+}
+
+/* Sonraki buton - primary */
+.nextBtn {
+    background: #133E87;
+    color: #fff;
+}
+
+.nextBtn:hover:not(:disabled) {
+    background: #0f316c;
+}
+
+.paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationInfo {
+    font-size: 20px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #374151;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ============================================
+   ICON CIRCLE (CTA ile %100 aynı)
+============================================ */
+.paginationButtonIcon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.prevBtn .paginationButtonIcon,
+.nextBtn .paginationButtonIcon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.paginationButtonIcon img {
+    width: 14px;
+    height: 14px;
+}

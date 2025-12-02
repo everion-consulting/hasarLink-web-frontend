@@ -152,6 +152,7 @@
   font-size: 15px;
   line-height: 20px;
   letter-spacing: 1px;
+  margin-bottom: 12px;
 }
 
 /* =========================================
@@ -249,7 +250,7 @@
 /* =========================================
    WHITE CARD
 ========================================= */
-.vehicleFormCard {
+.fileContainer {
   background-color: #fff;
   border: 1px solid #eaeaea;
   border-radius: 14px;
@@ -263,9 +264,12 @@
    LIST
 ========================================= */
 .listWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  gap: 24px;
 }
 
 .empty {
@@ -442,5 +446,9 @@
     padding: 10px 18px;
     font-size: 15px;
     min-width: 140px;
+  }
+
+  .listWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }

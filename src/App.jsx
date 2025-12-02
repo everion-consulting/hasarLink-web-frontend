@@ -39,7 +39,6 @@ function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Dashboard mı?
   const isDashboard = location.pathname === "/";
 
   const [draftCount, setDraftCount] = useState(0);
@@ -105,7 +104,6 @@ export default function App() {
   const validToken = savedToken && savedToken !== "undefined" && savedToken !== "null";
   const [isAuth, setIsAuth] = useState(!!validToken);
 
-  // Token kontrolü - her 5 dakikada bir
   useEffect(() => {
     const checkTokenValidity = async () => {
       const token = localStorage.getItem("authToken");
@@ -117,7 +115,6 @@ export default function App() {
         return;
       }
 
-      // Token'in geçerliliğini kontrol et (API çağrısı ile)
       try {
         const response = await fetch(`${import.meta.env.VITE_API_BASE || "https://dosya-bildirim-vrosq.ondigitalocean.app"}/api/profile/`, {
           headers: {
@@ -126,24 +123,27 @@ export default function App() {
         });
 
         if (!response.ok) {
-          // Token geçersiz
           console.log("⚠️ Token geçersiz, oturum sonlandırılıyor");
           localStorage.clear();
           setIsAuth(false);
         }
       } catch (err) {
-        console.error("Token kontrol hatası:", err);
+        console.log("Token kontrol hatası:", err.message);
       }
     };
 
-    // İlk kontrol
     if (isAuth) {
-      checkTokenValidity();
-    }
+      const initialCheck = setTimeout(() => {
+        checkTokenValidity();
+      }, 500);
 
-    // Her 5 dakikada bir kontrol et
-    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+      const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+      
+      return () => {
+        clearTimeout(initialCheck);
+        clearInterval(interval);
+      };
+    }
   }, [isAuth]);
 
   useEffect(() => {

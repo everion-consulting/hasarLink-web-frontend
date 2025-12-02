@@ -4,12 +4,13 @@ import styles from "../../styles/monthlyFiles.module.css";
 import apiService from "../../services/apiServices";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Eye } from "lucide-react";
+import Pagination from "../pagination/Pagination";
 
 const MonthlyFilesDetailScreen = () => {
   const navigate = useNavigate();
 
-  const [fileNotifications, setFileNotifications] = useState([]);  
-  const [displayedFiles, setDisplayedFiles] = useState([]);         
+  const [fileNotifications, setFileNotifications] = useState([]);
+  const [displayedFiles, setDisplayedFiles] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -19,7 +20,7 @@ const MonthlyFilesDetailScreen = () => {
 
   const itemsPerPage = 20;
 
-  
+
   const normalize = (str) =>
     str
       ?.toString()
@@ -33,19 +34,19 @@ const MonthlyFilesDetailScreen = () => {
       .replace(/ö/g, "o")
       .replace(/ç/g, "c");
 
-  
+
   const formatDateToYYYYMMDD = (dateStr) => {
     if (!dateStr) return "";
 
-    const datePart = dateStr.split(" ")[0]; 
+    const datePart = dateStr.split(" ")[0];
 
-   
+
     if (datePart.includes(".")) {
       const [dd, mm, yyyy] = datePart.split(".");
       return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
     }
 
-    
+
     if (datePart.includes("-")) {
       return datePart;
     }
@@ -53,7 +54,7 @@ const MonthlyFilesDetailScreen = () => {
     return dateStr;
   };
 
- 
+
   const formatDateForDisplay = (dateStr) => {
     if (!dateStr) return "-";
 
@@ -83,8 +84,8 @@ const MonthlyFilesDetailScreen = () => {
           const safeArray = Array.isArray(payload)
             ? payload
             : Array.isArray(payload?.results)
-            ? payload.results
-            : [];
+              ? payload.results
+              : [];
 
           const normalized = safeArray.map((data) => {
             const createdRaw = data.created_at ?? "-";
@@ -115,11 +116,11 @@ const MonthlyFilesDetailScreen = () => {
     getFileNotifications();
   }, []);
 
-  
+
   useEffect(() => {
     let filtered = [...fileNotifications];
 
-    
+
     if (selectedDate) {
       filtered = filtered.filter((file) => {
         const baseDate =
@@ -129,7 +130,7 @@ const MonthlyFilesDetailScreen = () => {
       });
     }
 
-   
+
     if (searchText.trim() !== "") {
       const n = normalize(searchText);
 
@@ -261,7 +262,7 @@ const MonthlyFilesDetailScreen = () => {
             <div className={styles.listWrapper}>
               <h1 className={styles.pageTitle}>Bu Ay Bildirilen Dosyalar</h1>
 
-            
+
               <div className={styles.filterSection}>
                 <div className={styles.filterRow}>
                   {/* TARİH FİLTRESİ */}
@@ -336,36 +337,11 @@ const MonthlyFilesDetailScreen = () => {
                   </p>
                 </div>
               )}
-
-              {totalPages > 1 && (
-                <div className={styles.pagination}>
-                  <button
-                    className={styles.paginationButton}
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(1, prev - 1))
-                    }
-                    disabled={currentPage === 1}
-                  >
-                    ← Önceki
-                  </button>
-
-                  <div className={styles.paginationInfo}>
-                    Sayfa {currentPage} / {totalPages}
-                  </div>
-
-                  <button
-                    className={styles.paginationButton}
-                    onClick={() =>
-                      setCurrentPage((prev) =>
-                        Math.min(totalPages, prev + 1)
-                      )
-                    }
-                    disabled={currentPage === totalPages}
-                  >
-                    Sonraki →
-                  </button>
-                </div>
-              )}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
             </div>
           </main>
         </div>
