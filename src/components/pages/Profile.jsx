@@ -110,7 +110,12 @@ export default function Profile() {
     useEffect(() => {
         const getFiles = async () => {
             const res = await apiService.getAllSubmissions();
-            if (res.success) setFileNotifications(res.data.results);
+            if (res.success) {
+                const notifications = res.data?.results || res.data || [];
+                setFileNotifications(notifications);
+            } else {
+                console.error("Dosya Bildirimleri Çekilmedi:", res);
+            }
         };
         getFiles();
     }, []);
@@ -263,8 +268,8 @@ export default function Profile() {
                         <a className={styles.editLink} onClick={() => navigate("/file-notifications")}>Hepsini Gör</a>
                     </div>
 
-                    <div className={`${styles.fileStatusRow} ${styles['count-' + Math.min(fileNotifications.slice(0, 8).length, 8)]}`}>
-                        {fileNotifications.slice(0, 8).map((item) => (
+                    <div className={`${styles.fileStatusRow} ${styles['count-' + Math.min((fileNotifications || []).slice(0, 8).length, 8)]}`}>
+                        {(fileNotifications || []).slice(0, 8).map((item) => (
                             <div key={item.id} className={styles.fileStatusBox}>
                                 {getStatusIcon(item.status)}
                             </div>

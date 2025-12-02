@@ -9,12 +9,18 @@
 
 .scrollView {
   flex: 1;
-  padding: 0 20px;
+  padding: 2rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.requiredIndicator {
+  color: #C62828;
+  font-weight: 700;
+  margin-left: 2px;
 }
 
 .pageTitle {
@@ -24,6 +30,7 @@
   text-align: center;
   font-style: normal;
   font-family: 'Poppins', sans-serif;
+  margin-block: 24px;
 }
 
 /* ADIM BİLGİ ALANI */
@@ -32,7 +39,6 @@
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
-  margin-bottom: 20px;
   order: 3;
 }
 
@@ -64,7 +70,6 @@
   text-align: center;
   line-height: 20px;
   font-family: 'Poppins', sans-serif;
-  margin: 0 20px 20px 20px;
 }
 
 /* FORM KARTI */
@@ -299,25 +304,14 @@
   text-align: center;
 }
 
-/* RESPONSIVE */
-@media (max-width: 992px) {
-  .formCard {
-    padding: 15px;
-  }
-}
-
 @media (max-width: 768px) {
   .scrollView {
-    padding: 0 15px;
+    padding: 1rem;
   }
 
   .pageTitle {
     font-size: 20px;
-    margin-top: 20px;
-  }
-
-  .formCard {
-    padding: 15px;
+    margin-block: 20px;
   }
 
   .dataLabel {
@@ -382,7 +376,6 @@
 
   .stepInfo {
     font-size: 14px;
-    margin: 0 10px 15px 10px;
   }
 
   .approvedCard {

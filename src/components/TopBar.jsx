@@ -53,8 +53,16 @@ export default function TopBar() {
                 setNotificationCount(0);
             }
         };
-
         fetchUnread();
+
+        const handleNotificationsUpdate = () => {
+            fetchUnread();
+        };
+
+        window.addEventListener("notificationsUpdated", handleNotificationsUpdate);
+        return () => {
+            window.removeEventListener("notificationsUpdated", handleNotificationsUpdate);
+        };
     }, []);
 
 

@@ -111,6 +111,10 @@
     height: var(--circle-size);
   }
 
+  .circleContainer {
+    width: 50px;
+  }
+
   .stepNumber {
     font-size: 18px;
   }
@@ -132,6 +136,10 @@
     --circle-size: 40px;
     width: var(--circle-size);
     height: var(--circle-size);
+  }
+
+  .circleContainer {
+    width: 40px;
   }
 
   .stepNumber {

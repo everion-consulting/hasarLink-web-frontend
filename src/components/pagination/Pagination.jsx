@@ -15,7 +15,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 <span className={styles.paginationButtonIcon}>
                     <img src={LeftIconBlack} alt="Geri" />
                 </span>
-                Önceki
+                Önceki Sayfa
             </button>
 
             <div className={styles.paginationInfo}>
@@ -27,9 +27,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >
-                Sonraki
+                Sonraki Sayfa
                 <span className={styles.paginationButtonIcon}>
-                    <img src={RightIconWhite} alt="Sonraki" />
+                    <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
                 </span>
             </button>
         </div>

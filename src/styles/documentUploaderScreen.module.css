@@ -1,5 +1,4 @@
 .uploadContainer {
-  padding: 20px;
   max-width: 900px;
   margin: 0 auto;
 }
@@ -160,9 +159,6 @@
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  .uploadContainer {
-    padding: 12px;
-  }
 
   .uploadCard {
     padding: 14px;

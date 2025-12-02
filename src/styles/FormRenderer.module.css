@@ -106,6 +106,12 @@
   color: #9ca3af !important;
 }
 
+.requiredIndicator {
+  color: #C62828;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
 /* HIDDEN NATIVE DATE INPUT */
 .nativeDateInput {
   position: absolute;
@@ -271,10 +277,6 @@
   .formRow {
     grid-template-columns: 1fr;
     gap: 12px;
-  }
-
-  .formRenderer {
-    padding: 0 16px;
   }
 
   .dropdownMenu {

@@ -6,6 +6,7 @@ import apiService from "../../services/apiServices";
 import styles from "../../styles/rejectedFileScreen.module.css";
 import Pagination from "../pagination/Pagination";
 import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
+import FilterSection from "../filter/FilterSection";
 
 const RejectedFilesScreen = () => {
   const navigate = useNavigate();
@@ -218,65 +219,15 @@ const RejectedFilesScreen = () => {
         <div className={styles.rejectedHeader}>
           <h1 className={styles.pageTitle}>Reddedilen Dosyalar</h1>
         </div>
-
-        {/* 🔹 FİLTRELEME BÖLÜMÜ */}
-        <div className={styles.filterSection}>
-          <div className={styles.filterRow}>
-            {/* TARİH FİLTRESİ */}
-            <div className={styles.filterGroup}>
-              <label htmlFor="selectedDate" className={styles.filterLabel}>
-                Tarih Seçin:
-              </label>
-              <div className={styles.inputWrapper}>
-                <input
-                  type="date"
-                  id="selectedDate"
-                  className={styles.filterDate}
-                  value={selectedDate}
-                  onChange={(e) => {
-                    setSelectedDate(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* GENEL ARAMA FİLTRESİ */}
-            <div className={styles.filterGroup}>
-              <label className={styles.filterLabel}>Genel Arama:</label>
-              <div className={styles.inputWrapper}>
-                <input
-                  type="text"
-                  placeholder="Plaka, red nedeni..."
-                  className={styles.filterDate}
-                  value={searchText}
-                  onChange={(e) => {
-                    setSearchText(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* BUTONLAR */}
-            <div className={styles.buttonGroup}>
-              <button
-                className={styles.filterButton}
-                onClick={handleFilterChange}
-                disabled={!selectedDate && !searchText}
-              >
-                Filtrele
-              </button>
-              <button
-                className={styles.clearFilterButton}
-                onClick={handleClearFilters}
-                disabled={!selectedDate && !searchText}
-              >
-                Filtreyi Temizle
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Filter Section */}
+        <FilterSection
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          searchText={searchText}
+          setSearchText={setSearchText}
+          onFilter={handleFilterChange}
+          onClear={handleClearFilters}
+        />
 
         {totalCount > 0 && (
           <p className={styles.totalCount}>

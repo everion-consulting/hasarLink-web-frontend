@@ -19,7 +19,6 @@
     width: 100%;
     max-width: 627px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
 }
 
 .screenContainer.dark {
@@ -32,6 +31,7 @@
     flex-direction: column;
     align-items: center;
     flex-grow: 1;
+    padding: 2rem;
 }
 
 .sectionTitle {
@@ -51,49 +51,43 @@
 /* RESPONSIVE TASARIM */
 /* --------------------------- */
 
-/* TABLET (1024px ve altı) */
 @media (max-width: 1024px) {
-    .contentArea {
-        max-width: 700px;
-        padding: 32px 16px;
-    }
-
     .pageTitle {
         font-size: 26px;
     }
+
+    .formCard {
+        padding: 35px;
+    }
 }
 
-/* 📌 BÜYÜK MOBİL & KÜÇÜK TABLET (768px ve altı) */
 @media (max-width: 768px) {
-    .contentArea {
-        max-width: 95%;
-        padding: 28px 12px;
-    }
-
     .pageTitle {
         font-size: 24px;
         margin-bottom: 20px;
     }
+
+    .formCard {
+        padding: 30px;
+    }
 }
 
-/* 📌 KÜÇÜK MOBİL (480px ve altı) */
 @media (max-width: 480px) {
-    .contentArea {
-        padding: 24px 10px;
-    }
-
     .pageTitle {
         font-size: 22px;
     }
+
+    .formCard {
+        padding: 25px;
+    }
 }
 
-/* 📌 EN KÜÇÜK MOBİL (370px ve altı – iPhone SE vb.) */
 @media (max-width: 370px) {
     .pageTitle {
         font-size: 20px;
     }
 
-    .contentArea {
-        padding: 20px 8px;
+    .formCard {
+        padding: 20px;
     }
 }

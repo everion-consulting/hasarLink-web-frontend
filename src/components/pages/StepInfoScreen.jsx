@@ -887,7 +887,7 @@ export default function StepInfoScreen() {
                         <div className={styles.dataLabel}>
                           {item.label}
                           {item.label === 'Mağdur Araç Plaka' && isCokluKarsiKasko && (
-                            <span style={{ color: 'red' }}> *</span>
+                            <span className={styles.requiredIndicator}> *</span>
                           )}:
                         </div>
                       ) : (

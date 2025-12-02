@@ -6,7 +6,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Eye } from "lucide-react";
 import Pagination from "../pagination/Pagination";
 import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
-
+import FilterSection from "../filter/FilterSection";
 
 const MonthlyFilesDetailScreen = () => {
   const navigate = useNavigate();
@@ -261,66 +261,17 @@ const MonthlyFilesDetailScreen = () => {
       <div className={styles.contentArea}>
         <div className={styles.container}>
           <main className={styles.content}>
-            <div className={styles.listWrapper}>
+            <div>
               <h1 className={styles.pageTitle}>Bu Ay Bildirilen Dosyalar</h1>
-
-
-              <div className={styles.filterSection}>
-                <div className={styles.filterRow}>
-                  {/* TARİH FİLTRESİ */}
-                  <div className={styles.filterGroup}>
-                    <label
-                      htmlFor="selectedDate"
-                      className={styles.filterLabel}
-                    >
-                      Tarih Seçin:
-                    </label>
-
-                    <div className={styles.inputWrapper}>
-                      <input
-                        type="date"
-                        id="selectedDate"
-                        className={styles.filterDate}
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* GENEL ARAMA FİLTRESİ */}
-                  <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>Genel Arama:</label>
-
-                    <div className={styles.inputWrapper}>
-                      <input
-                        type="text"
-                        placeholder="Plaka, şirket, tarih, model..."
-                        className={styles.filterDate}
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* BUTONLAR */}
-                  <div className={styles.buttonGroup}>
-                    <button
-                      className={styles.filterButton}
-                      onClick={handleFilterChange}
-                      disabled={!selectedDate && !searchText}
-                    >
-                      Filtrele
-                    </button>
-                    <button
-                      className={styles.clearFilterButton}
-                      onClick={handleClearFilters}
-                      disabled={!selectedDate && !searchText}
-                    >
-                      Filtreyi Temizle
-                    </button>
-                  </div>
-                </div>
-              </div>
+              {/* Filter Section */}
+              <FilterSection
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                onFilter={handleFilterChange}
+                onClear={handleClearFilters}
+              />
 
               {totalCount > 0 && (
                 <p className={styles.totalCount}>
@@ -329,7 +280,9 @@ const MonthlyFilesDetailScreen = () => {
               )}
 
               {displayedFiles.length > 0 ? (
-                displayedFiles.map(renderFileItem)
+                <div className={styles.listWrapper}>
+                  {displayedFiles.map(renderFileItem)}
+                </div>
               ) : (
                 <div className={styles.emptyState}>
                   <p>
