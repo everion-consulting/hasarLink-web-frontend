@@ -4,8 +4,8 @@ import { ChevronDown, MessageSquare, Mail, HelpCircle } from "lucide-react";
 import apiService from "../../services/apiServices";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import LeftIconBlack from "../../assets/images/left-icon-black.svg";
-import RightIconWhite from "../../assets/images/right-icon-white.svg";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
+import RightIconWhite from "../images/rightIcon.svg";
 
 export default function Contact() {
     const navigate = useNavigate();

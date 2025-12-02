@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/FileDetail.module.css";
-import LeftIconBlack from "../../assets/images/left-icon-black.svg";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 
 const FileDetail = () => {
   const { fileId } = useParams();
