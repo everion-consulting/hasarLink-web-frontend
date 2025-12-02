@@ -4,6 +4,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
+import { maskPhone, validatePhone, validateEmail } from "../components/utils/formatter";
 
 export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [form, setForm] = useState({
@@ -19,6 +20,7 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [policyScrolledToEnd, setPolicyScrolledToEnd] = useState(false);
@@ -151,7 +153,40 @@ Adres: [Şirket adresiniz]<br>
   }, [type]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    let finalValue = value;
+
+    if (name === "phone") {
+      finalValue = maskPhone(value);
+    }
+    
+    setForm({ ...form, [name]: finalValue });
+    
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    let error = "";
+
+    if (name === "phone" && value) {
+      if (!validatePhone(value)) {
+        error = "Telefon 0 (5xx) xxx xx xx formatında olmalı";
+      }
+    }
+
+    if (name === "email" && value) {
+      if (!validateEmail(value)) {
+        error = "Geçerli bir e-mail adresi giriniz";
+      }
+    }
+
+    if (error) {
+      setErrors({ ...errors, [name]: error });
+    }
   };
 
   // 📌 Gizlilik Politikası Scroll Sonu Kontrolü
@@ -173,7 +208,6 @@ Adres: [Şirket adresiniz]<br>
     else setPolicyAccepted(false);
   };
 
-  // 🔐 FORM SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -187,17 +221,38 @@ Adres: [Şirket adresiniz]<br>
           return;
         }
 
+        if (form.email && !validateEmail(form.email)) {
+          setMessage("Geçerli bir e-mail adresi giriniz.");
+          setLoading(false);
+          return;
+        }
+
+        if (form.phone && !validatePhone(form.phone)) {
+          setMessage("Telefon 0 (5xx) xxx xx xx formatında olmalı.");
+          setLoading(false);
+          return;
+        }
+
         const result = await AuthAPI.register({
           email: form.email,
           username: form.email,
           full_name: form.name,
-          phone: form.phone,
+          phone: form.phone.replace(/\D/g, ""), 
           password: form.password,
           password_confirm: form.confirm,
         });
 
         if (result.success) {
-          setMessage("✅ Kayıt başarılı! Giriş yapabilirsiniz.");
+          setMessage("✅ Kayıt başarılı! Giriş yapılıyor...");
+          
+          const loginResult = await AuthAPI.login(form.email, form.password);
+          
+          if (loginResult.success && localStorage.getItem("authToken")) {
+            if (typeof setIsAuth === "function") setIsAuth(true);
+            setTimeout(() => navigate("/"), 500);
+          } else {
+            setMessage("✅ Kayıt başarılı! Lütfen giriş yapın.");
+          }
         } else {
           setMessage(result.message || "Kayıt başarısız.");
         }
@@ -223,13 +278,61 @@ Adres: [Şirket adresiniz]<br>
         }
       }
     } catch (err) {
-      setMessage(err.detail || err.message || "Bir hata oluştu.");
+      console.error("Form Submit Error:", err);
+      console.log("Error keys:", Object.keys(err));
+      console.log("Full error object:", JSON.stringify(err, null, 2));
+
+      const newErrors = {};
+
+      if (err.details && typeof err.details === 'object') {
+        const details = err.details;
+        
+        if (details.email) {
+          newErrors.email = Array.isArray(details.email) ? details.email[0] : details.email;
+        }
+        if (details.username) {
+          newErrors.email = Array.isArray(details.username) ? details.username[0] : details.username;
+        }
+        if (details.phone) {
+          newErrors.phone = Array.isArray(details.phone) ? details.phone[0] : details.phone;
+        }
+        if (details.password) {
+          newErrors.password = Array.isArray(details.password) ? details.password[0] : details.password;
+        }
+      }
+      else {
+        if (err.email) {
+          newErrors.email = Array.isArray(err.email) ? err.email[0] : err.email;
+        }
+        if (err.username) {
+          newErrors.email = Array.isArray(err.username) ? err.username[0] : err.username;
+        }
+        if (err.phone) {
+          newErrors.phone = Array.isArray(err.phone) ? err.phone[0] : err.phone;
+        }
+        if (err.password) {
+          newErrors.password = Array.isArray(err.password) ? err.password[0] : err.password;
+        }
+      }
+      
+
+      setErrors(newErrors);
+      if (Object.keys(newErrors).length === 0) {
+        if (err.detail) {
+          setMessage(err.detail);
+        } else if (err.message) {
+          setMessage(err.message);
+        } else if (err.error) {
+          setMessage(err.error);
+        } else {
+          setMessage("Bir hata oluştu.");
+        }
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔵 Google Login
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setGoogleLoading(true);
@@ -299,9 +402,43 @@ Adres: [Şirket adresiniz]<br>
         {type === "register" && (
           <>
             <input type="text" name="name" placeholder="Ad Soyad" onChange={handleChange} required />
-            <input type="email" name="email" placeholder="E-Mail" onChange={handleChange} required />
-            <input type="tel" name="phone" placeholder="Telefon No" onChange={handleChange} />
-            <input type="password" name="password" placeholder="Şifre" onChange={handleChange} required />
+            <div className="input-wrapper">
+              <input 
+                type="email" 
+                name="email" 
+                placeholder="E-Mail" 
+                value={form.email}
+                onChange={handleChange} 
+                onBlur={handleBlur}
+                className={errors.email ? "error" : ""}
+                required 
+              />
+              {errors.email && <span className="error-text">{errors.email}</span>}
+            </div>
+            <div className="input-wrapper">
+              <input 
+                type="tel" 
+                name="phone" 
+                placeholder="Telefon No" 
+                value={form.phone}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={errors.phone ? "error" : ""}
+                maxLength={19}
+              />
+              {errors.phone && <span className="error-text">{errors.phone}</span>}
+            </div>
+            <div className="input-wrapper">
+              <input 
+                type="password" 
+                name="password" 
+                placeholder="Şifre" 
+                onChange={handleChange}
+                className={errors.password ? "error" : ""}
+                required 
+              />
+              {errors.password && <span className="error-text">{errors.password}</span>}
+            </div>
             <input type="password" name="confirm" placeholder="Şifre Tekrar" onChange={handleChange} required />
 
             {/* KVKK Checkbox */}
