@@ -263,8 +263,8 @@ export default function Profile() {
                         <a className={styles.editLink} onClick={() => navigate("/file-notifications")}>Hepsini Gör</a>
                     </div>
 
-                    <div className={`${styles.fileStatusRow} ${styles['count-' + Math.min(fileNotifications.slice(0, 8).length, 8)]}`}>
-                        {fileNotifications.slice(0, 8).map((item) => (
+                    <div className={`${styles.fileStatusRow} ${styles['count-' + Math.min((fileNotifications || []).slice(0, 8).length, 8)]}`}>
+                        {(fileNotifications || []).slice(0, 8).map((item) => (
                             <div key={item.id} className={styles.fileStatusBox}>
                                 {getStatusIcon(item.status)}
                             </div>
