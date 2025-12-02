@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import coreService from "../../services/coreService";
 import styles from "../../styles/notificationScreen.module.css";
+import LeftBlackIcon from "../../assets/images/leftIconBlack.svg";
 
 const NotificationsScreen = () => {
   const navigate = useNavigate();
@@ -161,7 +162,7 @@ const NotificationsScreen = () => {
             onClick={() => navigate(-1)}
           >
             <span className={styles.contactBtnIcon}>
-              <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+              <img src={LeftBlackIcon} alt="Geri" />
             </span>
           </button>
 

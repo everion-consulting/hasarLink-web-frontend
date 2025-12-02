@@ -103,7 +103,7 @@ export const ProfileProvider = ({ children }) => {
       setFavoriteCompanies([]);
     }
   };
-  
+
   const fetchAllCompanies = async () => {
     try {
       const companies = await apiService.getPaginationInsuranceCompanies();
@@ -124,15 +124,10 @@ export const ProfileProvider = ({ children }) => {
 
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token && token !== "undefined" && token !== "null") {
-      console.log('Profil yükleniyor...');
-      fetchProfile();
-      fetchFavoriteCompanies();
-      fetchAllCompanies();
-    } else {
-      setLoading(false);
-    }
+    fetchProfile();
+    console.log('Profil yükleniyor...');
+    fetchFavoriteCompanies();
+    fetchAllCompanies();
   }, []);
 
   return (

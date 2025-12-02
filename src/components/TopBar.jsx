@@ -5,6 +5,7 @@ import AuthAPI from "../services/authAPI";
 import coreService from "../services/coreService";
 import styles from "../styles/topbar.module.css";
 import { Bell } from "lucide-react";
+import RightIcon from "../components/images/rightIcon.svg";
 
 export default function TopBar() {
     const navigate = useNavigate();
@@ -133,7 +134,7 @@ export default function TopBar() {
                 >
                     ÇIKIŞ YAP
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
+                        <img src={RightIcon} alt="Sağ Ok" />
                     </span>
                 </button>
             </div>
@@ -190,7 +191,7 @@ export default function TopBar() {
                     >
                         ÇIKIŞ YAP
                         <span className={styles.contactBtnIcon}>
-                            <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
+                            <img src={RightIcon} alt="Sağ Ok" />
                         </span>
                     </button>
                 </div>

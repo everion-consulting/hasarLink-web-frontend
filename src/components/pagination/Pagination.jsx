@@ -1,8 +1,9 @@
 import React from "react";
 import styles from "../../styles/Pagination.module.css";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
+import RightIconWhite from "../images/rightIcon.svg";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    if (totalPages <= 1) return null;
 
     return (
         <div className={styles.pagination}>
@@ -12,7 +13,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 disabled={currentPage === 1}
             >
                 <span className={styles.paginationButtonIcon}>
-                    <img src="/src/assets/images/arrow-left-black-pag.svg" alt="Geri" />
+                    <img src={LeftIconBlack} alt="Geri" />
                 </span>
                 Önceki Sayfa
             </button>
@@ -28,7 +29,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             >
                 Sonraki Sayfa
                 <span className={styles.paginationButtonIcon}>
-                    <img src="/src/assets/images/arrow-right-black-pag.svg" alt="Gönder" />
+                    <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
                 </span>
             </button>
         </div>

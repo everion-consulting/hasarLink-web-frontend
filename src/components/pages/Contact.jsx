@@ -4,6 +4,8 @@ import { ChevronDown, MessageSquare, Mail, HelpCircle } from "lucide-react";
 import apiService from "../../services/apiServices";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
+import RightIconWhite from "../images/rightIcon.svg";
 
 export default function Contact() {
     const navigate = useNavigate();
@@ -133,7 +135,7 @@ export default function Contact() {
 
                 <button className={styles.backBtn} onClick={() => navigate(-1)}>
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+                        <img src={LeftIconBlack} alt="Geri" />
                     </span>
                     GERİ DÖN
                 </button>
@@ -141,7 +143,7 @@ export default function Contact() {
                 <button className={styles.nextBtn} onClick={handleSend}>
                     GÖNDER
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/right-icon-white.svg" alt="Gönder" />
+                        <img src={RightIconWhite} alt="Gönder" />
                     </span>
                 </button>
 

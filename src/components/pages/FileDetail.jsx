@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import styles from "../../styles/FileDetail.module.css";
+import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 
 const FileDetail = () => {
   const { fileId } = useParams();
@@ -183,7 +184,7 @@ const FileDetail = () => {
       <div className={styles.bottomButtons}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <span className={styles.contactBtnIcon}>
-            <img src="/src/assets/images/left-icon-black.svg" alt="Geri" />
+              <img src={LeftIconBlack} alt="Geri" />
           </span>
           GERİ DÖN
         </button>
