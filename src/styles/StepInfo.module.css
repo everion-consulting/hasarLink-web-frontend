@@ -30,7 +30,7 @@
   text-align: center;
   font-style: normal;
   font-family: 'Poppins', sans-serif;
-  margin-block: 25px;
+  margin-block: 24px;
 }
 
 /* ADIM BİLGİ ALANI */
@@ -39,7 +39,6 @@
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
-  margin-bottom: 20px;
   order: 3;
 }
 

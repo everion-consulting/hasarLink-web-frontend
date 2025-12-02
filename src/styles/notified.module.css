@@ -82,7 +82,7 @@
 
 .headerTitleCentered {
   text-align: center;
-  margin: 24px 0;
+  margin-bottom: 24px;
   font-size: 30px;
   font-weight: 700;
   color: #333;
@@ -482,7 +482,6 @@
 @media (max-width: 480px) {
   .headerTitleCentered {
     font-size: 20px;
-    margin: 16px 0;
   }
 
   .fileContainer {

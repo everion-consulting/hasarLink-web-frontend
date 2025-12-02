@@ -261,7 +261,7 @@ const MonthlyFilesDetailScreen = () => {
       <div className={styles.contentArea}>
         <div className={styles.container}>
           <main className={styles.content}>
-            <div className={styles.listWrapper}>
+            <div>
               <h1 className={styles.pageTitle}>Bu Ay Bildirilen Dosyalar</h1>
               {/* Filter Section */}
               <FilterSection
@@ -280,7 +280,9 @@ const MonthlyFilesDetailScreen = () => {
               )}
 
               {displayedFiles.length > 0 ? (
-                displayedFiles.map(renderFileItem)
+                <div className={styles.listWrapper}>
+                  {displayedFiles.map(renderFileItem)}
+                </div>
               ) : (
                 <div className={styles.emptyState}>
                   <p>

@@ -282,6 +282,18 @@
 }
 
 /* =========================================
+   LIST
+========================================= */
+.listWrapper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  gap: 24px;
+}
+
+/* =========================================
    CONTENT
 ========================================= */
 
@@ -291,47 +303,20 @@
 }
 
 /* =========================================
-   RESPONSIVE GRID — TEKLİ AMA ARALI
-========================================= */
-
-.listWrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  /* tekli grid */
-  gap: 28px;
-  /* kartlar arası boşluk */
-  width: 100%;
-  margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-  .listWrapper {
-    max-width: 900px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .listWrapper {
-    max-width: 950px;
-  }
-}
-
-/* =========================================
    TITLE
 ========================================= */
 
 .pageTitle {
   text-align: center;
-  margin: 24px 0 0;
   font-size: 30px;
   font-weight: 700;
   color: #333;
+  margin-bottom: 24px;
 }
 
 /* =========================================
    FILE CARD
 ========================================= */
-
 .fileCard {
   background-color: #fff;
   border: 1px solid #eaeaea;
@@ -494,5 +479,9 @@
 
   .pageTitle {
     font-size: 22px;
+  }
+
+  .listWrapper {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }

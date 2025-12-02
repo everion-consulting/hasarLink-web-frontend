@@ -1,20 +1,11 @@
 /* =========================================
    ROOT LAYOUT
 ========================================= */
-.screenContainer {
-  width: 100%;
-  min-height: 100vh;
-  padding: 20px 16px 40px;
-  display: flex;
-  justify-content: center;
-  background: transparent;
-}
-
 .contentArea {
   width: 100%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: column;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 /* =========================================
@@ -22,7 +13,7 @@
 ========================================= */
 .pageTitle {
   text-align: center;
-  margin: 24px 0;
+  margin-bottom: 24px;
   font-size: 30px;
   font-weight: 700;
   color: #333;
@@ -319,6 +310,7 @@
     font-size: 18px;
   }
 }
+
 /* =========================================
    FİLTRELEME BÖLÜMÜ
 ========================================= */
