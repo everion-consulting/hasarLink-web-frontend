@@ -1,30 +1,26 @@
-// src/services/authAPI.js
 import { API_ROOT, ACCOUNTS_BASE, API_BASE } from "../config";
 
-// Global error handler - 401 hatasında otomatik logout
 function handleUnauthorized() {
   const token = localStorage.getItem("authToken");
   if (token) {
-    console.warn("⚠️ Token geçersiz veya süresi dolmuş, oturum sonlandırılıyor");
+    console.log("⚠️ Token geçersiz veya süresi dolmuş, oturum sonlandırılıyor");
     localStorage.clear();
     window.dispatchEvent(new Event('storage'));
-    window.location.href = "/auth";
+    if (!window.location.pathname.includes('/auth')) {
+      window.location.href = "/auth";
+    }
   }
 }
 
-// 🔹 Token kaydetme helper
 function storeTokenFromResponse(data) {
   let raw = "";
 
-  // Login cevabında token direkt geliyor
   if (typeof data.token === "string") {
     raw = data.token.trim();
   }
-  // Bazı endpointler data.data.token dönebilir – şimdilik yedek dursun
   else if (typeof data?.data?.token === "string") {
     raw = data.data.token.trim();
   }
-  // Bazı paketler key kullanıyor olabilir
   else if (typeof data.key === "string") {
     raw = data.key.trim();
   }
@@ -86,7 +82,6 @@ const AuthAPI = {
       const data = await response.json();
       if (!response.ok) throw data;
 
-      // İstersen burada da login olsun diye token kaydedebilirsin
       storeTokenFromResponse(data);
 
       return {
@@ -122,7 +117,7 @@ const AuthAPI = {
         throw data;
       }
 
-      const token = storeTokenFromResponse(data); // 🔥 Burada kesin kaydediyoruz
+      const token = storeTokenFromResponse(data);
 
       return {
         success: data.success,
@@ -149,13 +144,11 @@ const AuthAPI = {
       });
       const data = await response.json();
 
-      // "Beni Hatırla" seçili değilse tüm bilgileri temizle
       const rememberMe = localStorage.getItem("rememberMe");
       
       localStorage.removeItem("authToken");
       localStorage.removeItem("authToken_type");
       
-      // Sadece "Beni Hatırla" seçili DEĞİLSE kullanıcı adını sil
       if (rememberMe !== "true") {
         localStorage.removeItem("savedUsername");
       }
@@ -163,7 +156,6 @@ const AuthAPI = {
       return data;
     } catch (error) {
       console.error("Logout API Error:", error);
-      // Hata olsa bile local storage'ı temizle
       const rememberMe = localStorage.getItem("rememberMe");
       
       localStorage.removeItem("authToken");
@@ -182,8 +174,7 @@ const AuthAPI = {
   getProfile: async (tokenParam) => {
     const token = (tokenParam || localStorage.getItem("authToken") || "").trim();
 
-    const url = `${API_BASE}/profile/`; // 🔥 → https://.../api/profile/
-
+    const url = `${API_BASE}/profile/`;
     const response = await fetch(url, {
       method: "GET",
       headers: AuthAPI.getHeaders(token),
@@ -209,7 +200,7 @@ const AuthAPI = {
         headers: AuthAPI.getHeaders(),
         body: JSON.stringify({
           firebase_token: idToken,
-          firebase_uid: "", // Web'de Firebase uid yok, backend'de optional
+          firebase_uid: "", 
           email: email,
           full_name: fullName,
           device_token: "web_device",
@@ -222,7 +213,6 @@ const AuthAPI = {
 
       if (!response.ok) throw data;
 
-      // Token'ı kaydet
       const token = storeTokenFromResponse(data.data || data);
 
       return {
@@ -242,7 +232,6 @@ const AuthAPI = {
   // PASSWORD RESET - EMAIL (3 Aşamalı)
   // -----------------------------------------
 
-  // 1️⃣ Email ile kod gönder
   requestPasswordResetEmail: async (email) => {
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/request/`, {
@@ -261,7 +250,6 @@ const AuthAPI = {
     }
   },
 
-  // 2️⃣ Kodu doğrula ve reset_token al
   verifyPasswordResetCode: async (email, code) => {
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/verify-code/`, {
@@ -280,7 +268,6 @@ const AuthAPI = {
     }
   },
 
-  // 3️⃣ Reset token ile yeni şifre belirle
   resetPasswordWithToken: async (reset_token, new_password, confirm_password) => {
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/reset-password/`, {

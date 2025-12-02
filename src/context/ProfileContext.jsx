@@ -124,10 +124,15 @@ export const ProfileProvider = ({ children }) => {
 
 
   useEffect(() => {
-    fetchProfile();
-    console.log('Profil yükleniyor...');
-    fetchFavoriteCompanies();
-    fetchAllCompanies();
+    const token = localStorage.getItem("authToken");
+    if (token && token !== "undefined" && token !== "null") {
+      console.log('Profil yükleniyor...');
+      fetchProfile();
+      fetchFavoriteCompanies();
+      fetchAllCompanies();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   return (
