@@ -133,7 +133,7 @@ export default function TopBar() {
                 >
                     ÇIKIŞ YAP
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
+                        <img src="/src/assets/images/rightIcon.svg" alt="Sağ Ok" />
                     </span>
                 </button>
             </div>
@@ -190,7 +190,7 @@ export default function TopBar() {
                     >
                         ÇIKIŞ YAP
                         <span className={styles.contactBtnIcon}>
-                            <img src="/src/assets/images/right-icon-white.svg" alt="Sağ Ok" />
+                            <img src="/src/assets/images/rightIcon.svg" alt="Sağ Ok" />
                         </span>
                     </button>
                 </div>
