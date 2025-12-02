@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import {
     Mail, KeyRound, User, Phone, MapPin, Building2
 } from "lucide-react";
-import RightIcon from "../../assets/images/rightIcon.svg";
 
 
 export default function Profile() {
@@ -298,7 +297,7 @@ export default function Profile() {
                 <button className={styles.backBtn} onClick={() => navigate("/")}>
                     ANASAYFAYA DÖN
                     <span className={styles.contactBtnIcon}>
-                        <img src={RightIcon} alt="Geri" />
+                        <img src="/src/assets/images/rightIcon.svg" alt="Geri" />
                     </span>
                 </button>
             </div>
