@@ -17,7 +17,7 @@ body {
     align-items: center;
     padding: 20px 50px;
     background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .logo {
@@ -34,7 +34,8 @@ body {
 }
 
 .contactButton {
-    background-color: #1a4d8c; /* Koyu Mavi */
+    background-color: #1a4d8c;
+    /* Koyu Mavi */
     color: white;
     padding: 10px 20px;
     border: none;
@@ -61,6 +62,7 @@ body {
     flex-direction: column;
     align-items: center;
     flex-grow: 1;
+    padding: 2rem;
 }
 
 .sectionTitle {
@@ -74,11 +76,10 @@ body {
 .formCard {
     background-color: white;
     border-radius: 20px;
-    padding: 40px;
+    padding: 2rem;
     width: 100%;
-    max-width: 627px; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
+    max-width: 627px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* --- Stepper Stili --- */
@@ -115,12 +116,14 @@ body {
 }
 
 .stepItem.active .stepCircle {
-    background-color: #1a4d8c; /* Aktif Mavi */
+    background-color: #1a4d8c;
+    /* Aktif Mavi */
     border-color: #1a4d8c;
 }
 
 .stepItem.completed .stepCircle {
-    background-color: #1a4d8c; /* Tamamlanmış Mavi */
+    background-color: #1a4d8c;
+    /* Tamamlanmış Mavi */
     border-color: #1a4d8c;
 }
 
@@ -136,8 +139,9 @@ body {
     height: 2px;
     background-color: #ccc;
     flex-grow: 1;
-    margin: 0 -15px; /* Adım dairelerinin altına denk gelmesi için */
-    width: 120px; 
+    margin: 0 -15px;
+    /* Adım dairelerinin altına denk gelmesi için */
+    width: 120px;
 }
 
 
@@ -166,15 +170,17 @@ body {
 
 .switchOption.activeOption {
     background-color: white;
-    color: #1a4d8c; /* Aktif Mavi */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #1a4d8c;
+    /* Aktif Mavi */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* --- Form Alanları Stili --- */
 .formRendererContainer {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Alanlar arası boşluk */
+    gap: 15px;
+    /* Alanlar arası boşluk */
 }
 
 .formFieldContainer {
@@ -187,7 +193,8 @@ body {
 
 .formInput {
     width: 100%;
-    padding: 15px 45px 15px 15px; /* Sağdan simge boşluğu */
+    padding: 15px 45px 15px 15px;
+    /* Sağdan simge boşluğu */
     border: 1px solid #e0e6ed;
     border-radius: 10px;
     font-size: 16px;
@@ -258,4 +265,16 @@ body {
 .formSectionContent {
     display: flex;
     flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .contentArea {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .formCard {
+        padding: 1rem;
+    }
 }

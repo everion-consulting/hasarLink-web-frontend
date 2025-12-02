@@ -13,15 +13,13 @@
 .contentArea {
   width: 100%;
   max-width: 1100px;
-  /* genişletildi */
   margin: 0 auto;
-  padding: 20px;
+  padding: 2rem;
 }
 
 .container {
   position: relative;
 }
-
 
 /* =========================================
    FILTER SECTION – Taslak/Processed ile aynı

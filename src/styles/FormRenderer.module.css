@@ -273,10 +273,6 @@
     gap: 12px;
   }
 
-  .formRenderer {
-    padding: 0 16px;
-  }
-
   .dropdownMenu {
     position: fixed;
     top: 50%;

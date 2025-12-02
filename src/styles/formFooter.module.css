@@ -12,6 +12,7 @@
   max-width: 800px;
   margin-inline: auto;
   margin-bottom: 40px;
+  padding: 2rem;
 }
 
 /* === BUTTON === */
@@ -87,6 +88,7 @@
   .formFooter {
     flex-direction: column;
     gap: 8px;
+    padding: 1rem;
   }
 
   .backBtn,
