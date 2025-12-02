@@ -297,7 +297,7 @@ export default function Profile() {
                 <button className={styles.backBtn} onClick={() => navigate("/")}>
                     ANASAYFAYA DÖN
                     <span className={styles.contactBtnIcon}>
-                        <img src="/src/assets/images/right-icon-white.svg" alt="Geri" />
+                        <img src="/src/assets/images/rightIcon.svg" alt="Geri" />
                     </span>
                 </button>
             </div>

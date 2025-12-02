@@ -32,7 +32,7 @@ import {
   ListBulletIcon,
 } from "@heroicons/react/24/outline";
 
-import styles from "../../styles/formRenderer.module.css";
+import styles from "../../styles/FormRenderer.module.css";
 
 export default function FormRenderer({
   fields,

@@ -11,7 +11,7 @@ import {
   Info
 } from 'lucide-react';
 import Stepper from '../stepper/Stepper';
-import styles from '../../styles/insuranceStepper.module.css';
+import styles from '../../styles/InsuranceStepper.module.css';
 import FormFooter from '../forms/FormFooter';
 
 export default function InsuranceStepper() {
