@@ -182,6 +182,7 @@ export const formatPlate = (text) => {
     .trim();
 };
 
+
 // -------------------
 // Default export (isteğe bağlı - modern projelerde named export tercih edilir)
 // -------------------
@@ -201,6 +202,7 @@ const formatter = {
   toYYYYMMDD,
   toDDMMYYYY,
   formatPlate,
+
 };
 
 export default formatter;

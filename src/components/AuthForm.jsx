@@ -5,6 +5,7 @@ import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
 import { maskPhone, validatePhone, validateEmail } from "../components/utils/formatter";
+import { KVKK_TEXT } from "../constants/kvkk";
 
 export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [form, setForm] = useState({
@@ -29,115 +30,6 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const navigate = useNavigate();
 
   // 📌 KVKK AYDINLATMA METNİ - HasarLink
-  const policyText = `
-<b>KVKK AYDINLATMA METNİ</b><br>
-<b>HasarLink – Araç Kaza Dosya Takip Uygulaması</b><br><br>
-
-<b>Veri Sorumlusu:</b> Everion Consulting<br>
-<b>Uygulama:</b> HasarLink – Araç Kaza Dosya Takip Uygulaması<br>
-<b>E-posta:</b> kvkk@everionconsulting.com<br>
-<b>Telefon:</b> [Telefon numaranız]<br>
-<b>Adres:</b> [Şirket adresiniz]<br>
-<b>KEP Adresi:</b> [KEP adresiniz - varsa]<br><br>
-
-Everion Consulting ("Şirket") olarak, HasarLink uygulaması aracılığıyla işlediğimiz kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında korumakta ve aşağıda açıklanan şartlarda işlemekteyiz.<br><br>
-
-<b>1. Kişisel Verilerin İşlenme Amaçları</b><br>
-• Araç kaza dosya bildiriminin oluşturulması ve yönetilmesi<br>
-• Sigorta şirketlerine iletilecek bilgilerin ve belgelerin toplanması<br>
-• Kullanıcı bilgilendirme ve dosya durumu süreçlerinin yürütülmesi<br>
-• Eksik evrak süreçlerinin yönetilmesi<br>
-• Uygulama güvenliği, erişim doğrulama, log kayıtları<br>
-• Müşteri destek hizmetleri<br>
-• Yasal yükümlülüklerin yerine getirilmesi<br>
-• Hizmet kalitesinin artırılması ve istatistiksel analizler<br><br>
-
-<b>2. İşlenen Kişisel Veri Kategorileri</b><br><br>
-
-<b>2.1 Standart Kişisel Veriler</b><br>
-• Ad, soyad, T.C. kimlik numarası<br>
-• Telefon numarası, e-posta, adres<br>
-• Araç plaka, marka, model, yıl, ruhsat bilgileri<br>
-• Kaza tarihi, konumu, taraf bilgileri<br>
-• Fotoğraflar, tutanaklar, belgeler<br>
-• IP adresi, cihaz bilgisi, log kayıtları<br>
-• Banka bilgileri (ödeme yapılması durumunda)<br><br>
-
-<b>2.2 Özel Nitelikli Veriler</b><br>
-• Yaralanmalı kazalarda sağlık verileri (yalnızca açık rıza ile)<br><br>
-
-<b>3. Kişisel Verilerin Toplanma Yöntemi ve Hukuki Sebep</b><br>
-<b>3.1 Toplama Yöntemi:</b><br>
-• Uygulama formları<br>
-• Kullanıcı tarafından yüklenen fotoğraf ve belgeler<br>
-• Çağrı merkezi ve destek kayıtları<br>
-• Sistem logları ve teknik veri kayıtları<br><br>
-
-<b>3.2 Hukuki Sebepler:</b><br>
-• Sözleşmenin kurulması ve ifası<br>
-• Kanuni yükümlülüklerin yerine getirilmesi<br>
-• Meşru menfaat<br>
-• Açık rıza (özel nitelikli veriler için)<br><br>
-
-<b>4. Kişisel Verilerin Aktarılması</b><br>
-
-<b>4.1 Yurt İçi Aktarımlar</b><br>
-• Sigorta şirketleri<br>
-• Eksperler<br>
-• Yetkili kamu kurumları<br>
-• Hukuk danışmanları<br>
-• Bankalar<br><br>
-
-<b>4.2 Yurt Dışı Aktarımlar</b><br>
-• Bulut hizmet sağlayıcıları (AWS/Azure/Google Cloud vb.)<br>
-• Aktarımlar şifreleme ve sözleşmeler ile korunmaktadır<br><br>
-
-<b>5. Kişisel Verilerin Saklama Süresi</b><br>
-• Kaza dosya bilgileri: 10 yıl<br>
-• Kimlik ve iletişim verileri: 10 yıl<br>
-• Finansal kayıtlar: 10 yıl<br>
-• Log kayıtları: 2 yıl<br>
-• Pazarlama izinleri: Geri çekilene kadar<br><br>
-
-<b>6. Otomatik Karar Verme</b><br>
-Uygulamada otomatik karar verme yapılmamaktadır.<br><br>
-
-<b>7. Çocukların Verileri</b><br>
-Uygulama 18 yaş altına yönelik değildir.<br><br>
-
-<b>8. Uygulama İçi Analitik</b><br>
-Sadece anonim kullanım verileri toplanır.<br><br>
-
-<b>9. KVKK Kapsamındaki Haklarınız</b><br>
-• Bilgi talep etme<br>
-• Düzeltme<br>
-• Silme / yok etme<br>
-• İtiraz etme<br>
-• Tazminat talep etme<br><br>
-
-<b>10. Başvuru Yöntemleri</b><br>
-E-posta: kvkk@everionconsulting.com<br>
-Adres: [Şirket adresiniz]<br>
-KEP: [KEP adresi – varsa]<br>
-Uygulama içi KVKK formu<br><br>
-
-<b>11. Güvenlik Önlemleri</b><br>
-• Veri şifreleme<br>
-• Erişim kontrolü<br>
-• Güvenlik testleri<br>
-• Log yönetimi<br>
-• Gizlilik sözleşmeleri<br><br>
-
-<b>12. Aydınlatma Metni Güncellemeleri</b><br>
-Güncellemeler uygulama içi bildirim veya e-posta yoluyla duyurulur.<br><br>
-
-<b>Son Güncelleme Tarihi:</b> 2025<br><br>
-
-<b>İletişim</b><br>
-E-posta: kvkk@everionconsulting.com<br>
-Adres: [Şirket adresiniz]<br>
-© 2024 Everion Consulting - HasarLink<br>
-`;
 
 
   useEffect(() => {
@@ -184,6 +76,13 @@ Adres: [Şirket adresiniz]<br>
       }
     }
 
+
+    if (name === "confirm" && value) {
+      if (value !== form.password) {
+        error = "Şifreler eşleşmiyor";
+      }
+    }
+
     if (error) {
       setErrors({ ...errors, [name]: error });
     }
@@ -192,7 +91,7 @@ Adres: [Şirket adresiniz]<br>
   // 📌 Gizlilik Politikası Scroll Sonu Kontrolü
   const handlePolicyScroll = (e) => {
     const target = e.target;
-    if (target.scrollTop + target.clientHeight >= target.scrollHeight - 20) {
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight - 20) { 
       setPolicyScrolledToEnd(true);
     }
   };
@@ -233,6 +132,16 @@ Adres: [Şirket adresiniz]<br>
           return;
         }
 
+        if (form.password !== form.confirm) {
+          setMessage("Şifreler eşleşmiyor.");
+          setErrors({ 
+            password: "Şifreler eşleşmiyor.",
+            confirm: "Şifreler eşleşmiyor." 
+          });
+          setLoading(false);
+          return;
+        }
+
         const result = await AuthAPI.register({
           email: form.email,
           username: form.email,
@@ -249,7 +158,7 @@ Adres: [Şirket adresiniz]<br>
           
           if (loginResult.success && localStorage.getItem("authToken")) {
             if (typeof setIsAuth === "function") setIsAuth(true);
-            setTimeout(() => navigate("/"), 500);
+            setTimeout(() => navigate("/"), 500); // why artifical delay? 
           } else {
             setMessage("✅ Kayıt başarılı! Lütfen giriş yapın.");
           }
@@ -277,6 +186,7 @@ Adres: [Şirket adresiniz]<br>
           setMessage(result.message || "Giriş başarısız.");
         }
       }
+      //parseAPIError instead
     } catch (err) {
       console.error("Form Submit Error:", err);
       console.log("Error keys:", Object.keys(err));
@@ -382,7 +292,7 @@ Adres: [Şirket adresiniz]<br>
             </div>
 
             <div className="modal-content" onScroll={handlePolicyScroll}
-              dangerouslySetInnerHTML={{ __html: policyText }} />
+              dangerouslySetInnerHTML={{ __html: KVKK_TEXT }} /> 
 
             <button
               className={`modal-accept-btn ${policyScrolledToEnd ? "active" : ""}`}
@@ -432,14 +342,28 @@ Adres: [Şirket adresiniz]<br>
               <input 
                 type="password" 
                 name="password" 
-                placeholder="Şifre" 
+                placeholder="Şifre"
+                value={form.password}
                 onChange={handleChange}
                 className={errors.password ? "error" : ""}
                 required 
               />
               {errors.password && <span className="error-text">{errors.password}</span>}
             </div>
-            <input type="password" name="confirm" placeholder="Şifre Tekrar" onChange={handleChange} required />
+            
+            <div className="input-wrapper">
+              <input 
+                type="password" 
+                name="confirm" 
+                placeholder="Şifre Tekrar"
+                value={form.confirm}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={errors.confirm ? "error" : ""}
+                required 
+              />
+              {errors.confirm && <span className="error-text">{errors.confirm}</span>}
+            </div>
 
             {/* KVKK Checkbox */}
             <label className="checkbox">
@@ -455,9 +379,60 @@ Adres: [Şirket adresiniz]<br>
 
         {type === "login" && (
           <>
-            <input type="text" name="username" placeholder="Kullanıcı Adı veya E-Mail" value={form.username} onChange={handleChange} required />
-            <input type="password" name="password" placeholder="Şifre" value={form.password} onChange={handleChange} required />
-          </>
+            <input 
+              type="text" 
+              name="username" 
+              placeholder="Kullanıcı Adı veya E-Mail" 
+              value={form.username} 
+              onChange={handleChange} 
+              required 
+            />
+            
+            <input 
+              type="password" 
+              name="password" 
+              placeholder="Şifre" 
+              value={form.password} 
+              onChange={handleChange} 
+              required 
+            />
+            
+            {/* Remember Me + Forgot Password (Horizontal) */}
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginTop: "5px", 
+              marginBottom: "15px" 
+            }}>
+              <label className="checkbox" style={{ margin: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Beni Hatırla
+              </label>
+
+              <a 
+                href="#" 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  navigate("/forgot-password"); 
+                }}
+                style={{ 
+                  fontSize: "14px", 
+                  color: "#133E87", 
+                  textDecoration: "none",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => e.target.style.textDecoration = "underline"}
+                onMouseLeave={(e) => e.target.style.textDecoration = "none"}
+              >
+                Şifremi Unuttum?
+              </a>
+            </div>
+          </>  
         )}
 
         <div className="divider"><span>veya şununla devam et</span></div>
