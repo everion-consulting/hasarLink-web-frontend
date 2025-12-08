@@ -10,6 +10,34 @@ body {
   position: relative;
   overflow-x: hidden;
 }
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper {
+  position: relative;
+}
+
+.eye-icon {
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.eye-icon {
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #808080;
+}
+
 
 .auth-wrapper {
   display: flex;

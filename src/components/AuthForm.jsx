@@ -4,6 +4,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { maskPhone, validatePhone, validateEmail } from "../components/utils/formatter";
 
 export default function AuthForm({ type, setIsAuth, setActiveTab }) {
@@ -17,6 +18,9 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   });
 
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -154,15 +158,15 @@ Adres: [Şirket adresiniz]<br>
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     let finalValue = value;
 
     if (name === "phone") {
       finalValue = maskPhone(value);
     }
-    
+
     setForm({ ...form, [name]: finalValue });
-    
+
     if (errors[name]) {
       setErrors({ ...errors, [name]: "" });
     }
@@ -237,16 +241,16 @@ Adres: [Şirket adresiniz]<br>
           email: form.email,
           username: form.email,
           full_name: form.name,
-          phone: form.phone.replace(/\D/g, ""), 
+          phone: form.phone.replace(/\D/g, ""),
           password: form.password,
           password_confirm: form.confirm,
         });
 
         if (result.success) {
           setMessage("✅ Kayıt başarılı! Giriş yapılıyor...");
-          
+
           const loginResult = await AuthAPI.login(form.email, form.password);
-          
+
           if (loginResult.success && localStorage.getItem("authToken")) {
             if (typeof setIsAuth === "function") setIsAuth(true);
             setTimeout(() => navigate("/"), 500);
@@ -286,7 +290,7 @@ Adres: [Şirket adresiniz]<br>
 
       if (err.details && typeof err.details === 'object') {
         const details = err.details;
-        
+
         if (details.email) {
           newErrors.email = Array.isArray(details.email) ? details.email[0] : details.email;
         }
@@ -314,7 +318,7 @@ Adres: [Şirket adresiniz]<br>
           newErrors.password = Array.isArray(err.password) ? err.password[0] : err.password;
         }
       }
-      
+
 
       setErrors(newErrors);
       if (Object.keys(newErrors).length === 0) {
@@ -403,23 +407,23 @@ Adres: [Şirket adresiniz]<br>
           <>
             <input type="text" name="name" placeholder="Ad Soyad" onChange={handleChange} required />
             <div className="input-wrapper">
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="E-Mail" 
+              <input
+                type="email"
+                name="email"
+                placeholder="E-Mail"
                 value={form.email}
-                onChange={handleChange} 
+                onChange={handleChange}
                 onBlur={handleBlur}
                 className={errors.email ? "error" : ""}
-                required 
+                required
               />
               {errors.email && <span className="error-text">{errors.email}</span>}
             </div>
             <div className="input-wrapper">
-              <input 
-                type="tel" 
-                name="phone" 
-                placeholder="Telefon No" 
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Telefon No"
                 value={form.phone}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -429,17 +433,57 @@ Adres: [Şirket adresiniz]<br>
               {errors.phone && <span className="error-text">{errors.phone}</span>}
             </div>
             <div className="input-wrapper">
-              <input 
-                type="password" 
-                name="password" 
-                placeholder="Şifre" 
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Şifre"
+                value={form.password}
                 onChange={handleChange}
                 className={errors.password ? "error" : ""}
-                required 
+                required
               />
+
+              {/* GÖRSEL DOĞRU: Slash varsa AÇIK, yoksa GİZLİ */}
+              {showPassword ? (
+                <EyeIcon
+                  className="eye-icon"
+                  onClick={() => setShowPassword(false)}
+                />
+              ) : (
+                <EyeSlashIcon
+                  className="eye-icon"
+                  onClick={() => setShowPassword(true)}
+                />
+              )}
+
               {errors.password && <span className="error-text">{errors.password}</span>}
             </div>
-            <input type="password" name="confirm" placeholder="Şifre Tekrar" onChange={handleChange} required />
+
+
+
+            <div className="input-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirm"
+                placeholder="Şifre Tekrar"
+                value={form.confirm}
+                onChange={handleChange}
+                required
+              />
+
+              {showConfirmPassword ? (
+                <EyeIcon
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(false)}
+                />
+              ) : (
+                <EyeSlashIcon
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(true)}
+                />
+              )}
+            </div>
+
 
             {/* KVKK Checkbox */}
             <label className="checkbox">
@@ -456,7 +500,29 @@ Adres: [Şirket adresiniz]<br>
         {type === "login" && (
           <>
             <input type="text" name="username" placeholder="Kullanıcı Adı veya E-Mail" value={form.username} onChange={handleChange} required />
-            <input type="password" name="password" placeholder="Şifre" value={form.password} onChange={handleChange} required />
+             <div className="input-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirm"
+                placeholder="Şifre "
+                value={form.confirm}
+                onChange={handleChange}
+                required
+              />
+
+              {showConfirmPassword ? (
+                <EyeIcon
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(false)}
+                />
+              ) : (
+                <EyeSlashIcon
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(true)}
+                />
+              )}
+            </div>
+
           </>
         )}
 
