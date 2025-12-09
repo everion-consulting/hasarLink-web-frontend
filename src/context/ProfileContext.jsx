@@ -3,10 +3,10 @@ import apiService from '../services/apiServices';
 
 const ProfileContext = createContext();
 
-export const ProfileProvider = ({ children }) => {
+export const ProfileProvider = ({ children , isAuth}) => {
   const [profileData, setProfileData] = useState(null);
   const [profileDetail, setProfileDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [favoriteCompanies, setFavoriteCompanies] = useState([]);
   const [allCompaniesList, setAllCompaniesList] = useState([]);
 
@@ -124,11 +124,12 @@ export const ProfileProvider = ({ children }) => {
 
 
   useEffect(() => {
+    if (!isAuth) return;
     fetchProfile();
     console.log('Profil yükleniyor...');
     fetchFavoriteCompanies();
     fetchAllCompanies();
-  }, []);
+  }, [isAuth]);
 
   return (
     <ProfileContext.Provider

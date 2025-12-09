@@ -499,32 +499,43 @@ Adres: [Şirket adresiniz]<br>
 
         {type === "login" && (
           <>
-            <input type="text" name="username" placeholder="Kullanıcı Adı veya E-Mail" value={form.username} onChange={handleChange} required />
-             <div className="input-wrapper">
+            <input
+              type="text"
+              name="username"
+              placeholder="Kullanıcı Adı veya E-Mail"
+              value={form.username}
+              onChange={handleChange}
+              required
+            />
+            <div className="input-wrapper">
               <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirm"
-                placeholder="Şifre "
-                value={form.confirm}
+                type={showPassword ? "text" : "password"}
+                name="password"              // ✅ password
+                placeholder="Şifre"
+                value={form.password}        // ✅ form.password
                 onChange={handleChange}
                 required
               />
 
-              {showConfirmPassword ? (
+              {showPassword ? (
                 <EyeIcon
                   className="eye-icon"
-                  onClick={() => setShowConfirmPassword(false)}
+                  onClick={() => setShowPassword(false)}
                 />
               ) : (
                 <EyeSlashIcon
                   className="eye-icon"
-                  onClick={() => setShowConfirmPassword(true)}
+                  onClick={() => setShowPassword(true)}
                 />
               )}
-            </div>
 
+              {errors.password && (
+                <span className="error-text">{errors.password}</span>
+              )}
+            </div>
           </>
         )}
+
 
         <div className="divider"><span>veya şununla devam et</span></div>
 
