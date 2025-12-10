@@ -25,18 +25,15 @@
   margin-bottom: 8px;
 }
 
-/* 🔹 Kartları yan yana dizen FLEX GRID */
+/* 🔹 Kartları yan yana dizen grid */
 .fileImagesGrid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
 }
 
-/* 🔹 Her dosya kartı: 3 sütun */
+/* 🔹 Her dosya kartı */
 .fileCard {
-  flex: 0 0 calc(33.333% - 16px);  /* 3 tane yan yana */
-  max-width: calc(33.333% - 16px);
-
   border-radius: 12px;
   padding: 10px;
   background: #f7f8fb;
@@ -59,22 +56,7 @@
   background: #f0f4ff;
 }
 
-/* Tablet: 2’li */
-@media (max-width: 900px) {
-  .fileCard {
-    flex: 0 0 calc(50% - 16px);
-    max-width: calc(50% - 16px);
-  }
-}
-
-/* Mobil: tek sütun */
-@media (max-width: 600px) {
-  .fileCard {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-}
-
+/* 🔹 Görsel küçük önizleme */
 .fileThumbnail {
   width: 100%;
   height: 120px;
@@ -83,6 +65,7 @@
   margin-bottom: 6px;
 }
 
+/* 🔹 PDF ikonu alanı */
 .pdfThumb {
   width: 100%;
   height: 120px;
@@ -95,6 +78,7 @@
   font-size: 38px;
 }
 
+/* 🔹 Dosya adı */
 .fileName {
   font-size: 12px;
   font-weight: 500;
@@ -107,6 +91,7 @@
   overflow: hidden;
 }
 
+/* 🔹 PDF için küçük açıklama */
 .fileHint {
   margin-top: 2px;
   font-size: 11px;
