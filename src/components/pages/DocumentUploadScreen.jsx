@@ -2,16 +2,10 @@ import React, { useState } from "react";
 import submissionService from "../../services/submissionService";
 import styles from "../../styles/documentUploaderScreen.module.css";
 import FormFooter from "../forms/FormFooter";
+import { FILE_TYPES } from "../../constants/filesTypes";
 
-const FILE_TYPES = [
-  { id: "tutanak", title: "Anlaşmalı Tutanak" },
-  { id: "magdur_arac_ruhsat", title: "Mağdur Araç Ruhsatı" },
-  { id: "magdur_arac_ehliyet", title: "Mağdur Araç Ehliyeti" },
-  { id: "sigortali_arac_ruhsat", title: "Karşı Sigortalı Araç Ruhsatı" },
-  { id: "sigortali_arac_ehliyet", title: "Karşı Sigortalı Araç Ehliyeti" },
-  { id: "fotograflar", title: "Olay Yeri Fotoğrafları" },
-  { id: "diger", title: "Diğer Evraklar" },
-];
+
+
 
 const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   const [sections, setSections] = useState(

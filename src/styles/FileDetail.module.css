@@ -346,3 +346,36 @@
     line-height: 35px;
   }
 }
+
+
+
+/* ============================= */
+/*EVRAK GÖRÜNÜMLERİ */
+.fileTypeBlock,
+.fileTypeSection {
+  margin-top: 16px;
+  margin-bottom: 32px; 
+}
+
+
+.fileTypeHeader,
+.fileTypeTitle {
+  font-size: 14px;
+  font-weight: 400;     
+  color: #444;
+  margin: 0 0 10px 2px; 
+  letter-spacing: 0.02em;
+}
+
+
+.fileImagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  column-gap: 22px;  
+  row-gap: 22px;    
+}
+
+
+.fileCard {
+  padding: 12px;
+}
