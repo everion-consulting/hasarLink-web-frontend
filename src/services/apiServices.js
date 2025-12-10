@@ -140,14 +140,6 @@ const apiService = {
     );
   },
 
-  async uploadFile(formData) {
-    return await fetchData(
-      `${PATH}/submissions/files/`,
-      'POST',
-      formData,
-      'multipart/form-data',
-    );
-  },
 
   async updateProfileDetail(body) {
     return await fetchData(

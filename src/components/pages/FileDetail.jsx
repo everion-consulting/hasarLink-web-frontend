@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
+import submissionService from "../../services/submissionService";
 import styles from "../../styles/FileDetail.module.css";
 import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 
@@ -13,6 +14,7 @@ const FileDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
 
+
   const statusMap = {
     PENDING: "Beklemede",
     IN_PROGRESS: "İşlemde",
@@ -21,39 +23,34 @@ const FileDetail = () => {
   };
 
   useEffect(() => {
-    const fetchFileDetail = async () => {
-      try {
-        const res = await apiService.getSubmissionDetail(fileId);
-
-        if (!res.success) {
-          console.error("❌ Dosya detayı alınamadı:", res.message);
-          return;
-        }
-
-        setFileData(res.data);
-      } catch (err) {
-        console.error("❌ Hata:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchSubmissionFiles = async () => {
       try {
-        const res = await apiService.getSubmissionFiles(fileId);
+        if (!fileId) return;
+
+        const res = await submissionService.getSubmissionFiles(fileId);
 
         if (!res.success) {
           console.error("❌ Dosya görselleri alınamadı:", res.message);
+          window.alert(res.message || "Dosya görselleri alınırken hata oluştu.");
           return;
         }
 
-        const filesArray =
-          Array.isArray(res?.data.files)
-            ? res.data.files
-            : Array.isArray(res?.data.results)
-              ? res.data.results
-              : [];
+        console.log("📸 Dosya görselleri:", res.data);
 
+        // 🔹 API'den gelen asıl payload
+        // fetchData -> res.data
+        // viewset -> { success: true, data: { files: [...] } }
+        const payload = res.data?.data || res.data;
+
+        const filesArray = Array.isArray(payload?.files)
+          ? payload.files
+          : Array.isArray(payload?.results)
+            ? payload.results
+            : [];
+
+        console.log("📂 Çözümlenmiş filesArray:", filesArray);
+
+        // 🔹 Görselleri file_type'a göre grupla
         const grouped = {};
         filesArray.forEach((f) => {
           if (!grouped[f.file_type]) grouped[f.file_type] = [];
@@ -67,13 +64,41 @@ const FileDetail = () => {
 
         setFileImages(grouped);
       } catch (err) {
-        console.error("❌ Görsel getirme hatası:", err);
+        console.error("❌ Görsel fetch hatası:", err);
       }
     };
 
-    fetchFileDetail();
     fetchSubmissionFiles();
   }, [fileId]);
+
+
+
+  useEffect(() => {
+    const fetchFileDetail = async () => {
+      try {
+        const res = await apiService.getSubmissionDetail(fileId);
+
+        if (!res.success) {
+          console.error("❌ Dosya detayı alınamadı:", res.message);
+          // web'te Alert yok, window.alert kullan
+          window.alert(res.message || "Dosya detayı alınırken hata oluştu.");
+          return;
+        }
+
+        console.log("✅ Dosya Detayı:", res?.data);
+        setFileData(res?.data);   // 🔥 asıl eksik olan satır buydu
+      } catch (err) {
+        console.error("❌ Hata:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (fileId) {
+      fetchFileDetail();
+    }
+  }, [fileId]);
+
 
   const renderInfoRow = (label, value) => {
     if (!value) return null;
@@ -164,27 +189,60 @@ const FileDetail = () => {
               <h3 className={styles.fileTypeTitle}>{type.toUpperCase()}</h3>
 
               <div className={styles.fileImagesGrid}>
-                {files.map((f) => (
-                  <div key={f.id} className={styles.fileImageItem}>
-                    <img
-                      src={f.url}
-                      alt={f.name}
-                      className={styles.fileThumbnail}
-                      onClick={() => setSelectedImage(f.url)}
-                    />
-                    <p className={styles.fileName}>{f.name || "Dosya"}</p>
-                  </div>
-                ))}
+                {files.map((f) => {
+                  const isPdf =
+                    (f.name && f.name.toLowerCase().endsWith(".pdf")) ||
+                    (f.url && f.url.toLowerCase().includes(".pdf"));
+
+                  const handleClick = () => {
+                    if (isPdf) {
+                      window.open(f.url, "_blank");
+                    } else {
+                      setSelectedImage(f.url);
+                    }
+                  };
+
+                  return (
+                    <button
+                      key={f.id}
+                      type="button"
+                      className={styles.fileCard}
+                      onClick={handleClick}
+                    >
+                      {isPdf ? (
+                        <div className={styles.pdfThumb}>📄</div>
+                      ) : (
+                        <img
+                          src={f.url}
+                          alt={f.name}
+                          className={styles.fileThumbnail}
+                        />
+                      )}
+
+                      <span className={styles.fileName}>
+                        {f.name || (isPdf ? "PDF Dosya" : "Dosya")}
+                      </span>
+
+                      {isPdf && (
+                        <span className={styles.fileHint}>
+                          Tıkla, yeni sekmede aç
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))
         )}
+
+
       </div>
 
       <div className={styles.bottomButtons}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <span className={styles.contactBtnIcon}>
-              <img src={LeftIconBlack} alt="Geri" />
+            <img src={LeftIconBlack} alt="Geri" />
           </span>
           GERİ DÖN
         </button>

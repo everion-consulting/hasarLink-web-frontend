@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import apiService from "../../services/apiServices";
+import submissionService from "../../services/submissionService";
 import styles from "../../styles/documentUploaderScreen.module.css";
 import FormFooter from "../forms/FormFooter";
 
@@ -60,7 +60,10 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
   const handleUpload = async () => {
     try {
       const submissionId = routeState.submissionId;
-      if (!submissionId) return alert("Submission ID bulunamadı!");
+      if (!submissionId) {
+        alert("Submission ID bulunamadı!");
+        return;
+      }
 
       const allFiles = sections.flatMap((s) => s.files);
       setProgress({ current: 0, total: allFiles.length });
@@ -69,31 +72,57 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
       for (const section of sections) {
         for (const item of section.files) {
           const formData = new FormData();
+
           formData.append("submission", submissionId);
           formData.append("file_type", section.id.replace(/_/g, " "));
           formData.append("summary", section.title);
-          formData.append("file", item.file);
+          formData.append("name", item.name || "Dosya");
+          formData.append("file", item.file); // <input type="file" /> File objesi
 
-          await apiService.uploadFile(formData);
+          const res = await submissionService.uploadFile(formData);
+
+          // 🔴 BURASI ÇOK ÖNEMLİ: backend ne döndürüyor görelim
+          console.log("UPLOAD RES", {
+            section: section.id,
+            success: res.success,
+            status: res.status,
+            data: res.data,
+          });
+
+          if (!res.success) {
+            // FileViewSet.create böyle dönüyor:
+            // { success: False, error: 'Validasyon hatası', details: {...} }
+            const details = res.data?.details || res.data?.data || res.data;
+            console.error("Upload failed details:", details);
+
+            alert(
+              "Dosya yüklenemedi:\n" +
+              (JSON.stringify(details, null, 2) || res.message)
+            );
+
+            // şu anlık tüm yüklemeyi keselim, istersen continue da edebilirsin
+            throw new Error("Upload failed");
+          }
 
           setProgress((p) => ({ ...p, current: p.current + 1 }));
         }
       }
 
-      const docs = Object.fromEntries(
-        sections.map((s) => [s.id, s.files])
-      );
+      const docs = Object.fromEntries(sections.map((s) => [s.id, s.files]));
 
       if (onContinue) {
         onContinue({ documents: docs });
       }
     } catch (e) {
-      console.error(e);
-      alert("Yükleme sırasında hata oluştu");
+      console.error("upload error:", e);
+      if (!uploading) {
+        alert("Yükleme sırasında hata oluştu");
+      }
     } finally {
       setUploading(false);
     }
   };
+
 
   const isAllChosenForCurrentStep = sections.some(section => section.files.length > 0);
   return (

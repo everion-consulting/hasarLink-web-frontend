@@ -12,6 +12,9 @@ const submissionService = {
             'multipart/form-data',
         );
     },
+    async getSubmissionFiles(fileId) {
+    return await fetchData(`${PATH}/files/by-submission/${fileId}/`, 'GET');
+  },
 
 };
 
