@@ -164,7 +164,7 @@ export default function InsuredMechanicStepperScreen() {
                     service_name: profileDetail.service_name || '',
                     service_phone: profileDetail.service_phone || '',
                     service_city: profileDetail.service_city || '',
-                    service_state: profileDetail.service_state || '',
+                    service_state_city_city: profileDetail.service_state || '',
                     service_address: profileDetail.service_address || '',
                     service_tax_no: profileDetail.service_tax_no || '',
                     service_iban: profileDetail.service_iban || '',
@@ -302,7 +302,7 @@ export default function InsuredMechanicStepperScreen() {
                 service_name: values.service_name,
                 service_phone: values.service_phone,
                 service_city: values.service_city,
-                service_state: values.service_state,
+                service_state: values.service_state_city_city,
                 service_address: values.service_address,
                 service_tax_no: values.service_tax_no,
                 service_iban: values.service_iban,
@@ -532,7 +532,22 @@ export default function InsuredMechanicStepperScreen() {
                 </div>
                 {/* === FOOTER === */}
 
-                {currentStep === 1 && (
+                {/* Tekli Kaza - Sadece Servis Formu */}
+                {isTekliBizimKasko && currentStep === 1 && (
+                    <FormFooter
+                        onBack={handleBack}
+                        onNext={() => {
+                            const form = document.querySelector("form");
+                            if (form) {
+                                form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+                            }
+                        }}
+                        disabled={!serviceValid}
+                    />
+                )}
+
+                {/* Sigortalı Formu (Tekli kaza değilse) */}
+                {!isTekliBizimKasko && currentStep === 1 && (
                     <FormFooter
                         onBack={handleBack}
                         onNext={() => {
@@ -545,6 +560,7 @@ export default function InsuredMechanicStepperScreen() {
                     />
                 )}
 
+                {/* Karşı Sürücü Formu */}
                 {currentStep === 2 && shouldShowOpposingDriver && (
                     <FormFooter
                         onBack={handleBack}
@@ -558,7 +574,8 @@ export default function InsuredMechanicStepperScreen() {
                     />
                 )}
 
-                {((currentStep === 2 && !shouldShowOpposingDriver) || currentStep === 3) && (
+                {/* Servis Formu (Diğer senaryolar) */}
+                {!isTekliBizimKasko && ((currentStep === 2 && !shouldShowOpposingDriver) || currentStep === 3) && (
                     <FormFooter
                         onBack={handleBack}
                         onNext={() => {
