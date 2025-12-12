@@ -42,9 +42,6 @@ export const getVictimFields = (isCompany = false) => {
       placeholder: "DD.MM.YYYY",
       type: "date",
       required: true,
-
-      // 🔹 Form verisi backend'e gönderilmeden önce dönüştürülecek
-      transform: (val) => formatToISO(val),
     });
   }
 
