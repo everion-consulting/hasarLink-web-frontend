@@ -15,7 +15,7 @@ const FileDamageInfoStepperScreen = () => {
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
   const [formValid, setFormValid] = useState(false); 
-  const [remainingCredits, setRemainingCredits] = useState(10); 
+  const [remainingCredits, setRemainingCredits] = useState(0); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,6 +29,22 @@ const FileDamageInfoStepperScreen = () => {
       setCurrentStep(2);
     }
   }, [directToDocuments]);
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const res = await apiService.getProfileDetail();
+        if (res?.success) {
+          const credits = res?.data?.credits ?? res?.data?.data?.credits ?? 0;
+          setRemainingCredits(credits);
+          console.log("✅ FileDamageInfo - Kalan kredi:", credits);
+        }
+      } catch (error) {
+        console.error("❌ Kredi bilgisi alınamadı:", error);
+      }
+    };
+    fetchCredits();
+  }, []);
 
   useEffect(() => {
     const fetchAllCities = async () => {

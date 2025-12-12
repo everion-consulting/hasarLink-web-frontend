@@ -31,7 +31,7 @@ export default function Dashboard() {
     recent_incomplete_companies: []
   });
 
-  const [remainingCredits, setRemainingCredits] = useState(10); 
+  const [remainingCredits, setRemainingCredits] = useState(0); 
   const [loading, setLoading] = useState(true);
   const goToOngoing = () => {
     navigate("/ongoing-files");
@@ -118,6 +118,10 @@ export default function Dashboard() {
       const res = await apiService.getProfileDetail();
       if (!res?.success) {
         console.error("❌ Profil alınamadı:", res?.message);
+      } else {
+        const credits = res?.data?.credits ?? res?.data?.data?.credits ?? 0;
+        setRemainingCredits(credits);
+        console.log("✅ Kalan kredi:", credits);
       }
     } catch (error) {
       console.error("❌ Profil Hatası:", error);

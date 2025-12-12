@@ -2,19 +2,22 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/creditPurchase.module.css";
 import { CreditCard, Sparkles, CheckCircle } from "lucide-react";
+import apiService from "../../services/apiServices";
 
 export default function CreditPurchase() {
     const navigate = useNavigate();
-    const [remainingCredits, setRemainingCredits] = useState(10); // Şimdilik sabit, sonradan API'den gelecek
+    const [remainingCredits, setRemainingCredits] = useState(0);
     const [selectedPackage, setSelectedPackage] = useState(null);
 
-    // Backend hazır olunca API'den kredi çekilecek
     useEffect(() => {
         const fetchCredits = async () => {
             try {
-                // TODO: API çağrısı eklenecek
-                // const response = await apiService.getUserCredits();
-                // setRemainingCredits(response.credits);
+                const response = await apiService.getProfileDetail();
+                if (response?.success) {
+                    const credits = response?.data?.credits ?? response?.data?.data?.credits ?? 0;
+                    setRemainingCredits(credits);
+                    console.log("✅ Mevcut kredi:", credits);
+                }
             } catch (error) {
                 console.error("Kredi bilgisi alınamadı:", error);
             }
