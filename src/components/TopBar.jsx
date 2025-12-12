@@ -118,6 +118,14 @@ export default function TopBar() {
                 >
                     Ayarlar
                 </NavLink>
+                <NavLink
+                    to="/kredi-satin-al"
+                    className={({ isActive }) =>
+                        `${styles.tab} ${isActive ? styles.active : ""}`
+                    }
+                >
+                    Kredi Satın Al
+                </NavLink>
             </nav>
 
             {/* RIGHT GROUP: Notification + Logout */}
@@ -188,6 +196,9 @@ export default function TopBar() {
                     </NavLink>
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>
                         Ayarlar
+                    </NavLink>
+                    <NavLink to="/kredi-satin-al" onClick={() => setIsMenuOpen(false)}>
+                        Kredi Satın Al
                     </NavLink>
 
                     <button

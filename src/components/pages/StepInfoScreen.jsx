@@ -59,6 +59,7 @@ export default function StepInfoScreen() {
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
+  const [remainingCredits, setRemainingCredits] = useState(10); // Şimdilik sabit, API'den gelecek
 
 
   useEffect(() => {
@@ -641,6 +642,13 @@ export default function StepInfoScreen() {
   const handleFinalApprove = async () => {
     try {
       console.log('🎯 Final approve process started');
+
+      // ✅ KREDİ KONTROLÜ - Dosya bildirme anında kredi olmalı
+      if (remainingCredits <= 0) {
+        alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
+        navigate("/kredi-satin-al");
+        return;
+      }
 
       // Önce submission'ı güncelle
       const updateResult = await updateSubmission();

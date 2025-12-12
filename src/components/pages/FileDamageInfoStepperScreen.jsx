@@ -15,6 +15,7 @@ const FileDamageInfoStepperScreen = () => {
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
   const [formValid, setFormValid] = useState(false); 
+  const [remainingCredits, setRemainingCredits] = useState(10); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -91,6 +92,13 @@ const FileDamageInfoStepperScreen = () => {
   };
 
   const handleDocumentsCompleted = (data) => {
+    // Kredi kontrolü - dosya bildirilirken kredi olmalı
+    if (remainingCredits <= 0) {
+      alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
+      navigate("/kredi-satin-al");
+      return;
+    }
+
     navigate("/step-info", {
       state: {
         ...routeState,
@@ -127,6 +135,21 @@ const FileDamageInfoStepperScreen = () => {
         <h1 className={styles.sectionTitle}>
           {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
         </h1>
+
+        {/* Kredi Bilgisi */}
+        {currentStep === 1 && (
+          <div className={styles.creditInfoContainer}>
+            {remainingCredits > 0 ? (
+              <div className={styles.creditInfo}>
+                Kalan Kredi: <span className={styles.creditCount}>{remainingCredits}</span>
+              </div>
+            ) : (
+              <div className={styles.noCreditInfo}>
+                Krediniz bitti! Dosya bildirmek için kredi satın alın
+              </div>
+            )}
+          </div>
+        )}
 
         {/* --- FORM KARTI --- */}
         <div className={styles.formCard}>

@@ -31,6 +31,7 @@ export default function Dashboard() {
     recent_incomplete_companies: []
   });
 
+  const [remainingCredits, setRemainingCredits] = useState(10); 
   const [loading, setLoading] = useState(true);
   const goToOngoing = () => {
     navigate("/ongoing-files");
@@ -168,6 +169,16 @@ export default function Dashboard() {
 
           <div className={styles.cardDashboardTitleSm}>YENİ</div>
           <div className={styles.cardDashboardTitleLg}>DOSYA</div>
+
+          {remainingCredits > 0 ? (
+            <div className={styles.remainingCredits}>
+              Kalan Kredi: <span className={styles.creditNumber}>{remainingCredits}</span>
+            </div>
+          ) : (
+            <div className={styles.noCreditWarning}>
+              Krediniz bitti! Dosya bildirmek için kredi satın alın
+            </div>
+          )}
 
           <button
             className={styles.cardDashboardBtn}
