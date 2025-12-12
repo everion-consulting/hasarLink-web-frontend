@@ -89,11 +89,12 @@ export default function FormRenderer({
     if (type === "number") return "number";
     if (type === "tckn") return "text";
     if (type === "password") return "password";
+    if (type === "currency") return "text";
     return "text";
   }
 
   function getInputMode(type) {
-    if (type === "tckn" || type === "number") return "numeric";
+    if (type === "tckn" || type === "number" || type === "currency") return "numeric";
     if (type === "email") return "email";
     if (type === "phone") return "tel";
     return "text";
@@ -190,6 +191,15 @@ export default function FormRenderer({
       actualValue = value.target.value;
     }
 
+    if (type === "currency") {
+      // Sadece rakam ve virgül bırak
+      actualValue = String(actualValue).replace(/[^0-9,]/g, "");
+      // İlk karakter 0 ise ve sonrasında virgül yoksa kaldır
+      if (actualValue.startsWith('0') && actualValue.length > 1 && actualValue[1] !== ',') {
+        actualValue = actualValue.substring(1);
+      }
+    }
+
     if (type === "tckn" || type === "number") {
       actualValue = String(actualValue).replace(/[^0-9]/g, "");
       if (type === "tckn") {
@@ -227,6 +237,11 @@ export default function FormRenderer({
     }
 
     let finalValue = applyMask(type, actualValue);
+
+    const field = findFieldByName(name);
+    if (field && field.transform && typeof field.transform === "function") {
+      finalValue = field.transform(finalValue);
+    }
 
     if (formatter && typeof formatter === "function") {
       finalValue = formatter(finalValue);

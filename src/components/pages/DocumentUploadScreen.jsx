@@ -184,7 +184,7 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
         )}
       </div>
       <FormFooter
-        onBack={() => navigate(-1)}
+        onBack={onBack}
         onNext={handleUpload}
         nextLabel="DEVAM ET"
         backLabel="GERİ DÖN"
