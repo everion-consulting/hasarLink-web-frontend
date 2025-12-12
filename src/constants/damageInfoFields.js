@@ -74,9 +74,19 @@ const damageFields = [
     name: "estimated_damage_amount",
     label: "Tahmini Hasar Tutarı",
     placeholder: "Tahmini Hasar Tutarı Giriniz",
-    type: "number",
+    type: "currency",
     required: false,
-    icon: CircleStackIcon
+    icon: CircleStackIcon,
+    // Virgül ve rakam dışındakileri temizle, baştaki gereksiz sıfırları kaldır bu kaldırılacaksa 
+    // eğer burayı yorum satırına alalım ve  type: "currency" yazısını da değiştirmeyi unutmayın
+    transform: (value) => {
+      if (!value) return '';
+      let cleaned = String(value).replace(/[^0-9,]/g, '');
+      if (cleaned.startsWith('0') && cleaned.length > 1 && cleaned[1] !== ',') {
+        cleaned = cleaned.substring(1);
+      }
+      return cleaned;
+    }
   },
 
   {
