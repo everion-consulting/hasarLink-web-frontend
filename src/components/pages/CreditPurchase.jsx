@@ -58,8 +58,10 @@ export default function CreditPurchase() {
 
     const handlePurchase = (pkg) => {
         setSelectedPackage(pkg);
-        // TODO: Backend hazır olunca ödeme işlemi eklenecek
-        alert(`${pkg.credits} kredi paketi seçildi. Ödeme sistemi yakında aktif olacak.`);
+        // Ödeme sayfasına yönlendir
+        navigate("/kredi-odeme", {
+            state: { package: pkg }
+        });
     };
 
     return (
