@@ -161,7 +161,7 @@ const FileDamageInfoStepperScreen = () => {
               </div>
             ) : (
               <div className={styles.noCreditInfo}>
-                Krediniz bitti! Dosya bildirmek için kredi satın alın
+                Krediniz bitti! Dosya bildirmek için kredi satın alın. Dosyanız Taslak Olarak Oluşturulacaktır.
               </div>
             )}
           </div>

@@ -59,7 +59,24 @@ export default function StepInfoScreen() {
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(null);
-  const [remainingCredits, setRemainingCredits] = useState(10); // Şimdilik sabit, API'den gelecek
+  const [remainingCredits, setRemainingCredits] = useState(0);
+
+  // Kredi bilgisini fetch et
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const res = await apiService.getProfileDetail();
+        if (res?.success) {
+          const credits = res?.data?.credits ?? res?.data?.data?.credits ?? 0;
+          setRemainingCredits(credits);
+          console.log("✅ StepInfo - Kalan kredi:", credits);
+        }
+      } catch (error) {
+        console.error("❌ Kredi bilgisi alınamadı:", error);
+      }
+    };
+    fetchCredits();
+  }, []);
 
 
   useEffect(() => {
@@ -257,6 +274,14 @@ export default function StepInfoScreen() {
 
       if (!res.success) {
         console.error("❌ UPDATE başarısız:", res.message);
+        
+        // Kredi hatası kontrolü
+        const message = res.message || "";
+        if (message.includes('kredi') || message.includes('credit') || message.toLowerCase().includes('insufficient')) {
+          alert("Krediniz bitti! Dosya taslak olarak kaydedildi.");
+          return null; // null döndür ki handleFinalApprove durdursun
+        }
+        
         alert(res.message || "Submission güncellenemedi.");
         return null;
       }
@@ -654,6 +679,13 @@ export default function StepInfoScreen() {
       const updateResult = await updateSubmission();
       console.log('📝 Update result:', updateResult);
 
+      // Backend'den kredi hatası gelirse kontrol et
+      if (!updateResult) {
+        console.log('❌ Update başarısız, kredi satın almaya yönlendiriliyor');
+        navigate("/kredi-satin-al");
+        return;
+      }
+
       const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
 
       // Evrak sayısını hesapla
@@ -695,7 +727,14 @@ export default function StepInfoScreen() {
 
     } catch (error) {
       console.error('❌ Final approve error:', error);
-      alert('Son onaylama sırasında hata: ' + error.message);
+      
+      // Hata mesajında kredi ile ilgili bir şey varsa kredi sayfasına yönlendir
+      if (error.message && (error.message.includes('kredi') || error.message.includes('credit'))) {
+        alert('Krediniz bitti! Dosya bildirmek için kredi satın alın.');
+        navigate("/kredi-satin-al");
+      } else {
+        alert('Son onaylama sırasında hata: ' + error.message);
+      }
     }
   };
   const handleEditPress = (section) => {
