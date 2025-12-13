@@ -303,6 +303,116 @@
     margin: 0;
 }
 
+/* Kayıtlı Kartlar Bölümü */
+.savedCardsSection {
+    margin-bottom: 30px;
+}
+
+.paymentMethodTabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.tabButton {
+    flex: 1;
+    padding: 14px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: -2px;
+}
+
+.tabButton.active {
+    color: #133E87;
+    border-bottom-color: #133E87;
+}
+
+.tabButton:hover {
+    color: #133E87;
+}
+
+.savedCardsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.savedCardItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.savedCardItem:hover {
+    border-color: #1976D2;
+    box-shadow: 0 4px 12px rgba(19, 62, 135, 0.1);
+}
+
+.savedCardItem.selected {
+    border-color: #133E87;
+    background: linear-gradient(135deg, rgba(19, 62, 135, 0.03) 0%, rgba(25, 118, 210, 0.03) 100%);
+}
+
+.cardRadio {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #d0d0d0;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.savedCardItem.selected .cardRadio {
+    border-color: #133E87;
+}
+
+.radioSelected {
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #133E87 0%, #1976D2 100%);
+    border-radius: 50%;
+}
+
+.cardDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cardBank {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.cardNumberMasked {
+    font-size: 13px;
+    color: #666;
+    font-family: 'Courier New', monospace;
+}
+
+.cardIconSmall {
+    color: #1976D2;
+    flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .checkoutGrid {

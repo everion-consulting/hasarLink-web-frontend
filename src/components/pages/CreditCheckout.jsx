@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../../styles/creditCheckout.module.css";
 import { CreditCard, Lock, CheckCircle, ArrowLeft } from "lucide-react";
@@ -7,6 +7,10 @@ export default function CreditCheckout() {
     const navigate = useNavigate();
     const location = useLocation();
     const selectedPackage = location.state?.package;
+
+    const [savedCards, setSavedCards] = useState([]);
+    const [selectedCardId, setSelectedCardId] = useState(null);
+    const [useNewCard, setUseNewCard] = useState(true);
 
     const [formData, setFormData] = useState({
         cardName: "",
@@ -19,6 +23,15 @@ export default function CreditCheckout() {
     });
 
     const [processing, setProcessing] = useState(false);
+
+    // Kayıtlı kartları yükle
+    useEffect(() => {
+        const cards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+        setSavedCards(cards);
+        if (cards.length > 0) {
+            setUseNewCard(false);
+        }
+    }, []);
 
     // Eğer paket bilgisi yoksa geri yönlendir
     if (!selectedPackage) {
@@ -62,6 +75,20 @@ export default function CreditCheckout() {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleSelectCard = (cardId) => {
+        const card = savedCards.find(c => c.id === cardId);
+        if (card) {
+            setSelectedCardId(cardId);
+            setFormData({
+                ...formData,
+                cardName: card.cardName,
+                cardNumber: card.cardNumber,
+                expiryDate: card.expiryDate,
+                cvv: "" // CVV güvenlik için kaydedilmez
+            });
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setProcessing(true);
@@ -92,52 +119,126 @@ export default function CreditCheckout() {
                         <h2>Güvenli Ödeme</h2>
                     </div>
 
+                    {/* Kayıtlı Kartlar Seçimi */}
+                    {savedCards.length > 0 && (
+                        <div className={styles.savedCardsSection}>
+                            <div className={styles.paymentMethodTabs}>
+                                <button
+                                    type="button"
+                                    className={`${styles.tabButton} ${!useNewCard ? styles.active : ""}`}
+                                    onClick={() => setUseNewCard(false)}
+                                >
+                                    Kayıtlı Kartlarım
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`${styles.tabButton} ${useNewCard ? styles.active : ""}`}
+                                    onClick={() => {
+                                        setUseNewCard(true);
+                                        setSelectedCardId(null);
+                                        setFormData({
+                                            cardName: "",
+                                            cardNumber: "",
+                                            expiryDate: "",
+                                            cvv: "",
+                                            billingAddress: formData.billingAddress,
+                                            city: formData.city,
+                                            postalCode: formData.postalCode
+                                        });
+                                    }}
+                                >
+                                    Yeni Kart
+                                </button>
+                            </div>
+
+                            {!useNewCard && (
+                                <div className={styles.savedCardsList}>
+                                    {savedCards.map(card => (
+                                        <div
+                                            key={card.id}
+                                            className={`${styles.savedCardItem} ${selectedCardId === card.id ? styles.selected : ""}`}
+                                            onClick={() => handleSelectCard(card.id)}
+                                        >
+                                            <div className={styles.cardRadio}>
+                                                {selectedCardId === card.id && <div className={styles.radioSelected}></div>}
+                                            </div>
+                                            <div className={styles.cardDetails}>
+                                                <span className={styles.cardBank}>{card.bankName}</span>
+                                                <span className={styles.cardNumberMasked}>{card.maskedNumber}</span>
+                                            </div>
+                                            <CreditCard size={24} className={styles.cardIconSmall} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className={styles.paymentForm}>
-                        <div className={styles.formGroup}>
-                            <label>Kart Üzerindeki İsim</label>
-                            <input
-                                type="text"
-                                name="cardName"
-                                value={formData.cardName}
-                                onChange={handleInputChange}
-                                placeholder="AD SOYAD"
-                                required
-                                className={styles.input}
-                            />
-                        </div>
+                        {(useNewCard || savedCards.length === 0) && (
+                            <>
+                                <div className={styles.formGroup}>
+                                    <label>Kart Üzerindeki İsim</label>
+                                    <input
+                                        type="text"
+                                        name="cardName"
+                                        value={formData.cardName}
+                                        onChange={handleInputChange}
+                                        placeholder="AD SOYAD"
+                                        required
+                                        className={styles.input}
+                                    />
+                                </div>
 
-                        <div className={styles.formGroup}>
-                            <label>Kart Numarası</label>
-                            <div className={styles.cardInputWrapper}>
-                                <CreditCard size={20} className={styles.inputIcon} />
-                                <input
-                                    type="text"
-                                    name="cardNumber"
-                                    value={formData.cardNumber}
-                                    onChange={handleInputChange}
-                                    placeholder="0000 0000 0000 0000"
-                                    required
-                                    className={styles.input}
-                                />
-                            </div>
-                        </div>
+                                <div className={styles.formGroup}>
+                                    <label>Kart Numarası</label>
+                                    <div className={styles.cardInputWrapper}>
+                                        <CreditCard size={20} className={styles.inputIcon} />
+                                        <input
+                                            type="text"
+                                            name="cardNumber"
+                                            value={formData.cardNumber}
+                                            onChange={handleInputChange}
+                                            placeholder="0000 0000 0000 0000"
+                                            required
+                                            className={styles.input}
+                                        />
+                                    </div>
+                                </div>
 
-                        <div className={styles.formRow}>
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label>Son Kullanma Tarihi</label>
+                                        <input
+                                            type="text"
+                                            name="expiryDate"
+                                            value={formData.expiryDate}
+                                            onChange={handleInputChange}
+                                            placeholder="MM/YY"
+                                            required
+                                            className={styles.input}
+                                        />
+                                    </div>
+
+                                    <div className={styles.formGroup}>
+                                        <label>CVV</label>
+                                        <input
+                                            type="text"
+                                            name="cvv"
+                                            value={formData.cvv}
+                                            onChange={handleInputChange}
+                                            placeholder="000"
+                                            required
+                                            className={styles.input}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {!useNewCard && selectedCardId && (
                             <div className={styles.formGroup}>
-                                <label>Son Kullanma Tarihi</label>
-                                <input
-                                    type="text"
-                                    name="expiryDate"
-                                    value={formData.expiryDate}
-                                    onChange={handleInputChange}
-                                    placeholder="MM/YY"
-                                    required
-                                    className={styles.input}
-                                />
-                            </div>
-
-                            <div className={styles.formGroup}>
-                                <label>CVV</label>
+                                <label>CVV (Güvenlik Kodu)</label>
                                 <input
                                     type="text"
                                     name="cvv"
@@ -148,7 +249,7 @@ export default function CreditCheckout() {
                                     className={styles.input}
                                 />
                             </div>
-                        </div>
+                        )}
 
                         <div className={styles.divider}></div>
 
