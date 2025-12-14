@@ -11,6 +11,25 @@ import apiService from '../../services/apiServices';
 import { toYYYYMMDD } from '../utils/formatter';
 import styles from '../../styles/victimInfoScreen.module.css';
 
+const isFilled = (v) => v !== null && v !== undefined && String(v).trim() !== "";
+
+const fillEmptyFrom = (base, incoming) => {
+    const out = { ...(base || {}) };
+    Object.entries(incoming || {}).forEach(([k, v]) => {
+        if (!isFilled(out[k]) && isFilled(v)) out[k] = v;
+    });
+    return out;
+};
+
+const overwriteOnlyFilled = (base, incoming) => {
+    const out = { ...(base || {}) };
+    Object.entries(incoming || {}).forEach(([k, v]) => {
+        if (isFilled(v)) out[k] = v;
+    });
+    return out;
+};
+
+
 export default function InsuredMechanicStepperScreen() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -51,7 +70,7 @@ export default function InsuredMechanicStepperScreen() {
     const isCokluKarsiTrafik =
         kazaNitelik === "ÇOKLU KAZA" && insuranceSource === "karsi trafik";
 
-   
+
     const shouldShowOpposingDriver = (insuranceSource === 'karsi trafik' || insuranceSource === 'karsi kasko') && karsiSamePerson === false;
 
     console.log('🔍 Karşı Sürücü Durumu:', {
@@ -155,21 +174,21 @@ export default function InsuredMechanicStepperScreen() {
 
             if (!isProfileLoaded) {
                 console.log('✅ Profil verisi yüklendi:', profileDetail);
-                setServiceData(prev => ({
-                    ...prev,
-                    repair_fullname: profileDetail.repair_fullname || '',
-                    repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || '',
-                    repair_tc: profileDetail.repair_tc || '',
-                    repair_phone: profileDetail.repair_phone || '',
-                    service_name: profileDetail.service_name || '',
-                    service_phone: profileDetail.service_phone || '',
-                    service_city: profileDetail.service_city || '',
-                    service_state_city_city: profileDetail.service_state || '',
-                    service_address: profileDetail.service_address || '',
-                    service_tax_no: profileDetail.service_tax_no || '',
-                    service_iban: profileDetail.service_iban || '',
-                    service_iban_name: profileDetail.service_iban_name || '',
+                setServiceData(prev => fillEmptyFrom(prev, {
+                    repair_fullname: profileDetail.repair_fullname || "",
+                    repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
+                    repair_tc: profileDetail.repair_tc || "",
+                    repair_phone: profileDetail.repair_phone || "",
+                    service_name: profileDetail.service_name || "",
+                    service_phone: profileDetail.service_phone || "",
+                    service_city: profileDetail.service_city || "",
+                    service_state_city_city: profileDetail.service_state || "",
+                    service_address: profileDetail.service_address || "",
+                    service_tax_no: profileDetail.service_tax_no || "",
+                    service_iban: profileDetail.service_iban || "",
+                    service_iban_name: profileDetail.service_iban_name || "",
                 }));
+
                 setIsProfileLoaded(true);
             }
         };
@@ -211,7 +230,7 @@ export default function InsuredMechanicStepperScreen() {
                     ...prev,
                     ...location.state.serviceData
                 }));
-                setIsProfileLoaded(true);
+               
             }
             if (location.state.opposingDriverData) {
                 console.log('✅ opposingDriverData yükleniyor:', location.state.opposingDriverData);

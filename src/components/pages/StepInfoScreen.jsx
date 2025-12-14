@@ -274,14 +274,14 @@ export default function StepInfoScreen() {
 
       if (!res.success) {
         console.error("❌ UPDATE başarısız:", res.message);
-        
+
         // Kredi hatası kontrolü
         const message = res.message || "";
         if (message.includes('kredi') || message.includes('credit') || message.toLowerCase().includes('insufficient')) {
           alert("Krediniz bitti! Dosya taslak olarak kaydedildi.");
           return null; // null döndür ki handleFinalApprove durdursun
         }
-        
+
         alert(res.message || "Submission güncellenemedi.");
         return null;
       }
@@ -335,7 +335,9 @@ export default function StepInfoScreen() {
   };
 
   const getStepContent = () => {
-    const hasKarsiTrafik = insuranceSource === 'karsi trafik';
+    const hasKarsiTrafikOrKasko =
+      insuranceSource === "karsi trafik" || insuranceSource === "karsi kasko";
+
 
     switch (currentStep) {
       case 1:
@@ -478,7 +480,8 @@ export default function StepInfoScreen() {
                 { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'YOK' },
               ]
             },
-            ...(hasKarsiTrafik && karsiSamePerson === false
+            ...(hasKarsiTrafikOrKasko && karsiSamePerson === false
+
               ? [
                 {
                   title: 'Karşı Taraf Sürücü Bilgileri',
@@ -621,7 +624,9 @@ export default function StepInfoScreen() {
         case 2:
           console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
 
+        case 2: {
           const insuredNavigationState = {
+            ...params,
             kazaNitelik,
             insuranceSource,
             samePerson,
@@ -637,6 +642,13 @@ export default function StepInfoScreen() {
             mechanicData,
             documents: params?.documents,
           };
+
+          console.log("📦 Navigation state:", insuredNavigationState);
+
+          navigate("/insured-mechanic-stepper", { state: insuredNavigationState });
+          break;
+        }
+
 
           console.log('📦 Navigation state:', insuredNavigationState);
 
@@ -727,7 +739,7 @@ export default function StepInfoScreen() {
 
     } catch (error) {
       console.error('❌ Final approve error:', error);
-      
+
       // Hata mesajında kredi ile ilgili bir şey varsa kredi sayfasına yönlendir
       if (error.message && (error.message.includes('kredi') || error.message.includes('credit'))) {
         alert('Krediniz bitti! Dosya bildirmek için kredi satın alın.');
@@ -867,14 +879,16 @@ export default function StepInfoScreen() {
       case 'karsi_driver_info':
       case 'service_info':
         console.log('🔧 EDIT -> insured-mechanic-stepper:', baseParams);
-        navigate('/insured-mechanic-stepper', {
+        navigate("/insured-mechanic-stepper", {
           state: {
             ...baseParams,
             editMode: true,
             focusSection: editKey,
-            returnTo: 'step-info',
-            returnStep: currentStep
-          }
+            returnTo: "/step-info",
+            returnStep: currentStep,
+          },
+
+
         });
         break;
       case 'damage_info':

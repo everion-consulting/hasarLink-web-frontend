@@ -136,7 +136,7 @@ const DraftNotifications = () => {
 
     const handleContinue = async (draft) => {
         try {
-            const response = await apiService.getDraft(draft.id);
+            const response = await apiService.getDraftDetail(draft.id);
             const draftDetail = response.data;
 
             let nextStep = 1;
@@ -171,6 +171,12 @@ const DraftNotifications = () => {
                     },
                     samePerson: draftDetail.is_driver_victim_same,
                     insuranceSource: draftDetail.insurance_source,
+                    kazaNitelik: draftDetail.nature_new,
+                    karsiSamePerson:
+                        draftDetail.is_insured_opposing_driver_same === true ? true :
+                            draftDetail.is_insured_opposing_driver_same === false ? false :
+                                null,
+
 
                     driverData: {
                         driver_fullname: draftDetail.driver_fullname,
