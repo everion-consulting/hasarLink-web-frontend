@@ -22,27 +22,52 @@
 /* Tabs */
 .tabs {
     background: rgba(255, 255, 255, 0.4);
-    padding: 20px 24px;
-    border-radius: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
     display: flex;
-    gap: 18px;
+    gap: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
+    position: relative;
+    /* indicator için şart */
 }
 
 .tab {
-    background: none;
-    color: #444;
-    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    /* indicatorın üstünde kalsın */
+    padding: 10px 14px;
+    border-radius: 12px;
     text-decoration: none;
-    font-weight: 400;
+    color: #444;
+    font-weight: 500;
     font-size: 15px;
     line-height: 140%;
-    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.tab:hover {
+    color: #133E87;
 }
 
 .active {
-    font-weight: 700;
     color: #133E87;
+    font-weight: 700;
+}
+
+/* Tek gezinen çizgi kutu */
+.tabIndicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(19, 62, 135, 0.9);
+    background: transparent;
+    box-shadow: 0 10px 24px rgba(19, 62, 135, 0.12);
+    transition: transform 0.22s ease, width 0.22s ease, height 0.22s ease, opacity 0.15s ease;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    /* ilk hesaplanınca 1 oluyor */
 }
 
 /* CTA (Desktop) */
@@ -86,18 +111,21 @@
 .rightGroup {
     display: flex;
     align-items: center;
-    gap: 24px; /* Bildirim ile buton arasında boşluk */
+    gap: 24px;
+    /* Bildirim ile buton arasında boşluk */
 }
 
 /* Bildirim ikonu */
-.notificationIconDesktop, .notificationIconMobile {
+.notificationIconDesktop,
+.notificationIconMobile {
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
 }
 
-.notificationIconDesktop svg, .notificationIconMobile svg {
+.notificationIconDesktop svg,
+.notificationIconMobile svg {
     width: 24px;
     height: 24px;
     stroke: #1a1a1a;
@@ -122,7 +150,8 @@
 
 /* --- MOBILE RIGHT GROUP (Bildirim + Hamburger) --- */
 .mobileRightGroup {
-    display: none; /* Desktop’ta gizli */
+    display: none;
+    /* Desktop’ta gizli */
     align-items: center;
     gap: 18px;
     position: absolute;
@@ -137,7 +166,8 @@
 }
 
 /* Mobil bildirim ikonu */
-.mobileRightGroup .notificationIconDesktop svg, .notificationIconMobile svg {
+.mobileRightGroup .notificationIconDesktop svg,
+.notificationIconMobile svg {
     width: 22px;
     height: 22px;
     stroke: #1a1a1a;
@@ -175,7 +205,7 @@
     gap: 14px;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(6px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     z-index: 200;
 }
 
@@ -208,6 +238,8 @@
 
 .desktopMenu {
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (max-width: 1024px) {
