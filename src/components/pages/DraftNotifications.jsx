@@ -139,6 +139,16 @@ const DraftNotifications = () => {
             const response = await apiService.getDraftDetail(draft.id);
             const draftDetail = response.data;
 
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) return dateStr;
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                    const [year, month, day] = dateStr.split('-');
+                    return `${day}.${month}.${year}`;
+                }
+                return dateStr;
+            };
+
             let nextStep = 1;
 
             if (
@@ -164,6 +174,7 @@ const DraftNotifications = () => {
             navigate('/step-info', {
                 state: {
                     fromDraft: true,
+                    draftId: draftDetail.id, 
                     startStep: nextStep,
                     selectedCompany: {
                         id: draftDetail.insurance_company,
@@ -183,7 +194,7 @@ const DraftNotifications = () => {
                         driver_tc: draftDetail.driver_tc,
                         driver_mail: draftDetail.driver_mail,
                         driver_phone: draftDetail.driver_phone,
-                        driver_birth_date: draftDetail.driver_birth_date,
+                        driver_birth_date: formatDate(draftDetail.driver_birth_date),
                     },
 
                     victimData: {
@@ -191,7 +202,7 @@ const DraftNotifications = () => {
                         victim_tc: draftDetail.victim_tc,
                         victim_mail: draftDetail.victim_mail,
                         victim_phone: draftDetail.victim_phone,
-                        victim_birth_date: draftDetail.victim_birth_date,
+                        victim_birth_date: formatDate(draftDetail.victim_birth_date),
                         victim_iban: draftDetail.victim_iban,
                         policy_no: draftDetail.policy_no,
                         insured_policy_no: draftDetail.insured_policy_no,
@@ -216,13 +227,14 @@ const DraftNotifications = () => {
                         insured_tc: draftDetail.insured_tc,
                         insured_phone: draftDetail.insured_phone,
                         insured_mail: draftDetail.insured_mail,
-                        insured_birth_date: draftDetail.insured_birth_date,
+                        insured_birth_date: formatDate(draftDetail.insured_birth_date),
                         insured_plate: draftDetail.insured_plate,
+                        insured_file_no: draftDetail.insured_file_no,
                     },
 
                     mechanicData: {
                         repair_fullname: draftDetail.repair_fullname,
-                        repair_birth_date: draftDetail.repair_birth_date,
+                        repair_birth_date: formatDate(draftDetail.repair_birth_date),
                         repair_tc: draftDetail.repair_tc,
                         repair_phone: draftDetail.repair_phone,
                         repair_city: draftDetail.service_city,
@@ -231,6 +243,10 @@ const DraftNotifications = () => {
                     },
 
                     serviceData: {
+                        repair_fullname: draftDetail.repair_fullname,
+                        repair_birth_date: formatDate(draftDetail.repair_birth_date),
+                        repair_tc: draftDetail.repair_tc,
+                        repair_phone: draftDetail.repair_phone,
                         service_name: draftDetail.service_name,
                         service_tax_no: draftDetail.service_tax_no,
                         service_phone: draftDetail.service_phone,
@@ -239,6 +255,14 @@ const DraftNotifications = () => {
                         service_address: draftDetail.service_address,
                         service_iban: draftDetail.service_iban,
                         service_iban_name: draftDetail.service_iban_name,
+                    },
+
+                    opposingDriverData: {
+                        opposing_driver_fullname: draftDetail.opposing_driver_fullname,
+                        opposing_driver_tc: draftDetail.opposing_driver_tc,
+                        opposing_driver_phone: draftDetail.opposing_driver_phone,
+                        opposing_driver_mail: draftDetail.opposing_driver_mail,
+                        opposing_driver_birth_date: formatDate(draftDetail.opposing_driver_birth_date),
                     },
 
                     damageData: {

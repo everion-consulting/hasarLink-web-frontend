@@ -163,38 +163,43 @@ export default function InsuredMechanicStepperScreen() {
         return dateStr;
     };
 
-    // Profile verilerini yükle
     useEffect(() => {
-        const loadProfileData = async () => {
-            if (!profileDetail || Object.keys(profileDetail).length === 0) {
-                console.log('📥 Profil verisi yok, yeniden yükleniyor...');
-                await fetchProfile();
-                return;
-            }
+        console.log('🔄 Component mount oldu, GÜNCEL profil yükleniyor...');
+        fetchProfile();
+    }, []);
 
-            if (!isProfileLoaded) {
-                console.log('✅ Profil verisi yüklendi:', profileDetail);
-                setServiceData(prev => fillEmptyFrom(prev, {
-                    repair_fullname: profileDetail.repair_fullname || "",
-                    repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
-                    repair_tc: profileDetail.repair_tc || "",
-                    repair_phone: profileDetail.repair_phone || "",
-                    service_name: profileDetail.service_name || "",
-                    service_phone: profileDetail.service_phone || "",
-                    service_city: profileDetail.service_city || "",
-                    service_state_city_city: profileDetail.service_state || "",
-                    service_address: profileDetail.service_address || "",
-                    service_tax_no: profileDetail.service_tax_no || "",
-                    service_iban: profileDetail.service_iban || "",
-                    service_iban_name: profileDetail.service_iban_name || "",
-                }));
+    useEffect(() => {
+        if (!profileDetail || Object.keys(profileDetail).length === 0) {
+            return;
+        }
 
-                setIsProfileLoaded(true);
-            }
-        };
+        console.log('✅ GÜNCEL profil verisi yüklendi:', profileDetail);
 
-        loadProfileData();
-    }, [profileDetail, fetchProfile, isProfileLoaded]);
+        const draftServiceData = location.state?.serviceData || {};
+
+        setServiceData(prev => ({
+            ...prev,
+            service_name: draftServiceData.service_name || profileDetail.service_name || "",
+            service_phone: draftServiceData.service_phone || profileDetail.service_phone || "",
+            service_city: draftServiceData.service_city || profileDetail.service_city || "",
+            service_state_city_city: draftServiceData.service_state_city_city || profileDetail.service_state || "",
+            service_address: draftServiceData.service_address || profileDetail.service_address || "",
+            service_tax_no: draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
+            service_iban: draftServiceData.service_iban || profileDetail.service_iban || "",
+            service_iban_name: draftServiceData.service_iban_name || profileDetail.service_iban_name || "",
+            repair_fullname: profileDetail.repair_fullname || "",
+            repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
+            repair_tc: profileDetail.repair_tc || "",
+            repair_phone: profileDetail.repair_phone || "",
+        }));
+
+        console.log('📋 Profil bilgileri güncellendi:', {
+            repair_fullname: profileDetail.repair_fullname,
+            repair_birth_date: profileDetail.repair_birth_date,
+            repair_tc: profileDetail.repair_tc,
+            repair_phone: profileDetail.repair_phone
+        });
+    }, [profileDetail]);
 
     useEffect(() => {
         const fetchAllCities = async () => {
@@ -215,10 +220,9 @@ export default function InsuredMechanicStepperScreen() {
         fetchAllCities();
     }, []);
 
-    // Route parametrelerinden verileri yükle
     useEffect(() => {
         if (location.state) {
-            console.log('🔄 Route state verileri yükleniyor:', location.state);
+            console.log('🔄 InsuredMechanic: location.key değişti, state yükleniyor:', location.key);
 
             if (location.state.insuredData) {
                 console.log('✅ insuredData yükleniyor:', location.state.insuredData);
@@ -226,18 +230,14 @@ export default function InsuredMechanicStepperScreen() {
             }
             if (location.state.serviceData) {
                 console.log('✅ serviceData yükleniyor:', location.state.serviceData);
-                setServiceData(prev => ({
-                    ...prev,
-                    ...location.state.serviceData
-                }));
-               
+                setServiceData(prev => overwriteOnlyFilled(prev, location.state.serviceData));
             }
             if (location.state.opposingDriverData) {
                 console.log('✅ opposingDriverData yükleniyor:', location.state.opposingDriverData);
                 setOpposingDriverData(location.state.opposingDriverData);
             }
         }
-    }, [location.state]);
+    }, [location.key]);
 
     // 🔹 Sigortalı adımı için alanları senaryoya göre yeniden işle - NATIVE'DEKİ MANTIK
     const insuredFieldsForStep = useMemo(() => {
@@ -340,6 +340,20 @@ export default function InsuredMechanicStepperScreen() {
             console.error('❌ Profil güncelleme hatası:', error);
         }
 
+        const completeServiceData = {
+            repair_fullname: values.repair_fullname,
+            repair_birth_date: values.repair_birth_date,
+            repair_tc: values.repair_tc,
+            repair_phone: values.repair_phone,
+            service_name: values.service_name,
+            service_tax_no: values.service_tax_no,
+            service_phone: values.service_phone,
+            service_city: values.service_city,
+            service_state_city_city: values.service_state_city_city,
+            service_address: values.service_address,
+            service_iban: values.service_iban,
+            service_iban_name: values.service_iban_name,
+        };
 
         const navigationState = {
             ...location.state,
@@ -350,21 +364,25 @@ export default function InsuredMechanicStepperScreen() {
             karsiSamePerson,
             startStep: editMode ? returnStep : 3,
 
-
-            insuredData: insuredData,
-            serviceData: values,
-            opposingDriverData: opposingDriverData,
+        
+            insuredData: Object.keys(insuredData).length > 0 ? insuredData : location.state?.insuredData || {},
+            serviceData: completeServiceData,
+            opposingDriverData: Object.keys(opposingDriverData).length > 0 ? opposingDriverData : location.state?.opposingDriverData || {},
         };
 
         console.log('🚀 handleServiceSubmit - navigation state:', navigationState);
-        console.log('🔍 insuredData gönderiliyor:', insuredData);
-        console.log('🔍 serviceData gönderiliyor:', values);
-        console.log('🔍 opposingDriverData gönderiliyor:', opposingDriverData);
+        console.log('🔍 LOCAL insuredData:', Object.keys(insuredData).length, 'keys');
+        console.log('🔍 LOCATION insuredData:', Object.keys(location.state?.insuredData || {}).length, 'keys');
+        console.log('🔍 FINAL insuredData:', Object.keys(navigationState.insuredData).length, 'keys');
+        console.log('🔍 LOCAL opposingDriverData:', Object.keys(opposingDriverData).length, 'keys');
+        console.log('🔍 LOCATION opposingDriverData:', Object.keys(location.state?.opposingDriverData || {}).length, 'keys');
+        console.log('🔍 FINAL opposingDriverData:', Object.keys(navigationState.opposingDriverData).length, 'keys');
 
         // Düzenleme modunda mı?
         if (editMode) {
-            const targetRoute = returnTo || 'step-info';
-            navigate(`/${targetRoute}`, { state: navigationState });
+            const targetRoute = returnTo || '/step-info';
+            const finalRoute = targetRoute.startsWith('/') ? targetRoute : `/${targetRoute}`;
+            navigate(finalRoute, { state: navigationState });
         } else {
             navigate('/step-info', {
                 state: {

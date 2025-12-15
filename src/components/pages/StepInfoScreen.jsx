@@ -9,10 +9,12 @@ import { formatPlate, maskPhone, toYYYYMMDD, toDDMMYYYY } from '../utils/formatt
 import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import FormFooter from '../forms/FormFooter';
+import { useProfile } from '../../context/ProfileContext';
 
 export default function StepInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { profileDetail, fetchProfile } = useProfile();
 
   // ✅ Her render'da güncel location.state'i al
   const params = location.state || {};
@@ -26,6 +28,8 @@ export default function StepInfoScreen() {
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
+  const fromDraft = params?.fromDraft || false; 
+  const draftId = params?.draftId || null; 
   const karsiSamePerson =
     params?.karsiSamePerson === true
       ? true
@@ -58,8 +62,20 @@ export default function StepInfoScreen() {
   const [currentStep, setCurrentStep] = useState(startStep);
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
-  const [submissionId, setSubmissionId] = useState(null);
+  const [submissionId, setSubmissionId] = useState(draftId); 
   const [remainingCredits, setRemainingCredits] = useState(0);
+
+  useEffect(() => {
+    if (fromDraft && draftId) {
+      console.log('📦 Taslaktan gelindi, submission ID set ediliyor:', draftId);
+      localStorage.setItem("submissionId", String(draftId));
+    }
+  }, [fromDraft, draftId]);
+
+  useEffect(() => {
+    console.log('🔄 StepInfo mount oldu, GÜNCEL profil yükleniyor...');
+    fetchProfile();
+  }, []);
 
   // Kredi bilgisini fetch et
   useEffect(() => {
@@ -79,19 +95,24 @@ export default function StepInfoScreen() {
   }, []);
 
 
+  // Route'tan gelen verileri yükle - location.key her navigation'da değişir ama sonsuz loop yaratmaz
   useEffect(() => {
     if (!location.state) return;
 
-    if (params.victimData) setVictimData(params.victimData);
-    if (params.driverData) setDriverData(params.driverData);
-    if (params.vehicleData) setVehicleData(params.vehicleData);
-    if (params.insuredData) setInsuredData(params.insuredData);
-    if (params.serviceData) setServiceData(params.serviceData);
-    if (params.mechanicData) setMechanicData(params.mechanicData);
-    if (params.damageData) setDamageData(params.damageData);
-    if (params.opposingDriverData) setOpposingDriverData(params.opposingDriverData);
-
-  }, [location.state]);
+    console.log('🔄 StepInfo: location.key değişti, state yükleniyor:', location.key);
+    
+    // params'ı burada tanımla ki güncel location.state'i alsın
+    const freshParams = location.state;
+    
+    if (freshParams.victimData) setVictimData(freshParams.victimData);
+    if (freshParams.driverData) setDriverData(freshParams.driverData);
+    if (freshParams.vehicleData) setVehicleData(freshParams.vehicleData);
+    if (freshParams.insuredData) setInsuredData(freshParams.insuredData);
+    if (freshParams.serviceData) setServiceData(freshParams.serviceData);
+    if (freshParams.mechanicData) setMechanicData(freshParams.mechanicData);
+    if (freshParams.damageData) setDamageData(freshParams.damageData);
+    if (freshParams.opposingDriverData) setOpposingDriverData(freshParams.opposingDriverData);
+  }, [location.key, location.state]);
 
 
   const isTekliBizimKasko =
@@ -156,9 +177,9 @@ export default function StepInfoScreen() {
     }
   }, [submissionId]);
 
-  const updateSubmission = async () => {
+  const updateSubmission = async (markAsCompleted = false) => {
     const savedId = submissionId || localStorage.getItem("submissionId");
-    console.log("🔎 submissionId (state/localStorage):", savedId, " currentStep:", currentStep);
+   
 
     if (!savedId) {
       console.log("⛔ Submission ID bulunamadı");
@@ -174,7 +195,7 @@ export default function StepInfoScreen() {
           insurance_company: selectedCompany?.id || null,
           is_driver_victim_same: samePerson,
           insurance_source: insuranceSource,
-          is_completed: false,
+          is_completed: markAsCompleted,
         };
       } else if (currentStep === 2) {
         payload = {
@@ -184,7 +205,7 @@ export default function StepInfoScreen() {
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
-          is_completed: false,
+          is_completed: markAsCompleted,
         };
 
         if (!samePerson) {
@@ -212,6 +233,8 @@ export default function StepInfoScreen() {
           vehicle_engine_no: vehicleData.vehicle_engine_no,
         };
       } else if (currentStep === 3) {
+        const currentProfileData = profileDetail || {};
+        
         payload = {
           insured_fullname: insuredData.insured_fullname,
           insured_tc: insuredData.insured_tc,
@@ -221,20 +244,27 @@ export default function StepInfoScreen() {
           insured_plate: insuredData.insured_plate,
           insured_policy_no: insuredData.insured_policy_no,
           insured_file_no: insuredData.insured_file_no,
-          repair_fullname: serviceData.repair_fullname,
-          repair_birth_date: toYYYYMMDD(serviceData.repair_birth_date),
-          repair_tc: serviceData.repair_tc,
-          repair_phone: serviceData.repair_phone,
-          service_name: serviceData.service_name,
-          service_tax_no: serviceData.service_tax_no,
-          service_phone: serviceData.service_phone,
-          service_state_city_city: serviceData.service_state_city_city,
-          service_city: serviceData.service_city,
-          service_address: serviceData.service_address,
-          service_iban: serviceData.service_iban,
-          service_iban_name: serviceData.service_iban_name,
-          is_completed: false,
+          repair_fullname: currentProfileData.repair_fullname || serviceData.repair_fullname,
+          repair_birth_date: toYYYYMMDD(currentProfileData.repair_birth_date) || toYYYYMMDD(serviceData.repair_birth_date),
+          repair_tc: currentProfileData.repair_tc || serviceData.repair_tc,
+          repair_phone: currentProfileData.repair_phone || serviceData.repair_phone,
+          service_name: serviceData.service_name || currentProfileData.service_name,
+          service_tax_no: serviceData.service_tax_no || currentProfileData.service_tax_no,
+          service_phone: serviceData.service_phone || currentProfileData.service_phone,
+          service_state_city_city: serviceData.service_state_city_city || currentProfileData.service_state,
+          service_city: serviceData.service_city || currentProfileData.service_city,
+          service_address: serviceData.service_address || currentProfileData.service_address,
+          service_iban: serviceData.service_iban || currentProfileData.service_iban,
+          service_iban_name: serviceData.service_iban_name || currentProfileData.service_iban_name,
+          is_completed: markAsCompleted,
         };
+        
+        console.log('📤 Profil bilgileri backend\'e gönderiliyor:', {
+          repair_fullname: payload.repair_fullname,
+          repair_birth_date: payload.repair_birth_date,
+          repair_tc: payload.repair_tc,
+          repair_phone: payload.repair_phone
+        });
 
         if ((insuranceSource === "karsi trafik" || insuranceSource === "karsi kasko") && karsiSamePerson === false) {
           payload = {
@@ -264,7 +294,7 @@ export default function StepInfoScreen() {
           policy_no: damageData.policy_no,
           estimated_damage_amount: damageData.estimated_damage_amount,
           official_report_type: damageData.official_report_type,
-          is_completed: true,
+          is_completed: markAsCompleted,
         };
       }
 
@@ -500,17 +530,19 @@ export default function StepInfoScreen() {
               title: 'Servis Bilgileri',
               editKey: 'service_info',
               data: [
-                { label: 'Ad Soyad', value: serviceData.repair_fullname || 'YOK' },
-                { label: 'Doğum Tarihi', value: serviceData.repair_birth_date || 'YOK' },
-                { label: 'TC No', value: serviceData.repair_tc || 'YOK' },
-                { label: 'Telefon', value: maskPhone(serviceData.repair_phone) || 'YOK' },
-                { label: 'IBAN', value: serviceData.service_iban || 'YOK' },
-                { label: 'IBAN Adı', value: serviceData.service_iban_name || 'YOK' },
-                { label: 'Servis Adı', value: serviceData.service_name || 'YOK' },
-                { label: 'İl', value: serviceData.service_city || 'YOK' },
-                { label: 'İlçe', value: serviceData.service_state_city_city || 'YOK' },
-                { label: 'Adres', value: serviceData.service_address || 'YOK' },
-                { label: 'Servis No', value: serviceData.service_tax_no || 'YOK' },
+                // 🔥 Profil bilgileri GÜNCEL profileDetail'den göster
+                { label: 'Ad Soyad', value: (profileDetail?.repair_fullname || serviceData.repair_fullname) || 'YOK' },
+                { label: 'Doğum Tarihi', value: (profileDetail?.repair_birth_date ? toDDMMYYYY(profileDetail.repair_birth_date) : serviceData.repair_birth_date) || 'YOK' },
+                { label: 'TC No', value: (profileDetail?.repair_tc || serviceData.repair_tc) || 'YOK' },
+                { label: 'Telefon', value: maskPhone(profileDetail?.repair_phone || serviceData.repair_phone) || 'YOK' },
+                // Servis bilgileri serviceData'dan (taslakta güncellenmiş olabilir)
+                { label: 'IBAN', value: (serviceData.service_iban || profileDetail?.service_iban) || 'YOK' },
+                { label: 'IBAN Adı', value: (serviceData.service_iban_name || profileDetail?.service_iban_name) || 'YOK' },
+                { label: 'Servis Adı', value: (serviceData.service_name || profileDetail?.service_name) || 'YOK' },
+                { label: 'İl', value: (serviceData.service_city || profileDetail?.service_city) || 'YOK' },
+                { label: 'İlçe', value: (serviceData.service_state_city_city || profileDetail?.service_state) || 'YOK' },
+                { label: 'Adres', value: (serviceData.service_address || profileDetail?.service_address) || 'YOK' },
+                { label: 'Servis No', value: (serviceData.service_tax_no || profileDetail?.service_tax_no) || 'YOK' },
               ]
             }
           ]
@@ -687,8 +719,7 @@ export default function StepInfoScreen() {
         return;
       }
 
-      // Önce submission'ı güncelle
-      const updateResult = await updateSubmission();
+      const updateResult = await updateSubmission(true);
       console.log('📝 Update result:', updateResult);
 
       // Backend'den kredi hatası gelirse kontrol et
@@ -897,7 +928,7 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             focusSection: editKey,
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
@@ -908,7 +939,7 @@ export default function StepInfoScreen() {
             ...baseParams,
             editMode: true,
             directToDocuments: true,
-            returnTo: 'step-info',
+            returnTo: '/step-info',
             returnStep: currentStep
           }
         });
