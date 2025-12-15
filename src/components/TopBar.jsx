@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthAPI from "../services/authAPI";
 
@@ -11,6 +11,8 @@ export default function TopBar() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
+    const tabsRef = useRef(null);
+    const indicatorRef = useRef(null);
 
     const handleNotificationsClick = () => {
         navigate("/notifications");
@@ -65,64 +67,106 @@ export default function TopBar() {
         };
     }, []);
 
+    const moveIndicatorToEl = (el) => {
+        if (!el || !tabsRef.current || !indicatorRef.current) return;
 
+        const parentRect = tabsRef.current.getBoundingClientRect();
+        const rect = el.getBoundingClientRect();
+
+        const left = rect.left - parentRect.left;
+        const top = rect.top - parentRect.top;
+
+        indicatorRef.current.style.transform = `translate(${left}px, ${top}px)`;
+        indicatorRef.current.style.width = `${rect.width}px`;
+        indicatorRef.current.style.height = `${rect.height}px`;
+        indicatorRef.current.style.opacity = "1";
+    };
+
+    // İlk açılış + route değişince active tab'a oturt
+    useLayoutEffect(() => {
+        const activeEl = tabsRef.current?.querySelector(`.${styles.active}`);
+        moveIndicatorToEl(activeEl || tabsRef.current?.querySelector(`.${styles.tab}`));
+    });
+
+    // Resize olunca indicator'ı yeniden hizala
+    useEffect(() => {
+        const onResize = () => {
+            const activeEl = tabsRef.current?.querySelector(`.${styles.active}`);
+            moveIndicatorToEl(activeEl);
+        };
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const handleMouseLeaveTabs = () => {
+        const activeEl = tabsRef.current?.querySelector(`.${styles.active}`);
+        moveIndicatorToEl(activeEl);
+    };
 
     return (
         <header className={styles.topBar}>
             <div className={styles.logo}>HASARLİNK</div>
 
             {/* DESKTOP TABS */}
-            <nav className={`${styles.tabs} ${styles.desktopMenu}`}>
+            <nav
+                ref={tabsRef}
+                className={`${styles.tabs} ${styles.desktopMenu}`}
+                onMouseLeave={handleMouseLeaveTabs}
+            >
+                {/* sliding outline indicator */}
+                <span ref={indicatorRef} className={styles.tabIndicator} />
+
                 <NavLink
                     to="/"
                     end
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Anasayfa
                 </NavLink>
 
                 <NavLink
                     to="/file-notifications"
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Dosya Bildirimlerim
                 </NavLink>
 
                 <NavLink
                     to="/profile"
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Profilim
                 </NavLink>
 
                 <NavLink
                     to="/contact"
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     İletişim
                 </NavLink>
 
                 <NavLink
                     to="/settings"
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Ayarlar
                 </NavLink>
+
                 <NavLink
                     to="/kredi-satin-al"
-                    className={({ isActive }) =>
-                        `${styles.tab} ${isActive ? styles.active : ""}`
-                    }
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Kredi Satın Al
                 </NavLink>
