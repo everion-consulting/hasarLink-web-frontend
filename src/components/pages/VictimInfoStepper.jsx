@@ -60,7 +60,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
-  const victimFields = getVictimFields(isCompany);
+  const victimFields = getVictimFields(isCompany, selectedCompany);
 
   useEffect(() => {
     setFormValues(prev => ({
