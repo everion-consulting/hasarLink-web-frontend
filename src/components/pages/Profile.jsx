@@ -52,6 +52,22 @@ export default function Profile() {
     const [loadingStats, setLoadingStats] = useState(true);
     const [fileNotifications, setFileNotifications] = useState([]);
     const navigate = useNavigate();
+    const [cityOptions, setCityOptions] = useState([]);
+
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+    const showToast = (message, type = "success") => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: "", type: "" });
+        }, 3000);
+    };
+
+    const truncateText = (text, maxLength = 17) => {
+        if (!text) return "";
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + "...";
+    };
 
     const handlePasswordChange = async () => {
         if (!currentPassword || !newPassword || !confirmPassword) {
@@ -91,6 +107,43 @@ export default function Profile() {
     useEffect(() => {
         fetchProfile();
         fetchAllCompanies();
+    }, []);
+
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                let allCities = [];
+                let currentUrl = null;
+                
+                const res = await apiService.getCities();
+                
+                if (res?.data?.results) {
+                    allCities = [...res.data.results];
+                    currentUrl = res.data.next;
+                    while (currentUrl) {
+                        const nextRes = await apiService.getCities(currentUrl);
+                        if (nextRes?.data?.results) {
+                            allCities = [...allCities, ...nextRes.data.results];
+                            currentUrl = nextRes.data.next;
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    allCities = res?.data || [];
+                }
+                
+                const options = allCities.map((city) => ({
+                    label: city.name,
+                    value: city.name,
+                }));
+                setCityOptions(options);
+            } catch (err) {
+                console.error('❌ Şehir verileri alınamadı:', err);
+                setCityOptions([]);
+            }
+        };
+        fetchCities();
     }, []);
 
     useEffect(() => {
@@ -150,6 +203,13 @@ export default function Profile() {
 
     return (
         <div className={styles.profilePage}>
+
+            {/* 🔔 Toast Notification */}
+            {toast.show && (
+                <div className={`${styles.toast} ${styles[toast.type]}`}>
+                    {toast.type === "success" ? "✓" : "✕"} {toast.message}
+                </div>
+            )}
 
             <div className={styles.profileBackground}></div>
 
@@ -227,8 +287,8 @@ export default function Profile() {
 
                     <div className={styles.row}><User size={20} /><p>{profileDetail?.repair_fullname}</p></div>
                     <div className={styles.row}><Phone size={20} /><p>{profileDetail?.repair_phone}</p></div>
-                    <div className={styles.row}><MapPin size={20} /><p>{profileDetail?.service_city} / {profileDetail?.service_state}</p></div>
-                    <div className={styles.row}><Building2 size={20} /><p>{profileDetail?.service_address}</p></div>
+                    <div className={styles.row}><MapPin size={20} /><p>{truncateText(profileDetail?.service_city, 10)} / {truncateText(profileDetail?.service_state, 10)}</p></div>
+                    <div className={styles.row}><Building2 size={20} /><p>{truncateText(profileDetail?.service_address, 17)}</p></div>
                 </div>
 
 
@@ -367,11 +427,18 @@ export default function Profile() {
                             <div className={styles.formRow2}>
                                 <div>
                                     <label>Servis Şehir</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={form.service_city}
                                         onChange={(e) => setForm({ ...form, service_city: e.target.value })}
-                                    />
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="">Şehir Seçin</option>
+                                        {cityOptions.map((city) => (
+                                            <option key={city.value} value={city.value}>
+                                                {city.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
@@ -409,9 +476,10 @@ export default function Profile() {
                                         if (res.success) {
                                             await fetchProfile();
                                             setEditModalOpen(false);
-                                            alert("Servis bilgileri güncellendi!");
+                                            showToast("Servis bilgileri güncellendi!", "success");
                                         } else {
-                                            alert("Güncelleme başarısız!");
+                                            setEditModalOpen(false);
+                                            showToast("Güncelleme başarısız!", "error");
                                         }
                                     }}
                                 >

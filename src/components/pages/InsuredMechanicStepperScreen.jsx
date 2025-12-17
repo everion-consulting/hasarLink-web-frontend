@@ -204,13 +204,34 @@ export default function InsuredMechanicStepperScreen() {
     useEffect(() => {
         const fetchAllCities = async () => {
             try {
+                let allCities = [];
+                let currentUrl = null;
+                
                 const res = await apiService.getCities();
-                const cities = res?.data?.results || res?.data || [];
-                const options = cities.map((city) => ({
+                
+                if (res?.data?.results) {
+                    allCities = [...res.data.results];
+                    currentUrl = res.data.next;
+                    
+                    while (currentUrl) {
+                        const nextRes = await apiService.getCities(currentUrl);
+                        if (nextRes?.data?.results) {
+                            allCities = [...allCities, ...nextRes.data.results];
+                            currentUrl = nextRes.data.next;
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    allCities = res?.data || [];
+                }
+                
+                const options = allCities.map((city) => ({
                     label: city.name,
                     value: city.name,
                 }));
                 setCityOptions(options);
+                console.log(`✅ Form: Toplam ${allCities.length} şehir yüklendi`);
             } catch (err) {
                 console.error('❌ Şehir verileri alınamadı:', err);
                 setCityOptions([]);
@@ -378,7 +399,6 @@ export default function InsuredMechanicStepperScreen() {
         console.log('🔍 LOCATION opposingDriverData:', Object.keys(location.state?.opposingDriverData || {}).length, 'keys');
         console.log('🔍 FINAL opposingDriverData:', Object.keys(navigationState.opposingDriverData).length, 'keys');
 
-        // Düzenleme modunda mı?
         if (editMode) {
             const targetRoute = returnTo || '/step-info';
             const finalRoute = targetRoute.startsWith('/') ? targetRoute : `/${targetRoute}`;
