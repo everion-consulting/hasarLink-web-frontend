@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../../styles/creditCheckout.module.css";
 import { CreditCard, Lock, CheckCircle, ArrowLeft } from "lucide-react";
+import LeftBlackIcon from "../../assets/images/leftIconBlack.svg";
 
 export default function CreditCheckout() {
     const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function CreditCheckout() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Kart numarası formatı (16 hane, 4'lük gruplar)
         if (name === "cardNumber") {
             const cleaned = value.replace(/\s/g, "");
@@ -56,7 +57,7 @@ export default function CreditCheckout() {
         if (name === "expiryDate") {
             const cleaned = value.replace(/\D/g, "");
             if (cleaned.length <= 4) {
-                const formatted = cleaned.length >= 2 
+                const formatted = cleaned.length >= 2
                     ? `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`
                     : cleaned;
                 setFormData({ ...formData, [name]: formatted });
@@ -103,13 +104,17 @@ export default function CreditCheckout() {
 
     return (
         <div className={styles.checkoutContainer}>
-            <button 
-                className={styles.backButton}
-                onClick={() => navigate("/kredi-satin-al")}
-            >
-                <ArrowLeft size={20} />
-                Geri Dön
-            </button>
+            <div className={styles.notifHeader}>
+                <button
+                    type="button"
+                    className={styles.notifBackBtn}
+                    onClick={() => navigate(-1)}
+                >
+                    <span className={styles.contactBtnIcon}>
+                        <img src={LeftBlackIcon} alt="Geri" />
+                    </span>
+                </button>
+            </div>
 
             <div className={styles.checkoutGrid}>
                 {/* SOL TARAF - Ödeme Formu */}
@@ -296,8 +301,8 @@ export default function CreditCheckout() {
                             </div>
                         </div>
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className={styles.submitButton}
                             disabled={processing}
                         >

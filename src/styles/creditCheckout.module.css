@@ -5,24 +5,26 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.backButton {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #133E87;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 30px;
+.notifBackBtn {
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s ease;
 }
 
-.backButton:hover {
-    background: #f5f5f5;
-    border-color: #133E87;
+.notifBackBtn:hover {
+  background: #e5e7eb;
+}
+
+.notifHeader {
+  padding-bottom: 2rem;
 }
 
 .checkoutGrid {
@@ -125,7 +127,7 @@
 
 .submitButton {
     padding: 16px;
-    background: linear-gradient(135deg, #133E87 0%, #1976D2 100%);
+    background: #133E87;
     color: white;
     border: none;
     border-radius: 8px;
@@ -187,7 +189,7 @@
 .packageBadge {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #133E87 0%, #1976D2 100%);
+    background: #133E87;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -385,7 +387,7 @@
 .radioSelected {
     width: 14px;
     height: 14px;
-    background: linear-gradient(135deg, #133E87 0%, #1976D2 100%);
+    background: #133E87;
     border-radius: 50%;
 }
 

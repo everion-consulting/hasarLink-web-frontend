@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  background: linear-gradient(135deg, #133E87 0%, #1e5bb8 100%);    
+  background: #133E87;    
   color: white;
   padding: 16px 50px;
   border-radius: 16px;
@@ -111,7 +111,7 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #133E87 0%, #1e5bb8 100%);
+  background: #133E87;
   color: white;
   padding: 6px 20px;
   border-radius: 20px;
@@ -195,7 +195,7 @@
 }
 
 .popularBtn {
-  background: linear-gradient(135deg, #133E87 0%, #1e5bb8 100%);
+  background: #133E87;
   color: white;
 }
 
@@ -235,7 +235,7 @@
 .infoNumber {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #133E87 0%, #1e5bb8 100%);
+  background: #133E87;
   color: white;
   border-radius: 50%;
   display: flex;
