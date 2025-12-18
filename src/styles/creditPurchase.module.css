@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  background: #133E87;    
+  background: #133E87;
   color: white;
   padding: 16px 50px;
   border-radius: 16px;
@@ -180,12 +180,14 @@
   padding: 15px;
   border: none;
   border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   background: #f0f0f0;
   color: #333;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .purchaseBtn:hover {
@@ -205,57 +207,95 @@
 }
 
 .infoSection {
-  margin-top: 80px;
-  padding: 40px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 20px;
+  margin-top: 48px;
+  padding: 56px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.06);
 }
 
 .infoTitle {
   text-align: center;
-  font-size: 2rem;
-  color: #133E87;
-  margin-bottom: 40px;
+  font-size: 36px;
+  font-weight: 800;
+  color: #0f2f6b;
+  margin-bottom: 38px;
+  letter-spacing: -0.5px;
 }
 
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
 }
 
+/* başlangıçta gizli */
 .infoCard {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(18px);
+  border-radius: 20px;
+  padding: 26px 22px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+}
+
+.infoVisible .infoCard {
+  animation: stepIn 520ms cubic-bezier(.2, .8, .2, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Hover: lift + mavi glow + border belirginleşsin */
+.infoVisible .infoCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.12), 0 0 0 6px rgb(0 95 255 / 8%);
+  border-color: rgba(19, 62, 135, 0.35);
+  background: rgb(240 245 255 / 95%);
+}
+
+/* İçerik de tepki versin */
+.infoVisible .infoCard:hover .infoNumber {
+  transform: scale(1.08);
+  box-shadow: 0 10px 24px rgba(19, 62, 135, 0.25);
 }
 
 .infoNumber {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
   background: #133E87;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 14px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+@keyframes stepIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .infoCard h3 {
-  font-size: 1.2rem;
-  color: #333;
-  margin: 0 0 10px 0;
+  text-align: center;
+  margin: 10px 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1b1b1b;
 }
 
 .infoCard p {
-  color: #666;
-  line-height: 1.6;
+  text-align: center;
   margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 15px;
 }
 
 @media (max-width: 768px) {
@@ -290,5 +330,9 @@
 
   .infoSection {
     padding: 30px 20px;
+  }
+
+  .infoTitle {
+    font-size: 26px;
   }
 }

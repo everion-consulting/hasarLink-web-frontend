@@ -6,25 +6,25 @@
 }
 
 .notifBackBtn {
-  width: 40px;
-  height: 40px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.15s ease;
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s ease;
 }
 
 .notifBackBtn:hover {
-  background: #e5e7eb;
+    background: #e5e7eb;
 }
 
 .notifHeader {
-  padding-bottom: 2rem;
+    padding-bottom: 2rem;
 }
 
 .checkoutGrid {
@@ -131,11 +131,13 @@
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 10px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .submitButton:hover:not(:disabled) {
