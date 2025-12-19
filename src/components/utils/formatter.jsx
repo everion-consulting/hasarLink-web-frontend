@@ -42,7 +42,7 @@ export const normalizeIBAN = (s = "") => {
 
 export const validateEmail = (s = "") => /^\S+@\S+\.\S+$/.test(s);
 export const validatePhone = (s = "") => /^0\d{10}$/.test(onlyDigits(s));
-export const validateTCKN = (s = "") => /^\d{11}$/.test(onlyDigits(s));
+export const validateTCKN = (s = "") => /^\d{10,11}$/.test(onlyDigits(s));
 export const validateIBAN = (s = "") => /^TR\d{24}$/i.test(s.replace(/\s/g, ""));
 
 // -------------------
