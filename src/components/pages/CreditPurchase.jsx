@@ -4,6 +4,7 @@ import styles from "../../styles/creditPurchase.module.css";
 import { CreditCard, Sparkles, CheckCircle } from "lucide-react";
 import apiService from "../../services/apiServices";
 
+
 export default function CreditPurchase() {
     const navigate = useNavigate();
     const [remainingCredits, setRemainingCredits] = useState(0);
