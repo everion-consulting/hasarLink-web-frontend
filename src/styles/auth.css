@@ -77,11 +77,11 @@ body {
   background: transparent;
   border: none;
   color: #133E87;
-  padding: 12px 32px;
+  padding: 12px 45px;
   border-radius: 25px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 18px;
   transition: all 0.3s ease;
   position: relative;
   font-family: "Poppins", sans-serif;
