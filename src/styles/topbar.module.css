@@ -10,13 +10,26 @@
     font-family: 'Poppins';
 }
 
-/* Logo */
+/* Logo (icon + text) */
 .logo {
-    font-size: 36px;
-    letter-spacing: 5px;
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 30px;
+    letter-spacing: 4px;
+    font-weight: 600;
     color: #222;
-    line-height: 50px;
+    line-height: 1;
+}
+
+.logoIcon {
+    width: 60px;
+    height: 60px;
+    display: block;
+}
+
+.logoText {
+    display: inline-block;
 }
 
 /* Tabs */
@@ -302,5 +315,10 @@
 
     .hamburger {
         font-size: 28px;
+    }
+
+    .logoIcon {
+        width: 50px;
+        height: 50px;
     }
 }

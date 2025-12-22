@@ -63,6 +63,10 @@ body {
   letter-spacing: 1px;
 }
 
+.auth-logo {
+  margin-bottom: 20px;
+}
+
 .auth-tabs {
   display: flex;
   justify-content: center;

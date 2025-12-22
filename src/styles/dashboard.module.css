@@ -45,28 +45,27 @@
 }
 
 .cardDashboardHeading {
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 25px;
+  line-height: 30px;
   font-weight: 400;
-  margin-top: 12px;
   letter-spacing: 0.48px;
-  margin-bottom: 20px;
 }
 
 .cardDashboardBtn {
   margin-top: auto;
-  padding: 15px 24px;
+  padding: 10px;
   border-radius: 11px;
   border: none;
   background: var(--blue-dark);
   color: #fff;
-  font-size: 24px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 22px;
   font-weight: 700;
   cursor: pointer;
   width: 100%;
   transition: 0.2s;
   letter-spacing: 0.05em;
+  font-family: 'Poppins', sans-serif;
 }
 
 .cardDashboardBtn:hover {
@@ -120,14 +119,14 @@
 }
 
 .cardDashboardTitleSm {
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 28px;
+  line-height: 35px;
   letter-spacing: 0.15em;
 }
 
 .cardDashboardTitleLg {
-  font-size: 48px;
-  line-height: 50px;
+  font-size: 32px;
+  line-height: 36px;
   font-weight: 700;
   letter-spacing: 0.08em;
   margin-bottom: 8px;
@@ -179,16 +178,16 @@
 }
 
 .cardDashboardCount {
-  font-size: 28px;
-  line-height: 35px;
+  font-size: 22px;
+  line-height: 28px;
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
 }
 
 .cardDashboardCountNumber {
-  font-size: 28px;
-  line-height: 35px;
+  font-size: 22px;
+  line-height: 28px;
 }
 
 /* --- PENDING --- */
@@ -219,15 +218,15 @@
 }
 
 .amountMain {
-  font-size: 40px;
-  line-height: 48px;
+  font-size: 30px;
+  line-height: 35px;
   font-weight: 700;
   margin: 16px 0 8px;
 }
 
 .amountSub {
-  font-size: 24px;
-  line-height: 30px;
+  font-size: 20px;
+  line-height: 25px;
 }
 
 /* --- DRAFTS --- */
@@ -369,9 +368,7 @@
   }
 
   .cardDashboardBtn {
-    padding: 10px 15px;
-    font-size: 20px;
-    line-height: 24px;
+    padding: 8px;
   }
 
   .draftsLogos {
@@ -489,16 +486,6 @@
   .cardPending {
     background-position: -40px -125px;
   }
-
-  .cardDashboardTitleSm {
-    font-size: 30px;
-    line-height: 35px;
-  }
-
-  .cardDashboardTitleLg {
-    font-size: 45px;
-    line-height: 48px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -581,13 +568,6 @@
   .cardDashboardHeading {
     font-size: 19px;
     line-height: 24px;
-    margin-bottom: 8px;
-  }
-
-  .cardDashboardBtn {
-    padding: 10px 15px;
-    font-size: 20px;
-    line-height: 24px;
   }
 
   .cardDashboard {
@@ -624,18 +604,13 @@
   }
 
   .cardDashboardTitleSm {
-    font-size: 28px;
-    line-height: 33px;
-  }
-
-  .cardDashboardTitleLg {
-    font-size: 40px;
-    line-height: 45px;
+    font-size: 22px;
+    line-height: 25px;
   }
 }
 
 /* ==================== EXTRA SMALL (375px ve altı) ==================== */
-@media (max-width: 425px) {
+@media (max-width: 426px) {
   .dashGrid {
     grid-template-columns: 1fr !important;
     padding: 16px;
@@ -665,13 +640,9 @@
     width: 90px !important;
   }
 
-  .cardDashboardHeading {
-    font-size: 26px !important;
-    line-height: 32px !important;
-  }
-
   .amountMain {
-    font-size: 30px !important;
+    font-size: 25px !important;
+    line-height: 32px !important;
   }
 
   .cardDashboardHeading {
@@ -708,13 +679,8 @@
     height: 100px;
   }
 
-  .cardDashboardTitleSm {
-    font-size: 25px;
-    line-height: 30px;
-  }
-
   .cardDashboardTitleLg {
-    font-size: 38px;
-    line-height: 40px;
+    font-size: 28px;
+    line-height: 30px;
   }
 }
