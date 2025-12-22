@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../stepper/Stepper';
 import FormRenderer from '../forms/FormRenderer';
 import FormFooter from '../forms/FormFooter';
-import insuredField from '../../constants/insuredFields';
+import { getInsuredFields } from '../../constants/insuredFields';
 import serviceField from '../../constants/serviceField';
 import opposingDriverFields from '../../constants/opposingDriverFields';
 import { useProfile } from '../../context/ProfileContext';
@@ -37,6 +37,7 @@ export default function InsuredMechanicStepperScreen() {
     const [insuredValid, setInsuredValid] = useState(false);
     const [opposingValid, setOpposingValid] = useState(false);
     const [serviceValid, setServiceValid] = useState(false);
+    const [isCompany, setIsCompany] = useState(false);
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
@@ -248,6 +249,9 @@ export default function InsuredMechanicStepperScreen() {
             if (location.state.insuredData) {
                 console.log('✅ insuredData yükleniyor:', location.state.insuredData);
                 setInsuredData(location.state.insuredData);
+                if (location.state.insuredData.isCompany !== undefined) {
+                    setIsCompany(location.state.insuredData.isCompany);
+                }
             }
             if (location.state.serviceData) {
                 console.log('✅ serviceData yükleniyor:', location.state.serviceData);
@@ -260,11 +264,20 @@ export default function InsuredMechanicStepperScreen() {
         }
     }, [location.key]);
 
+    useEffect(() => {
+        setInsuredData(prev => ({
+            ...prev,
+            isCompany: isCompany
+        }));
+    }, [isCompany]);
+
     // 🔹 Sigortalı adımı için alanları senaryoya göre yeniden işle - NATIVE'DEKİ MANTIK
     const insuredFieldsForStep = useMemo(() => {
+        const fields = getInsuredFields(isCompany);
+
         // 1) Çoklu + Karşı Kasko → sadece plaka zorunlu
         if (isCokluKarsiKasko) {
-            return insuredField.map(f => {
+            return fields.map(f => {
                 if (f.type === "row" && Array.isArray(f.children)) {
                     return {
                         ...f,
@@ -283,7 +296,7 @@ export default function InsuredMechanicStepperScreen() {
 
         // 2) Çoklu + Karşı Trafik → TÜM alanlar zorunlu
         if (isCokluKarsiTrafik) {
-            return insuredField.map(f => {
+            return fields.map(f => {
                 if (f.type === "row" && Array.isArray(f.children)) {
                     return {
                         ...f,
@@ -301,8 +314,8 @@ export default function InsuredMechanicStepperScreen() {
         }
 
         // 3) Diğer senaryolarda alanlar olduğu gibi kalsın
-        return insuredField;
-    }, [isCokluKarsiKasko, isCokluKarsiTrafik]);
+        return fields;
+    }, [isCokluKarsiKasko, isCokluKarsiTrafik, isCompany]);
 
     // Form submit handlers - NATIVE'DEKİ MANTIK
     const handleInsuredSubmit = (values) => {
@@ -505,6 +518,24 @@ export default function InsuredMechanicStepperScreen() {
     };
 
 
+    const renderInsuredTypeSwitch = () => (
+        <div className={styles.switchMainContainer}>
+            <div
+                className={`${styles.switchOption} ${!isCompany ? styles.activeOption : ''}`}
+                onClick={() => setIsCompany(false)}
+            >
+                Şahıs
+            </div>
+            <div
+                className={`${styles.switchOption} ${isCompany ? styles.activeOption : ''}`}
+                onClick={() => setIsCompany(true)}
+            >
+                Şirket
+            </div>
+        </div>
+    );
+
+
     const renderCurrentForm = () => {
         console.log('🎨 RENDER - currentStep:', currentStep, 'steps:', steps, 'shouldShowOpposingDriver:', shouldShowOpposingDriver);
 
@@ -524,13 +555,16 @@ export default function InsuredMechanicStepperScreen() {
 
         if (currentStep === 1) {
             return (
-                <FormRenderer
-                    fields={insuredFieldsForStep}
-                    values={insuredData}
-                    setValues={setInsuredData}
-                    onSubmit={handleInsuredSubmit}
-                    onFormChange={({ allValid }) => setInsuredValid(allValid)}
-                />
+                <>
+                    {renderInsuredTypeSwitch()}
+                    <FormRenderer
+                        fields={insuredFieldsForStep}
+                        values={insuredData}
+                        setValues={setInsuredData}
+                        onSubmit={handleInsuredSubmit}
+                        onFormChange={({ allValid }) => setInsuredValid(allValid)}
+                    />
+                </>
             );
         }
 

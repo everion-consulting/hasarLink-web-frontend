@@ -28,8 +28,8 @@ export default function StepInfoScreen() {
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
-  const fromDraft = params?.fromDraft || false; 
-  const draftId = params?.draftId || null; 
+  const fromDraft = params?.fromDraft || false;
+  const draftId = params?.draftId || null;
   const karsiSamePerson =
     params?.karsiSamePerson === true
       ? true
@@ -62,7 +62,7 @@ export default function StepInfoScreen() {
   const [currentStep, setCurrentStep] = useState(startStep);
   const [isAllChosen, setIsAllChosen] = useState(true);
   const [isStepApproved, setIsStepApproved] = useState(false);
-  const [submissionId, setSubmissionId] = useState(draftId); 
+  const [submissionId, setSubmissionId] = useState(draftId);
   const [remainingCredits, setRemainingCredits] = useState(0);
 
   useEffect(() => {
@@ -100,10 +100,10 @@ export default function StepInfoScreen() {
     if (!location.state) return;
 
     console.log('🔄 StepInfo: location.key değişti, state yükleniyor:', location.key);
-    
+
     // params'ı burada tanımla ki güncel location.state'i alsın
     const freshParams = location.state;
-    
+
     if (freshParams.victimData) setVictimData(freshParams.victimData);
     if (freshParams.driverData) setDriverData(freshParams.driverData);
     if (freshParams.vehicleData) setVehicleData(freshParams.vehicleData);
@@ -179,7 +179,7 @@ export default function StepInfoScreen() {
 
   const updateSubmission = async (markAsCompleted = false) => {
     const savedId = submissionId || localStorage.getItem("submissionId");
-   
+
 
     if (!savedId) {
       console.log("⛔ Submission ID bulunamadı");
@@ -234,11 +234,13 @@ export default function StepInfoScreen() {
         };
       } else if (currentStep === 3) {
         const currentProfileData = profileDetail || {};
-        
+
         payload = {
-          insured_fullname: insuredData.insured_fullname,
-          insured_tc: insuredData.insured_tc,
-          insured_birth_date: toYYYYMMDD(insuredData.insured_birth_date),
+          insured_fullname: insuredData.isCompany ? "" : insuredData.insured_fullname,
+          insured_tc: insuredData.isCompany ? "" : insuredData.insured_tc,
+          company_name: insuredData.isCompany ? insuredData.company_name : "",
+          company_tax_number: insuredData.isCompany ? insuredData.company_tax_number : "",
+          insured_birth_date: insuredData.isCompany ? null : toYYYYMMDD(insuredData.insured_birth_date),
           insured_phone: insuredData.insured_phone,
           insured_mail: insuredData.insured_mail,
           insured_plate: insuredData.insured_plate,
@@ -258,7 +260,7 @@ export default function StepInfoScreen() {
           service_iban_name: serviceData.service_iban_name || currentProfileData.service_iban_name,
           is_completed: markAsCompleted,
         };
-        
+
         console.log('📤 Profil bilgileri backend\'e gönderiliyor:', {
           repair_fullname: payload.repair_fullname,
           repair_birth_date: payload.repair_birth_date,
@@ -499,16 +501,26 @@ export default function StepInfoScreen() {
             {
               title: 'Sigortalı Bilgileri',
               editKey: 'insured_info',
-              data: [
-                { label: 'Ad Soyad', value: insuredData.insured_fullname || 'YOK' },
-                { label: 'TC No', value: insuredData.insured_tc || 'YOK' },
-                { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'YOK' },
-                { label: 'Telefon', value: insuredData.insured_phone || 'YOK' },
-                { label: 'E-Mail', value: insuredData.insured_mail || 'YOK' },
-                { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'YOK' },
-                { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'YOK' },
-                { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'YOK' },
-              ]
+              data: insuredData.isCompany
+                ? [
+                  { label: 'Şirket İsmi', value: insuredData.company_name || 'YOK' },
+                  { label: 'Vergi Kimlik No', value: insuredData.company_tax_number || 'YOK' },
+                  { label: 'Telefon', value: insuredData.insured_phone || 'YOK' },
+                  { label: 'E-Mail', value: insuredData.insured_mail || 'YOK' },
+                  { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'YOK' },
+                  { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'YOK' },
+                  { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'YOK' },
+                ]
+                : [
+                  { label: 'Ad Soyad', value: insuredData.insured_fullname || 'YOK' },
+                  { label: 'TC No', value: insuredData.insured_tc || 'YOK' },
+                  { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'YOK' },
+                  { label: 'Telefon', value: insuredData.insured_phone || 'YOK' },
+                  { label: 'E-Mail', value: insuredData.insured_mail || 'YOK' },
+                  { label: 'Poliçe No', value: formatPlate(insuredData.insured_policy_no) || 'YOK' },
+                  { label: 'Araç Plaka', value: formatPlate(insuredData.insured_plate) || 'YOK' },
+                  { label: 'Ruhsat No', value: formatPlate(insuredData.insuredCarDocNo) || 'YOK' },
+                ]
             },
             ...(hasKarsiTrafikOrKasko && karsiSamePerson === false
 
