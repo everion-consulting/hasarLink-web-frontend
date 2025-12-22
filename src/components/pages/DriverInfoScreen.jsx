@@ -10,11 +10,11 @@ export default function DriverInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [formValues, setFormValues] = useState({});
-  const [formValid, setFormValid] = useState(false);  // ❗ valid state dışarı alındı
-
   const locationState = location.state || {};
-  const { victimData, samePerson = false } = locationState;
+  const { victimData, driverData = {}, samePerson = false } = locationState;
+
+  const [formValues, setFormValues] = useState(driverData);
+  const [formValid, setFormValid] = useState(false); 
 
   const steps = samePerson
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']

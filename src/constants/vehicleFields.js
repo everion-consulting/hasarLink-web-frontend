@@ -21,6 +21,7 @@ export default [
     placeholder: "Araç markası giriniz",
     required: true,
     icon: TruckIcon,
+    transform: (value) => value?.toUpperCase(),
   },
   {
     type: "row",
@@ -42,6 +43,7 @@ export default [
         placeholder: "Corolla",
         required: true,
         icon: RectangleStackIcon,
+        transform: (value) => value?.toUpperCase(),
       }
     ]
   },
@@ -57,6 +59,7 @@ export default [
         placeholder: "AB123456",
         required: true,
         icon: IdentificationIcon,
+        transform: (value) => value?.toUpperCase(),
       },
       {
         name: "vehicle_chassis_no",
@@ -66,6 +69,7 @@ export default [
         placeholder: "Şasi no giriniz",
         required: true,
         icon: QrCodeIcon,
+        transform: (value) => value?.toUpperCase(),
         validate: (value) => {
           if (!value) return null;
           
@@ -110,7 +114,7 @@ export default [
         placeholder: "Motor no giriniz",
         required: true,
         icon: Cog6ToothIcon,
-        
+        transform: (value) => value?.toUpperCase(),
       },
       {
         name: "vehicle_year",
@@ -153,6 +157,7 @@ export default [
         required: true,
         icon: TruckIcon,
         maxLength: 9,
+        transform: (value) => value?.toUpperCase(),
         validate: (value) => {
           if (!value) return null;
           const v = String(value).toUpperCase().replace(/\s+/g, "");

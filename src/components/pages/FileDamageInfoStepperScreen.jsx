@@ -15,6 +15,7 @@ const FileDamageInfoStepperScreen = () => {
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
   const [formValid, setFormValid] = useState(false); 
+  const [remainingCredits, setRemainingCredits] = useState(0); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,6 +29,22 @@ const FileDamageInfoStepperScreen = () => {
       setCurrentStep(2);
     }
   }, [directToDocuments]);
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const res = await apiService.getProfileDetail();
+        if (res?.success) {
+          const credits = res?.data?.credits ?? res?.data?.data?.credits ?? 0;
+          setRemainingCredits(credits);
+          console.log("✅ FileDamageInfo - Kalan kredi:", credits);
+        }
+      } catch (error) {
+        console.error("❌ Kredi bilgisi alınamadı:", error);
+      }
+    };
+    fetchCredits();
+  }, []);
 
   useEffect(() => {
     const fetchAllCities = async () => {
@@ -91,6 +108,13 @@ const FileDamageInfoStepperScreen = () => {
   };
 
   const handleDocumentsCompleted = (data) => {
+    // Kredi kontrolü - dosya bildirilirken kredi olmalı
+    if (remainingCredits <= 0) {
+      alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
+      navigate("/kredi-satin-al");
+      return;
+    }
+
     navigate("/step-info", {
       state: {
         ...routeState,
@@ -127,6 +151,21 @@ const FileDamageInfoStepperScreen = () => {
         <h1 className={styles.sectionTitle}>
           {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
         </h1>
+
+        {/* Kredi Bilgisi */}
+        {currentStep === 1 && (
+          <div className={styles.creditInfoContainer}>
+            {remainingCredits > 0 ? (
+              <div className={styles.creditInfo}>
+                Kalan Kredi: <span className={styles.creditCount}>{remainingCredits}</span>
+              </div>
+            ) : (
+              <div className={styles.noCreditInfo}>
+                Krediniz bitti! Dosya bildirmek için kredi satın alın. Dosyanız Taslak Olarak Oluşturulacaktır.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* --- FORM KARTI --- */}
         <div className={styles.formCard}>

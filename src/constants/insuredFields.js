@@ -81,6 +81,7 @@ const insuredField = [
     type: "text",
     required: false,
     icon: IdentificationIcon,
+    transform: (value) => value?.toUpperCase(),
   },
   {
     name: "insured_policy_no",
@@ -89,6 +90,7 @@ const insuredField = [
     placeholder: "AXA-2024-123456",
     icon: CheckBadgeIcon,
     required: true,
+    transform: (value) => value?.toUpperCase(),
     validate: (value) => {
       if (!value) return null;
       const v = String(value).trim();

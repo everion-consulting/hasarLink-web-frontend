@@ -33,15 +33,31 @@ export default function InsuranceSelect() {
     }, []);
 
     const toggleFavorite = async (id) => {
-        const updated = favoriteList.includes(id)
-            ? favoriteList.filter(f => f !== id)
-            : [...favoriteList, id];
+        const isFav = favoriteList.includes(id);
 
-        const res = await apiService.toggleFavoriteCompanies(updated);
-        if (res.success) fetchProfile();
+        const res = isFav
+            ? await apiService.removeFavoriteCompany(id)
+            : await apiService.addFavoriteCompany(id);
+
+        if (res?.success) {
+            fetchProfile();
+        } else {
+            console.error("Favori güncellenemedi:", res);
+        }
     };
 
-
+    const removeFavorite = async (companyId) => {
+        try {
+            const res = await apiService.removeFavoriteCompany(companyId);
+            if (!res.success) {
+                console.error("❌ Favori kaldırılamadı:", res.message);
+                Alert.alert(res.message || "Favoriden çıkarma işlemi başarısız oldu.");
+                return;
+            }
+            setFavoriteCompanies(prev => prev.filter(id => id !== companyId));
+            await loadFavorites();
+        } catch (error) { }
+    };
     const filteredCompanies = list.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase())
     );
@@ -169,12 +185,12 @@ export default function InsuranceSelect() {
                         onClick={() => {
                             // Eğer StepInfoScreen'den geldiyse, oraya geri dön
                             if (params.returnTo === 'StepInfoScreen') {
-                                navigate('/step-info', { 
-                                    state: { 
-                                        ...params, 
+                                navigate('/step-info', {
+                                    state: {
+                                        ...params,
                                         selectedCompany: companyObj,
                                         startStep: params.returnStep || 1
-                                    } 
+                                    }
                                 });
                             } else {
                                 // Normal akış: AccidentTypeScreen'e git

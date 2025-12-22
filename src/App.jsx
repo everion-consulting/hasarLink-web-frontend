@@ -34,6 +34,8 @@ import SuccessScreen from "./components/pages/SuccessScreen";
 import ProcessedScreen from "./components/pages/ProcessedScreen";
 import OnGoingFileScreen from "./components/pages/OnGoingFileScreen";
 import MonthlyFilesDetailScreen from "./components/pages/MonthlyFilesDetailScreen";
+import CreditPurchase from "./components/pages/CreditPurchase";
+import CreditCheckout from "./components/pages/CreditCheckout";
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -92,6 +94,8 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/processed-screen" element={isAuth ? <ProcessedScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/ongoing-files" element={isAuth ? <OnGoingFileScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/monthly-files" element={isAuth ? <MonthlyFilesDetailScreen filter="monthly" /> : <Navigate to="/auth" replace />} />
+        <Route path="/kredi-satin-al" element={isAuth ? <CreditPurchase /> : <Navigate to="/auth" replace />} />
+        <Route path="/kredi-odeme" element={isAuth ? <CreditCheckout /> : <Navigate to="/auth" replace />} />
         <Route path="/auth" element={isAuth ? <Navigate to="/" replace /> : <AuthTabs setIsAuth={setIsAuth} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

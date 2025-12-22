@@ -1,0 +1,338 @@
+.creditPurchaseContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.headerSection {
+  text-align: center;
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.headerIcon {
+  color: #242935;
+}
+
+.pageTitle {
+  font-size: 50px;
+  line-height: 60px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 3px;
+  font-family: "Poppins", sans-serif;
+}
+
+.pageSubtitle {
+  font-size: 20px;
+  line-height: 25px;
+  letter-spacing: 1px;
+  color: #333333;
+  max-width: 600px;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+.currentCredits {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #133E87;
+  color: white;
+  padding: 16px 50px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(19, 62, 135, 0.3);
+  max-width: 400px;
+}
+
+.creditInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.creditLabel {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.creditCount {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.packageCard {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.packageCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border-color: #133E87;
+}
+
+.packageCard.popular {
+  border-color: #133E87;
+  border-width: 3px;
+  box-shadow: 0 8px 25px rgba(19, 62, 135, 0.2);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #133E87;
+  color: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.packageHeader {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.packageCredits {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #133E87;
+  margin: 0 0 10px 0;
+}
+
+.packagePrice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.priceAmount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.pricePerCredit {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  flex-grow: 1;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.checkIcon {
+  color: #4CAF50;
+  flex-shrink: 0;
+}
+
+.purchaseBtn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f0f0f0;
+  color: #333;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.purchaseBtn:hover {
+  background: #133E87;
+  color: white;
+  transform: scale(1.02);
+}
+
+.popularBtn {
+  background: #133E87;
+  color: white;
+}
+
+.popularBtn:hover {
+  background: linear-gradient(135deg, #0f2f66 0%, #133E87 100%);
+  transform: scale(1.05);
+}
+
+.infoSection {
+  margin-top: 48px;
+  padding: 56px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.06);
+}
+
+.infoTitle {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #0f2f6b;
+  margin-bottom: 38px;
+  letter-spacing: -0.5px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+/* başlangıçta gizli */
+.infoCard {
+  opacity: 0;
+  transform: translateY(18px);
+  border-radius: 20px;
+  padding: 26px 22px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+}
+
+.infoVisible .infoCard {
+  animation: stepIn 520ms cubic-bezier(.2, .8, .2, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Hover: lift + mavi glow + border belirginleşsin */
+.infoVisible .infoCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.12), 0 0 0 6px rgb(0 95 255 / 8%);
+  border-color: rgba(19, 62, 135, 0.35);
+  background: rgb(240 245 255 / 95%);
+}
+
+/* İçerik de tepki versin */
+.infoVisible .infoCard:hover .infoNumber {
+  transform: scale(1.08);
+  box-shadow: 0 10px 24px rgba(19, 62, 135, 0.25);
+}
+
+.infoNumber {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
+  background: #133E87;
+  margin: 0 auto 14px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+@keyframes stepIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.infoCard h3 {
+  text-align: center;
+  margin: 10px 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1b1b1b;
+}
+
+.infoCard p {
+  text-align: center;
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+@media (max-width: 768px) {
+  .creditPurchaseContainer {
+    padding: 20px 15px;
+  }
+
+  .pageTitle {
+    font-size: 1.8rem;
+  }
+
+  .pageSubtitle {
+    font-size: 1rem;
+  }
+
+  .currentCredits {
+    padding: 15px 25px;
+  }
+
+  .creditCount {
+    font-size: 1.5rem;
+  }
+
+  .packagesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .infoSection {
+    padding: 30px 20px;
+  }
+
+  .infoTitle {
+    font-size: 26px;
+  }
+}

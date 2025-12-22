@@ -133,6 +133,37 @@
   margin-bottom: 8px;
 }
 
+.remainingCredits {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ce1e1e;
+  margin: 12px 0 16px 0;
+  text-align: center;
+  background: #fabbbb;
+  padding: 6px 16px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.creditNumber {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ce1e1e;
+}
+
+.noCreditWarning {
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  margin: 12px 0 16px 0;
+  text-align: center;
+  line-height: 1.4;
+  padding: 8px 16px;
+  background: #d32f2f;
+  border-radius: 6px;
+  display: inline-block;
+}
+
 /* --- APPROVED --- */
 .cardApproved {
   grid-column: 2 / 3;
