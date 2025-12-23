@@ -42,36 +42,4 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(title, options);
 });
 
-// ✅ Bildirime tıklanınca davranış seç
-self.addEventListener("notificationclick", (event) => {
-  const { link = "", click_action = "focus_only" } = event.notification?.data || {};
 
-  // ✅ Welcome: hiçbir şey yapma (kapanmasın, yönlendirmesin, focus yapmasın)
-  if (click_action === "none") {
-    return;
-  }
-
-  // Diğerleri için istersen kapat
-  event.notification.close();
-
-  const absUrl = link ? new URL(link, self.location.origin).href : "";
-
-  event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (clientList) => {
-      if (click_action === "focus_only" || !absUrl) {
-        if (clientList.length > 0) await clientList[0].focus();
-        return;
-      }
-
-      for (const client of clientList) {
-        if ("navigate" in client) {
-          await client.navigate(absUrl);
-          await client.focus();
-          return;
-        }
-      }
-
-      return clients.openWindow(absUrl);
-    })
-  );
-});
