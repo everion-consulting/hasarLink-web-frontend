@@ -1,4 +1,6 @@
 import { API_ROOT, ACCOUNTS_BASE, API_BASE } from "../config";
+import { getWebFcmToken } from "../components/webPush/webPush";
+
 
 function handleUnauthorized() {
   const token = localStorage.getItem("authToken");
@@ -65,6 +67,7 @@ const AuthAPI = {
   // REGISTER
   // -----------------------------------------
   register: async (userData) => {
+    const fcmToken = await getWebFcmToken();
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/auth/register/`, {
         method: "POST",
@@ -76,6 +79,8 @@ const AuthAPI = {
           phone: userData.phone || "",
           password: userData.password,
           password_confirm: userData.password_confirm,
+          device_token: fcmToken || "",
+          platform: "web",
         }),
       });
 
@@ -100,11 +105,18 @@ const AuthAPI = {
   // LOGIN
   // -----------------------------------------
   login: async (username, password) => {
+    const fcmToken = await getWebFcmToken();
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/auth/login/`, {
         method: "POST",
         headers: AuthAPI.getHeaders(),
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password,
+          device_token: fcmToken || "",
+          platform: "web",
+        }),
+
       });
 
       const data = await response.json();
@@ -123,6 +135,8 @@ const AuthAPI = {
         success: data.success,
         message: data.message,
         user: data.data?.user || data.user || null,
+        device_token: fcmToken || "",
+        platform: "web",
         token,
       };
     } catch (error) {
@@ -145,10 +159,10 @@ const AuthAPI = {
       const data = await response.json();
 
       const rememberMe = localStorage.getItem("rememberMe");
-      
+
       localStorage.removeItem("authToken");
       localStorage.removeItem("authToken_type");
-      
+
       if (rememberMe !== "true") {
         localStorage.removeItem("savedUsername");
       }
@@ -157,10 +171,10 @@ const AuthAPI = {
     } catch (error) {
       console.error("Logout API Error:", error);
       const rememberMe = localStorage.getItem("rememberMe");
-      
+
       localStorage.removeItem("authToken");
       localStorage.removeItem("authToken_type");
-      
+
       if (rememberMe !== "true") {
         localStorage.removeItem("savedUsername");
       }
@@ -195,15 +209,17 @@ const AuthAPI = {
   // -----------------------------------------
   googleLogin: async ({ idToken, email, fullName }) => {
     try {
+      const fcmToken = await getWebFcmToken();
       const response = await fetch(`${ACCOUNTS_BASE}/auth/google-login/`, {
         method: "POST",
         headers: AuthAPI.getHeaders(),
+
         body: JSON.stringify({
           firebase_token: idToken,
-          firebase_uid: "", 
+          firebase_uid: "",
           email: email,
           full_name: fullName,
-          device_token: "web_device",
+          device_token: fcmToken || "",
           platform: "web",
         }),
       });

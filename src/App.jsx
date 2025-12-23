@@ -36,6 +36,9 @@ import OnGoingFileScreen from "./components/pages/OnGoingFileScreen";
 import MonthlyFilesDetailScreen from "./components/pages/MonthlyFilesDetailScreen";
 import CreditPurchase from "./components/pages/CreditPurchase";
 import CreditCheckout from "./components/pages/CreditCheckout";
+import { listenForegroundMessages } from "./components/webPush/foregroundListener";
+import { ensureWebPushReady } from "./components/webPush/initWebPush";
+
 
 function AppContent({ isAuth, setIsAuth }) {
   const location = useLocation();
@@ -46,6 +49,19 @@ function AppContent({ isAuth, setIsAuth }) {
   const [draftCount, setDraftCount] = useState(0);
 
   useEffect(() => {
+  let unsub = null;
+
+  (async () => {
+    await ensureWebPushReady();
+    unsub = listenForegroundMessages(); 
+  })();
+
+  return () => {
+    if (typeof unsub === "function") unsub();
+  };
+}, []);
+
+  useEffect(() => {
     const fetchDraftCount = async () => {
       try {
         const drafts = await apiService.getDrafts();
@@ -54,7 +70,6 @@ function AppContent({ isAuth, setIsAuth }) {
         console.error("Error fetching draft count:", error);
       }
     };
-
     fetchDraftCount();
   }, []);
 
@@ -88,7 +103,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/hasar-bilgileri" element={isAuth ? <FileDamageInfoStepperScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notifications" element={isAuth ? <NotificationScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar" element={isAuth ? <RejectedFileScreen /> : <Navigate to="/auth" replace />} />
-        <Route path="/success" element={isAuth ? <SuccessScreen/> : <Navigate to="/auth" replace/>}/>
+        <Route path="/success" element={isAuth ? <SuccessScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/reddedilen-dosyalar-detay/:submissionId" element={isAuth ? <RejectedFileDetailScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/notified-screen" element={isAuth ? <NotifiedScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/processed-screen" element={isAuth ? <ProcessedScreen /> : <Navigate to="/auth" replace />} />
@@ -142,7 +157,7 @@ export default function App() {
       }, 500);
 
       const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
-      
+
       return () => {
         clearTimeout(initialCheck);
         clearInterval(interval);
