@@ -282,7 +282,7 @@ const NotificationsScreen = () => {
                 onClick={() => {
                   closeModal();
                   if (selectedNotification.object_id) {
-                    navigate(`/files/${selectedNotification.object_id}`);
+                    navigate(`/file-detail/${selectedNotification.object_id}`);
                   } else {
                     window.alert("Bu bildirim bir dosyaya bağlı değil.");
                   }
