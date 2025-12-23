@@ -165,14 +165,16 @@ export default function TopBar() {
                     Ayarlar
                 </NavLink>
 
-                <NavLink
-                    to="/kredi-satin-al"
-                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                <span
+                    className={`${styles.tab} ${styles.tabDisabled}`}
+                    title="Yakında"
+                    aria-disabled="true"
                     onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
                     onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
                 >
                     Kredi Satın Al
-                </NavLink>
+                </span>
+
             </nav>
 
             {/* RIGHT GROUP: Notification + Logout */}

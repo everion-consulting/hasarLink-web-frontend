@@ -13,6 +13,27 @@ const NotificationsScreen = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+  const toastTimerRef = React.useRef(null);
+
+  const showToast = (message, type = "success") => {
+    // önceki timer varsa temizle
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+
+    setToast({ visible: true, message, type });
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast((prev) => ({ ...prev, visible: false }));
+    }, 2500);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+
   const getUnreadCount = () => notifications.filter((n) => !n.is_read).length;
 
   const fetchNotifications = async () => {
@@ -75,13 +96,14 @@ const NotificationsScreen = () => {
       if (response.success) {
         setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
         window.dispatchEvent(new Event("notificationsUpdated"));
-        window.alert("Tüm bildirimler okundu işaretlendi");
+        showToast("Tüm bildirimler okundu olarak işaretlendi", "success");
+
       } else {
-        window.alert(response.message || "İşlem başarısız oldu");
+        showToast(response.message || "İşlem başarısız oldu", "error");
       }
     } catch (err) {
       console.error("markAllAsRead hatası:", err);
-      window.alert("Bağlantı hatası oluştu");
+      showToast("Bağlantı hatası oluştu", "error");
     }
   };
 
@@ -290,10 +312,25 @@ const NotificationsScreen = () => {
               >
                 Dosyaya Git
               </button>
+
             </div>
           </div>
         </div>
       )}
+      {/* Toast */}
+      {toast.visible && (
+        <div className={`${styles.toast} ${toast.type === "error" ? styles.toastError : styles.toastSuccess}`}>
+          <span className={styles.toastText}>{toast.message}</span>
+          <button
+            type="button"
+            className={styles.toastClose}
+            onClick={() => setToast((prev) => ({ ...prev, visible: false }))}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
     </div>
   );
 };

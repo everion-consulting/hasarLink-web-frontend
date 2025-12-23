@@ -1,3 +1,69 @@
+.toast {
+  position: fixed;
+  right: 20px;
+  top: 20px;  
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 280px;
+  max-width: 420px;
+
+  padding: 12px 14px;
+  border-radius: 14px;
+
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+
+  animation: toastIn 180ms ease-out;
+}
+
+.toastSuccess {
+  border: 1px solid rgba(46, 204, 113, 0.35);
+}
+
+.toastError {
+  border: 1px solid rgba(231, 76, 60, 0.35);
+}
+
+.toastText {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.toastClose {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.toastClose:hover {
+  color: #fff;
+}
+
+@keyframes toastIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+
+
+
 /* =========================================
    ROOT LAYOUT
 ========================================= */
