@@ -19,9 +19,9 @@ messaging.onBackgroundMessage((payload) => {
   const data = payload?.data || {};
 
   const title = data.title || "";
-  const body  = data.body  || "";
+  const body = data.body || "";
 
-  // ✅ boş payload / test push / gereksiz mesajlar = hiç gösterme
+  // ✅ boş payload = hiç gösterme
   if (!title && !body) return;
 
   const link = data.link || "";
@@ -31,11 +31,53 @@ messaging.onBackgroundMessage((payload) => {
     body,
     icon: data.icon || "/logo192.png",
     badge: data.badge || "/badge-72.png",
-    // ✅ aynı bildirimi tekilleştirmek için
     tag: data.notification_id || data.submission_id || undefined,
     renotify: false,
     data: { link, click_action: clickAction },
   });
 });
 
+// ✅ Tıklanınca ne olacak?
+self.addEventListener("notificationclick", (event) => {
+  const n = event.notification;
+  const payload = n.data || {};
+  const link = payload.link || "";
+  const action = payload.click_action || "focus_only";
 
+  n.close();
+
+  // ✅ sadece hoşgeldin gibi bildirimlerde gitmesin
+  if (action === "none") return;
+
+  event.waitUntil(
+    (async () => {
+      const allClients = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      // sekme varsa odakla
+      if (action === "focus_only") {
+        if (allClients.length) return allClients[0].focus();
+        return clients.openWindow(self.location.origin + "/");
+      }
+
+      // linke git
+      if (action === "open_link" && link) {
+        const url = link.startsWith("http")
+          ? link
+          : new URL(link, self.location.origin).toString();
+
+        // aynı url açık mı?
+        for (const c of allClients) {
+          if (c.url === url) return c.focus();
+        }
+        return clients.openWindow(url);
+      }
+
+      // fallback
+      if (allClients.length) return allClients[0].focus();
+      return clients.openWindow(self.location.origin + "/");
+    })()
+  );
+});
