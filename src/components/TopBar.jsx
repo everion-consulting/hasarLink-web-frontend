@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthAPI from "../services/authAPI";
-
 import coreService from "../services/coreService";
 import styles from "../styles/topbar.module.css";
 import { Bell } from "lucide-react";
 import RightIcon from "../components/images/rightIcon.svg";
+import HasarLinkLogo from "../assets/images/hasarlinklogo.svg";
 
 export default function TopBar() {
     const navigate = useNavigate();
@@ -105,7 +105,10 @@ export default function TopBar() {
 
     return (
         <header className={styles.topBar}>
-            <div className={styles.logo}>HASARLİNK</div>
+            <div className={styles.logo}>
+                <img src={HasarLinkLogo} alt="HasarLink" className={styles.logoIcon} />
+                <span className={styles.logoText}>HASARLİNK</span>
+            </div>
 
             {/* DESKTOP TABS */}
             <nav

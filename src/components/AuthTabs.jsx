@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AuthForm from "./AuthForm";
 import "../styles/auth.css";
+import HasarLinkLogo from "../assets/images/hasarlinklogo.svg";
 
 export default function AuthTabs({ setIsAuth }) {
   
@@ -9,7 +10,11 @@ export default function AuthTabs({ setIsAuth }) {
   return (
     <div className="auth-wrapper">
       <div className="auth-header">
-        <h1>HOŞ GELDİNİZ</h1>
+        <img
+          src={HasarLinkLogo}
+          alt="HasarLink"
+          className="auth-logo"
+        />
         <div className="auth-tabs">
           <button
             className={activeTab === "register" ? "active" : ""}
