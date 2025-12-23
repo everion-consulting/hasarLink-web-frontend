@@ -18,28 +18,24 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   const data = payload?.data || {};
 
-  const title = data.title || "HasarLink";
-  const body = data.body || "";
+  const title = data.title || "";
+  const body  = data.body  || "";
 
-  // link ve click_action data'dan gelsin
-  const link = data.link || ""; // boş olabilir
+  // ✅ boş payload / test push / gereksiz mesajlar = hiç gösterme
+  if (!title && !body) return;
+
+  const link = data.link || "";
   const clickAction = data.click_action || (link ? "open_link" : "focus_only");
-  // click_action örnekleri:
-  // - "none"       -> tıkla, sadece kapat
-  // - "focus_only" -> sadece mevcut sekmeyi odakla
-  // - "open_link"  -> link'e yönlendir
 
-  const options = {
+  self.registration.showNotification(title, {
     body,
     icon: data.icon || "/logo192.png",
     badge: data.badge || "/badge-72.png",
-    data: {
-      link,
-      click_action: clickAction,
-    },
-  };
-
-  self.registration.showNotification(title, options);
+    // ✅ aynı bildirimi tekilleştirmek için
+    tag: data.notification_id || data.submission_id || undefined,
+    renotify: false,
+    data: { link, click_action: clickAction },
+  });
 });
 
 
