@@ -44,30 +44,25 @@ messaging.onBackgroundMessage((payload) => {
 
 // ✅ Bildirime tıklanınca davranış seç
 self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-
   const { link = "", click_action = "focus_only" } = event.notification?.data || {};
 
-  // 1) Hiçbir şey yapma (welcome gibi)
+  // ✅ Welcome: hiçbir şey yapma (kapanmasın, yönlendirmesin, focus yapmasın)
   if (click_action === "none") {
     return;
   }
 
-  // link'i absolute yap (client.navigate/openWindow daha sağlıklı)
+  // Diğerleri için istersen kapat
+  event.notification.close();
+
   const absUrl = link ? new URL(link, self.location.origin).href : "";
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (clientList) => {
-      // 2) Sadece focus (yönlendirme yok)
       if (click_action === "focus_only" || !absUrl) {
-        if (clientList.length > 0) {
-          await clientList[0].focus();
-        }
+        if (clientList.length > 0) await clientList[0].focus();
         return;
       }
 
-      // 3) Link'e yönlendir
-      // - varsa açık sekmede navigate + focus
       for (const client of clientList) {
         if ("navigate" in client) {
           await client.navigate(absUrl);
@@ -76,7 +71,6 @@ self.addEventListener("notificationclick", (event) => {
         }
       }
 
-      // - açık sekme yoksa yeni sekme aç
       return clients.openWindow(absUrl);
     })
   );
