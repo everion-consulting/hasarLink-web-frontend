@@ -45,52 +45,28 @@ self.addEventListener("notificationclick", (event) => {
   // Firebase bazen içe gömer:
   const fcm = raw.FCM_MSG || {};
   const nestedData = fcm.data || {};
-  const nestedFcmOptions = fcm.fcmOptions || {};
-
-  const title = (event.notification?.title || "").toLowerCase();
-  const tag = (event.notification?.tag || "").toLowerCase();
 
   const type = (raw.type || nestedData.type || "").toLowerCase();
   const clickAction = (raw.click_action || nestedData.click_action || "").toLowerCase();
+  const link = raw.link || nestedData.link || "";
 
-  // ✅ Welcome’ı 4 farklı yerden yakala (type gelmese bile)
-  const isWelcome =
-    tag === "welcome" ||
-    type === "welcome" ||
-    clickAction === "none" ||
-    title.includes("hoşgeldiniz");
-
+  // bildirimi kapat
   event.notification.close();
 
-  // ✅ Welcome: hiçbir şey yapma (default davranışı da bastır)
-  if (isWelcome) {
+  // ✅ Welcome / none: hiçbir şey yapma + başka handler varsa engelle
+  if (type === "welcome" || clickAction === "none") {
     if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-    event.waitUntil(Promise.resolve()); // "handled" gibi davran
     return;
   }
 
-  // link’i her yerden dene (status için)
-  const link =
-    raw.link ||
-    nestedData.link ||
-    nestedFcmOptions.link ||
-    "";
-
-  if (!link) {
-    event.waitUntil(Promise.resolve());
-    return;
-  }
+  // link yoksa açma
+  if (!link) return;
 
   event.waitUntil(
     (async () => {
       const all = await clients.matchAll({ type: "window", includeUncontrolled: true });
       for (const c of all) {
-        // varsa bir pencereyi focusla
-        if ("focus" in c) {
-          await c.focus();
-          // sonra link aç (istersen sadece openWindow yap)
-          return clients.openWindow(link);
-        }
+        if ("focus" in c) return c.focus();
       }
       if (clients.openWindow) return clients.openWindow(link);
     })()
