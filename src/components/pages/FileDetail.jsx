@@ -101,6 +101,12 @@ const FileDetail = () => {
     }
   }, [fileId]);
 
+  const normalizeUrl = (url) => {
+    if (!url) return "";
+    const s = String(url).trim();
+    if (!s) return "";
+    return s.startsWith("http://") || s.startsWith("https://") ? s : `https://${s}`;
+  };
 
   const renderInfoRow = (label, value) => {
     if (!value) return null;
@@ -136,6 +142,27 @@ const FileDetail = () => {
         <h2 className={styles.sectionTitle}>Dosya Bilgileri</h2>
         {renderInfoRow("Durum", statusMap[fileData.status])}
         {renderInfoRow("Sigorta Şirketi", fileData.insurance_company_name)}
+        <div className={styles.infoRow}>
+          <span className={styles.infoLabel}>Sigorta Sorgulama:</span>
+
+          <span className={styles.infoValue}>
+            {fileData?.incurance_query_link ? (
+              <a
+                href={normalizeUrl(fileData.incurance_query_link)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.link} // istersen css ile güzelleştir
+                onClick={(e) => e.stopPropagation()}
+              >
+                Sorgulama ekranını aç
+              </a>
+            ) : (
+              <span className={styles.mutedText}>Link tanımlı değil</span>
+            )}
+          </span>
+        </div>
+
+
         {renderInfoRow("Oluşturulma Tarihi", fileData.created_at?.slice(0, 10))}
         {renderInfoRow("İşlenme Tarihi", fileData.processed_at?.slice(0, 10))}
         {renderInfoRow("Tamamlanma Tarihi", fileData.completed_at?.slice(0, 10))}
@@ -183,92 +210,92 @@ const FileDetail = () => {
 
         <h2 className={styles.sectionTitle}>Yüklenen Dosyalar</h2>
 
-{(() => {
-  // Hiç dosya yoksa
-  const hasAnyFile = Object.values(fileImages).some(
-    (arr) => Array.isArray(arr) && arr.length > 0
-  );
+        {(() => {
+          // Hiç dosya yoksa
+          const hasAnyFile = Object.values(fileImages).some(
+            (arr) => Array.isArray(arr) && arr.length > 0
+          );
 
-  if (!hasAnyFile) {
-    return (
-      <p className={styles.noFiles}>
-        Henüz yüklenmiş dosya bulunmuyor.
-      </p>
-    );
-  }
+          if (!hasAnyFile) {
+            return (
+              <p className={styles.noFiles}>
+                Henüz yüklenmiş dosya bulunmuyor.
+              </p>
+            );
+          }
 
-  // FILE_TYPES sırasına göre kategorileri gezelim
-  // (constants/fileTypes içinde tanımlı olduğunu varsayıyorum)
-  const TYPE_KEYS_IN_ORDER = Object.keys(FILE_TYPE_LABEL_MAP); 
-  // Eğer FILE_TYPES array’in varsa:
-  // import { FILE_TYPES, FILE_TYPE_LABEL_MAP } ...
-  // const TYPE_KEYS_IN_ORDER = FILE_TYPES.map((t) => t.id);
+          // FILE_TYPES sırasına göre kategorileri gezelim
+          // (constants/fileTypes içinde tanımlı olduğunu varsayıyorum)
+          const TYPE_KEYS_IN_ORDER = Object.keys(FILE_TYPE_LABEL_MAP);
+          // Eğer FILE_TYPES array’in varsa:
+          // import { FILE_TYPES, FILE_TYPE_LABEL_MAP } ...
+          // const TYPE_KEYS_IN_ORDER = FILE_TYPES.map((t) => t.id);
 
-  return (
-    <>
-      {TYPE_KEYS_IN_ORDER.map((typeKey) => {
-        const files = fileImages[typeKey] || [];
-        if (!files.length) return null;
+          return (
+            <>
+              {TYPE_KEYS_IN_ORDER.map((typeKey) => {
+                const files = fileImages[typeKey] || [];
+                if (!files.length) return null;
 
-        const typeLabel =
-          FILE_TYPE_LABEL_MAP[typeKey.toLowerCase()] ||
-          FILE_TYPE_LABEL_MAP[typeKey] ||
-          typeKey;
-
-        return (
-          <div key={typeKey} className={styles.fileTypeBlock}>
-            <h3 className={styles.fileTypeHeader}>{typeLabel}</h3>
-
-            <div className={styles.fileImagesGrid}>
-              {files.map((f) => {
-                const isPdf =
-                  (f.name && f.name.toLowerCase().endsWith(".pdf")) ||
-                  (f.url && f.url.toLowerCase().includes(".pdf"));
-
-                const handleClick = () => {
-                  if (isPdf) {
-                    window.open(f.url, "_blank");
-                  } else {
-                    setSelectedImage(f.url);
-                  }
-                };
+                const typeLabel =
+                  FILE_TYPE_LABEL_MAP[typeKey.toLowerCase()] ||
+                  FILE_TYPE_LABEL_MAP[typeKey] ||
+                  typeKey;
 
                 return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={styles.fileCard}
-                    onClick={handleClick}
-                  >
-                    {isPdf ? (
-                      <div className={styles.pdfThumb}>📄</div>
-                    ) : (
-                      <img
-                        src={f.url}
-                        alt={f.name}
-                        className={styles.fileThumbnail}
-                      />
-                    )}
+                  <div key={typeKey} className={styles.fileTypeBlock}>
+                    <h3 className={styles.fileTypeHeader}>{typeLabel}</h3>
 
-                    <span className={styles.fileName}>
-                      {f.name || (isPdf ? "PDF Dosya" : "Dosya")}
-                    </span>
+                    <div className={styles.fileImagesGrid}>
+                      {files.map((f) => {
+                        const isPdf =
+                          (f.name && f.name.toLowerCase().endsWith(".pdf")) ||
+                          (f.url && f.url.toLowerCase().includes(".pdf"));
 
-                    {isPdf && (
-                      <span className={styles.fileHint}>
-                        Tıkla, yeni sekmede aç
-                      </span>
-                    )}
-                  </button>
+                        const handleClick = () => {
+                          if (isPdf) {
+                            window.open(f.url, "_blank");
+                          } else {
+                            setSelectedImage(f.url);
+                          }
+                        };
+
+                        return (
+                          <button
+                            key={f.id}
+                            type="button"
+                            className={styles.fileCard}
+                            onClick={handleClick}
+                          >
+                            {isPdf ? (
+                              <div className={styles.pdfThumb}>📄</div>
+                            ) : (
+                              <img
+                                src={f.url}
+                                alt={f.name}
+                                className={styles.fileThumbnail}
+                              />
+                            )}
+
+                            <span className={styles.fileName}>
+                              {f.name || (isPdf ? "PDF Dosya" : "Dosya")}
+                            </span>
+
+                            {isPdf && (
+                              <span className={styles.fileHint}>
+                                Tıkla, yeni sekmede aç
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 );
               })}
-            </div>
-          </div>
-        );
-      })}
-    </>
-  );
-})()}
+            </>
+          );
+        })()}
 
 
 
