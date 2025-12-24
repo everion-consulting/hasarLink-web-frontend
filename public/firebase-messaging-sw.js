@@ -40,26 +40,36 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 self.addEventListener("notificationclick", (event) => {
-  const d = event.notification?.data || {};
-  const clickAction = (d.click_action || "").toLowerCase();
-  const link = d.link || "";
+  const raw = event.notification?.data || {};
 
+  // Firebase bazen içe gömer:
+  const fcm = raw.FCM_MSG || {};
+  const nestedData = fcm.data || {};
+
+  const type = (raw.type || nestedData.type || "").toLowerCase();
+  const clickAction = (raw.click_action || nestedData.click_action || "").toLowerCase();
+  const link = raw.link || nestedData.link || "";
+
+  // bildirimi kapat
   event.notification.close();
 
-  // ✅ welcome: hiçbir şey yapma
-  if (clickAction === "none" || !link) return;
+  // ✅ Welcome / none: hiçbir şey yapma + başka handler varsa engelle
+  if (type === "welcome" || clickAction === "none") {
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    return;
+  }
+
+  // link yoksa açma
+  if (!link) return;
 
   event.waitUntil(
     (async () => {
       const all = await clients.matchAll({ type: "window", includeUncontrolled: true });
       for (const c of all) {
-        if ("focus" in c) {
-          c.focus();
-          // aynı origin ise yönlendirme de yapılabilir ama basit bırakıyoruz
-          return;
-        }
+        if ("focus" in c) return c.focus();
       }
       if (clients.openWindow) return clients.openWindow(link);
     })()
   );
 });
+
