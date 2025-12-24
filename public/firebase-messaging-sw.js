@@ -1,5 +1,4 @@
 /* public/firebase-messaging-sw.js */
-
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
@@ -14,18 +13,17 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ✅ Sayfa kapalıyken gelen mesajı yakala
 messaging.onBackgroundMessage((payload) => {
-  const data = payload?.data || {};
+  // ✅ Backend WebpushNotification gönderiyorsa tarayıcı zaten gösterecek.
+  // Çift bildirim olmasın.
+  if (payload?.notification?.title || payload?.notification?.body) return;
 
+  const data = payload?.data || {};
   const title = data.title || "";
   const body = data.body || "";
 
   // ✅ boş payload = hiç gösterme
   if (!title && !body) return;
-
-  const link = data.link || "";
-  const clickAction = data.click_action || (link ? "open_link" : "focus_only");
 
   self.registration.showNotification(title, {
     body,
@@ -33,7 +31,35 @@ messaging.onBackgroundMessage((payload) => {
     badge: data.badge || "/badge-72.png",
     tag: data.notification_id || data.submission_id || undefined,
     renotify: false,
-    data: { link, click_action: clickAction },
+    data: {
+      link: data.link || "",
+      click_action: (data.click_action || "").toLowerCase(),
+      type: (data.type || "").toLowerCase(),
+    },
   });
 });
 
+self.addEventListener("notificationclick", (event) => {
+  const d = event.notification?.data || {};
+  const clickAction = (d.click_action || "").toLowerCase();
+  const link = d.link || "";
+
+  event.notification.close();
+
+  // ✅ welcome: hiçbir şey yapma
+  if (clickAction === "none" || !link) return;
+
+  event.waitUntil(
+    (async () => {
+      const all = await clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const c of all) {
+        if ("focus" in c) {
+          c.focus();
+          // aynı origin ise yönlendirme de yapılabilir ama basit bırakıyoruz
+          return;
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(link);
+    })()
+  );
+});
