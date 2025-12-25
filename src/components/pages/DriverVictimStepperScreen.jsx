@@ -11,7 +11,6 @@ const DriverVictimStepperScreen = () => {
   const location = useLocation();
   const [formValid, setFormValid] = useState(false);
 
-  // ✅ Location.state'den TÜM verileri al
   const locationState = location.state || {};
 
   const {
@@ -25,7 +24,7 @@ const DriverVictimStepperScreen = () => {
     vehicleData: existingVehicleData,
   } = locationState;
 
-  console.log('🔍 DriverVictimStepper - Gelen location.state:', locationState);
+  console.log('🔍 DriverVictimStepper - samePerson:', samePerson);
   console.log('🔍 DriverVictimStepper - victimData:', victimData);
   console.log('🔍 DriverVictimStepper - driverData:', driverData);
 
@@ -61,8 +60,9 @@ const DriverVictimStepperScreen = () => {
     }
   };
 
+  // samePerson'a göre stepleri belirle
   const steps = samePerson
-    ? ['Mağdur Bilgileri', 'Araç Bilgileri']
+    ? ['Mağdur/Sürücü Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
   const currentStep = samePerson ? 2 : 3;
@@ -75,8 +75,6 @@ const DriverVictimStepperScreen = () => {
 
   const handleVehicleSubmit = (vehicleFormData) => {
     console.log("🚗 Vehicle Form Tamamlandı:", vehicleFormData);
-    console.log("📦 Mevcut victimData:", victimData);
-    console.log("📦 Mevcut driverData:", driverData);
 
     // Transform işlemlerini uygula
     const transformedVehicleData = { ...vehicleFormData };
@@ -86,24 +84,21 @@ const DriverVictimStepperScreen = () => {
       }
     });
 
+    // ✅ Aynı kişi durumunda driverData = victimData olmalı
+    const finalDriverData = samePerson ? victimData : driverData;
+
     // ✅ KRİTİK: Tüm verileri birleştir ve StepInfo'ya gönder
     const completeData = {
-      // Mevcut tüm location.state'i koru
       ...locationState,
-
-      // Form verilerini ekle/güncelle
-      victimData: victimData,           // ✅ victimData'yı muhafaza et
-      driverData: driverData,           // ✅ driverData'yı muhafaza et
-      vehicleData: transformedVehicleData,  // ✅ Yeni vehicle verisini ekle
-
-      // StepInfo için gerekli
+      victimData: victimData,
+      driverData: finalDriverData, // ✅ samePerson durumuna göre ayarla
+      vehicleData: transformedVehicleData,
       startStep: 2,
     };
 
     console.log("🚀 DriverVictimStepper -> StepInfo'ya gönderilen TÜM veriler:", completeData);
-    console.log("📍 victimData korundu mu?", completeData.victimData);
-    console.log("📍 driverData korundu mu?", completeData.driverData);
-    console.log("📍 vehicleData:", completeData.vehicleData);
+    console.log("📍 samePerson durumu:", samePerson);
+    console.log("📍 driverData:", completeData.driverData);
 
     navigate("/step-info", {
       state: completeData
