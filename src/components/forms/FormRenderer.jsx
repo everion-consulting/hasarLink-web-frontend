@@ -7,6 +7,7 @@ import {
   validateEmail,
   validatePhone,
   validateTCKN,
+  validateTCKNSoft,
   validateIBAN,
   validateDateYMD,
   validatePlate,
@@ -114,7 +115,7 @@ export default function FormRenderer({
     if (f.type === "email" && v && !validateEmail(v)) return "Geçerli e-mail girin";
     if (f.type === "phone" && v && !validatePhone(v))
       return "Telefon 0 (5xx) xxx xx xx olmalı";
-    if (f.type === "tckn" && v && !validateTCKN(v))
+    if (f.type === "tckn" && v && !validateTCKNSoft(v))
       return "TCKN 11 hane olmalı";
     if (f.type === "iban" && v && !validateIBAN(v))
       return "IBAN 'TR' + 24 hane olmalı";
