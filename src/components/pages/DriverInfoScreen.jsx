@@ -13,13 +13,17 @@ export default function DriverInfoScreen() {
   const locationState = location.state || {};
   const { victimData, driverData = {}, samePerson = false } = locationState;
 
+  // Aynı kişi durumunda bu ekrana gelmemeli, ama yine de kontrol edelim
+  if (samePerson) {
+    console.warn("⚠️ Aynı kişi durumunda DriverInfoScreen'e gelinmemeli!");
+    navigate('/driver-victim-stepper', { state: locationState });
+    return null;
+  }
+
   const [formValues, setFormValues] = useState(driverData);
   const [formValid, setFormValid] = useState(false); 
 
-  const steps = samePerson
-    ? ['Mağdur Bilgileri', 'Araç Bilgileri']
-    : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
-
+  const steps = ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
   const currentStep = 2;
 
   const handleSubmit = (driverFormData) => {
@@ -64,7 +68,7 @@ export default function DriverInfoScreen() {
               values={formValues}
               setValues={setFormValues}
               onSubmit={handleSubmit}
-              onFormChange={({ allValid }) => setFormValid(allValid)} // valid kontrolü
+              onFormChange={({ allValid }) => setFormValid(allValid)}
             />
           </div>
         </div>

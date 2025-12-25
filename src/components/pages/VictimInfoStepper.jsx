@@ -15,20 +15,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const selectedCompany = locationState.selectedCompany;
   const insuranceSource = locationState.insuranceSource;
   const karsiSamePerson = locationState.karsiSamePerson;
-    useEffect(() => {
-    if (locationState?.victimData) {
-      console.log("🟢 Düzenleme modunda — eski victimData forma set edildi:", locationState.victimData);
-
-      setFormValues(prev => ({
-        ...prev,
-        ...locationState.victimData
-      }));
-
-      if (locationState.victimData?.isCompany !== undefined) {
-        setIsCompany(locationState.victimData.isCompany);
-      }
-    }
-  }, []);
+  const samePersonFromState = locationState.samePerson || samePerson;
 
   useEffect(() => {
     if (locationState?.victimData) {
@@ -43,20 +30,20 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     }
   }, [locationState]);
 
-
   console.log('🔍 VictimInfoStepper - Gelen parametreler:', {
     kazaNitelik,
     selectedCompany,
     insuranceSource,
-    samePerson,
+    samePerson: samePersonFromState,
     karsiSamePerson
   });
 
   const [isCompany, setIsCompany] = useState(false);
   const [formValues, setFormValues] = useState({});
-  const [formValid, setFormValid] = useState(false);   // 🔥 VALID STATE BURADA
+  const [formValid, setFormValid] = useState(false);
 
-  const steps = samePerson
+  // samePerson'a göre stepleri belirle
+  const steps = samePersonFromState
     ? ['Mağdur Bilgileri', 'Araç Bilgileri']
     : ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
 
@@ -88,7 +75,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     const returnTo = locationState.returnTo || null;
     const returnStep = locationState.returnStep || null;
 
-    // 🎯 Eğer düzenle modundaysan → StepInfo’ya geri gönder!
+    // 🎯 Eğer düzenle modundaysan → StepInfo'ya geri gönder!
     if (editMode && returnTo) {
       navigate(`/${returnTo}`, {
         state: {
@@ -102,19 +89,35 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     }
 
     // 🚀 Normal akış
-    navigate('/driver-info', {
-      state: {
-        ...locationState,
-        victimData: transformedValues,
-        kazaNitelik,
-        selectedCompany,
-        insuranceSource,
-        samePerson,
-        karsiSamePerson,
-      }
-    });
+    if (samePersonFromState) {
+      // Aynı kişi ise: Mağdur bilgisi aynı zamanda sürücü bilgisidir
+      navigate('/driver-victim-stepper', {
+        state: {
+          ...locationState,
+          victimData: transformedValues,
+          driverData: transformedValues, // ✅ Sürücü bilgisi = Mağdur bilgisi
+          samePerson: true,
+          kazaNitelik,
+          selectedCompany,
+          insuranceSource,
+          karsiSamePerson,
+        }
+      });
+    } else {
+      // Farklı kişi ise: Sürücü bilgileri için ayrı forma git
+      navigate('/driver-info', {
+        state: {
+          ...locationState,
+          victimData: transformedValues,
+          samePerson: false,
+          kazaNitelik,
+          selectedCompany,
+          insuranceSource,
+          karsiSamePerson,
+        }
+      });
+    }
   };
-
 
   const renderVictimTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
@@ -139,7 +142,11 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
         <Stepper steps={steps} currentStep={1} />
 
-        <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
+        <h2 className={styles.sectionTitle}>
+          {samePersonFromState ? 'Mağdur/Sürücü Bilgileri' : 'Mağdur Bilgileri'}
+        </h2>
+
+     
 
         <div className={styles.formCard}>
           <div className={styles.formSectionContent}>
