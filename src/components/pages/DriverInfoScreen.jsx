@@ -136,7 +136,7 @@ export default function DriverInfoScreen() {
           <div className={styles.formSectionContent}>
             {renderDriverTypeSwitch()}
             <FormRenderer
-              fields={driverFields}
+              fields={activeFields}
               values={formValues}
               setValues={setFormValues}
               onSubmit={handleSubmit}
