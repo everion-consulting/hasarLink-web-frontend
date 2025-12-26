@@ -216,6 +216,7 @@ export default function StepInfoScreen() {
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
             driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
+            foreign_driver_tc: driverData.foreign_driver_tc,
           };
         }
 
@@ -276,6 +277,7 @@ export default function StepInfoScreen() {
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
             opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
+            opposing_foreign_driver_tc: opposingDriverData.opposing_foreign_driver_tc || "",
           };
         }
       } else if (currentStep === 4) {
@@ -467,12 +469,21 @@ export default function StepInfoScreen() {
                 {
                   title: 'Sürücü Bilgileri',
                   editKey: 'driver_info',
-                  data: [
-                    { label: 'Ad Soyad', value: driverData.driver_fullname || 'YOK' },
-                    { label: 'Kimlik No', value: driverData.driver_tc || 'YOK' },
-                    { label: 'Telefon No', value: driverData.driver_phone || 'YOK' },
-                    { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'YOK' }
-                  ]
+                  data: driverData?.isForeign
+                    ? [
+                      { label: 'Ad Soyad', value: driverData.driver_fullname || 'YOK' },
+                      { label: 'Yabancı Kimlik No', value: driverData.foreign_driver_tc || 'YOK' },
+                      { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'YOK' },
+                      { label: 'Telefon No', value: driverData.driver_phone || 'YOK' },
+                      { label: 'Geçici Kimlik No', value: driverData.foreign_driver_temp_tc || 'YOK' },
+
+                    ]
+                    : [
+                      { label: 'Ad Soyad', value: driverData.driver_fullname || 'YOK' },
+                      { label: 'Kimlik No', value: driverData.driver_tc || 'YOK' },
+                      { label: 'Telefon No', value: driverData.driver_phone || 'YOK' },
+                      { label: 'Doğum Tarihi', value: driverData.driver_birth_date || 'YOK' }
+                    ]
                 }
               ]
               : []),
@@ -528,13 +539,23 @@ export default function StepInfoScreen() {
                 {
                   title: 'Karşı Taraf Sürücü Bilgileri',
                   editKey: 'karsi_driver_info',
-                  data: [
-                    { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'YOK' },
-                    { label: 'TC No', value: opposingDriverData.opposing_driver_tc || 'YOK' },
-                    { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'YOK' },
-                    { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'YOK' },
-                    { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'YOK' },
-                  ]
+                  data: opposingDriverData?.isForeign
+                    ? [
+                      { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'YOK' },
+                      { label: 'Yabancı Kimlik No', value: opposingDriverData.opposing_foreign_driver_tc || 'YOK' },
+
+                      { label: 'Geçici Kimlik No', value: opposingDriverData.opposing_driver_tc || 'YOK' },
+                      { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'YOK' },
+                      { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'YOK' },
+                      { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'YOK' },
+                    ]
+                    : [
+                      { label: 'Ad Soyad', value: opposingDriverData.opposing_driver_fullname || 'YOK' },
+                      { label: 'TC No', value: opposingDriverData.opposing_driver_tc || 'YOK' },
+                      { label: 'Telefon', value: opposingDriverData.opposing_driver_phone || 'YOK' },
+                      { label: 'E-Mail', value: opposingDriverData.opposing_driver_mail || 'YOK' },
+                      { label: 'Doğum Tarihi', value: opposingDriverData.opposing_driver_birth_date || 'YOK' },
+                    ]
                 }
               ]
               : []),

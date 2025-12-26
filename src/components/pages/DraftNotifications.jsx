@@ -174,7 +174,7 @@ const DraftNotifications = () => {
             navigate('/step-info', {
                 state: {
                     fromDraft: true,
-                    draftId: draftDetail.id, 
+                    draftId: draftDetail.id,
                     startStep: nextStep,
                     selectedCompany: {
                         id: draftDetail.insurance_company,
@@ -190,11 +190,14 @@ const DraftNotifications = () => {
 
 
                     driverData: {
+                        isForeign: false,
                         driver_fullname: draftDetail.driver_fullname,
                         driver_tc: draftDetail.driver_tc,
                         driver_mail: draftDetail.driver_mail,
                         driver_phone: draftDetail.driver_phone,
                         driver_birth_date: formatDate(draftDetail.driver_birth_date),
+
+                        foreign_driver_tc: draftDetail.foreign_driver_tc,
                     },
 
                     victimData: {
@@ -263,6 +266,7 @@ const DraftNotifications = () => {
                         opposing_driver_phone: draftDetail.opposing_driver_phone,
                         opposing_driver_mail: draftDetail.opposing_driver_mail,
                         opposing_driver_birth_date: formatDate(draftDetail.opposing_driver_birth_date),
+                        opposing_foreign_driver_tc: draftDetail.opposing_foreign_driver_tc,
                     },
 
                     damageData: {
