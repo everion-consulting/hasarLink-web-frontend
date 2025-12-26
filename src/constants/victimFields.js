@@ -15,8 +15,10 @@ const formatToISO = (value) => {
   return value; // fallback
 };
 
+// victimFields.js
+
 export const getVictimFields = (isCompany = false, selectedCompany = null) => {
-  //  RAY SİGORTA (id: 72) veya TMTB (id: 76) için IBAN zorunlu
+  // RAY SİGORTA (id: 72) veya TMTB (id: 76) için IBAN zorunlu
   const isIbanRequired = selectedCompany?.id === 72 || selectedCompany?.id === 76;
   
   const fields = [
@@ -48,42 +50,18 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
     });
   }
 
+  // IBAN alanını doğrudan push ediyoruz
   fields.push(
     { 
       name: "victim_iban", 
-      label: isIbanRequired ? "IBAN No " : "IBAN No", 
+      label: isIbanRequired 
+        ? "IBAN No (Zorunlu) - Kesinlikle mağdur ruhsat sahibinin IBAN'ı olmalıdır" 
+        : "IBAN No (Kesinlikle mağdur ruhsat sahibinin IBAN'ı olmalıdır)",
       placeholder: "TR00 0000 0000 0000 0000 0000 00", 
       type: "iban", 
       required: isIbanRequired, 
       maxLength: 32 
-    },
-    // {
-    //   name: "policy_no",
-    //   label: "Poliçe Tecdit No (Zeyl Değişikliği Varsa)",
-    //   placeholder: "TEC-2025-000987",
-    //   type: "text",
-    //   required: false,
-    //   icon: IdentificationIcon,
-    //   formatter: formatPlate,
-    // },
-    // {
-    //   name: "insured_policy_no",
-    //   label: "Sigortalı Poliçe No",
-    //   type: "text",
-    //   placeholder: "AXA-2024-123456",
-    //   icon: CheckBadgeIcon,
-    //   formatter: formatPlate,
-    //   required: true 
-    // },
-    // {
-    //   name: "insuredCarDocNo",
-    //   label: "Ruhsat Seri No",
-    //   type: "text",
-    //   placeholder: "AB 123456",
-    //   icon: IdentificationIcon,
-    //   formatter: formatPlate,
-    //   required: true 
-    // }
+    }
   );
 
   return fields;
