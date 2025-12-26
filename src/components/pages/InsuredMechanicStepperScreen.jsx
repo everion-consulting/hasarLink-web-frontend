@@ -38,6 +38,8 @@ export default function InsuredMechanicStepperScreen() {
     const [opposingValid, setOpposingValid] = useState(false);
     const [serviceValid, setServiceValid] = useState(false);
     const [isCompany, setIsCompany] = useState(false);
+    const [isOpposingForeign, setIsOpposingForeign] = useState(!!opposingDriverData?.isForeign);
+
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
 
@@ -149,6 +151,59 @@ export default function InsuredMechanicStepperScreen() {
     }, [cityOptions]);
 
 
+    const opposingTcFields = useMemo(
+        () => opposingDriverFields.filter((f) => f.name !== "opposing_foreign_driver_tc"),
+        []
+    );
+
+    const opposingForeignFields = useMemo(
+        () => opposingDriverFields.filter((f) => f.name !== "opposing_driver_tc"),
+        []
+    );
+
+    const activeOpposingFields = isOpposingForeign ? opposingForeignFields : opposingTcFields;
+
+    const renderOpposingDriverTypeSwitch = () => (
+        <div className={styles.switchMainContainer}>
+            <div
+                className={`${styles.switchOption} ${!isOpposingForeign ? styles.activeOption : ""}`}
+                onClick={() => switchOpposingTab(false)}
+            >
+                TC Sürücü
+            </div>
+            <div
+                className={`${styles.switchOption} ${isOpposingForeign ? styles.activeOption : ""}`}
+                onClick={() => switchOpposingTab(true)}
+            >
+                Yabancı Sürücü
+            </div>
+        </div>
+    );
+
+    const switchOpposingTab = (nextIsForeign) => {
+        setIsOpposingForeign(nextIsForeign);
+
+        setOpposingDriverData((prev) => {
+            if (nextIsForeign) {
+                return {
+                    ...prev,
+                    isForeign: true,
+                    opposing_driver_tc: "",
+                    opposing_foreign_driver_tc: prev.opposing_foreign_driver_tc || "",
+                };
+            }
+
+            return {
+                ...prev,
+                isForeign: false,
+                opposing_foreign_driver_tc: "",
+                opposing_driver_tc: prev.opposing_driver_tc || "",
+            };
+        });
+    };
+
+
+
     const formatDateToDDMMYYYY = (dateStr) => {
         if (!dateStr) return '';
 
@@ -207,13 +262,13 @@ export default function InsuredMechanicStepperScreen() {
             try {
                 let allCities = [];
                 let currentUrl = null;
-                
+
                 const res = await apiService.getCities();
-                
+
                 if (res?.data?.results) {
                     allCities = [...res.data.results];
                     currentUrl = res.data.next;
-                    
+
                     while (currentUrl) {
                         const nextRes = await apiService.getCities(currentUrl);
                         if (nextRes?.data?.results) {
@@ -226,7 +281,7 @@ export default function InsuredMechanicStepperScreen() {
                 } else {
                     allCities = res?.data || [];
                 }
-                
+
                 const options = allCities.map((city) => ({
                     label: city.name,
                     value: city.name,
@@ -260,6 +315,9 @@ export default function InsuredMechanicStepperScreen() {
             if (location.state.opposingDriverData) {
                 console.log('✅ opposingDriverData yükleniyor:', location.state.opposingDriverData);
                 setOpposingDriverData(location.state.opposingDriverData);
+            }
+            if (location.state?.opposingDriverData?.isForeign !== undefined) {
+                setIsOpposingForeign(!!location.state.opposingDriverData.isForeign);
             }
         }
     }, [location.key]);
@@ -398,7 +456,7 @@ export default function InsuredMechanicStepperScreen() {
             karsiSamePerson,
             startStep: editMode ? returnStep : 3,
 
-        
+
             insuredData: Object.keys(insuredData).length > 0 ? insuredData : location.state?.insuredData || {},
             serviceData: completeServiceData,
             opposingDriverData: Object.keys(opposingDriverData).length > 0 ? opposingDriverData : location.state?.opposingDriverData || {},
@@ -570,15 +628,27 @@ export default function InsuredMechanicStepperScreen() {
 
 
         if (currentStep === 2 && shouldShowOpposingDriver) {
-            console.log('✅ Karşı sürücü formu render ediliyor');
             return (
-                <FormRenderer
-                    fields={opposingDriverFields}
-                    values={opposingDriverData}
-                    setValues={setOpposingDriverData}
-                    onSubmit={handleOpposingDriverSubmit}
-                    onFormChange={({ allValid }) => setOpposingValid(allValid)}
-                />
+                <>
+                    {renderOpposingDriverTypeSwitch()}
+
+                    <FormRenderer
+                        fields={activeOpposingFields}
+                        values={opposingDriverData}
+                        setValues={setOpposingDriverData}
+                        onSubmit={(values) => {
+                          
+                            const merged = { ...opposingDriverData, ...values, isForeign: isOpposingForeign };
+
+                            const cleaned = isOpposingForeign
+                                ? { ...merged, opposing_driver_tc: "" }
+                                : { ...merged, opposing_foreign_driver_tc: "" };
+
+                            handleOpposingDriverSubmit(cleaned);
+                        }}
+                        onFormChange={({ allValid }) => setOpposingValid(allValid)}
+                    />
+                </>
             );
         }
 
