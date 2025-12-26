@@ -38,6 +38,7 @@ export default function InsuredMechanicStepperScreen() {
     const [opposingValid, setOpposingValid] = useState(false);
     const [serviceValid, setServiceValid] = useState(false);
     const [isCompany, setIsCompany] = useState(false);
+    const [opposingDriverData, setOpposingDriverData] = useState({});
     const [isOpposingForeign, setIsOpposingForeign] = useState(!!opposingDriverData?.isForeign);
 
 
@@ -125,7 +126,6 @@ export default function InsuredMechanicStepperScreen() {
 
     const [insuredData, setInsuredData] = useState({});
     const [serviceData, setServiceData] = useState({});
-    const [opposingDriverData, setOpposingDriverData] = useState({});
     const [cityOptions, setCityOptions] = useState([]);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
@@ -637,7 +637,7 @@ export default function InsuredMechanicStepperScreen() {
                         values={opposingDriverData}
                         setValues={setOpposingDriverData}
                         onSubmit={(values) => {
-                          
+
                             const merged = { ...opposingDriverData, ...values, isForeign: isOpposingForeign };
 
                             const cleaned = isOpposingForeign
