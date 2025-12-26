@@ -7,12 +7,14 @@ import {
   validateEmail,
   validatePhone,
   validateTCKN,
+  validateTCKNSoft,
   validateIBAN,
   validateDateYMD,
   validatePlate,
   validateLicenseSerialNo,
   toDDMMYYYY,
   toYYYYMMDD,
+  onlyDigits,
 } from "../utils/formatter";
 import AppTextInput from "../input templates/AppTextInput";
 
@@ -50,6 +52,20 @@ export default function FormRenderer({
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
+
+  const todayYMD = () => {
+    const d = new Date(); // local
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`; // YYYY-MM-DD
+  };
+
+  const isBirthDateField = (field) => {
+    const name = String(field?.name || "").toLowerCase();
+    // senin alanların: driver_birth_date, victim_birth_date, repair_birth_date...
+    return name.includes("birth_date") || name.includes("birthdate") || name.includes("dogum");
+  };
 
   function findFieldByName(fieldName) {
     for (const field of fields) {
@@ -114,12 +130,18 @@ export default function FormRenderer({
     if (f.type === "email" && v && !validateEmail(v)) return "Geçerli e-mail girin";
     if (f.type === "phone" && v && !validatePhone(v))
       return "Telefon 0 (5xx) xxx xx xx olmalı";
-    if (f.type === "tckn" && v && !validateTCKN(v))
-      return "TCKN 11 hane olmalı";
+    if (f.type === "tckn" && v) {
+      const digits = onlyDigits(v);
+      if (digits.length > 0 && digits.length < 11) return "TCKN 11 hane olmalı";
+      if (digits.length === 11 && !validateTCKN(digits)) return "Geçerli bir TCKN giriniz";
+    }
+
     if (f.type === "iban" && v && !validateIBAN(v))
       return "IBAN 'TR' + 24 hane olmalı";
-    if (f.type === "date" && v && !validateDateYMD(v))
-      return "Tarih DD.MM.YYYY olmalı";
+    if (f.type === "date" && v && isBirthDateField(f)) {
+      const ymd = toYYYYMMDD(v); // v senin sistemde "DD.MM.YYYY"
+      if (ymd && ymd > todayYMD()) return "Doğum tarihi ileri tarih olamaz";
+    }
     if (f.type === "datetime" && v) {
       const [datePart, timePart] = String(v).split(" ");
       const isTimeValid = timePart && /^\d{2}:\d{2}$/.test(timePart);
@@ -483,6 +505,7 @@ export default function FormRenderer({
                             ref={(el) =>
                               (dateRefs.current[childField.name] = el)
                             }
+                            max={isBirthDateField(childField) ? todayYMD() : undefined}
                             name={childField.name}
                             value={
                               currentValue ? toYYYYMMDD(currentValue) : ""
@@ -595,12 +618,12 @@ export default function FormRenderer({
                             onBlur={(e) => {
                               const currentValue = values[childField.name] || "";
                               const [date, time] = currentValue.split(" ");
-                              
+
                               if (date && !time) {
                                 setTimeout(() => {
                                   const latestValue = values[childField.name] || "";
                                   const [latestDate, latestTime] = latestValue.split(" ");
-                                  
+
                                   if (latestDate && !latestTime) {
                                     handleChange(childField.name, childField.type, "");
                                     setTouchedFields(prev => ({ ...prev, [childField.name]: true }));
@@ -608,13 +631,13 @@ export default function FormRenderer({
                                       ...prev,
                                       [childField.name]: "Lütfen tarih ve saati seçiniz",
                                     }));
-                                    
+
                                     const dateInput = dateRefs.current[childField.name];
                                     if (dateInput) dateInput.value = "";
                                   }
                                 }, 500);
                               }
-                              
+
                               handleBlur(childField.name, childField.type);
                             }}
                             className={styles.nativeDateInput}
@@ -737,6 +760,7 @@ export default function FormRenderer({
                   <input
                     type="date"
                     ref={(el) => (dateRefs.current[f.name] = el)}
+                    max={isBirthDateField(f) ? todayYMD() : undefined}
                     name={f.name}
                     value={currentValue ? toYYYYMMDD(currentValue) : ""}
                     onChange={(e) => {
@@ -828,7 +852,7 @@ export default function FormRenderer({
                         setTimeout(() => {
                           const latestValue = values[f.name] || "";
                           const [latestDate, latestTime] = latestValue.split(" ");
-                          
+
                           if (latestDate && !latestTime) {
                             handleChange(f.name, f.type, "");
                             setTouchedFields(prev => ({ ...prev, [f.name]: true }));
@@ -836,13 +860,13 @@ export default function FormRenderer({
                               ...prev,
                               [f.name]: "Lütfen tarih ve saati seçiniz",
                             }));
-                            
+
                             const dateInput = dateRefs.current[f.name];
                             if (dateInput) dateInput.value = "";
                           }
                         }, 500);
                       }
-                      
+
                       handleBlur(f.name, f.type);
                     }}
                     className={styles.nativeDateInput}

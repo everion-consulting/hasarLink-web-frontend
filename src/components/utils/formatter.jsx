@@ -42,7 +42,46 @@ export const normalizeIBAN = (s = "") => {
 
 export const validateEmail = (s = "") => /^\S+@\S+\.\S+$/.test(s);
 export const validatePhone = (s = "") => /^0\d{10}$/.test(onlyDigits(s));
-export const validateTCKN = (s = "") => /^\d{10,11}$/.test(onlyDigits(s));
+export const validateTCKN = (s = "") => {
+  const t = onlyDigits(String(s)).slice(0, 11);
+
+  
+  if (!/^\d{11}$/.test(t)) return false;
+
+ 
+  if (t[0] === "0") return false;
+
+  
+  if (/^(\d)\1{10}$/.test(t)) return false;
+
+  const d = t.split("").map(Number);
+
+  const oddSum = d[0] + d[2] + d[4] + d[6] + d[8];
+  const evenSum = d[1] + d[3] + d[5] + d[7];
+
+  const check10 = ((oddSum * 7) - evenSum) % 10;
+  if (d[9] !== check10) return false;
+
+  const check11 = d.slice(0, 10).reduce((a, b) => a + b, 0) % 10;
+  if (d[10] !== check11) return false;
+
+  return true;
+};
+
+
+export const validateTCKNSoft = (s = "") => {
+  const t = onlyDigits(String(s));
+
+  
+  if (!t) return true;
+
+ 
+  if (t.length < 11) return true;
+
+  
+  return validateTCKN(t);
+};
+
 export const validateIBAN = (s = "") => /^TR\d{24}$/i.test(s.replace(/\s/g, ""));
 
 // -------------------
