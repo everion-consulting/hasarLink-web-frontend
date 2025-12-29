@@ -399,14 +399,19 @@ export default function InsuredMechanicStepperScreen() {
 
     // Form submit handlers - NATIVE'DEKİ MANTIK
     const handleInsuredSubmit = (values) => {
-        console.log('✅ Sigortalı formu tamamlandı:', values);
-        setInsuredData(values);
+        const merged = { ...insuredData, ...values, isForeign: isInsuredForeign, isCompany };
 
-        // Sonraki adıma geç - NATIVE'DEKİ MANTIK
+        const cleaned = isInsuredForeign
+            ? { ...merged, insured_tc: "" }                 // yabancıysa TC sil
+            : { ...merged, foreign_insured_tc: "" };        // TC ise yabancı sil
+
+        console.log("✅ Sigortalı SUBMIT cleaned:", cleaned);
+
+        setInsuredData(cleaned);
+
         if (shouldShowOpposingDriver) {
-            setCurrentStep(2); // Karşı sürücü bilgilerine geç
+            setCurrentStep(2);
         } else {
-            // Servis bilgilerine geç
             const serviceStepIndex = steps.findIndex(step => step === 'Servis Bilgileri');
             setCurrentStep(serviceStepIndex + 1);
         }
@@ -479,7 +484,14 @@ export default function InsuredMechanicStepperScreen() {
             startStep: editMode ? returnStep : 3,
 
 
-            insuredData: Object.keys(insuredData).length > 0 ? insuredData : location.state?.insuredData || {},
+            insuredData: (() => {
+                const base = Object.keys(insuredData).length > 0 ? insuredData : (location.state?.insuredData || {});
+                // ✅ yabancı/tc alanını kesinleştir
+                return isInsuredForeign
+                    ? { ...base, isForeign: true, insured_tc: "" }
+                    : { ...base, isForeign: false, foreign_insured_tc: "" };
+            })(),
+
             serviceData: completeServiceData,
             opposingDriverData: Object.keys(opposingDriverData).length > 0 ? opposingDriverData : location.state?.opposingDriverData || {},
         };
@@ -661,7 +673,7 @@ export default function InsuredMechanicStepperScreen() {
                         fields={activeInsuredFields}
                         values={insuredData}
                         setValues={setInsuredData}
-                        onSubmit={handleInsuredSubmit}
+                        onSubmit={(values) => handleInsuredSubmit(values)}
                         onFormChange={({ allValid }) => setInsuredValid(allValid)}
                     />
                 </>

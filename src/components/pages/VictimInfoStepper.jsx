@@ -21,12 +21,19 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const switchVictimTab = (nextIsForeign) => {
     setIsVictimForeign(nextIsForeign);
 
-    setFormValues((prev) => ({
-      ...prev,
-      isForeign: nextIsForeign,
-      victim_tc: nextIsForeign ? "" : (prev.victim_tc || ""),
-      foreign_victim_tc: nextIsForeign ? (prev.foreign_victim_tc || "") : "",
-    }));
+    setFormValues((prev) => {
+      const out = { ...prev, isForeign: nextIsForeign };
+
+      if (nextIsForeign) {
+        out.victim_tc = "";
+        out.foreign_victim_tc = out.foreign_victim_tc || "";
+      } else {
+        out.foreign_victim_tc = "";
+        out.victim_tc = out.victim_tc || "";
+      }
+
+      return out;
+    });
   };
 
 
@@ -75,13 +82,24 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   };
 
   const handleFormSubmit = (values) => {
-    console.log('✅ VictimInfoStepper - Ham form verileri:', values);
 
-    const transformedValues = { ...values };
+    const merged = { ...formValues, ...values, isCompany, isForeign: isVictimForeign };
 
-    victimFields.forEach(field => {
-      if (field.transform && typeof field.transform === 'function' && values[field.name]) {
-        transformedValues[field.name] = field.transform(values[field.name]);
+
+    const cleaned = isCompany
+      ? { ...merged, isForeign: false, foreign_victim_tc: "" }
+      : isVictimForeign
+        ? { ...merged, victim_tc: "" }
+        : { ...merged, foreign_victim_tc: "" };
+
+    console.log("✅ Victim SUBMIT cleaned:", cleaned);
+
+
+    const transformedValues = { ...cleaned };
+
+    victimFields.forEach((field) => {
+      if (field.transform && typeof field.transform === "function" && transformedValues[field.name]) {
+        transformedValues[field.name] = field.transform(transformedValues[field.name]);
       }
     });
 
@@ -89,37 +107,32 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     const returnTo = locationState.returnTo || null;
     const returnStep = locationState.returnStep || null;
 
-    // 🎯 Eğer düzenle modundaysan → StepInfo'ya geri gönder!
     if (editMode && returnTo) {
       navigate(`/${returnTo}`, {
         state: {
           ...locationState,
           victimData: transformedValues,
-          startStep: returnStep || 2
-        }
+          startStep: returnStep || 2,
+        },
       });
-
-      return; // ❗ normal akışı durdur
+      return;
     }
 
-    // 🚀 Normal akış
     if (samePersonFromState) {
-      // Aynı kişi ise: Mağdur bilgisi aynı zamanda sürücü bilgisidir
-      navigate('/driver-victim-stepper', {
+      navigate("/driver-victim-stepper", {
         state: {
           ...locationState,
           victimData: transformedValues,
-          driverData: transformedValues, // ✅ Sürücü bilgisi = Mağdur bilgisi
+          driverData: transformedValues,
           samePerson: true,
           kazaNitelik,
           selectedCompany,
           insuranceSource,
           karsiSamePerson,
-        }
+        },
       });
     } else {
-      // Farklı kişi ise: Sürücü bilgileri için ayrı forma git
-      navigate('/driver-info', {
+      navigate("/driver-info", {
         state: {
           ...locationState,
           victimData: transformedValues,
@@ -128,10 +141,11 @@ const VictimInfoStepper = ({ samePerson = false }) => {
           selectedCompany,
           insuranceSource,
           karsiSamePerson,
-        }
+        },
       });
     }
   };
+
 
   const renderVictimTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
@@ -162,43 +176,43 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   );
 
   const renderVictimForeignSwitch = () => (
-  <div className={styles.switchMainContainer}>
-    <div
-      className={`${styles.switchOption} ${!isVictimForeign ? styles.activeOption : ""}`}
-      onClick={() => switchVictimTab(false)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && switchVictimTab(false)}
-    >
-      TC
-    </div>
+    <div className={styles.switchMainContainer}>
+      <div
+        className={`${styles.switchOption} ${!isVictimForeign ? styles.activeOption : ""}`}
+        onClick={() => switchVictimTab(false)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && switchVictimTab(false)}
+      >
+        TC
+      </div>
 
-    <div
-      className={`${styles.switchOption} ${isVictimForeign ? styles.activeOption : ""}`}
-      onClick={() => switchVictimTab(true)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && switchVictimTab(true)}
-    >
-      Yabancı
+      <div
+        className={`${styles.switchOption} ${isVictimForeign ? styles.activeOption : ""}`}
+        onClick={() => switchVictimTab(true)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && switchVictimTab(true)}
+      >
+        Yabancı
+      </div>
     </div>
-  </div>
-);
+  );
 
-const activeVictimFields = React.useMemo(() => {
-  return victimFields
-    .filter((f) => {
-      if (isCompany) return true; // şirketse dokunma
-      if (isVictimForeign) return f.name !== "victim_tc";
-      return f.name !== "foreign_victim_tc";
-    })
-    .map((f) => {
-      if (isCompany) return f;
-      if (f.name === "victim_tc") return { ...f, required: !isVictimForeign };
-      if (f.name === "foreign_victim_tc") return { ...f, required: isVictimForeign };
-      return f;
-    });
-}, [victimFields, isCompany, isVictimForeign]);
+  const activeVictimFields = React.useMemo(() => {
+    return victimFields
+      .filter((f) => {
+        if (isCompany) return true; // şirketse dokunma
+        if (isVictimForeign) return f.name !== "victim_tc";
+        return f.name !== "foreign_victim_tc";
+      })
+      .map((f) => {
+        if (isCompany) return f;
+        if (f.name === "victim_tc") return { ...f, required: !isVictimForeign };
+        if (f.name === "foreign_victim_tc") return { ...f, required: isVictimForeign };
+        return f;
+      });
+  }, [victimFields, isCompany, isVictimForeign]);
 
   return (
     <div className={styles.screenContainer}>
