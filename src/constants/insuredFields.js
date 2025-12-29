@@ -43,7 +43,19 @@ export const getInsuredFields = (isCompany = false) => {
       } : (value) => {
         return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
       }
-    }
+    },
+    {
+      name: "foreign_insured_tc",
+      label: "Yabancı Kimlik No",
+      type: "text",
+      placeholder: "Kimlik numaranızı giriniz",
+      required: true,
+      maxLength: 11,
+      keyboardType: "numeric",
+      validate: (value) => {
+        return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
+      }
+    },
   ];
 
   if (isCompany) {

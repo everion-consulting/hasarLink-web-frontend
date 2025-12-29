@@ -40,6 +40,8 @@ export default function InsuredMechanicStepperScreen() {
     const [isCompany, setIsCompany] = useState(false);
     const [opposingDriverData, setOpposingDriverData] = useState({});
     const [isOpposingForeign, setIsOpposingForeign] = useState(!!opposingDriverData?.isForeign);
+    const [isInsuredForeign, setIsInsuredForeign] = useState(!!location.state?.insuredData?.isForeign);
+
 
 
     console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
@@ -163,6 +165,18 @@ export default function InsuredMechanicStepperScreen() {
 
     const activeOpposingFields = isOpposingForeign ? opposingForeignFields : opposingTcFields;
 
+    const switchInsuredTab = (nextIsForeign) => {
+        setIsInsuredForeign(nextIsForeign);
+
+        setInsuredData((prev) => ({
+            ...prev,
+            isForeign: nextIsForeign,
+            insured_tc: nextIsForeign ? "" : (prev.insured_tc || ""),
+            foreign_insured_tc: nextIsForeign ? (prev.foreign_insured_tc || "") : "",
+        }));
+    };
+
+
     const renderOpposingDriverTypeSwitch = () => (
         <div className={styles.switchMainContainer}>
             <div
@@ -179,6 +193,8 @@ export default function InsuredMechanicStepperScreen() {
             </div>
         </div>
     );
+
+
 
     const switchOpposingTab = (nextIsForeign) => {
         setIsOpposingForeign(nextIsForeign);
@@ -201,6 +217,8 @@ export default function InsuredMechanicStepperScreen() {
             };
         });
     };
+
+
 
 
 
@@ -327,6 +345,10 @@ export default function InsuredMechanicStepperScreen() {
             ...prev,
             isCompany: isCompany
         }));
+        if (location.state?.insuredData?.isForeign !== undefined) {
+            setIsInsuredForeign(!!location.state.insuredData.isForeign);
+        }
+
     }, [isCompany]);
 
     // 🔹 Sigortalı adımı için alanları senaryoya göre yeniden işle - NATIVE'DEKİ MANTIK
@@ -512,6 +534,10 @@ export default function InsuredMechanicStepperScreen() {
         </div>
     );
 
+
+
+
+
     // Özel validasyon için footer - NATIVE'DEKİ MANTIK
     const renderInsuredFormFooter = ({ submit, allValid }) => {
         // 👉 Çoklu + Karşı Kasko → sadece plaka kontrolü
@@ -576,6 +602,7 @@ export default function InsuredMechanicStepperScreen() {
     };
 
 
+
     const renderInsuredTypeSwitch = () => (
         <div className={styles.switchMainContainer}>
             <div
@@ -586,12 +613,25 @@ export default function InsuredMechanicStepperScreen() {
             </div>
             <div
                 className={`${styles.switchOption} ${isCompany ? styles.activeOption : ''}`}
-                onClick={() => setIsCompany(true)}
+                onClick={() => {
+                    setIsCompany(true);
+
+                    // ✅ şirket seçildiyse TC/Yabancı switch kapansın + alan temizlensin
+                    setIsInsuredForeign(false);
+                    setInsuredData((prev) => ({
+                        ...prev,
+                        isForeign: false,
+                        foreign_insured_tc: "",
+                    }));
+                }}
+
             >
                 Şirket
             </div>
         </div>
     );
+
+
 
 
     const renderCurrentForm = () => {
@@ -615,8 +655,10 @@ export default function InsuredMechanicStepperScreen() {
             return (
                 <>
                     {renderInsuredTypeSwitch()}
+                    {!isCompany && renderInsuredForeignSwitch()}
                     <FormRenderer
-                        fields={insuredFieldsForStep}
+                        key={`insured-${isCompany ? "company" : "individual"}-${isInsuredForeign ? "foreign" : "tc"}`}
+                        fields={activeInsuredFields}
                         values={insuredData}
                         setValues={setInsuredData}
                         onSubmit={handleInsuredSubmit}
@@ -663,6 +705,60 @@ export default function InsuredMechanicStepperScreen() {
             />
         );
     };
+
+    const renderInsuredForeignSwitch = () => (
+        <div className={styles.switchMainContainer}>
+            <div
+                className={`${styles.switchOption} ${!isInsuredForeign ? styles.activeOption : ""}`}
+                onClick={() => switchInsuredTab(false)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && switchInsuredTab(false)}
+            >
+                TC
+            </div>
+
+            <div
+                className={`${styles.switchOption} ${isInsuredForeign ? styles.activeOption : ""}`}
+                onClick={() => switchInsuredTab(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && switchInsuredTab(true)}
+            >
+                Yabancı
+            </div>
+        </div>
+    );
+
+    const activeInsuredFields = useMemo(() => {
+        const list = Array.isArray(insuredFieldsForStep) ? insuredFieldsForStep : [];
+
+        const patchField = (f) => {
+            if (f?.name === "insured_tc") return { ...f, required: !isInsuredForeign };
+            if (f?.name === "foreign_insured_tc") return { ...f, required: isInsuredForeign };
+            return f;
+        };
+
+        return list
+            .map((f) => {
+
+                if (f.type === "row" && Array.isArray(f.children)) {
+                    const children = f.children
+                        .filter((c) => (isInsuredForeign ? c.name !== "insured_tc" : c.name !== "foreign_insured_tc"))
+                        .map(patchField);
+
+                    return { ...f, children };
+                }
+
+                return patchField(f);
+            })
+            .filter((f) => {
+
+                if (f.type === "row") return true;
+                return isInsuredForeign ? f.name !== "insured_tc" : f.name !== "foreign_insured_tc";
+            });
+    }, [insuredFieldsForStep, isInsuredForeign]);
+
 
     return (
         <div className={styles.screenContainer}>

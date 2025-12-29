@@ -38,6 +38,15 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       maxLength: isCompany ? undefined : 11,
     },
     { name: "victim_phone", label: "Telefon", placeholder: "5xxxxxxxxx", type: "phone", required: false },
+    ,{
+      name:"foreign_victim_tc",
+      label: "Yabancı Kimlik No",
+      placeholder:"11 hane",
+      type:"tckn",
+      required: true,
+      maxLength:11,
+    },
+     
   ];
 
   if (!isCompany) {

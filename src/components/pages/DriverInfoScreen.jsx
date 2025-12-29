@@ -44,7 +44,7 @@ export default function DriverInfoScreen() {
 
   const activeFields = isForeign ? foreignFields : tcFields;
 
-  // ✅ VictimInfoStepper’daki gibi switch UI
+
   const renderDriverTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
       <div

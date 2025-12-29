@@ -16,6 +16,19 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const insuranceSource = locationState.insuranceSource;
   const karsiSamePerson = locationState.karsiSamePerson;
   const samePersonFromState = locationState.samePerson || samePerson;
+  const [isVictimForeign, setIsVictimForeign] = useState(!!locationState?.victimData?.isForeign);
+
+  const switchVictimTab = (nextIsForeign) => {
+    setIsVictimForeign(nextIsForeign);
+
+    setFormValues((prev) => ({
+      ...prev,
+      isForeign: nextIsForeign,
+      victim_tc: nextIsForeign ? "" : (prev.victim_tc || ""),
+      foreign_victim_tc: nextIsForeign ? (prev.foreign_victim_tc || "") : "",
+    }));
+  };
+
 
   useEffect(() => {
     if (locationState?.victimData) {
@@ -27,6 +40,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
       }
 
       setFormValues(victim);
+      setIsVictimForeign(!!victim.isForeign);
     }
   }, [locationState]);
 
@@ -129,12 +143,62 @@ const VictimInfoStepper = ({ samePerson = false }) => {
       </div>
       <div
         className={`${styles.switchOption} ${isCompany ? styles.activeOption : ''}`}
-        onClick={() => setIsCompany(true)}
+        onClick={() => {
+          setIsCompany(true);
+
+          // ✅ şirket seçildiyse TC/Yabancı switch'i kapat + foreign tc temizle
+          setIsVictimForeign(false);
+          setFormValues((prev) => ({
+            ...prev,
+            isForeign: false,
+            foreign_victim_tc: "",
+          }));
+        }}
+
       >
         Şirket
       </div>
     </div>
   );
+
+  const renderVictimForeignSwitch = () => (
+  <div className={styles.switchMainContainer}>
+    <div
+      className={`${styles.switchOption} ${!isVictimForeign ? styles.activeOption : ""}`}
+      onClick={() => switchVictimTab(false)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && switchVictimTab(false)}
+    >
+      TC
+    </div>
+
+    <div
+      className={`${styles.switchOption} ${isVictimForeign ? styles.activeOption : ""}`}
+      onClick={() => switchVictimTab(true)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && switchVictimTab(true)}
+    >
+      Yabancı
+    </div>
+  </div>
+);
+
+const activeVictimFields = React.useMemo(() => {
+  return victimFields
+    .filter((f) => {
+      if (isCompany) return true; // şirketse dokunma
+      if (isVictimForeign) return f.name !== "victim_tc";
+      return f.name !== "foreign_victim_tc";
+    })
+    .map((f) => {
+      if (isCompany) return f;
+      if (f.name === "victim_tc") return { ...f, required: !isVictimForeign };
+      if (f.name === "foreign_victim_tc") return { ...f, required: isVictimForeign };
+      return f;
+    });
+}, [victimFields, isCompany, isVictimForeign]);
 
   return (
     <div className={styles.screenContainer}>
@@ -146,13 +210,14 @@ const VictimInfoStepper = ({ samePerson = false }) => {
           {samePersonFromState ? 'Mağdur/Sürücü Bilgileri' : 'Mağdur Bilgileri'}
         </h2>
 
-     
+
 
         <div className={styles.formCard}>
           <div className={styles.formSectionContent}>
             {renderVictimTypeSwitch()}
+            {!isCompany && renderVictimForeignSwitch()}
             <FormRenderer
-              fields={victimFields}
+              fields={activeVictimFields}
               values={formValues}
               setValues={setFormValues}
               onSubmit={handleFormSubmit}
