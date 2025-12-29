@@ -25,6 +25,18 @@ export default function StepInfoScreen() {
   console.log("🔍 Gelen driverData:", params.driverData);
   console.log("🔍 Gelen vehicleData:", params.vehicleData);
 
+  useEffect(() => {
+    console.log("🧪 victimData UPDATED:", victimData);
+    console.log("🧪 victimData.foreign_victim_tc:", victimData?.foreign_victim_tc);
+  }, [victimData]);
+
+  useEffect(() => {
+    console.log("🧪 insuredData UPDATED:", insuredData);
+    console.log("🧪 insuredData.foreign_insured_tc:", insuredData?.foreign_insured_tc);
+  }, [insuredData]);
+
+
+
   const startStep = params?.startStep || 1;
   const selectedCompany = params?.selectedCompany || null;
   const samePerson = params?.samePerson || false;
@@ -64,6 +76,7 @@ export default function StepInfoScreen() {
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(draftId);
   const [remainingCredits, setRemainingCredits] = useState(0);
+
 
   useEffect(() => {
     if (fromDraft && draftId) {
@@ -305,6 +318,10 @@ export default function StepInfoScreen() {
       }
 
       console.log(`📤 UPDATE Submission ${savedId} Payload:`, payload);
+      console.log("🚀 UPDATE payload JSON:", JSON.stringify(payload, null, 2));
+      console.log("🚀 CHECK foreign_victim_tc:", payload?.foreign_victim_tc);
+      console.log("🚀 CHECK foreign_insured_tc:", payload?.foreign_insured_tc);
+
       const res = await apiService.updateSubmission(savedId, payload);
       console.log("📡 UPDATE yanıtı:", res);
 
