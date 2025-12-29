@@ -201,6 +201,7 @@ export default function StepInfoScreen() {
         payload = {
           victim_fullname: victimData.victim_fullname,
           victim_tc: victimData.victim_tc,
+          foreign_victim_tc: victimData.foreign_victim_tc,
           victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
@@ -239,6 +240,7 @@ export default function StepInfoScreen() {
         payload = {
           insured_fullname: insuredData.isCompany ? "" : insuredData.insured_fullname,
           insured_tc: insuredData.isCompany ? "" : insuredData.insured_tc,
+          foreign_insured_tc: insuredData.isCompany ? "" : insuredData.foreign_insured_tc,
           company_name: insuredData.isCompany ? insuredData.company_name : "",
           company_tax_number: insuredData.isCompany ? insuredData.company_tax_number : "",
           insured_birth_date: insuredData.isCompany ? null : toYYYYMMDD(insuredData.insured_birth_date),
@@ -459,6 +461,7 @@ export default function StepInfoScreen() {
               data: [
                 { label: 'Ad Soyad', value: victimData.victim_fullname || 'YOK' },
                 { label: 'Kimlik No', value: victimData.victim_tc || 'YOK' },
+                { label: 'Yabancı Kimlik No', value: victimData.foreign_victim_tc || 'YOK' },
                 { label: 'E-Mail', value: victimData.victim_mail || 'YOK' },
                 { label: 'Telefon No', value: victimData.victim_phone || 'YOK' },
                 { label: 'Doğum Tarihi', value: victimData.victim_birth_date || 'YOK' },
@@ -525,6 +528,7 @@ export default function StepInfoScreen() {
                 : [
                   { label: 'Ad Soyad', value: insuredData.insured_fullname || 'YOK' },
                   { label: 'TC No', value: insuredData.insured_tc || 'YOK' },
+                  { label: 'Yabancı Kimlik No', value: insuredData.foreign_insured_tc || 'YOK' },
                   { label: 'Doğum Tarihi', value: insuredData.insured_birth_date || 'YOK' },
                   { label: 'Telefon', value: insuredData.insured_phone || 'YOK' },
                   { label: 'E-Mail', value: insuredData.insured_mail || 'YOK' },
