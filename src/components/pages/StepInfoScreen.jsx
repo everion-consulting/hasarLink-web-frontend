@@ -25,16 +25,6 @@ export default function StepInfoScreen() {
   console.log("🔍 Gelen driverData:", params.driverData);
   console.log("🔍 Gelen vehicleData:", params.vehicleData);
 
-  useEffect(() => {
-    console.log("🧪 victimData UPDATED:", victimData);
-    console.log("🧪 victimData.foreign_victim_tc:", victimData?.foreign_victim_tc);
-  }, [victimData]);
-
-  useEffect(() => {
-    console.log("🧪 insuredData UPDATED:", insuredData);
-    console.log("🧪 insuredData.foreign_insured_tc:", insuredData?.foreign_insured_tc);
-  }, [insuredData]);
-
 
 
   const startStep = params?.startStep || 1;
@@ -76,6 +66,18 @@ export default function StepInfoScreen() {
   const [isStepApproved, setIsStepApproved] = useState(false);
   const [submissionId, setSubmissionId] = useState(draftId);
   const [remainingCredits, setRemainingCredits] = useState(0);
+
+    useEffect(() => {
+    console.log("🧪 victimData UPDATED:", victimData);
+    console.log("🧪 victimData.foreign_victim_tc:", victimData?.foreign_victim_tc);
+  }, [victimData]);
+
+  useEffect(() => {
+    console.log("🧪 insuredData UPDATED:", insuredData);
+    console.log("🧪 insuredData.foreign_insured_tc:", insuredData?.foreign_insured_tc);
+  }, [insuredData]);
+
+
 
 
   useEffect(() => {
