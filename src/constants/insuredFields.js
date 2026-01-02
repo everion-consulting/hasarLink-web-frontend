@@ -23,28 +23,26 @@ import {
 
 export const getInsuredFields = (isCompany = false) => {
   const fields = [
-    // Sigortalı kişi bilgileri
     {
       name: isCompany ? "company_name" : "insured_fullname",
       label: isCompany ? "Şirket İsmi" : "Ad Soyad",
       type: "text",
-      placeholder: isCompany ? "Şirket İsmi" : "Adınızı ve soyadınızı giriniz",
       required: true
     },
     {
       name: isCompany ? "company_tax_number" : "insured_tc",
       label: isCompany ? "Vergi Kimlik No" : "Kimlik No",
       type: isCompany ? "text" : "tckn",
-      placeholder: isCompany ? "Vergi Kimlik No" : "Kimlik numaranızı giriniz",
       required: true,
       maxLength: isCompany ? 10 : 11,
-      validate: isCompany ? (value) => {
-        return /^\d{10}$/.test(value) ? null : "Vergi kimlik numarası 10 haneli olmalı";
-      } : (value) => {
-        return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
-      }
+      validate: isCompany
+        ? (v) => /^\d{10}$/.test(v) ? null : "Vergi kimlik numarası 10 haneli olmalı"
+        : (v) => /^\d{11}$/.test(v) ? null : "Kimlik numarası 11 haneli olmalı"
     },
-    {
+  ];
+
+  if (!isCompany) {
+    fields.push({
       name: "foreign_insured_tc",
       label: "Yabancı Kimlik No",
       type: "text",
@@ -52,11 +50,10 @@ export const getInsuredFields = (isCompany = false) => {
       required: true,
       maxLength: 11,
       keyboardType: "numeric",
-      validate: (value) => {
-        return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
-      }
-    },
-  ];
+      validate: (value) =>
+        /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı",
+    });
+  }
 
   if (isCompany) {
     fields.push({

@@ -10,6 +10,12 @@ export const vehicleTypeOptions = [
   { label: "Otomobil", value: "otomobil" },
   { label: "Kamyonet", value: "kamyonet" },
   { label: "Motosiklet", value: "motosiklet" },
+  { label: "Minibüs", value: "minibus" },
+  { label: "Otobüs", value: "otobus" },
+  { label: "Tır", value: "tir" },
+  { label: "Çekici", value: "cekici" },
+  { label: "Römork", value: "romork" },
+  { label: "Diğer", value: "diger" },
 ];
 
 // Kullanım tipi seçenekleri (örn: ticari/hususi ayrımı gereken formlarda kullanılır)
@@ -28,8 +34,8 @@ export const DropdownOptions = {
 // React bileşeni olarak dropdown render etmek için örnek
 export const DropdownRenderer = ({ options, value, onChange, placeholder = "Seçiniz..." }) => {
   return (
-    <select 
-      value={value} 
+    <select
+      value={value}
       onChange={(e) => onChange(e.target.value)}
       className="form-select"
     >
@@ -47,8 +53,8 @@ export const DropdownRenderer = ({ options, value, onChange, placeholder = "Seç
 export const CustomSelect = ({ options, value, onChange, placeholder = "Seçiniz..." }) => {
   return (
     <div className="custom-select-container">
-      <select 
-        value={value} 
+      <select
+        value={value}
         onChange={(e) => onChange(e.target.value)}
         className="custom-select"
       >

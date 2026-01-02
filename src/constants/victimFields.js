@@ -20,7 +20,7 @@ const formatToISO = (value) => {
 export const getVictimFields = (isCompany = false, selectedCompany = null) => {
   // RAY SİGORTA (id: 72) veya TMTB (id: 76) için IBAN zorunlu
   const isIbanRequired = selectedCompany?.id === 72 || selectedCompany?.id === 76;
-  
+
   const fields = [
     {
       name: isCompany ? "companyName" : "victim_fullname",
@@ -38,15 +38,8 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       maxLength: isCompany ? undefined : 11,
     },
     { name: "victim_phone", label: "Telefon", placeholder: "5xxxxxxxxx", type: "phone", required: false },
-    ,{
-      name:"foreign_victim_tc",
-      label: "Yabancı Kimlik No",
-      placeholder:"11 hane",
-      type:"tckn",
-      required: true,
-      maxLength:11,
-    },
-     
+
+
   ];
 
   if (!isCompany) {
@@ -56,20 +49,28 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       placeholder: "DD.MM.YYYY",
       type: "date",
       required: true,
-    });
+    },
+      {
+        name: "foreign_victim_tc",
+        label: "Yabancı Kimlik No",
+        placeholder: "11 hane",
+        type: "tckn",
+        required: true,
+        maxLength: 11,
+      });
   }
 
   // IBAN alanını doğrudan push ediyoruz
   fields.push(
-    { 
-      name: "victim_iban", 
-      label: isIbanRequired 
-        ? "IBAN No (Zorunlu) - Kesinlikle mağdur ruhsat sahibinin IBAN'ı olmalıdır" 
+    {
+      name: "victim_iban",
+      label: isIbanRequired
+        ? "IBAN No (Zorunlu) - Kesinlikle mağdur ruhsat sahibinin IBAN'ı olmalıdır"
         : "IBAN No (Kesinlikle mağdur ruhsat sahibinin IBAN'ı olmalıdır)",
-      placeholder: "TR00 0000 0000 0000 0000 0000 00", 
-      type: "iban", 
-      required: isIbanRequired, 
-      maxLength: 32 
+      placeholder: "TR00 0000 0000 0000 0000 0000 00",
+      type: "iban",
+      required: isIbanRequired,
+      maxLength: 32
     }
   );
 
