@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import submissionService from "../../services/submissionService";
 import styles from "../../styles/documentUploaderScreen.module.css";
 import FormFooter from "../forms/FormFooter";
+
 import { FILE_TYPES } from "../../constants/filesTypes";
 
 
@@ -68,7 +69,7 @@ const DocumentUploaderScreen = ({ routeState = {}, onBack, onContinue }) => {
           const formData = new FormData();
 
           formData.append("submission", submissionId);
-          formData.append("file_type", section.id.replace(/_/g, " "));
+          formData.append("file_type", section.id);
           formData.append("summary", section.title);
           formData.append("name", item.name || "Dosya");
           formData.append("file", item.file); // <input type="file" /> File objesi

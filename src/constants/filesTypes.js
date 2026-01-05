@@ -1,12 +1,12 @@
 // src/constants/fileTypes.js
 export const FILE_TYPES = [
-  { id: "tutanak", title: "Anlaşmalı Tutanak" },
+  { id: "tutanak", title: "Tutanak" },
   { id: "magdur_arac_ruhsat", title: "Mağdur Araç Ruhsatı" },
   { id: "magdur_arac_ehliyet", title: "Mağdur Araç Ehliyeti" },
   { id: "sigortali_arac_ruhsat", title: "Karşı Sigortalı Araç Ruhsatı" },
   { id: "sigortali_arac_ehliyet", title: "Karşı Sigortalı Araç Ehliyeti" },
-  { id: "fotograflar", title: "Olay Yeri Fotoğrafları" },
-  { id: "diger", title: "Diğer Evraklar" },
+  { id: "fotograflar", title: "Fotoğraflar" },
+  { id: "diger", title: "Diğer" },
 ];
 
 // 🔹 backend'de saklanan değer (id alt çizgi→boşluk, lower) -> title

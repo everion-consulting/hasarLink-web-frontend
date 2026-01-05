@@ -629,12 +629,11 @@ export default function StepInfoScreen() {
               title: 'Evrak Yükleme Alanı',
               editKey: 'documents',
               data: [
-                { label: 'Tutanak', value: params?.documents?.olayYeri?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Anlaşmalı Tutanak', value: params?.documents?.tutanaklar?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Mağdur Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Mağdur Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Karşı Sigortalı Araç Ehliyet', value: params?.documents?.surucuBelgesi?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Karşı Sigortalı Araç Ruhsat', value: params?.documents?.ruhsat?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Tutanak', value: params?.documents?.tutanak?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Mağdur Araç Ruhsatı', value: params?.documents?.magdur_arac_ruhsat?.length ? 'Yüklendi' : 'YOK' },
+                { label: '"Mağdur Araç Ehliyeti', value: params?.documents?.magdur_arac_ehliyet?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Karşı Sigortalı Araç Ruhsatı', value: params?.documents?.sigortali_arac_ruhsat?.length ? 'Yüklendi' : 'YOK' },
+                { label: 'Karşı Sigortalı Araç Ehliyeti', value: params?.documents?.sigortali_arac_ehliyet?.length ? 'Yüklendi' : 'YOK' },
                 { label: 'Fotoğraflar', value: params?.documents?.fotograflar ? 'Yüklendi' : 'YOK' },
                 { label: 'Diğer', value: params?.documents?.diger ? 'Yüklendi' : 'YOK' },
               ]
