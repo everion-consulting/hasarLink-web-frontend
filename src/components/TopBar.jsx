@@ -246,9 +246,16 @@ export default function TopBar() {
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>
                         Ayarlar
                     </NavLink>
-                    <NavLink to="/kredi-satin-al" onClick={() => setIsMenuOpen(false)}>
+                    <NavLink
+                        to="#"
+                        onClick={(e) => e.preventDefault()}
+                        className={` ${styles.tabDisabled}`}
+                        title="Yakında"
+                        aria-disabled="true"
+                    >
                         Kredi Satın Al
                     </NavLink>
+
 
                     <button
                         className={styles.mobileLogout}
