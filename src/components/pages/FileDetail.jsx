@@ -167,6 +167,8 @@ const FileDetail = () => {
         {renderInfoRow("İşlenme Tarihi", fileData.processed_at?.slice(0, 10))}
         {renderInfoRow("Tamamlanma Tarihi", fileData.completed_at?.slice(0, 10))}
         {renderInfoRow("Atanan Memur", fileData.assigned_officer)}
+        {renderInfoRow("Dosya No:", fileData.folder_no)}
+        {renderInfoRow("Eksper Bilgisi:", fileData.exper_informations)}
 
         <div className={styles.separator}></div>
 
