@@ -48,6 +48,35 @@ export default function Profile() {
         service_tax_no: "",
     });
 
+    const handleAreaCodeChange = (e) => {
+        const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 3);
+
+        setForm((prev) => ({
+            ...prev,
+            repair_area_code: onlyNumbers,
+        }));
+    };
+
+    const handleAreaCodeBlur = () => {
+        const value = form.repair_area_code;
+
+        if (!value) return;
+
+        if (value.length === 1) {
+            setForm((prev) => ({
+                ...prev,
+                repair_area_code: `00${value}`,
+            }));
+        } else if (value.length === 2) {
+            setForm((prev) => ({
+                ...prev,
+                repair_area_code: `0${value}`,
+            }));
+        }
+    };
+
+
+
     const [statistics, setStatistics] = useState(null);
     const [loadingStats, setLoadingStats] = useState(true);
     const [fileNotifications, setFileNotifications] = useState([]);
@@ -114,9 +143,9 @@ export default function Profile() {
             try {
                 let allCities = [];
                 let currentUrl = null;
-                
+
                 const res = await apiService.getCities();
-                
+
                 if (res?.data?.results) {
                     allCities = [...res.data.results];
                     currentUrl = res.data.next;
@@ -132,7 +161,7 @@ export default function Profile() {
                 } else {
                     allCities = res?.data || [];
                 }
-                
+
                 const options = allCities.map((city) => ({
                     label: city.name,
                     value: city.name,
@@ -398,9 +427,13 @@ export default function Profile() {
                                     <input
                                         type="text"
                                         value={form.repair_area_code}
-                                        onChange={(e) => setForm({ ...form, repair_area_code: e.target.value })}
+                                        onChange={handleAreaCodeChange}
+                                        onBlur={handleAreaCodeBlur}
+                                        maxLength={3}
+                                        placeholder="Örn: 015"
                                     />
                                 </div>
+
                             </div>
 
                             <label>Usta Doğum Tarihi</label>
