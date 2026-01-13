@@ -45,13 +45,13 @@ export const validatePhone = (s = "") => /^0\d{10}$/.test(onlyDigits(s));
 export const validateTCKN = (s = "") => {
   const t = onlyDigits(String(s)).slice(0, 11);
 
-  
+
   if (!/^\d{11}$/.test(t)) return false;
 
- 
+
   if (t[0] === "0") return false;
 
-  
+
   if (/^(\d)\1{10}$/.test(t)) return false;
 
   const d = t.split("").map(Number);
@@ -72,13 +72,13 @@ export const validateTCKN = (s = "") => {
 export const validateTCKNSoft = (s = "") => {
   const t = onlyDigits(String(s));
 
-  
+
   if (!t) return true;
 
- 
+
   if (t.length < 11) return true;
 
-  
+
   return validateTCKN(t);
 };
 
@@ -198,10 +198,10 @@ export function validatePlate(value) {
 
   // En fazla 9 karakter, en az 1 rakam olmalı
   if (v.length > 9) return false;
-  
+
   // En az bir rakam içermeli
   if (!/\d/.test(v)) return false;
-  
+
   // Sadece harf ve rakam içermeli
   if (!/^[A-Z0-9]+$/.test(v)) return false;
 
@@ -220,6 +220,19 @@ export const formatPlate = (text) => {
     .replace(/[^A-Z0-9 ]/g, "")
     .trim();
 };
+
+// utils/formatter.js
+export const formatAreaCode = (value) => {
+  if (!value) return "";
+
+  const digits = value.replace(/\D/g, "").slice(0, 3);
+
+  if (digits.length === 1) return `00${digits}`;
+  if (digits.length === 2) return `0${digits}`;
+
+  return digits;
+};
+
 
 // -------------------
 // Default export (isteğe bağlı - modern projelerde named export tercih edilir)
@@ -240,6 +253,7 @@ const formatter = {
   toYYYYMMDD,
   toDDMMYYYY,
   formatPlate,
+  formatAreaCode
 };
 
 export default formatter;

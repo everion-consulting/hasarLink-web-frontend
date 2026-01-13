@@ -18,30 +18,30 @@ import { maskPhone } from "../components/utils/formatter";
 
 
 const serviceField = [
-   { name: "repair_fullname", label: "Ad Soyad", type: "text", placeholder: "Adınızı ve soyadınızı giriniz", required: true },
-    // Kimlik No alanı
-    {
-      name: "repair_tc",
-      label: "Kimlik No",
-      type: "tckn",
-      placeholder: "Kimlik numaranızı giriniz",
-      required: true,
-      maxLength: 11,
-      validate: (value) => {
-        return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
-      }
-    },
-    {
-      name: "repair_phone",
-      label: "Telefon No",
-      type: "phone",
-      placeholder: "555-333-22-11",
-      required: true,
-      maxLength: 17,
-      formatter: maskPhone
-    },
-    { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: true },
-  
+  { name: "repair_fullname", label: "Ad Soyad", type: "text", placeholder: "Adınızı ve soyadınızı giriniz", required: true },
+  // Kimlik No alanı
+  {
+    name: "repair_tc",
+    label: "Kimlik No",
+    type: "tckn",
+    placeholder: "Kimlik numaranızı giriniz",
+    required: true,
+    maxLength: 11,
+    validate: (value) => {
+      return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
+    }
+  },
+  {
+    name: "repair_phone",
+    label: "Telefon No",
+    type: "phone",
+    placeholder: "555-333-22-11",
+    required: true,
+    maxLength: 17,
+    formatter: maskPhone
+  },
+  { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: true },
+
   // Servis Adı alanı
   { name: "service_name", label: "Servis Adı", placeholder: "Servis Adı", type: "text", required: true },
   // Telefon alanı
@@ -60,7 +60,7 @@ const serviceField = [
         label: "İl",
         type: "dropdown",
         options: [],
-        required: true 
+        required: true
       },
       // İlçe seçimi (select/dropdown)
       {
@@ -68,11 +68,12 @@ const serviceField = [
         label: "İlçe",
         type: "text",
         placeholder: "İlçe yazınız",
-        required: true 
+        required: true
       },]
   },
   // Açık Adres (çok satırlı metin)
-  { name: "service_address", label: "Açık Adres", type: "textarea", placeholder: "Barbaros Mah., Atpıkız Sk. No:2 D:3", required: true  },
+  { name: "service_address", label: "Açık Adres", type: "textarea", placeholder: "Barbaros Mah., Atpıkız Sk. No:2 D:3", required: true },
+  { name: "repair_area_code", label: "Bölge Kodu", type: "textarea", placeholder: "Örn:017", required: false, maxLength: 3 },
 ];
 
 export default serviceField;

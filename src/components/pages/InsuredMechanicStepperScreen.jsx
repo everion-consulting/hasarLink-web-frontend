@@ -132,25 +132,82 @@ export default function InsuredMechanicStepperScreen() {
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
 
+    const handleAreaCodeChange = (value) => {
+        const onlyNumbers = value.replace(/\D/g, "").slice(0, 3);
+
+        setServiceData((prev) => ({
+            ...prev,
+            repair_area_code: onlyNumbers,
+        }));
+    };
+
+    const handleAreaCodeBlur = () => {
+        const value = serviceData.repair_area_code;
+        if (!value) return;
+
+        if (value.length === 1) {
+            setServiceData((prev) => ({
+                ...prev,
+                repair_area_code: `00${value}`,
+            }));
+        } else if (value.length === 2) {
+            setServiceData((prev) => ({
+                ...prev,
+                repair_area_code: `0${value}`,
+            }));
+        }
+    };
+
+    const formatAreaCode = (value) => {
+        if (!value) return "";
+
+        const digits = value.replace(/\D/g, "").slice(0, 3);
+
+        if (digits.length === 1) return `00${digits}`;
+        if (digits.length === 2) return `0${digits}`;
+
+        return digits;
+    };
+
+
+
     const serviceFields = useMemo(() => {
-        return serviceField.map(f => {
-            if (f.type === 'row') {
+        return serviceField.map((f) => {
+            if (f.name === "repair_area_code") {
                 return {
                     ...f,
-                    children: f.children.map(child =>
-                        child.name === 'service_city'
+                    maxLength: 3,
+                    inputMode: "numeric",
+                    onChange: (e, value) => handleAreaCodeChange(value),
+                    onBlur: handleAreaCodeBlur,
+                };
+            }
+
+            if (f.type === "row") {
+                return {
+                    ...f,
+                    children: f.children.map((child) =>
+                        child.name === "service_city"
                             ? { ...child, options: cityOptions }
-                            : child
+                            : child.name === "repair_area_code"
+                                ? {
+                                    ...child,
+                                    maxLength: 3,
+                                    inputMode: "numeric",
+                                    onChange: (e, value) => handleAreaCodeChange(value),
+                                    onBlur: handleAreaCodeBlur,
+                                }
+                                : child
                     ),
                 };
             }
 
-
-            return f.name === 'service_city'
+            return f.name === "service_city"
                 ? { ...f, options: cityOptions }
                 : f;
         });
-    }, [cityOptions]);
+    }, [cityOptions, serviceData.repair_area_code]);
+
 
 
     const opposingTcFields = useMemo(
@@ -237,6 +294,10 @@ export default function InsuredMechanicStepperScreen() {
         return dateStr;
     };
 
+
+
+
+
     useEffect(() => {
         console.log('🔄 Component mount oldu, GÜNCEL profil yükleniyor...');
         fetchProfile();
@@ -265,6 +326,7 @@ export default function InsuredMechanicStepperScreen() {
             repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
             repair_tc: profileDetail.repair_tc || "",
             repair_phone: profileDetail.repair_phone || "",
+            repair_area_code: profileDetail.repair_area_code || ""
         }));
 
         console.log('📋 Profil bilgileri güncellendi:', {
@@ -445,6 +507,7 @@ export default function InsuredMechanicStepperScreen() {
                 service_tax_no: values.service_tax_no,
                 service_iban: values.service_iban,
                 service_iban_name: values.service_iban_name,
+                repair_area_code: values.repair_area_code
             };
 
             console.log('📤 Profil güncelleniyor:', profileUpdateData);
@@ -472,6 +535,7 @@ export default function InsuredMechanicStepperScreen() {
             service_address: values.service_address,
             service_iban: values.service_iban,
             service_iban_name: values.service_iban_name,
+            repair_area_code: values.repair_area_code
         };
 
         const navigationState = {

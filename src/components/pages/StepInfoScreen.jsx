@@ -67,7 +67,7 @@ export default function StepInfoScreen() {
   const [submissionId, setSubmissionId] = useState(draftId);
   const [remainingCredits, setRemainingCredits] = useState(0);
 
-    useEffect(() => {
+  useEffect(() => {
     console.log("🧪 victimData UPDATED:", victimData);
     console.log("🧪 victimData.foreign_victim_tc:", victimData?.foreign_victim_tc);
   }, [victimData]);
@@ -599,6 +599,7 @@ export default function StepInfoScreen() {
                 { label: 'İlçe', value: (serviceData.service_state_city_city || profileDetail?.service_state) || 'YOK' },
                 { label: 'Adres', value: (serviceData.service_address || profileDetail?.service_address) || 'YOK' },
                 { label: 'Servis No', value: (serviceData.service_tax_no || profileDetail?.service_tax_no) || 'YOK' },
+                { label: 'Bölge Kodu', value: (serviceData.repair_area_code || profileDetail?.repair_area_code) || 'YOK' },
               ]
             }
           ]

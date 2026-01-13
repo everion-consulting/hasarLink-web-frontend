@@ -291,6 +291,22 @@ export default function FormRenderer({
         [name]: error || undefined
       }));
     }
+    // 🔹 ÖZEL: Bölge Kodu blur formatı
+    if (name === "repair_area_code") {
+      const raw = String(values[name] ?? "").replace(/\D/g, "");
+
+      let formatted = raw;
+      if (raw.length === 1) formatted = `00${raw}`;
+      else if (raw.length === 2) formatted = `0${raw}`;
+
+      if (formatted !== values[name]) {
+        setValues(prev => ({
+          ...prev,
+          [name]: formatted
+        }));
+      }
+    }
+
 
     const { isValid } = validateAllFields(values);
     onFormChange?.({ allValid: isValid });
