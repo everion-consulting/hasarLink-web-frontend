@@ -51,6 +51,8 @@ export default function FormRenderer({
   const [touched, setTouched] = useState({});
   const [currentDropdown, setCurrentDropdown] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [areaCodeFocused, setAreaCodeFocused] = useState(false);
+
 
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
@@ -236,19 +238,18 @@ export default function FormRenderer({
       [name]: finalValue,
     }));
 
-    // 🔥 KRİTİK: kullanıcı yazmaya başladıysa hata resetlenir
     if (name === "repair_area_code") {
-      setErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[name];
-        return copy;
-      });
+      const digits = String(value).replace(/\D/g, "").slice(0, 3);
 
-      setTouchedFields((prev) => ({
+      setAreaCodeFocused(true); //  input aktif
+      setValues(prev => ({
         ...prev,
-        [name]: false,
+        repair_area_code: digits,
       }));
+
+      return;
     }
+
   }
 
 
@@ -274,9 +275,11 @@ export default function FormRenderer({
         [name]: error || undefined
       }));
     }
-    // 🔹 ÖZEL: Bölge Kodu blur formatı
     if (name === "repair_area_code") {
+      setAreaCodeFocused(false); //  blur oldu
+
       const raw = String(values[name] ?? "").replace(/\D/g, "");
+      if (!raw) return;
 
       let formatted = raw;
       if (raw.length === 1) formatted = `00${raw}`;
@@ -285,22 +288,19 @@ export default function FormRenderer({
       const found = findRepairAreaByCode(formatted);
 
       if (found) {
-        // 🔥 Backend'e gidecek FINAL FORMAT
-        const finalValue = `${found.code} - ${found.name}`;
-
         setValues(prev => ({
           ...prev,
-          repair_area_code: finalValue,
-          repair_area_name: found.name // 👈 sadece ekranda göstermek istersen
+          repair_area_code: `${found.code} - ${found.name}`,
         }));
       } else {
         setValues(prev => ({
           ...prev,
-          repair_area_code: formatted
+          repair_area_code: `${formatted} - Geçersiz Kod`,
         }));
       }
-    }
 
+      return;
+    }
 
     const { isValid } = validateAllFields(values);
     onFormChange?.({ allValid: isValid });
@@ -733,7 +733,14 @@ export default function FormRenderer({
                         }
                         onBlur={() => handleBlur(childField.name, childField.type)}
                         error={
-                          touchedFields[childField.name] ? errors[childField.name] : undefined
+                          childField.name === "repair_area_code"
+                            ? !areaCodeFocused &&
+                              String(values.repair_area_code || "").includes("Geçersiz")
+                              ? "Geçersiz Kod"
+                              : undefined
+                            : touchedFields[childField.name]
+                              ? errors[childField.name]
+                              : undefined
                         }
                         helperText={childField.helperText}
                         maxLength={childField.maxLength}

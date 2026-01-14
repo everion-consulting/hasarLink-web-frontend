@@ -21,3 +21,13 @@ textarea,
 select {
   font-size: 16px !important;
 }
+
+.inputError {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.inputSuccess {
+  border-color: #22c55e;
+  color: #22c55e;
+}

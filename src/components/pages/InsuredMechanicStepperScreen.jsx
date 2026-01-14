@@ -173,35 +173,6 @@ export default function InsuredMechanicStepperScreen() {
 
     const serviceFields = useMemo(() => {
         return serviceField.map((f) => {
-            if (name === "repair_area_code") {
-                setAreaCodeFocused(false);
-
-                const raw = String(values[name] ?? "").replace(/\D/g, "");
-
-                let formatted = raw;
-                if (raw.length === 1) formatted = `00${raw}`;
-                else if (raw.length === 2) formatted = `0${raw}`;
-
-                const found = findRepairAreaByCode(formatted);
-
-                if (found) {
-                    setValues(prev => ({
-                        ...prev,
-                        repair_area_code: `${found.code} - ${found.name}`,
-                    }));
-                    setAreaCodeStatus("valid");
-                } else {
-                    setValues(prev => ({
-                        ...prev,
-                        repair_area_code: `${formatted} - Geçersiz Kod`,
-                    }));
-                    setAreaCodeStatus("invalid");
-                }
-
-                return;
-            }
-
-
             if (f.type === "row") {
                 return {
                     ...f,
