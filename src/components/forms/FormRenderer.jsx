@@ -36,6 +36,9 @@ import {
 
 import styles from "../../styles/FormRenderer.module.css";
 
+import areaCodeMap from "../../assets/json/areaCodeMap.json";
+
+
 export default function FormRenderer({
   fields,
   values,
@@ -209,54 +212,12 @@ export default function FormRenderer({
 
   function handleChange(name, type, value, formatter) {
     let actualValue = value;
+
     if (value && typeof value === "object" && value.target) {
       actualValue = value.target.value;
     }
 
-    if (type === "currency") {
-      // Sadece rakam ve virgül bırak
-      actualValue = String(actualValue).replace(/[^0-9,]/g, "");
-      // İlk karakter 0 ise ve sonrasında virgül yoksa kaldır
-      if (actualValue.startsWith('0') && actualValue.length > 1 && actualValue[1] !== ',') {
-        actualValue = actualValue.substring(1);
-      }
-    }
-
-    if (type === "tckn" || type === "number") {
-      actualValue = String(actualValue).replace(/[^0-9]/g, "");
-      if (type === "tckn") {
-        actualValue = actualValue.slice(0, 11);
-      }
-    }
-
-    if (name === 'vehicle_year') {
-      actualValue = String(actualValue).replace(/[^0-9]/g, '');
-      actualValue = actualValue.slice(0, 4);
-    }
-
-    if (type === 'licenseSerialNo') {
-      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
-
-      const letters = actualValue.slice(0, 2).replace(/[^A-Z]/g, '');
-      const numbers = actualValue.slice(2, 8).replace(/[^0-9]/g, '');
-      actualValue = letters + numbers;
-    }
-
-
-    if (type === 'chassisNo') {
-      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
-
-      actualValue = actualValue.replace(/[^A-HJ-NPR-Z0-9]/g, '');
-      actualValue = actualValue.slice(0, 17);
-    }
-
-
-    if (type === 'vehicle_plate') {
-      actualValue = String(actualValue).toUpperCase().replace(/\s+/g, '');
-
-      actualValue = actualValue.replace(/[^A-Z0-9]/g, '');
-      actualValue = actualValue.slice(0, 9);
-    }
+    /* ---- mevcut temizlik / maskeleme kodların ---- */
 
     let finalValue = applyMask(type, actualValue);
 
@@ -269,11 +230,33 @@ export default function FormRenderer({
       finalValue = formatter(finalValue);
     }
 
+    // ✅ BURADA finalValue TANIMLI
     setValues((prevValues) => ({
       ...prevValues,
       [name]: finalValue,
     }));
+
+    // 🔥 KRİTİK: kullanıcı yazmaya başladıysa hata resetlenir
+    if (name === "repair_area_code") {
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[name];
+        return copy;
+      });
+
+      setTouchedFields((prev) => ({
+        ...prev,
+        [name]: false,
+      }));
+    }
   }
+
+
+
+  function findRepairAreaByCode(code) {
+    return areaCodeMap.find(item => item.code === code);
+  }
+
 
   function handleBlur(name, type) {
     setTouchedFields(prev => ({
@@ -299,10 +282,21 @@ export default function FormRenderer({
       if (raw.length === 1) formatted = `00${raw}`;
       else if (raw.length === 2) formatted = `0${raw}`;
 
-      if (formatted !== values[name]) {
+      const found = findRepairAreaByCode(formatted);
+
+      if (found) {
+        // 🔥 Backend'e gidecek FINAL FORMAT
+        const finalValue = `${found.code} - ${found.name}`;
+
         setValues(prev => ({
           ...prev,
-          [name]: formatted
+          repair_area_code: finalValue,
+          repair_area_name: found.name // 👈 sadece ekranda göstermek istersen
+        }));
+      } else {
+        setValues(prev => ({
+          ...prev,
+          repair_area_code: formatted
         }));
       }
     }

@@ -74,6 +74,7 @@ const serviceField = [
   // Açık Adres (çok satırlı metin)
   { name: "service_address", label: "Açık Adres", type: "textarea", placeholder: "Barbaros Mah., Atpıkız Sk. No:2 D:3", required: true },
   { name: "repair_area_code", label: "Bölge Kodu", type: "textarea", placeholder: "Örn:017", required: false, maxLength: 3 },
+  
 ];
 
 export default serviceField;

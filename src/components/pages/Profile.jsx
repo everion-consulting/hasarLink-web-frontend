@@ -11,6 +11,8 @@ import {
     Mail, KeyRound, User, Phone, MapPin, Building2
 } from "lucide-react";
 import RightIcon from "../../components/images/rightIcon.svg";
+import areaCodeMap from "../../assets/json/areaCodeMap.json";
+
 
 
 export default function Profile() {
@@ -41,6 +43,7 @@ export default function Profile() {
         repair_birth_date: "",
         repair_tc: "",
         repair_area_code: "",
+        repair_area_name: "",
         service_name: "",
         service_city: "",
         service_state: "",
@@ -48,32 +51,51 @@ export default function Profile() {
         service_tax_no: "",
     });
 
+    const findRepairAreaByCode = (code) => {
+        return areaCodeMap.find(item => item.code === code);
+    };
+
+
     const handleAreaCodeChange = (e) => {
         const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 3);
 
         setForm((prev) => ({
             ...prev,
             repair_area_code: onlyNumbers,
+            repair_area_valid: null,  
+            repair_area_name: ""  
         }));
     };
 
     const handleAreaCodeBlur = () => {
-        const value = form.repair_area_code;
-
+        let value = form.repair_area_code;
         if (!value) return;
 
-        if (value.length === 1) {
-            setForm((prev) => ({
+        // sadece rakam
+        value = value.replace(/\D/g, "");
+
+        // 3 haneye tamamla
+        if (value.length === 1) value = `00${value}`;
+        else if (value.length === 2) value = `0${value}`;
+
+        const found = findRepairAreaByCode(value);
+
+        if (found) {
+            // BACKEND’E GİDECEK FORMAT
+            setForm(prev => ({
                 ...prev,
-                repair_area_code: `00${value}`,
+                repair_area_code: `${found.code} - ${found.name}`,
+                repair_area_name: found.name
             }));
-        } else if (value.length === 2) {
-            setForm((prev) => ({
+        } else {
+            setForm(prev => ({
                 ...prev,
-                repair_area_code: `0${value}`,
+                repair_area_code: `${value} - Geçersiz Kod`,
+                repair_area_name: "Geçersiz Kod"
             }));
         }
     };
+
 
 
 
@@ -423,15 +445,23 @@ export default function Profile() {
                                 </div>
 
                                 <div>
-                                    <label>Bölge Kodu</label>
+                                    <label>Bölge Kodu </label>
+                                    
                                     <input
                                         type="text"
                                         value={form.repair_area_code}
                                         onChange={handleAreaCodeChange}
                                         onBlur={handleAreaCodeBlur}
-                                        maxLength={3}
-                                        placeholder="Örn: 015"
+                                        placeholder="Örn: 012"
+                                        className={
+                                            form.repair_area_name === "Geçersiz Kod"
+                                                ? styles.areaInputError
+                                                : form.repair_area_name
+                                                    ? styles.areaInputSuccess
+                                                    : styles.areaInput
+                                        }
                                     />
+
                                 </div>
 
                             </div>
