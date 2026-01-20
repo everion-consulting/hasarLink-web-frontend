@@ -88,7 +88,7 @@ export const getInsuredFields = (isCompany = false) => {
   }
 
   fields.push(
-    { name: "insured_mail", label: "E-Mail", type: "email", placeholder: "mailiniz@gmail.com" },
+    //{ name: "insured_mail", label: "E-Mail", type: "email", placeholder: "mailiniz@gmail.com" },
     {
       name: "insured_plate",
       label: "Karşı Araç Plaka",
