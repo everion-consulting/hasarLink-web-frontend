@@ -40,7 +40,7 @@ const fixField = [
     formatter: maskPhone,
     keyboardType: "numeric"
   },
-  { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: true },
+  { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: false },
 
 
   // İl seçimi (select/dropdown)

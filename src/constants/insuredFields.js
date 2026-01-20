@@ -73,7 +73,7 @@ export const getInsuredFields = (isCompany = false) => {
           label: "Doğum Tarihi",
           type: "date",
           placeholder: "11/22/3333",
-          required: true,
+          required: false,
 
         },
         {

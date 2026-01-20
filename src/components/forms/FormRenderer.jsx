@@ -123,14 +123,27 @@ export default function FormRenderer({
 
   function validateField(f, v, formValues) {
     const isEmpty = !String(v ?? "").trim();
+    const fieldName = f.name || "";
 
-    if (f.required && isEmpty) {
-      return "Bu alan zorunludur";
-    }
+    
+    if (isEmpty) {
+      if (isBirthDateField(f)) {
+       
+        return null;
+      }
 
-    if (isEmpty && !f.required) {
+      if (fieldName === "victim_mail") {
+        return null;
+      }
+
+     
+      if (f.required) {
+        return "Bu alan zorunludur";
+      }
+
       return null;
     }
+
 
     if (f.type === "email" && v && !validateEmail(v)) return "Geçerli e-mail girin";
     if (f.type === "phone" && v && !validatePhone(v))

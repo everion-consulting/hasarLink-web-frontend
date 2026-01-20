@@ -48,7 +48,7 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       label: "Doğum Tarihi",
       placeholder: "DD.MM.YYYY",
       type: "date",
-      required: true,
+      required: false,
     },
       {
         name: "foreign_victim_tc",

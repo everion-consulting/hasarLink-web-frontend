@@ -40,7 +40,7 @@ const serviceField = [
     maxLength: 17,
     formatter: maskPhone
   },
-  { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: true },
+  { name: "repair_birth_date", label: "Doğum Tarihi", placeholder: "DD.MM.YYYY", type: "date", required: false },
 
   // Servis Adı alanı
   { name: "service_name", label: "Servis Adı", placeholder: "Servis Adı", type: "text", required: true },
