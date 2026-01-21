@@ -276,6 +276,7 @@ export default function StepInfoScreen() {
           service_address: serviceData.service_address || currentProfileData.service_address,
           service_iban: serviceData.service_iban || currentProfileData.service_iban,
           service_iban_name: serviceData.service_iban_name || currentProfileData.service_iban_name,
+          repair_area_code: serviceData.repair_area_code || currentProfileData.repair_area_code,
           is_completed: markAsCompleted,
         };
 
