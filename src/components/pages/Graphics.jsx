@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
     ResponsiveContainer,
     BarChart,
     Bar,
     XAxis,
     YAxis,
-    CartesianGrid,
-    Legend,
+    Tooltip,
     AreaChart,
     Area
 } from "recharts";
@@ -18,18 +13,6 @@ import {
 import styles from "./../../styles/graphics.module.css";
 import api from "../../services/apiServices";
 import { mapSubmissionStatsToDashboard } from "../../services/mapSubmissionStatsToDashboard";
-import { RadialBarChart, RadialBar } from "recharts";
-
-
-const COLORS = ["#133E87", "#608BC1", "#E63946", "#999"];
-
-const STATUS_LABELS = {
-    Approved: "Onaylandı",
-    Pending: "Bekliyor",
-    Rejected: "Reddedildi",
-    Draft: "Taslak",
-    InProgress: "İşlemde",
-};
 
 const PERIODS = [
     { key: "DAILY", label: "Günlük" },
@@ -40,11 +23,25 @@ const PERIODS = [
 
 export default function Graphics() {
     const [cards, setCards] = useState([]);
-    const [pieData, setPieData] = useState([]);
     const [rawCounts, setRawCounts] = useState(null);
     const [estimatedAmount, setEstimatedAmount] = useState(0);
-    const [loading, setLoading] = useState(true);
+
+    const [monthlyCounts, setMonthlyCounts] = useState([]);
+    const [monthlyAmounts, setMonthlyAmounts] = useState([]);
+    const [monthlyByCompanyRaw, setMonthlyByCompanyRaw] = useState([]);
+
+    const [availableMonths, setAvailableMonths] = useState([]);
+
+    const [companyMonth, setCompanyMonth] = useState(null);
+    const [countMonth, setCountMonth] = useState(null);
+    const [amountMonth, setAmountMonth] = useState(null);
+
+    const [companyData, setCompanyData] = useState([]);
+    const [countData, setCountData] = useState([]);
+    const [amountData, setAmountData] = useState([]);
+
     const [period, setPeriod] = useState("WEEKLY");
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -52,70 +49,84 @@ export default function Graphics() {
     }, [period]);
 
     async function loadStats() {
-        setLoading(true);
-        setError(false);
-
         try {
+            setLoading(true);
+            setError(false);
+
             const res = await api.getSubmissionStats(period);
             const apiData = res.data;
 
-            if (!apiData || !apiData.counts) {
-                throw new Error("Invalid API response");
-            }
-
             const mapped = mapSubmissionStatsToDashboard(apiData);
-
             setCards(mapped.cards);
-            setPieData(mapped.pieData);
             setRawCounts(apiData.counts);
             setEstimatedAmount(apiData.total_estimated_amount || 0);
+
+            const counts = apiData.monthly_counts.map(x => ({
+                month: x.month,
+                label: new Date(x.month).toLocaleString("tr-TR", { month: "short", year: "numeric" }),
+                value: x.count
+            }));
+
+            const amounts = apiData.monthly_estimated_amounts.map(x => ({
+                month: x.month,
+                label: new Date(x.month).toLocaleString("tr-TR", { month: "short", year: "numeric" }),
+                amount: x.amount
+            }));
+
+            setMonthlyCounts(counts);
+            setMonthlyAmounts(amounts);
+            setMonthlyByCompanyRaw(apiData.monthly_by_company);
+
+            const months = [...new Set(apiData.monthly_by_company.map(x => x.month))];
+            setAvailableMonths(months);
+
+            const last = months[months.length - 1];
+            setCompanyMonth(last);
+            setCountMonth(last);
+            setAmountMonth(last);
+
+            updateCompany(last, apiData.monthly_by_company);
+            updateCount(last, counts);
+            updateAmount(last, amounts);
+
         } catch (err) {
             console.error(err);
             setError(true);
-            setCards([]);
-            setPieData([]);
-            setRawCounts(null);
-            setEstimatedAmount(0);
         } finally {
             setLoading(false);
         }
     }
+    const last4Months = [...monthlyAmounts]
+        .slice(-4)
+        .reverse();
+
+
+    function updateCompany(month, data) {
+        const top = data
+            .filter(x => x.month === month)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 8)
+            .map(x => ({ name: x.company_name, value: x.count }));
+
+        setCompanyData(top);
+    }
+
+    function updateCount(month, data) {
+        setCountData(data.filter(x => x.month === month));
+    }
+
+    function updateAmount(month, data) {
+        setAmountData(data.filter(x => x.month === month));
+    }
 
     if (loading) return <div className={styles.page}>Yükleniyor…</div>;
-
-    const approvalRate =
-        rawCounts?.total > 0
-            ? ((rawCounts.approved / rawCounts.total) * 100).toFixed(1)
-            : 0;
-
-    const statusBarData = pieData.map((x) => ({
-        name: x.name,
-        value: x.value,
-    }));
-
-    const MAX_LIMIT = 80000000;
-
-    const usagePercent = Math.min(
-        Math.round((estimatedAmount / MAX_LIMIT) * 100),
-        100
-    );
-
-    const radialData = [
-        {
-            name: "Hasar Kullanımı",
-            value: usagePercent,
-            fill: "#133E87",
-        },
-    ];
-
 
     return (
         <div className={styles.page}>
             <h1>HasarLink Gönderim İstatistikleri</h1>
 
-            {/* Period Selector */}
             <div className={styles.periodSelector}>
-                {PERIODS.map((p) => (
+                {PERIODS.map(p => (
                     <button
                         key={p.key}
                         className={period === p.key ? styles.active : ""}
@@ -126,17 +137,12 @@ export default function Graphics() {
                 ))}
             </div>
 
-            {error && (
-                <div className={styles.apiError}>
-                    Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.
-                </div>
-            )}
+            {error && <div className={styles.apiError}>Veriler alınamadı</div>}
 
             {!error && rawCounts && (
                 <>
-                    {/* KPI Cards */}
                     <div className={styles.statsGrid}>
-                        {cards.map((c) => (
+                        {cards.map(c => (
                             <div key={c.label} className={styles.statCard}>
                                 <h3>{c.label}</h3>
                                 <span>{c.value}</span>
@@ -145,100 +151,110 @@ export default function Graphics() {
                     </div>
 
                     <div className={styles.chartsGrid}>
-                        {/* Pie */}
+                        {/* SIGORTA */}
                         <div className={styles.chartBox}>
-                            <h2>Dosya Durum Dağılımı</h2>
-                            <ResponsiveContainer width="100%" height={280}>
-                                <PieChart>
-                                    <Pie
-                                        data={pieData}
-                                        dataKey="value"
-                                        nameKey="name"
-                                        outerRadius={90}
-                                        label={({ name, value }) => `${name}: ${value}`}
-                                    >
-                                        {pieData.map((e, i) => (
-                                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
+                            <h2>En Yüksek Başvuru Sayısı Olan Sigorta Şirketleri</h2>
+                            <select value={companyMonth} onChange={e => {
+                                setCompanyMonth(e.target.value);
+                                updateCompany(e.target.value, monthlyByCompanyRaw);
+                            }}>
+                                {availableMonths.map(m => (
+                                    <option key={m} value={m}>
+                                        {new Date(m).toLocaleString("tr-TR", { month: "long", year: "numeric" })}
+                                    </option>
+                                ))}
+                            </select>
 
-                        {/* Simple Bar */}
-                        <div className={styles.chartBox}>
-                            <h2>Durumlara Göre Dosyalar</h2>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={statusBarData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
+                            <ResponsiveContainer width="100%" height={350}>
+                                <BarChart data={companyData} layout="vertical">
+                                    <XAxis type="number" />
+                                    <YAxis dataKey="name" type="category" width={260} />
                                     <Tooltip />
                                     <Bar dataKey="value" fill="#133E87" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
 
-                        {/* Approval Rate */}
+                        {/* Aylık Açılan Dosya – KPI Card */}
                         <div className={styles.chartBox}>
-                            <h2>Onay Oranı</h2>
-                            <div className={styles.bigNumber}>%{approvalRate}</div>
-                            <small>Toplam dosyalara göre</small>
+                            <h2>Aylık Açılan Dosya</h2>
+
+                            <select
+                                className={styles.monthSelect}
+                                value={countMonth}
+                                onChange={e => {
+                                    setCountMonth(e.target.value);
+                                    updateCount(e.target.value, monthlyCounts);
+                                }}
+                            >
+                                {availableMonths.map(m => (
+                                    <option key={m} value={m}>
+                                        {new Date(m).toLocaleString("tr-TR", { month: "long", year: "numeric" })}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {countData[0] && (() => {
+                                const current = countData[0].value;
+                                const last4 = monthlyCounts.slice(-4).map(x => x.value);
+                                const avg = last4.reduce((a, b) => a + b, 0) / last4.length;
+                                const percent = Math.min((current / avg) * 100, 120);
+
+                                return (
+                                    <>
+                                        <div className={styles.kpiValue}>{current}</div>
+                                        <div className={styles.kpiLabel}>Dosya</div>
+
+                                        <div className={styles.kpiBarWrap}>
+                                            <div
+                                                className={styles.kpiBar}
+                                                style={{ width: `${percent}%` }}
+                                            />
+                                        </div>
+
+                                        <div className={styles.kpiHint}>
+                                            Son 4 ay ortalamasına göre
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </div>
 
-                        {/* Stacked Approval Process */}
                         <div className={styles.chartBox}>
-                            <h2>Onay Süreci</h2>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart
-                                    data={[
-                                        {
-                                            name: "Dosyalar",
-                                            Approved: rawCounts.approved,
-                                            Pending: rawCounts.pending,
-                                            Rejected: rawCounts.rejected,
-                                        },
-                                    ]}
-                                >
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip
-                                        formatter={(value, name) => [
-                                            value,
-                                            STATUS_LABELS[name] || name,
-                                        ]}
-                                    />
-                                    <Legend formatter={(v) => STATUS_LABELS[v] || v} />
+                            {last4Months.map((m, i) => {
+                                const max = Math.max(...last4Months.map(x => x.amount));
+                                const percent = (m.amount / max) * 100;
 
-                                    <Bar dataKey="Approved" stackId="a" fill="#133E87" />
-                                    <Bar dataKey="Pending" stackId="a" fill="#608BC1" />
-                                    <Bar dataKey="Rejected" stackId="a" fill="#E63946" />
-                                </BarChart>
-                            </ResponsiveContainer>
+                                return (
+                                    <div key={m.month} className={styles.trendRow}>
+                                        <div className={styles.trendLabel}>
+                                            {new Date(m.month).toLocaleString("tr-TR", {
+                                                month: "long",
+                                                year: "numeric"
+                                            })}
+                                        </div>
+
+                                        <div className={styles.trendBarWrap}>
+                                            <div
+                                                className={styles.trendBar}
+                                                style={{ width: `${percent}%` }}
+                                            />
+                                        </div>
+
+                                        <div className={styles.trendValue}>
+                                            ₺{m.amount.toLocaleString("tr-TR")}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
 
-                        <div className={styles.chartBox}>
-                            <h2>Talep Edilen Toplam Tutar</h2>
 
+                        <div className={styles.chartBox}>
+                            <h2>Seçilen Dönem Toplam Hasar</h2>
                             <div className={styles.moneyValue}>
                                 ₺{estimatedAmount.toLocaleString("tr-TR")}
                             </div>
-
-                            <ResponsiveContainer width="100%" height={260}>
-                                <RadialBarChart
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius="70%"
-                                    outerRadius="100%"
-                                    barSize={18}
-                                    data={radialData}
-                                    startAngle={90}
-                                    endAngle={-270}
-                                >
-                                    <RadialBar dataKey="value" cornerRadius={10} />
-                                </RadialBarChart>
-                            </ResponsiveContainer>
                         </div>
 
                     </div>
