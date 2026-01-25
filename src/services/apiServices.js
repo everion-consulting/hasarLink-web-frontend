@@ -41,6 +41,11 @@ const apiService = {
     return await fetchData(`${PATH}/submissions/${fileId}/`, 'GET');
   },
 
+  async getSubmissionStats(period = "DAILY") {
+    return await fetchData(`${PATH}/submission-stats/?period=${period}`, "GET");
+  },
+
+
   async getPendingSubmissions() {
     return await fetchData(`${PATH}/pending-file-view/`, 'GET');
   },

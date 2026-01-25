@@ -165,6 +165,15 @@ export default function TopBar() {
                     Ayarlar
                 </NavLink>
 
+                <NavLink
+                    to="/graphics"
+                    className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ""}`}
+                    onMouseEnter={(e) => moveIndicatorToEl(e.currentTarget)}
+                    onFocus={(e) => moveIndicatorToEl(e.currentTarget)}
+                >
+                    Grafikler
+                </NavLink>
+
                 <span
                     className={`${styles.tab} ${styles.tabDisabled}`}
                     title="Yakında"
@@ -245,6 +254,9 @@ export default function TopBar() {
                     </NavLink>
                     <NavLink to="/settings" onClick={() => setIsMenuOpen(false)}>
                         Ayarlar
+                    </NavLink>
+                    <NavLink to="/graphics" onClick={() => setIsMenuOpen(false)}>
+                        Grafikler
                     </NavLink>
                     <NavLink
                         to="#"

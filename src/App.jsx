@@ -38,6 +38,7 @@ import CreditPurchase from "./components/pages/CreditPurchase";
 import CreditCheckout from "./components/pages/CreditCheckout";
 import { listenForegroundMessages } from "./components/webPush/foregroundListener";
 import { ensureWebPushReady } from "./components/webPush/initWebPush";
+import Graphics from "./components/pages/Graphics";
 
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -49,17 +50,17 @@ function AppContent({ isAuth, setIsAuth }) {
   const [draftCount, setDraftCount] = useState(0);
 
   useEffect(() => {
-  let unsub = null;
+    let unsub = null;
 
-  (async () => {
-    await ensureWebPushReady();
-    unsub = listenForegroundMessages(); 
-  })();
+    (async () => {
+      await ensureWebPushReady();
+      unsub = listenForegroundMessages();
+    })();
 
-  return () => {
-    if (typeof unsub === "function") unsub();
-  };
-}, []);
+    return () => {
+      if (typeof unsub === "function") unsub();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchDraftCount = async () => {
@@ -87,6 +88,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/profile" element={isAuth ? <Profile /> : <Navigate to="/auth" replace />} />
         <Route path="/contact" element={isAuth ? <Contact /> : <Navigate to="/auth" replace />} />
         <Route path="/settings" element={isAuth ? <Settings /> : <Navigate to="/auth" replace />} />
+        <Route path="/graphics" element={isAuth ? <Graphics /> : <Navigate to="/auth" replace />} />
         <Route path="/victim-info" element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-info" element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />
