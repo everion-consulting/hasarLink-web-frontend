@@ -44,7 +44,7 @@ export default function Graphics() {
     const [rawCounts, setRawCounts] = useState(null);
     const [estimatedAmount, setEstimatedAmount] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [period, setPeriod] = useState("DAILY");
+    const [period, setPeriod] = useState("WEEKLY");
     const [error, setError] = useState(false);
 
     useEffect(() => {
