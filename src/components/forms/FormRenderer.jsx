@@ -58,6 +58,12 @@ export default function FormRenderer({
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
 
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+
+
   const todayYMD = () => {
     const d = new Date(); // local
     const y = d.getFullYear();
@@ -250,7 +256,7 @@ export default function FormRenderer({
       finalValue = formatter(finalValue);
     }
 
-    // ✅ BURADA finalValue TANIMLI
+    // BURADA finalValue TANIMLI
     setValues((prevValues) => ({
       ...prevValues,
       [name]: finalValue,
@@ -735,57 +741,47 @@ export default function FormRenderer({
                       <div key={childField.name} className={styles.formField}>
                         <label className={styles.formLabel}>
                           {childField.label}
-                          {childField.required && (
-                            <span className={styles.requiredIndicator}> *</span>
-                          )}
+                          {childField.required && <span className={styles.requiredIndicator}> *</span>}
                         </label>
 
                         <div className={styles.dateInputWrapper}>
+                          {/* iOS'ta gerçek input tıklanabilir olmalı */}
                           <input
                             type="time"
                             ref={(el) => (timeRefs.current[childField.name] = el)}
                             name={childField.name}
                             value={currentValue || ""}
                             step="60"
-                            inputMode="numeric"
                             onChange={(e) => {
-                              handleChange(
-                                childField.name,
-                                childField.type,
-                                e.target.value
-                              );
+                              handleChange(childField.name, childField.type, e.target.value);
                             }}
                             onBlur={() => handleBlur(childField.name, childField.type)}
-                            className={styles.nativeTimeInput}
+                            className={isIOS ? styles.nativeTimeInputIOS : styles.nativeTimeInput}
                           />
 
+                          {/* Görünen tasarım */}
                           <div
-                            className={styles.dateTrigger}
-                            onClick={() => {
-                              const input = timeRefs.current[childField.name];
-                              if (input) {
-                                if (input.showPicker) input.showPicker();
-                                else input.focus();
-                              }
-                            }}
+                            className={`${styles.dateTrigger} ${isIOS ? styles.dateTriggerIOS : ""}`}
+                            onClick={
+                              isIOS
+                                ? undefined
+                                : () => {
+                                  const input = timeRefs.current[childField.name];
+                                  if (input) {
+                                    if (input.showPicker) input.showPicker();
+                                    else input.focus();
+                                  }
+                                }
+                            }
                           >
-                            {IconComponent && (
-                              <IconComponent className={styles.fieldIcon} />
-                            )}
-                            <span
-                              className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
-                                }`}
-                            >
+                            {IconComponent && <IconComponent className={styles.fieldIcon} />}
+                            <span className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""}`}>
                               {currentValue || "ss:dd"}
                             </span>
                           </div>
                         </div>
 
-                        {showError && (
-                          <span className={styles.errorText}>
-                            {errors[childField.name]}
-                          </span>
-                        )}
+                        {showError && <span className={styles.errorText}>{errors[childField.name]}</span>}
                       </div>
                     );
                   }
