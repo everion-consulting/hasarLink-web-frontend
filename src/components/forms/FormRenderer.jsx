@@ -125,10 +125,10 @@ export default function FormRenderer({
     const isEmpty = !String(v ?? "").trim();
     const fieldName = f.name || "";
 
-    
+
     if (isEmpty) {
       if (isBirthDateField(f)) {
-       
+
         return null;
       }
 
@@ -136,7 +136,7 @@ export default function FormRenderer({
         return null;
       }
 
-     
+
       if (f.required) {
         return "Bu alan zorunludur";
       }
@@ -166,6 +166,11 @@ export default function FormRenderer({
       // if (!validateDateYMD(datePart) || !isTimeValid) {
       //   return "Tarih ve saat DD.MM.YYYY SS:DD olmalı";
       // }
+    }
+
+    if (f.type === "time" && v) {
+      const ok = /^([01]\d|2[0-3]):[0-5]\d$/.test(String(v));
+      if (!ok) return "Saat HH:MM formatında olmalı (örn: 14:30)";
     }
 
     if (f.type === "chassisNo" && v) {
@@ -717,6 +722,66 @@ export default function FormRenderer({
                         </div>
 
                         {touchedFields[childField.name] && errors[childField.name] && (
+                          <span className={styles.errorText}>
+                            {errors[childField.name]}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  if (childField.type === "time") {
+                    return (
+                      <div key={childField.name} className={styles.formField}>
+                        <label className={styles.formLabel}>
+                          {childField.label}
+                          {childField.required && (
+                            <span className={styles.requiredIndicator}> *</span>
+                          )}
+                        </label>
+
+                        <div className={styles.dateInputWrapper}>
+                          <input
+                            type="time"
+                            ref={(el) => (timeRefs.current[childField.name] = el)}
+                            name={childField.name}
+                            value={currentValue || ""}
+                            step="60"
+                            inputMode="numeric"
+                            onChange={(e) => {
+                              handleChange(
+                                childField.name,
+                                childField.type,
+                                e.target.value
+                              );
+                            }}
+                            onBlur={() => handleBlur(childField.name, childField.type)}
+                            className={styles.nativeTimeInput}
+                          />
+
+                          <div
+                            className={styles.dateTrigger}
+                            onClick={() => {
+                              const input = timeRefs.current[childField.name];
+                              if (input) {
+                                if (input.showPicker) input.showPicker();
+                                else input.focus();
+                              }
+                            }}
+                          >
+                            {IconComponent && (
+                              <IconComponent className={styles.fieldIcon} />
+                            )}
+                            <span
+                              className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                                }`}
+                            >
+                              {currentValue || "ss:dd"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {showError && (
                           <span className={styles.errorText}>
                             {errors[childField.name]}
                           </span>

@@ -299,20 +299,20 @@ export default function StepInfoScreen() {
           };
         }
       } else if (currentStep === 4) {
-        let accidentDate = null;
-        if (damageData.accident_datetime) {
-          const [datePart, timePart] = damageData.accident_datetime.split(" ");
-          if (datePart && timePart) {
-            const [dd, mm, yyyy] = datePart.split(".");
-            accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
-          }
-        }
+        // let accidentDate = null;
+        // if (damageData.accident_datetime) {
+        //   const [datePart, timePart] = damageData.accident_datetime.split(" ");
+        //   if (datePart && timePart) {
+        //     const [dd, mm, yyyy] = datePart.split(".");
+        //     accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+        //   }
+        // }
         payload = {
           damage_type: damageData.damage_type,
           damage_description: damageData.damage_description,
           accident_city: damageData.accident_city,
           accident_district: damageData.accident_district,
-          accident_date: accidentDate,
+          accident_date: damageData.accident_datetime,
           policy_no: damageData.policy_no,
           estimated_damage_amount: damageData.estimated_damage_amount,
           official_report_type: damageData.official_report_type,
