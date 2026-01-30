@@ -33,7 +33,7 @@ export const getInsuredFields = (isCompany = false) => {
       name: isCompany ? "company_tax_number" : "insured_tc",
       label: isCompany ? "Vergi Kimlik No" : "Kimlik No",
       type: isCompany ? "text" : "tckn",
-      required: true,
+      required: false,
       maxLength: isCompany ? 10 : 11,
       validate: isCompany
         ? (v) => /^\d{10}$/.test(v) ? null : "Vergi kimlik numarası 10 haneli olmalı"
@@ -61,7 +61,7 @@ export const getInsuredFields = (isCompany = false) => {
       label: "Telefon No",
       type: "phone",
       placeholder: "555-333-22-11",
-      required: true,
+      required: false,
     });
   } else {
     fields.push({
@@ -74,14 +74,13 @@ export const getInsuredFields = (isCompany = false) => {
           type: "date",
           placeholder: "11/22/3333",
           required: false,
-
         },
         {
           name: "insured_phone",
           label: "Telefon No",
           type: "phone",
           placeholder: "555-333-22-11",
-          required: true,
+          required: false,
         }
       ]
     });
@@ -94,7 +93,7 @@ export const getInsuredFields = (isCompany = false) => {
       label: "Karşı Araç Plaka",
       type: "vehicle_plate",
       placeholder: "34 ABC 123",
-      required: true,
+      required: false,
       maxLength: 9,
       validate: (value) => {
         if (!value) return null;
@@ -121,7 +120,7 @@ export const getInsuredFields = (isCompany = false) => {
       type: "text",
       placeholder: "AXA-2024-123456",
       icon: CheckBadgeIcon,
-      required: true,
+      required: false,
       transform: (value) => value?.toUpperCase(),
       validate: (value) => {
         if (!value) return null;
