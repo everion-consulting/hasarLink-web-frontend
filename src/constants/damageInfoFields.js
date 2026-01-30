@@ -62,25 +62,12 @@ const damageFields = [
   },
 
   {
-    type: "row",
     name: "accident_datetime",
-    children: [
-      {
-        name: "accident_date",
-        label: "Kaza Tarihi",
-        type: "date",
-        placeholder: "Tarih seçiniz",
-        required: true,
-      },
-      {
-        name: "accident_time",
-        label: "Kaza Saati",
-        type: "time",
-        placeholder: "Saat seçiniz",
-        required: true,
-        icon: ClockIcon,
-      },
-    ],
+    label: "Kaza Tarihi ve Saati",
+    type: "datetime",
+    placeholder: "Tarih ve saat seçiniz",
+    required: true,
+    icon: ClockIcon,
   },
 
   {

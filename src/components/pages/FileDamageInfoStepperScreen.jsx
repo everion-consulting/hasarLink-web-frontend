@@ -14,8 +14,8 @@ const FileDamageInfoStepperScreen = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
-  const [formValid, setFormValid] = useState(false);
-  const [remainingCredits, setRemainingCredits] = useState(0);
+  const [formValid, setFormValid] = useState(false); 
+  const [remainingCredits, setRemainingCredits] = useState(0); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,39 +85,12 @@ const FileDamageInfoStepperScreen = () => {
     fetchAllCities();
   }, []);
 
-  const toApiDate = (dateStr) => {
-    if (!dateStr) return null;
-
-    // date input genelde "YYYY-MM-DD" verir
-    if (/^\d{4}-\d{2}-\d{2}$/.test(String(dateStr))) return String(dateStr);
-
-    // olur da "DD.MM.YYYY" gelirse
-    if (String(dateStr).includes(".")) {
-      const [dd, mm, yyyy] = String(dateStr).split(".");
-      if (dd && mm && yyyy) return `${yyyy}-${mm}-${dd}`;
+  const handleSubmitDamageInfo = (values) => {
+    if (currentStep === 1) {
+      setDamageData(values);
+      setCurrentStep(2);
     }
-
-    return null;
   };
-
-  // FileDamageInfoStepperScreen.jsx içinde
-
-const handleSubmitDamageInfo = (values) => {
-  if (currentStep === 1) {
-    const d = toApiDate(values?.accident_date); // "YYYY-MM-DD"
-    const t = values?.accident_time;           // "HH:mm"
-
-    const merged = d && t ? `${d}T${t}` : null; 
-
-    const nextValues = {
-      ...values,
-      accident_datetime: merged, 
-    };
-
-    setDamageData(nextValues);
-    setCurrentStep(2);
-  }
-};
 
   const handleStepClick = (stepIndex) => {
     if (stepIndex === currentStep) return;
