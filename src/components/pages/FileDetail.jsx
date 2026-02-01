@@ -108,6 +108,36 @@ const FileDetail = () => {
     return s.startsWith("http://") || s.startsWith("https://") ? s : `https://${s}`;
   };
 
+  // Tarihi DD.MM.YYYY formatına çevir
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    
+    // ISO 8601 formatı: "2026-01-03T10:00:00+03:00" veya "2026-01-03"
+    let datePart = dateString.toString().trim();
+    
+    // T varsa T'den önceki kısmı al
+    if (datePart.includes('T')) {
+      datePart = datePart.split('T')[0];
+    }
+    // Boşluk varsa boşluktan önceki kısmı al
+    else if (datePart.includes(' ')) {
+      datePart = datePart.split(' ')[0];
+    }
+    
+    // YYYY-MM-DD formatını DD.MM.YYYY'ye çevir
+    if (datePart.length >= 10 && datePart.includes('-')) {
+      const [year, month, day] = datePart.split('-');
+      return `${day}.${month}.${year}`;
+    }
+    
+    // Zaten DD.MM.YYYY formatındaysa olduğu gibi dön
+    if (datePart.includes('.')) {
+      return datePart;
+    }
+    
+    return datePart;
+  };
+
   const renderInfoRow = (label, value) => {
     if (!value) return null;
     return (
@@ -163,9 +193,9 @@ const FileDetail = () => {
         </div>
 
 
-        {renderInfoRow("Oluşturulma Tarihi", fileData.created_at?.slice(0, 10))}
-        {renderInfoRow("İşlenme Tarihi", fileData.processed_at?.slice(0, 10))}
-        {renderInfoRow("Tamamlanma Tarihi", fileData.completed_at?.slice(0, 10))}
+        {renderInfoRow("Oluşturulma Tarihi", formatDate(fileData.created_at))}
+        {renderInfoRow("İşlenme Tarihi", formatDate(fileData.processed_at))}
+        {renderInfoRow("Tamamlanma Tarihi", formatDate(fileData.completed_at))}
         {renderInfoRow("Atanan Memur", fileData.assigned_officer)}
         {renderInfoRow("Dosya No:", fileData.folder_no)}
         {renderInfoRow("Eksper Bilgisi:", fileData.exper_informations)}
@@ -174,7 +204,7 @@ const FileDetail = () => {
 
         <h2 className={styles.sectionTitle}>Sürücü Bilgileri</h2>
         {renderInfoRow("Ad Soyad", fileData.driver_fullname)}
-        {renderInfoRow("Doğum Tarihi", fileData.driver_birth_date)}
+        {renderInfoRow("Doğum Tarihi", formatDate(fileData.driver_birth_date))}
         {renderInfoRow("Email", fileData.driver_mail)}
         {renderInfoRow("Telefon", fileData.driver_phone)}
         {renderInfoRow("TC", fileData.driver_tc)}
@@ -183,7 +213,7 @@ const FileDetail = () => {
 
         <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
         {renderInfoRow("Ad Soyad", fileData.victim_fullname)}
-        {renderInfoRow("Doğum Tarihi", fileData.victim_birth_date)}
+        {renderInfoRow("Doğum Tarihi", formatDate(fileData.victim_birth_date))}
         {renderInfoRow("İBAN", fileData.victim_iban)}
         {renderInfoRow("Email", fileData.victim_mail)}
         {renderInfoRow("Telefon", fileData.victim_phone)}
@@ -205,7 +235,49 @@ const FileDetail = () => {
         <div className={styles.separator}></div>
 
         <h2 className={styles.sectionTitle}>Kaza Bilgileri</h2>
-        {renderInfoRow("Kaza Tarihi", fileData.accident_date?.slice(0, 10))}
+        {(() => {
+          // Backend'den gelen accident_date'i parse et
+          // Format: "2026-01-03T10:00:00+03:00" (ISO 8601)
+          const accidentDateTime = fileData.accident_date;
+          let accidentDate = null;
+          let accidentTime = null;
+          
+          if (accidentDateTime) {
+            const dateStr = accidentDateTime.toString().trim();
+            
+            // ISO 8601 formatı: "YYYY-MM-DDTHH:MM:SS+03:00" veya "YYYY-MM-DDTHH:MM:SSZ"
+            if (dateStr.includes('T')) {
+              const parts = dateStr.split('T');
+              if (parts.length >= 2) {
+                accidentDate = formatDate(parts[0]); // YYYY-MM-DD -> DD.MM.YYYY
+                // Saat kısmından sadece HH:MM al (timezone'u atla)
+                const timePart = parts[1];
+                if (timePart) {
+                  // "10:00:00+03:00" veya "10:00:00Z" -> "10:00"
+                  const timeOnly = timePart.split(/[+\-Z]/)[0]; // +, -, Z karakterinden önceki kısım
+                  accidentTime = timeOnly.slice(0, 5); // HH:MM
+                }
+              }
+            } else if (dateStr.includes(' ')) {
+              // Eski format: "YYYY-MM-DD HH:MM:SS"
+              const parts = dateStr.split(' ');
+              if (parts.length >= 2) {
+                accidentDate = formatDate(parts[0]); // YYYY-MM-DD -> DD.MM.YYYY
+                accidentTime = parts[1]?.slice(0, 5); // HH:MM
+              }
+            } else {
+              // Sadece tarih varsa
+              accidentDate = formatDate(dateStr.slice(0, 10));
+            }
+          }
+          
+          return (
+            <>
+              {renderInfoRow("Kaza Tarihi", accidentDate)}
+              {renderInfoRow("Kaza Saati", accidentTime)}
+            </>
+          );
+        })()}
         {renderInfoRow("Kaza Yeri", fileData.accident_location)}
 
         <div className={styles.separator}></div>

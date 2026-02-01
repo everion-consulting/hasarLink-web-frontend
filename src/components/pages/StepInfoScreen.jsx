@@ -640,9 +640,15 @@ export default function StepInfoScreen() {
                 },
                 { 
                   label: 'Kaza Tarihi', 
-                  value: (damageData.accident_date && damageData.accident_time) 
-                    ? `${damageData.accident_date} ${damageData.accident_time}`
-                    : damageData.accident_datetime || 'YOK' 
+                  value: damageData.accident_date 
+                    ? damageData.accident_date
+                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[0] : 'YOK')
+                },
+                { 
+                  label: 'Kaza Saati', 
+                  value: damageData.accident_time 
+                    ? damageData.accident_time
+                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[1] || 'YOK' : 'YOK')
                 },
                 { label: 'Poliçe No', value: formatPlate(damageData.policy_no) || 'YOK' },
                 { label: 'Tahmini Hasar Tutarı', value: damageData.estimated_damage_amount || 'YOK' },
