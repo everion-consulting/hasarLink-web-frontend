@@ -10,7 +10,8 @@ import {
   WrenchScrewdriverIcon,
   QuestionMarkCircleIcon,
   MapPinIcon,
-  ClockIcon
+  ClockIcon,
+  CalendarIcon
 } from "@heroicons/react/24/outline";
 
 const damageFields = [
@@ -50,24 +51,40 @@ const damageFields = [
         required: true,
         options: [],
         fetchOptions: true,
+        icon: MapPinIcon,
       },
       {
         name: "accident_district",
         label: "İlçe",
-        placeholder: "İlçe seçiniz",
+        placeholder: "İlçeyi giriniz",
         type: "text",
         required: true,
+        icon: MapPinIcon,
       },
     ],
   },
 
   {
+    type: "row",
     name: "accident_datetime",
-    label: "Kaza Tarihi ve Saati",
-    type: "datetime",
-    placeholder: "Tarih ve saat seçiniz",
-    required: true,
-    icon: ClockIcon,
+    children: [
+      {
+        name: "accident_date",
+        label: "Kaza Tarihi",
+        type: "date",
+        placeholder: "Tarih seçiniz",
+        required: true,
+        icon: CalendarIcon,
+      },
+      {
+        name: "accident_time",
+        label: "Kaza Saati",
+        type: "time",
+        placeholder: "Saat seçiniz",
+        required: true,
+        icon: ClockIcon,
+      },
+    ],
   },
 
   {

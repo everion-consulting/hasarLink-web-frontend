@@ -30,6 +30,26 @@ const FileDamageInfoStepperScreen = () => {
     }
   }, [directToDocuments]);
 
+  // Route state'ten gelen damageData'yı yükle ve accident_datetime'ı ayır
+  useEffect(() => {
+    if (routeState.damageData) {
+      const incomingData = { ...routeState.damageData };
+      
+      // Eğer accident_datetime varsa, accident_date ve accident_time'a ayır
+      if (incomingData.accident_datetime && !incomingData.accident_date && !incomingData.accident_time) {
+        const [datePart, timePart] = String(incomingData.accident_datetime).split(" ");
+        if (datePart) {
+          incomingData.accident_date = datePart;
+        }
+        if (timePart) {
+          incomingData.accident_time = timePart;
+        }
+      }
+      
+      setDamageData(incomingData);
+    }
+  }, [routeState.damageData]);
+
   useEffect(() => {
     const fetchCredits = async () => {
       try {
@@ -87,7 +107,19 @@ const FileDamageInfoStepperScreen = () => {
 
   const handleSubmitDamageInfo = (values) => {
     if (currentStep === 1) {
-      setDamageData(values);
+      // accident_date ve accident_time'ı birleştirip accident_datetime olarak kaydet
+      const processedValues = { ...values };
+      if (values.accident_date || values.accident_time) {
+        const datePart = values.accident_date || "";
+        const timePart = values.accident_time || "";
+        if (datePart && timePart) {
+          processedValues.accident_datetime = `${datePart} ${timePart}`;
+        } else if (datePart) {
+          // Sadece tarih varsa, saat olmadan kaydetme (backend'e göndermeden önce kontrol edilecek)
+          processedValues.accident_datetime = datePart;
+        }
+      }
+      setDamageData(processedValues);
       setCurrentStep(2);
     }
   };
