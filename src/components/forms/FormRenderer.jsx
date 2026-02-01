@@ -59,6 +59,12 @@ export default function FormRenderer({
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
 
+  // iOS tespiti
+  const isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  };
+
   const todayYMD = () => {
     const d = new Date(); // local
     const y = d.getFullYear();
@@ -600,6 +606,9 @@ export default function FormRenderer({
                   }
 
                   if (childField.type === "time") {
+                    const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
+                    const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
+                    
                     return (
                       <div key={childField.name} className={styles.formField}>
                         <label className={styles.formLabel}>
@@ -626,15 +635,18 @@ export default function FormRenderer({
                               );
                             }}
                             onBlur={() => handleBlur(childField.name, childField.type)}
-                            className={styles.nativeTimeInput}
+                            className={`${styles.nativeTimeInput} ${iosClass}`}
                           />
 
                           <div
-                            className={styles.dateTrigger}
+                            className={`${styles.dateTrigger} ${triggerIOSClass}`}
                             onClick={() => {
                               const input = timeRefs.current[childField.name];
                               if (input) {
-                                if (input.showPicker) {
+                                // iOS'ta direkt focus kullan
+                                if (isIOS()) {
+                                  input.focus();
+                                } else if (input.showPicker) {
                                   input.showPicker();
                                 } else {
                                   input.focus();
@@ -763,7 +775,8 @@ export default function FormRenderer({
                               );
                             }}
                             onBlur={() => handleBlur(childField.name, childField.type)}
-                            className={styles.nativeDateInput}
+                            className={`${styles.nativeDateInput} ${isIOS() ? styles.nativeTimeInputIOS : ""}`}
+                            style={isIOS() ? { fontSize: '16px' } : {}}
                           />
                           <div
                             className={styles.dateTrigger}
@@ -912,6 +925,9 @@ export default function FormRenderer({
           }
 
           if (f.type === "time") {
+            const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
+            const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
+            
             return (
               <div key={f.name} className={styles.formField}>
                 <label className={styles.formLabel}>
@@ -932,15 +948,18 @@ export default function FormRenderer({
                       handleChange(f.name, f.type, selectedTime);
                     }}
                     onBlur={() => handleBlur(f.name, f.type)}
-                    className={styles.nativeTimeInput}
+                    className={`${styles.nativeTimeInput} ${iosClass}`}
                   />
 
                   <div
-                    className={styles.dateTrigger}
+                    className={`${styles.dateTrigger} ${triggerIOSClass}`}
                     onClick={() => {
                       const input = timeRefs.current[f.name];
                       if (input) {
-                        if (input.showPicker) {
+                        // iOS'ta direkt focus kullan
+                        if (isIOS()) {
+                          input.focus();
+                        } else if (input.showPicker) {
                           input.showPicker();
                         } else {
                           input.focus();
@@ -1072,7 +1091,8 @@ export default function FormRenderer({
                       }
                     }}
                     onBlur={() => handleBlur(f.name, f.type)}
-                    className={styles.nativeTimeInput}
+                    className={`${styles.nativeTimeInput} ${isIOS() ? styles.nativeTimeInputIOS : ""}`}
+                    style={isIOS() ? { fontSize: '16px' } : {}}
                   />
 
                   <div

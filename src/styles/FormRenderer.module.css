@@ -150,9 +150,11 @@
   background: transparent;
   border: 0;
   -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 16px; /* iOS zoom'u önlemek için */
 }
 
-/* Görünen katman input’un altında kalsın */
+/* Görünen katman input'un altında kalsın */
 .dateTriggerIOS {
   position: relative;
   z-index: 10;
