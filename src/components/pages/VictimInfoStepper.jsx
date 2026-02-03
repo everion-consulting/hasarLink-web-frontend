@@ -22,6 +22,9 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   }, [aiDocuments]);
   console.log("✅ MAGDUR RUHSAT", magdurRuhsat);
 
+  const insuranceSource = state?.insuranceSource;
+  const isBizimKasko = insuranceSource === "bizim kasko";
+
 
 
   /* --------------------------------------------------
@@ -72,19 +75,39 @@ const VictimInfoStepper = ({ samePerson = false }) => {
 
   const victimFields = getVictimFields(isCompany, state?.selectedCompany);
 
-  const activeVictimFields = useMemo(() => {
-    return victimFields
-      .filter(f => {
+  const activeVictimFields = React.useMemo(() => {
+    let base = victimFields
+      .filter((f) => {
         if (isCompany) return true;
+
         if (isVictimForeign) return f.name !== "victim_tc";
         return f.name !== "foreign_victim_tc";
       })
-      .map(f => {
-        if (f.name === "victim_tc") return { ...f, required: !isVictimForeign };
-        if (f.name === "foreign_victim_tc") return { ...f, required: isVictimForeign };
+      .map((f) => {
+        if (isCompany) return f;
+
+        if (f.name === "victim_tc")
+          return { ...f, required: !isVictimForeign };
+
+        if (f.name === "foreign_victim_tc")
+          return { ...f, required: isVictimForeign };
+
+        // ✅ bizim kasko ise poliçe no zorunlu
+        if (f.name === "policy_no")
+          return { ...f, required: isBizimKasko };
+
         return f;
       });
-  }, [victimFields, isCompany, isVictimForeign]);
+
+    // ✅ bizim kasko DEĞİLSE poliçe noyu tamamen kaldır
+    if (!isBizimKasko) {
+      base = base.filter((f) => f.name !== "policy_no");
+    }
+
+    return base;
+  }, [victimFields, isCompany, isVictimForeign, isBizimKasko]);
+
+
 
   const handleFormSubmit = values => {
     const merged = { ...formValues, ...values };

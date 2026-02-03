@@ -139,6 +139,28 @@
   opacity: 0;
 }
 
+/* iOS için: input üstte, görünmez ama dokunulabilir */
+.nativeTimeInputIOS {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  opacity: 0.01; /* 0 yapma, iOS bazen click öldürüyor */
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 16px; /* iOS zoom'u önlemek için */
+}
+
+/* Görünen katman input'un altında kalsın */
+.dateTriggerIOS {
+  position: relative;
+  z-index: 10;
+  pointer-events: none; /* iOS'ta tıklama input'a gitsin */
+}
+
 /* 🔽 DROPDOWN */
 .dropdownTrigger {
   position: relative;

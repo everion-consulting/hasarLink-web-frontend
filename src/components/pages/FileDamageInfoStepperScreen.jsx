@@ -54,6 +54,25 @@ const FileDamageInfoStepperScreen = () => {
     fetchAllCities();
   }, []);
 
+   useEffect(() => {
+    if (routeState.damageData) {
+      const incomingData = { ...routeState.damageData };
+      
+      // Eğer accident_datetime varsa, accident_date ve accident_time'a ayır
+      if (incomingData.accident_datetime && !incomingData.accident_date && !incomingData.accident_time) {
+        const [datePart, timePart] = String(incomingData.accident_datetime).split(" ");
+        if (datePart) {
+          incomingData.accident_date = datePart;
+        }
+        if (timePart) {
+          incomingData.accident_time = timePart;
+        }
+      }
+      
+      setDamageData(incomingData);
+    }
+  }, [routeState.damageData]);
+
   /* ----------------------------------
      TUTANAKTAN OTOMATİK DOLDUR
   ---------------------------------- */
@@ -83,11 +102,23 @@ const FileDamageInfoStepperScreen = () => {
      FORM SUBMIT → STEP INFO
   ---------------------------------- */
   const handleSubmitDamageInfo = values => {
+    const processedValues = { ...values };
+      if (values.accident_date || values.accident_time) {
+        const datePart = values.accident_date || "";
+        const timePart = values.accident_time || "";
+        if (datePart && timePart) {
+          processedValues.accident_datetime = `${datePart} ${timePart}`;
+        } else if (datePart) {
+          // Sadece tarih varsa, saat olmadan kaydetme (backend'e göndermeden önce kontrol edilecek)
+          processedValues.accident_datetime = datePart;
+        }
+      }
+      setDamageData(processedValues);
     navigate("/step-info", {
       state: {
         ...routeState,
         damageData: values,
-        startStep: 4, // 🔥 EN KRİTİK SATIR
+        startStep: 4, 
       },
     });
   };

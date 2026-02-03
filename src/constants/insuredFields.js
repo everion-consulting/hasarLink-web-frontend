@@ -33,6 +33,7 @@ export const getInsuredFields = (isCompany = false) => {
       name: isCompany ? "company_tax_number" : "insured_tc",
       label: isCompany ? "Vergi Kimlik No" : "Kimlik No",
       type: isCompany ? "text" : "tckn",
+      required: false,
       maxLength: isCompany ? 10 : 11,
       required: false,
       validate: isCompany
@@ -79,6 +80,7 @@ export const getInsuredFields = (isCompany = false) => {
           name: "insured_phone",
           label: "Telefon No",
           type: "phone",
+
           placeholder: "555-333-22-11",
           required: false,
         }

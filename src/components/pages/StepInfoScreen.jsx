@@ -301,11 +301,28 @@ export default function StepInfoScreen() {
         }
       } else if (currentStep === 4) {
         let accidentDate = null;
-        if (damageData.accident_datetime) {
-          const [datePart, timePart] = damageData.accident_datetime.split(" ");
-          if (datePart && timePart) {
+        // Önce accident_date ve accident_time'ı kontrol et (yeni format)
+        if (damageData.accident_date && damageData.accident_time) {
+          const datePart = damageData.accident_date;
+          const timePart = damageData.accident_time;
+          // DD.MM.YYYY formatındaki tarihi YYYY-MM-DD'ye çevir
+          if (datePart.includes(".")) {
             const [dd, mm, yyyy] = datePart.split(".");
             accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+          } else {
+            // Zaten YYYY-MM-DD formatındaysa
+            accidentDate = `${datePart} ${timePart}`;
+          }
+        } else if (damageData.accident_datetime) {
+          // Eski format (accident_datetime) - geriye dönük uyumluluk için
+          const [datePart, timePart] = damageData.accident_datetime.split(" ");
+          if (datePart && timePart) {
+            if (datePart.includes(".")) {
+              const [dd, mm, yyyy] = datePart.split(".");
+              accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+            } else {
+              accidentDate = `${datePart} ${timePart}`;
+            }
           }
         }
         payload = {
@@ -622,7 +639,18 @@ export default function StepInfoScreen() {
                     ? `${damageData.accident_city} / ${damageData.accident_district}`
                     : 'YOK'
                 },
-                { label: 'Kaza Tarihi', value: damageData.accident_date || 'YOK' },
+                { 
+                  label: 'Kaza Tarihi', 
+                  value: damageData.accident_date 
+                    ? damageData.accident_date
+                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[0] : 'YOK')
+                },
+                { 
+                  label: 'Kaza Saati', 
+                  value: damageData.accident_time 
+                    ? damageData.accident_time
+                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[1] || 'YOK' : 'YOK')
+                },
                 { label: 'Poliçe No', value: formatPlate(damageData.policy_no) || 'YOK' },
                 { label: 'Tahmini Hasar Tutarı', value: damageData.estimated_damage_amount || 'YOK' },
                 { label: 'Tutanak Türü', value: damageData.official_report_type || 'YOK' },

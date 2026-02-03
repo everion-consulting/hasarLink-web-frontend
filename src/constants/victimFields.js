@@ -43,7 +43,14 @@ export const getVictimFields = (
     },
     { name: "victim_phone", label: "Telefon", placeholder: "5xxxxxxxxx", type: "phone", required: false },
 
-
+    {
+      name: "policy_no",
+      label: "Poliçe No",
+      placeholder: "Poliçe numarasını giriniz",
+      type: "text",
+      required: true,
+      maxLength: 30,
+    }
   ];
 
   if (!isCompany) {
@@ -63,18 +70,6 @@ export const getVictimFields = (
         maxLength: 11,
       });
   }
-
-  if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
-    fields.push({
-      name: "policy_no",
-      label: "Poliçe No",
-      placeholder: "Poliçe numarasını giriniz",
-      type: "text",
-      required: true,
-      maxLength: 30,
-    });
-  }
-
   // IBAN alanını doğrudan push ediyoruz
   fields.push(
     {

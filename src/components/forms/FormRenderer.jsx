@@ -32,6 +32,7 @@ import {
   QrCodeIcon,
   Cog6ToothIcon,
   ListBulletIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 
 import styles from "../../styles/FormRenderer.module.css";
@@ -57,6 +58,12 @@ export default function FormRenderer({
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
+
+  // iOS tespiti
+  const isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  };
 
   const todayYMD = () => {
     const d = new Date(); // local
@@ -166,6 +173,13 @@ export default function FormRenderer({
       // if (!validateDateYMD(datePart) || !isTimeValid) {
       //   return "Tarih ve saat DD.MM.YYYY SS:DD olmalı";
       // }
+    }
+
+    if (f.type === "time" && v) {
+      const isTimeValid = /^\d{2}:\d{2}$/.test(String(v));
+      if (!isTimeValid) {
+        return "Saat formatı SS:DD olmalı (örn: 14:30)";
+      }
     }
 
     if (f.type === "chassisNo" && v) {
@@ -373,6 +387,7 @@ export default function FormRenderer({
     if (name === "modelYear") return CalendarIcon;
     if (name === "usageType") return ListBulletIcon;
     if (name === "victimVehiclePlate") return TruckIcon;
+    if (name === "accident_city" || name === "accident_district") return MapPinIcon;
     return undefined;
   }
 
@@ -590,6 +605,76 @@ export default function FormRenderer({
                     );
                   }
 
+                  if (childField.type === "time") {
+                    const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
+                    const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
+                    
+                    return (
+                      <div key={childField.name} className={styles.formField}>
+                        <label className={styles.formLabel}>
+                          {childField.label}
+                          {childField.required && (
+                            <span className={styles.requiredIndicator}> *</span>
+                          )}
+                        </label>
+
+                        <div className={styles.dateInputWrapper}>
+                          <input
+                            type="time"
+                            ref={(el) =>
+                              (timeRefs.current[childField.name] = el)
+                            }
+                            name={childField.name}
+                            value={currentValue || ""}
+                            onChange={(e) => {
+                              const selectedTime = e.target.value;
+                              handleChange(
+                                childField.name,
+                                childField.type,
+                                selectedTime
+                              );
+                            }}
+                            onBlur={() => handleBlur(childField.name, childField.type)}
+                            className={`${styles.nativeTimeInput} ${iosClass}`}
+                          />
+
+                          <div
+                            className={`${styles.dateTrigger} ${triggerIOSClass}`}
+                            onClick={() => {
+                              const input = timeRefs.current[childField.name];
+                              if (input) {
+                                // iOS'ta direkt focus kullan
+                                if (isIOS()) {
+                                  input.focus();
+                                } else if (input.showPicker) {
+                                  input.showPicker();
+                                } else {
+                                  input.focus();
+                                }
+                              }
+                            }}
+                          >
+                            {IconComponent && (
+                              <IconComponent className={styles.fieldIcon} />
+                            )}
+                            <span
+                              className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                                }`}
+                            >
+                              {currentValue || "ss:dd"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {showError && (
+                          <span className={styles.errorText}>
+                            {errors[childField.name]}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }
+
                   if (childField.type === "datetime") {
                     const [datePart = "", timePart = ""] =
                       currentValue.split(" ");
@@ -690,7 +775,8 @@ export default function FormRenderer({
                               );
                             }}
                             onBlur={() => handleBlur(childField.name, childField.type)}
-                            className={styles.nativeDateInput}
+                            className={`${styles.nativeDateInput} ${isIOS() ? styles.nativeTimeInputIOS : ""}`}
+                            style={isIOS() ? { fontSize: '16px' } : {}}
                           />
                           <div
                             className={styles.dateTrigger}
@@ -838,6 +924,68 @@ export default function FormRenderer({
             );
           }
 
+          if (f.type === "time") {
+            const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
+            const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
+            
+            return (
+              <div key={f.name} className={styles.formField}>
+                <label className={styles.formLabel}>
+                  {f.label}
+                  {f.required && (
+                    <span className={styles.requiredIndicator}> *</span>
+                  )}
+                </label>
+
+                <div className={styles.dateInputWrapper}>
+                  <input
+                    type="time"
+                    ref={(el) => (timeRefs.current[f.name] = el)}
+                    name={f.name}
+                    value={currentValue || ""}
+                    onChange={(e) => {
+                      const selectedTime = e.target.value;
+                      handleChange(f.name, f.type, selectedTime);
+                    }}
+                    onBlur={() => handleBlur(f.name, f.type)}
+                    className={`${styles.nativeTimeInput} ${iosClass}`}
+                  />
+
+                  <div
+                    className={`${styles.dateTrigger} ${triggerIOSClass}`}
+                    onClick={() => {
+                      const input = timeRefs.current[f.name];
+                      if (input) {
+                        // iOS'ta direkt focus kullan
+                        if (isIOS()) {
+                          input.focus();
+                        } else if (input.showPicker) {
+                          input.showPicker();
+                        } else {
+                          input.focus();
+                        }
+                      }
+                    }}
+                  >
+                    {IconComponent && (
+                      <IconComponent className={styles.fieldIcon} />
+                    )}
+                    <span
+                      className={`${styles.dateValue} ${!currentValue ? styles.placeholder : ""
+                        }`}
+                    >
+                      {currentValue || "ss:dd"}
+                    </span>
+                  </div>
+                </div>
+
+                {touchedFields[f.name] && errors[f.name] && (
+                  <span className={styles.errorText}>{errors[f.name]}</span>
+                )}
+              </div>
+            );
+          }
+
           if (f.type === "datetime") {
             const [datePart = "", timePart = ""] = currentValue.split(" ");
 
@@ -943,7 +1091,8 @@ export default function FormRenderer({
                       }
                     }}
                     onBlur={() => handleBlur(f.name, f.type)}
-                    className={styles.nativeTimeInput}
+                    className={`${styles.nativeTimeInput} ${isIOS() ? styles.nativeTimeInputIOS : ""}`}
+                    style={isIOS() ? { fontSize: '16px' } : {}}
                   />
 
                   <div
