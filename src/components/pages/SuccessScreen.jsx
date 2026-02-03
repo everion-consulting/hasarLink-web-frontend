@@ -19,17 +19,27 @@ const SuccessScreen = () => {
         state.selectedCompany?.company_name ??
         '';
 
-    const documentCount =
-        typeof state.documentCount === "number"
-            ? state.documentCount
-            : 0;
+   const documentCount = (() => {
+  if (typeof state.documentCount === "number") return state.documentCount;
 
+  const stored = localStorage.getItem("total");
+  const n = stored ? parseInt(stored, 10) : 0;
+  console.log("SuccessScreen stored total:", localStorage.getItem("total"));
 
-    const handleGoHome = () => navigate('/', { replace: true });
+  return Number.isFinite(n) ? n : 0;
+})();
+
+    const handleGoHome = () => {
+        localStorage.removeItem("total");
+        navigate('/', { replace: true });
+    };
+
     const handleNewFile = () => {
         localStorage.removeItem("submissionId");
+        localStorage.removeItem("total");
         navigate('/insurance-select', { replace: true });
     };
+
 
     return (
         <div className={styles.successWrapper}>

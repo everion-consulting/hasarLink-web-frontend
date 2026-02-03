@@ -803,19 +803,30 @@ export default function StepInfoScreen() {
       const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
 
       // Evrak sayısını hesapla
-      const uploadedDocuments = documentCount;
+      // ✅ Evrak sayısını doğru hesapla: önce route state'ten (params.total), yoksa localStorage'dan
+      const uploadedDocuments = (() => {
+        if (typeof params?.total === "number") return params.total;
+
+        const stored = localStorage.getItem("total");
+        const n = stored ? parseInt(stored, 10) : 0;
+        return Number.isFinite(n) ? n : 0;
+      })();
 
       console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
       console.log("🏢 Şirket adı:", selectedCompany?.name);
-
-      // Success screen'e yönlendir
       console.log('🔄 Navigating to success screen...');
 
       navigate('/success', {
         state: {
           fileName: randomFileNumber,
           companyName: selectedCompany?.name || 'Bilinmiyor',
-          documentCount: params?.documentCount ?? 0, 
+
+          // ✅ burası artık 0 değil
+          documentCount: uploadedDocuments,
+
+          // istersen total'ı da taşı (debug için faydalı)
+          total: uploadedDocuments,
+
           kazaNitelik,
           selectedCompany,
           samePerson,
@@ -831,8 +842,9 @@ export default function StepInfoScreen() {
           opposingDriverData,
           documents: params?.documents,
         },
-        replace: true // Önceki sayfaya geri dönüşü engeller
+        replace: true
       });
+
 
     } catch (error) {
       console.error('❌ Final approve error:', error);

@@ -89,20 +89,20 @@ const DocumentUploaderScreen = ({
       prev.map((sec) =>
         sec.id === sectionId
           ? {
-              ...sec,
-              files: [
-                ...sec.files,
-                ...files.map((f) => ({
-                  id: `${sectionId}-${Date.now()}-${Math.random()}`,
-                  file: f,
-                  preview: f.type.includes("image")
-                    ? URL.createObjectURL(f)
-                    : null,
-                  name: f.name,
-                  type: f.type
-                }))
-              ]
-            }
+            ...sec,
+            files: [
+              ...sec.files,
+              ...files.map((f) => ({
+                id: `${sectionId}-${Date.now()}-${Math.random()}`,
+                file: f,
+                preview: f.type.includes("image")
+                  ? URL.createObjectURL(f)
+                  : null,
+                name: f.name,
+                type: f.type
+              }))
+            ]
+          }
           : sec
       )
     );
@@ -174,11 +174,17 @@ const DocumentUploaderScreen = ({
       }
 
       const aiRes = await uploadToEverionAI(
-        allFiles.map((f) => ({
-          file: f.file,
-          folderName: f.sectionId
-        }))
+        allFiles.map((f) => ({ file: f.file, folderName: f.sectionId }))
       );
+
+      const totalCount =
+        typeof aiRes?.total === "number" ? aiRes.total : allFiles.length;
+
+      localStorage.setItem("total", String(totalCount));
+
+      // debug
+      console.log("Everion aiRes:", aiRes);
+      console.log("Saved total:", localStorage.getItem("total"));
 
       navigate("/victim-info", {
         state: {
@@ -189,9 +195,11 @@ const DocumentUploaderScreen = ({
           insuranceSource,
           selectedCompany,
           samePerson,
-          karsiSamePerson
-        }
+          karsiSamePerson,
+          total: totalCount, //  EN ÖNEMLİSİ: state ile taşı
+        },
       });
+
     } catch (err) {
       console.error(err);
       alert("Yükleme sırasında hata oluştu");
@@ -208,7 +216,7 @@ const DocumentUploaderScreen = ({
 
     filesWithMeta.forEach((item) => {
       formData.append("files", item.file);
-      formData.append("folder_names", item.folderName); 
+      formData.append("folder_names", item.folderName);
     });
 
     const res = await fetch(
