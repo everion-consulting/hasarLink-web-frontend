@@ -14,6 +14,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const kazaNitelik = locationState.kazaNitelik;
   const selectedCompany = locationState.selectedCompany;
   const insuranceSource = locationState.insuranceSource;
+  const isBizimKasko = insuranceSource === 'bizim kasko';
   const karsiSamePerson = locationState.karsiSamePerson;
   const samePersonFromState = locationState.samePerson || samePerson;
   const [isVictimForeign, setIsVictimForeign] = useState(!!locationState?.victimData?.isForeign);
@@ -200,7 +201,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   );
 
   const activeVictimFields = React.useMemo(() => {
-    return victimFields
+    const base = victimFields
       .filter((f) => {
         if (isCompany) return true; // şirketse dokunma
         if (isVictimForeign) return f.name !== "victim_tc";
@@ -212,7 +213,29 @@ const VictimInfoStepper = ({ samePerson = false }) => {
         if (f.name === "foreign_victim_tc") return { ...f, required: isVictimForeign };
         return f;
       });
-  }, [victimFields, isCompany, isVictimForeign]);
+
+    // ✅ Bizim kasko seçildiyse Poliçe No alanı ekle
+    if (isBizimKasko) {
+      const alreadyExists = base.some((f) => f.name === "policy_no");
+      if (!alreadyExists) {
+        base.push({
+          name: "policy_no",
+          label: "Poliçe No",
+          type: "text",
+          required: true,
+          placeholder: "Poliçe numarası",
+        });
+      }
+    }
+
+    return base;
+  }, [victimFields, isCompany, isVictimForeign, isBizimKasko]);
+
+  useEffect(() => {
+    if (!isBizimKasko && formValues.policy_no) {
+      setFormValues((prev) => ({ ...prev, policy_no: "" }));
+    }
+  }, [isBizimKasko]);
 
   return (
     <div className={styles.screenContainer}>
