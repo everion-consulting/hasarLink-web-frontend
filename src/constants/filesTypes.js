@@ -3,8 +3,16 @@ export const FILE_TYPES = [
   { id: "tutanak", title: "Tutanak" },
   { id: "magdur_arac_ruhsat", title: "Mağdur Araç Ruhsatı" },
   { id: "magdur_arac_ehliyet", title: "Mağdur Araç Ehliyeti" },
+  {
+    id: "bizim_taraf_surucu_ehliyet",
+    title: "Bizim Taraf Sürücü Ehliyeti"
+  },
   { id: "sigortali_arac_ruhsat", title: "Karşı Sigortalı Araç Ruhsatı" },
   { id: "sigortali_arac_ehliyet", title: "Karşı Sigortalı Araç Ehliyeti" },
+  {
+    id: "karsi_taraf_surucu_ehliyet",
+    title: "Karşı Taraf Sürücü Ehliyeti"
+  },
   { id: "fotograflar", title: "Fotoğraflar" },
   { id: "diger", title: "Diğer" },
 ];

@@ -1,14 +1,17 @@
 .uploadContainer {
   max-width: 900px;
-  margin: 0 auto;
+  width: 90%;
+  margin-inline: 100px;
+  justify-self: center;
 }
 
 /* Başlık */
-.pageTitle {
+.topText {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 25px;
   text-align: center;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 /* Kart */
@@ -42,7 +45,6 @@
   cursor: pointer;
   font-size: 14px;
   transition: 0.2s;
-  margin-left: 12px;
 }
 
 .uploadButton:hover {

@@ -33,8 +33,8 @@ export const getInsuredFields = (isCompany = false) => {
       name: isCompany ? "company_tax_number" : "insured_tc",
       label: isCompany ? "Vergi Kimlik No" : "Kimlik No",
       type: isCompany ? "text" : "tckn",
-      required: false,
       maxLength: isCompany ? 10 : 11,
+      required: false,
       validate: isCompany
         ? (v) => /^\d{10}$/.test(v) ? null : "Vergi kimlik numarası 10 haneli olmalı"
         : (v) => /^\d{11}$/.test(v) ? null : "Kimlik numarası 11 haneli olmalı"
@@ -47,7 +47,7 @@ export const getInsuredFields = (isCompany = false) => {
       label: "Yabancı Kimlik No",
       type: "text",
       placeholder: "Kimlik numaranızı giriniz",
-      required: true,
+      required: false,
       maxLength: 11,
       keyboardType: "numeric",
       validate: (value) =>

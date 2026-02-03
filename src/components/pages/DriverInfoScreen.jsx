@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormRenderer from "../forms/FormRenderer";
 import driverFields from "../../constants/driverFields";
-import Stepper from '../stepper/Stepper';
-import styles from './../../styles/victimInfoScreen.module.css';
+import Stepper from "../stepper/Stepper";
+import styles from "../../styles/victimInfoScreen.module.css";
 import FormFooter from "../forms/FormFooter";
 
 export default function DriverInfoScreen() {
@@ -11,25 +11,79 @@ export default function DriverInfoScreen() {
   const location = useLocation();
 
   const locationState = location.state || {};
-  const { victimData, driverData = {}, samePerson = false } = locationState;
+  const {
+    victimData,
+    driverData = {},
+    samePerson = false,
+    aiDocuments = [] 
+  } = locationState;
 
-  // Aynı kişi durumunda bu ekrana gelmemeli, ama yine de kontrol edelim
-  if (samePerson) {
-    console.warn("⚠️ Aynı kişi durumunda DriverInfoScreen'e gelinmemeli!");
-    navigate('/driver-victim-stepper', { state: locationState });
-    return null;
-  }
+  /* --------------------------------------------------
+     Aynı kişi kontrolü
+  -------------------------------------------------- */
+  useEffect(() => {
+    if (samePerson) {
+      navigate("/driver-victim-stepper", { state: locationState });
+    }
+  }, [samePerson, navigate, locationState]);
 
+  /* --------------------------------------------------
+     🔍 SÜRÜCÜ EHLİYETİNİ BUL (GERÇEK VERİYE GÖRE)
+  -------------------------------------------------- */
+  const driverLicenseAI = useMemo(() => {
+    return aiDocuments.find(
+      (doc) =>
+        doc.filename?.toLowerCase().includes("sürücü") &&
+        doc.filename?.toLowerCase().includes("ehliyet")
+    );
+  }, [aiDocuments]);
 
+  /* --------------------------------------------------
+     🤖 AI → FORM MAPPING
+  -------------------------------------------------- */
+  const mapAiDriverDataToForm = (aiDoc) => {
+    const d = aiDoc?.data;
+    if (!d) return {};
+
+    return {
+      driver_fullname: `${d.ad || ""} ${d.soyad || ""}`.trim(),
+      driver_tc: d.tc_no || "",
+      driver_birth_date: d.dogum_tarihi || "",
+      isForeign: false
+    };
+  };
+
+  /* --------------------------------------------------
+     FORM STATE
+  -------------------------------------------------- */
   const [formValid, setFormValid] = useState(false);
-
-  const [isForeign, setIsForeign] = useState(!!driverData?.isForeign);
+  const [isForeign, setIsForeign] = useState(false);
   const [formValues, setFormValues] = useState({
     ...driverData,
-    isForeign: !!driverData?.isForeign,
+    isForeign: false
   });
 
-  const steps = ['Mağdur Bilgileri', 'Sürücü Bilgileri', 'Araç Bilgileri'];
+  /* --------------------------------------------------
+     🔥 AI GELİNCE FORMU DOLDUR (KRİTİK NOKTA)
+  -------------------------------------------------- */
+  useEffect(() => {
+    if (!driverLicenseAI) return;
+
+    const aiData = mapAiDriverDataToForm(driverLicenseAI);
+
+    setFormValues((prev) => ({
+      ...prev,
+      ...aiData,
+      isForeign: false
+    }));
+
+    setIsForeign(false);
+  }, [driverLicenseAI]);
+
+  /* --------------------------------------------------
+     FORM CONFIG
+  -------------------------------------------------- */
+  const steps = ["Mağdur Bilgileri", "Sürücü Bilgileri", "Araç Bilgileri"];
   const currentStep = 2;
 
   const tcFields = useMemo(
@@ -44,18 +98,43 @@ export default function DriverInfoScreen() {
 
   const activeFields = isForeign ? foreignFields : tcFields;
 
+  /* --------------------------------------------------
+     DRIVER TYPE SWITCH
+  -------------------------------------------------- */
+  const switchTab = (nextIsForeign) => {
+    setIsForeign(nextIsForeign);
+
+    setFormValues((prev) =>
+      nextIsForeign
+        ? {
+            ...prev,
+            isForeign: true,
+            driver_tc: "",
+            foreign_driver_tc: prev.foreign_driver_tc || ""
+          }
+        : {
+            ...prev,
+            isForeign: false,
+            foreign_driver_tc: "",
+            driver_tc: prev.driver_tc || ""
+          }
+    );
+  };
 
   const renderDriverTypeSwitch = () => (
     <div className={styles.switchMainContainer}>
       <div
-        className={`${styles.switchOption} ${!isForeign ? styles.activeOption : ""}`}
+        className={`${styles.switchOption} ${
+          !isForeign ? styles.activeOption : ""
+        }`}
         onClick={() => switchTab(false)}
       >
         TC Sürücü
       </div>
-
       <div
-        className={`${styles.switchOption} ${isForeign ? styles.activeOption : ""}`}
+        className={`${styles.switchOption} ${
+          isForeign ? styles.activeOption : ""
+        }`}
         onClick={() => switchTab(true)}
       >
         Yabancı Sürücü
@@ -63,71 +142,36 @@ export default function DriverInfoScreen() {
     </div>
   );
 
-  const switchTab = (nextIsForeign) => {
-    setIsForeign(nextIsForeign);
-
-    setFormValues((prev) => {
-      if (nextIsForeign) {
-        // TC -> Yabancı
-        return {
-          ...prev,
-          isForeign: true,
-          driver_tc: "", // ✅ TC alanını temizle
-          // yabancı alanı yoksa boş aç
-          foreign_driver_tc: prev.foreign_driver_tc || "",
-        };
-      }
-
-      // Yabancı -> TC
-      return {
-        ...prev,
-        isForeign: false,
-        foreign_driver_tc: "", // ✅ yabancı alanını temizle
-        driver_tc: prev.driver_tc || "",
-      };
-    });
-  };
-
+  /* --------------------------------------------------
+     SUBMIT
+  -------------------------------------------------- */
   const handleSubmit = (driverFormData) => {
-    // Transform işlemleri
     const merged = { ...formValues, ...driverFormData, isForeign };
 
-    // ✅ diğer tabın kimliğini temizle (backend'e yanlış gitmesin)
     const cleaned = isForeign
       ? { ...merged, driver_tc: "" }
       : { ...merged, foreign_driver_tc: "" };
 
-    const transformedDriverData = { ...cleaned };
-
-    activeFields.forEach((field) => {
-      if (field.transform && typeof field.transform === "function" && transformedDriverData[field.name]) {
-        transformedDriverData[field.name] = field.transform(transformedDriverData[field.name]);
+    navigate("/driver-victim-stepper", {
+      state: {
+        ...locationState,
+        victimData,
+        driverData: cleaned,
+        samePerson
       }
     });
-    const navigationState = {
-      ...locationState,
-      victimData: victimData,
-      driverData: transformedDriverData,
-      samePerson: samePerson
-    };
-
-    navigate('/driver-victim-stepper', {
-      state: navigationState
-    });
   };
-
-
 
   const handleBack = () => {
-    navigate('/victim-info', {
-      state: locationState
-    });
+    navigate("/victim-info", { state: locationState });
   };
 
+  /* --------------------------------------------------
+     UI
+  -------------------------------------------------- */
   return (
     <div className={styles.screenContainer}>
       <div className={styles.contentArea}>
-
         <Stepper steps={steps} currentStep={currentStep} />
 
         <h2 className={styles.sectionTitle}>Sürücü Bilgileri</h2>
@@ -135,6 +179,7 @@ export default function DriverInfoScreen() {
         <div className={styles.formCard}>
           <div className={styles.formSectionContent}>
             {renderDriverTypeSwitch()}
+
             <FormRenderer
               fields={activeFields}
               values={formValues}
@@ -150,7 +195,9 @@ export default function DriverInfoScreen() {
           onNext={() => {
             const form = document.querySelector("form");
             if (form) {
-              form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+              form.dispatchEvent(
+                new Event("submit", { cancelable: true, bubbles: true })
+              );
             }
           }}
           disabled={!formValid}

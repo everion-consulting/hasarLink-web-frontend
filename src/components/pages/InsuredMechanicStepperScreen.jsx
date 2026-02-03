@@ -41,10 +41,151 @@ export default function InsuredMechanicStepperScreen() {
     const [opposingDriverData, setOpposingDriverData] = useState({});
     const [isOpposingForeign, setIsOpposingForeign] = useState(!!opposingDriverData?.isForeign);
     const [isInsuredForeign, setIsInsuredForeign] = useState(!!location.state?.insuredData?.isForeign);
+    const [insuredData, setInsuredData] = useState({});
+    const [serviceData, setServiceData] = useState({});
+    const [cityOptions, setCityOptions] = useState([]);
+    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
 
 
-    console.log('🔍 FULL location.state:', JSON.stringify(location.state, null, 2));
+    const routeState = location.state || {};
+
+    // ================= AI DOCUMENT =================
+    const aiDocuments = routeState?.aiDocuments || [];
+
+    // --- FIND SIGORTALI EHLİYET ---
+    const insuredLicenseAI = useMemo(() => {
+        if (!Array.isArray(aiDocuments)) return null;
+
+        return aiDocuments.find(
+            d => d.folder_name === "sigortali_arac_ehliyet"
+        ) || null;
+    }, [aiDocuments]);
+
+    // --- FIND SIGORTALI RUHSAT ---
+    const insuredLicensePlateAI = useMemo(() => {
+        if (!Array.isArray(aiDocuments)) return null;
+
+        return aiDocuments.find(
+            d => d.folder_name === "sigortali_arac_ruhsat"
+        ) || null;
+    }, [aiDocuments]);
+
+    // --- FIND KARŞI SÜRÜCÜ EHLİYET ---
+    const opposingDriverLicenseAI = useMemo(() => {
+        if (!Array.isArray(aiDocuments)) return null;
+
+        return aiDocuments.find(
+            d => d.folder_name === "karsi_taraf_surucu_ehliyet"
+        ) || null;
+    }, [aiDocuments]);
+
+
+
+    const mapInsuredFromLicense = (doc) => {
+        const d = doc?.data;
+        if (!d) return {};
+
+        const formatDate = (v) => {
+            // "16.04.2007" → "2007-04-16"
+            if (/^\d{2}\.\d{2}\.\d{4}$/.test(v)) {
+                const [day, month, year] = v.split(".");
+                return `${year}-${month}-${day}`;
+            }
+            return v || "";
+        };
+
+        return {
+            insured_tc: d.tc_no || "",
+            insured_fullname: `${d.ad || ""} ${d.soyad || ""}`.trim(),
+            insured_birth_date: formatDate(d.dogum_tarihi),
+            isForeign: false
+        };
+    };
+
+    const mapPlateFromRuhsat = (doc) => {
+        const d = doc?.data;
+        if (!d) return {};
+
+        const plate =
+            d.plaka ||
+            d.arac_plaka ||
+            d.plate ||
+            "";
+
+        return {
+            insured_plate: plate.toUpperCase().replace(/\s+/g, " ").trim()
+        };
+    };
+
+    const mapOpposingFromLicense = (doc) => {
+        const d = doc?.data;
+        if (!d) return {};
+
+        const formatDate = (v) => {
+            if (/^\d{2}\.\d{2}\.\d{4}$/.test(v)) return v;
+
+            if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+                const [y, m, d] = v.split("-");
+                return `${d}.${m}.${y}`;
+            }
+
+            return "";
+        };
+
+
+        return {
+            opposing_driver_tc: d.tc_no || "",
+            opposing_driver_fullname: `${d.ad || ""} ${d.soyad || ""}`.trim(),
+            opposing_driver_birth_date: formatDate(d.dogum_tarihi),
+            isForeign: false
+        };
+    };
+
+
+
+    // --- APPLY ---
+    useEffect(() => {
+        if (!insuredLicenseAI) return;
+
+        console.log("🧠 SIGORTALI EHLİYET AI:", insuredLicenseAI);
+
+        const mapped = mapInsuredFromLicense(insuredLicenseAI);
+
+        console.log("🧩 MAPPED INSURED:", mapped);
+
+        setInsuredData(prev => fillEmptyFrom(prev, mapped));
+        setIsInsuredForeign(false);
+    }, [insuredLicenseAI]);
+
+    useEffect(() => {
+        if (!insuredLicensePlateAI) return;
+
+        console.log("🧠 SIGORTALI RUHSAT AI:", insuredLicensePlateAI);
+
+        const mappedPlate = mapPlateFromRuhsat(insuredLicensePlateAI);
+
+        console.log("🧩 MAPPED PLATE:", mappedPlate);
+
+        setInsuredData(prev => fillEmptyFrom(prev, mappedPlate));
+    }, [insuredLicensePlateAI]);
+
+    useEffect(() => {
+        if (!opposingDriverLicenseAI) return;
+
+        console.log("🧠 KARŞI SÜRÜCÜ EHLİYET AI (STEP 2):", opposingDriverLicenseAI);
+
+        const mapped = mapOpposingFromLicense(opposingDriverLicenseAI);
+
+        setOpposingDriverData(prev =>
+            fillEmptyFrom(prev, mapped)
+        );
+
+        setIsOpposingForeign(false);
+    }, [opposingDriverLicenseAI]);
+
+
+
 
 
     const {
@@ -126,10 +267,7 @@ export default function InsuredMechanicStepperScreen() {
         return 1;
     });
 
-    const [insuredData, setInsuredData] = useState({});
-    const [serviceData, setServiceData] = useState({});
-    const [cityOptions, setCityOptions] = useState([]);
-    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+
 
 
     const handleAreaCodeChange = (value) => {
@@ -168,8 +306,6 @@ export default function InsuredMechanicStepperScreen() {
 
         return digits;
     };
-
-
 
     const serviceFields = useMemo(() => {
         return serviceField.map((f) => {
@@ -372,19 +508,24 @@ export default function InsuredMechanicStepperScreen() {
             console.log('🔄 InsuredMechanic: location.key değişti, state yükleniyor:', location.key);
 
             if (location.state.insuredData) {
-                console.log('✅ insuredData yükleniyor:', location.state.insuredData);
-                setInsuredData(location.state.insuredData);
-                if (location.state.insuredData.isCompany !== undefined) {
-                    setIsCompany(location.state.insuredData.isCompany);
-                }
+                setInsuredData(prev =>
+                    Object.keys(prev).length > 0
+                        ? prev
+                        : location.state.insuredData
+                );
             }
+
             if (location.state.serviceData) {
                 console.log('✅ serviceData yükleniyor:', location.state.serviceData);
                 setServiceData(prev => overwriteOnlyFilled(prev, location.state.serviceData));
             }
+
             if (location.state.opposingDriverData) {
-                console.log('✅ opposingDriverData yükleniyor:', location.state.opposingDriverData);
-                setOpposingDriverData(location.state.opposingDriverData);
+                setOpposingDriverData(prev =>
+                    Object.keys(prev).length > 0
+                        ? prev
+                        : location.state.opposingDriverData
+                );
             }
             if (location.state?.opposingDriverData?.isForeign !== undefined) {
                 setIsOpposingForeign(!!location.state.opposingDriverData.isForeign);
@@ -602,6 +743,9 @@ export default function InsuredMechanicStepperScreen() {
 
 
 
+    useEffect(() => {
+        console.log("🧪 insuredData FINAL:", insuredData);
+    }, [insuredData]);
 
 
     // Özel validasyon için footer - NATIVE'DEKİ MANTIK
@@ -739,13 +883,12 @@ export default function InsuredMechanicStepperScreen() {
             return (
                 <>
                     {renderOpposingDriverTypeSwitch()}
-
                     <FormRenderer
+                        key={`opposing-${isOpposingForeign}-${opposingDriverLicenseAI?.id || "ai"}`}
                         fields={activeOpposingFields}
                         values={opposingDriverData}
                         setValues={setOpposingDriverData}
                         onSubmit={(values) => {
-
                             const merged = { ...opposingDriverData, ...values, isForeign: isOpposingForeign };
 
                             const cleaned = isOpposingForeign
@@ -756,6 +899,7 @@ export default function InsuredMechanicStepperScreen() {
                         }}
                         onFormChange={({ allValid }) => setOpposingValid(allValid)}
                     />
+
                 </>
             );
         }

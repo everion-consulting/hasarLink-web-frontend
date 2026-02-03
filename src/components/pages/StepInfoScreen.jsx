@@ -14,6 +14,7 @@ import { useProfile } from '../../context/ProfileContext';
 export default function StepInfoScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+  const ruhsatData = location.state?.ruhsatData;
   const { profileDetail, fetchProfile } = useProfile();
 
   // ✅ Her render'da güncel location.state'i al
@@ -607,7 +608,7 @@ export default function StepInfoScreen() {
         };
       case 4:
         return {
-          title: 'Hasar Bilgileri ve Evrak Yükleme',
+          title: 'Hasar Bilgileri',
           sections: [
             {
               title: 'Hasar Bilgileri',
@@ -627,19 +628,6 @@ export default function StepInfoScreen() {
                 { label: 'Tutanak Türü', value: damageData.official_report_type || 'YOK' },
               ]
             },
-            {
-              title: 'Evrak Yükleme Alanı',
-              editKey: 'documents',
-              data: [
-                { label: 'Tutanak', value: params?.documents?.tutanak?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Mağdur Araç Ruhsatı', value: params?.documents?.magdur_arac_ruhsat?.length ? 'Yüklendi' : 'YOK' },
-                { label: '"Mağdur Araç Ehliyeti', value: params?.documents?.magdur_arac_ehliyet?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Karşı Sigortalı Araç Ruhsatı', value: params?.documents?.sigortali_arac_ruhsat?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Karşı Sigortalı Araç Ehliyeti', value: params?.documents?.sigortali_arac_ehliyet?.length ? 'Yüklendi' : 'YOK' },
-                { label: 'Fotoğraflar', value: params?.documents?.fotograflar ? 'Yüklendi' : 'YOK' },
-                { label: 'Diğer', value: params?.documents?.diger ? 'Yüklendi' : 'YOK' },
-              ]
-            }
           ]
         };
 
@@ -689,29 +677,34 @@ export default function StepInfoScreen() {
 
     try {
       switch (currentStep) {
-        case 1:
-          navigate('/victim-info', {
+        case 1: {
+          let id = submissionId || localStorage.getItem("submissionId");
+
+          if (!id) {
+            console.log("🆕 Submission yok, backend’den oluşturuluyor...");
+            id = await createSubmission();
+          }
+
+          if (!id) {
+            alert("Dosya oluşturulamadı.");
+            return;
+          }
+
+          console.log("🚀 AI Upload’a gönderilen submissionId:", id);
+
+          navigate("/ai-document-upload", {
             state: {
+              submissionId: String(id), // ✅ her ihtimale string
               kazaNitelik,
               insuranceSource,
               selectedCompany,
               samePerson,
               karsiSamePerson,
-              driverData,
-              victimData,
-              vehicleData,
-              insuredData,
-              serviceData,
-              damageData,
-              mechanicData,
-              opposingDriverData,
-              documents: params?.documents,
+              aiMode: true
             }
           });
-          break;
-
-        case 2:
-          console.log('🚀 NAVIGATING TO insured-mechanic-stepper');
+          return;
+        }
 
         case 2: {
           const insuredNavigationState = {
@@ -733,37 +726,27 @@ export default function StepInfoScreen() {
           };
 
           console.log("📦 Navigation state:", insuredNavigationState);
-
           navigate("/insured-mechanic-stepper", { state: insuredNavigationState });
-          break;
+          return;
         }
 
-
-          console.log('📦 Navigation state:', insuredNavigationState);
-
-          navigate('/insured-mechanic-stepper', {
-            state: insuredNavigationState
-          });
-          break;
-
         case 3:
-          navigate('/hasar-bilgileri', { state: { ...params } });
-          break;
+          navigate("/hasar-bilgileri", { state: { ...params } });
+          return;
 
         case 4:
-          // ✅ 4. adımda direkt handleFinalApprove çağır
-          console.log('🎯 Step 4: Final approve called');
           await handleFinalApprove();
-          break;
+          return;
 
         default:
-          break;
+          return;
       }
     } catch (error) {
-      console.error('❌ Navigation error:', error);
-      alert('İşlem sırasında bir hata oluştu: ' + error.message);
+      console.error("❌ Navigation error:", error);
+      alert("İşlem sırasında bir hata oluştu: " + error.message);
     }
   };
+
 
   const handleFinalApprove = async () => {
     try {
@@ -927,16 +910,20 @@ export default function StepInfoScreen() {
         });
         break;
       case 'victim_info':
-        navigate('/victim-info', {
+        navigate("/victim-info", {
           state: {
-            ...baseParams,
-            editMode: true,
-            focusSection: 'victim_info',
-            returnTo: '/step-info',
-            returnStep: currentStep
+            ...params,
+            submissionId,
+            kazaNitelik,
+            selectedCompany,
+            insuranceSource,
+            samePerson,
+            ruhsatData: params.ruhsatData || window.__RUHSAT_DATA__ // ← BU
           }
         });
         break;
+
+
 
       case 'driver_info':
         navigate('/driver-info', {

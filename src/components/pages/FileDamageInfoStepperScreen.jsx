@@ -4,48 +4,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormRenderer from "../forms/FormRenderer";
 import damageInforFields from "../../constants/damageInfoFields";
 import apiService from "../../services/apiServices";
-import DocumentUploaderScreen from "./DocumentUploadScreen";
 import Stepper from "../stepper/Stepper";
 import FormFooter from "../forms/FormFooter";
 
 import styles from "../../styles/fileDamageStepperScreen.module.css";
 
 const FileDamageInfoStepperScreen = () => {
-  const [currentStep, setCurrentStep] = useState(1);
   const [damageData, setDamageData] = useState({});
   const [cityOptions, setCityOptions] = useState([]);
-  const [formValid, setFormValid] = useState(false); 
-  const [remainingCredits, setRemainingCredits] = useState(0); 
+  const [formValid, setFormValid] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const routeState = location.state || {};
-  const { directToDocuments = false } = routeState;
 
-  const steps = ["Hasar Bilgileri", "Evrak Yükleme"];
-
-  useEffect(() => {
-    if (directToDocuments) {
-      setCurrentStep(2);
-    }
-  }, [directToDocuments]);
-
-  useEffect(() => {
-    const fetchCredits = async () => {
-      try {
-        const res = await apiService.getProfileDetail();
-        if (res?.success) {
-          const credits = res?.data?.credits ?? res?.data?.data?.credits ?? 0;
-          setRemainingCredits(credits);
-          console.log("✅ FileDamageInfo - Kalan kredi:", credits);
-        }
-      } catch (error) {
-        console.error("❌ Kredi bilgisi alınamadı:", error);
-      }
-    };
-    fetchCredits();
-  }, []);
-
+  /* ----------------------------------
+     ŞEHİR VERİLERİ
+  ---------------------------------- */
   useEffect(() => {
     const fetchAllCities = async () => {
       try {
@@ -53,83 +28,75 @@ const FileDamageInfoStepperScreen = () => {
         let nextUrl = null;
 
         const res = await apiService.getCities();
-        const data = res.data;
+        let data = res.data;
 
-        if (data.detail) {
-          setCityOptions([]);
-          return;
-        }
-
-        allCities = [...allCities, ...(data.results || [])];
+        allCities.push(...(data.results || []));
         nextUrl = data.next;
 
         while (nextUrl) {
           const nextRes = await apiService.getCities(nextUrl);
-          const nextData = nextRes.data;
-          allCities = [...allCities, ...(nextData.results || [])];
-          nextUrl = nextData.next;
+          data = nextRes.data;
+          allCities.push(...(data.results || []));
+          nextUrl = data.next;
         }
 
-        const options = allCities.map((city) => ({
-          label: city.name,
-          value: city.name,
-        }));
-
-        setCityOptions(options);
+        setCityOptions(
+          allCities.map(city => ({
+            label: city.name,
+            value: city.name
+          }))
+        );
       } catch (err) {
         console.error("❌ Şehir verileri alınamadı:", err);
-        setCityOptions([]);
       }
     };
 
     fetchAllCities();
   }, []);
 
-  const handleSubmitDamageInfo = (values) => {
-    if (currentStep === 1) {
-      setDamageData(values);
-      setCurrentStep(2);
-    }
-  };
+  /* ----------------------------------
+     TUTANAKTAN OTOMATİK DOLDUR
+  ---------------------------------- */
+  const aiDocuments = routeState?.aiDocuments || [];
+  const tutanak = aiDocuments.find(
+    d => d.doc_type === "Kaza Tespit Tutanağı"
+  )?.data;
 
-  const handleStepClick = (stepIndex) => {
-    if (stepIndex === currentStep) return;
-    if (stepIndex < currentStep) {
-      setCurrentStep(stepIndex);
-    }
-  };
+  useEffect(() => {
+    if (!tutanak) return;
 
-  const handleBackPress = () => {
-    if (currentStep === 1) {
-      navigate(-1);
-    } else {
-      setCurrentStep(1);
-    }
-  };
+    setDamageData(prev => ({
+      ...prev,
+      accident_date: tutanak.genel_bilgiler?.kaza_tarihi || "",
+      accident_time: tutanak.genel_bilgiler?.kaza_saati || "",
+      accident_city: tutanak.genel_bilgiler?.il || "",
+      accident_district: tutanak.genel_bilgiler?.ilce || "",
+      accident_address: tutanak.genel_bilgiler?.mahalle_cadde || "",
+      accident_description:
+        tutanak.arac_a?.beyan ||
+        tutanak.kaza_olus_ve_kroki?.kroki_yorumu ||
+        "",
+    }));
+  }, [tutanak]);
 
-  const handleDocumentsCompleted = (data) => {
-    // Kredi kontrolü - dosya bildirilirken kredi olmalı
-    if (remainingCredits <= 0) {
-      alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
-      navigate("/kredi-satin-al");
-      return;
-    }
-
+  /* ----------------------------------
+     FORM SUBMIT → STEP INFO
+  ---------------------------------- */
+  const handleSubmitDamageInfo = values => {
     navigate("/step-info", {
       state: {
         ...routeState,
-        damageData,
-        documents: data?.documents || {},
-        startStep: 4,
+        damageData: values,
+        startStep: 4, // 🔥 EN KRİTİK SATIR
       },
     });
   };
 
-  const damageFieldsWithCities = damageInforFields.map((f) => {
+  const damageFieldsWithCities = damageInforFields.map(f => {
     if (f.type === "row" && f.name === "accident_location_row") {
       return {
         ...f,
-        children: f.children.map((child) =>
+        children: f.children.map(child =>
           child.name === "accident_city"
             ? { ...child, options: cityOptions }
             : child
@@ -140,79 +107,32 @@ const FileDamageInfoStepperScreen = () => {
   });
 
   return (
-    <div>
-      <div className={styles.contentArea}>
-        <Stepper
-          steps={steps}
-          currentStep={currentStep}
-          onStepPress={handleStepClick}
+    <div className={styles.contentArea}>
+      <Stepper steps={["Hasar Bilgileri"]} currentStep={1} />
+
+      <h1 className={styles.sectionTitle}>Hasar Bilgileri</h1>
+
+      <div className={styles.formCard}>
+        <FormRenderer
+          fields={damageFieldsWithCities}
+          values={damageData}
+          setValues={setDamageData}
+          onSubmit={handleSubmitDamageInfo}
+          onFormChange={({ allValid }) => setFormValid(allValid)}
         />
-
-        <h1 className={styles.sectionTitle}>
-          {currentStep === 1 ? "Hasar Bilgileri" : "Evrak Yükleme"}
-        </h1>
-
-        {/* Kredi Bilgisi */}
-        {currentStep === 1 && (
-          <div className={styles.creditInfoContainer}>
-            {remainingCredits > 0 ? (
-              <div className={styles.creditInfo}>
-                Kalan Kredi: <span className={styles.creditCount}>{remainingCredits}</span>
-              </div>
-            ) : (
-              <div className={styles.noCreditInfo}>
-                Krediniz bitti! Dosya bildirmek için kredi satın alın. Dosyanız Taslak Olarak Oluşturulacaktır.
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* --- FORM KARTI --- */}
-        <div className={styles.formCard}>
-          <div className={styles.formCardSection}>
-            {currentStep === 1 && (
-              <FormRenderer
-                fields={damageFieldsWithCities}
-                values={damageData}
-                setValues={setDamageData}
-                onSubmit={handleSubmitDamageInfo}
-                onFormChange={({ allValid }) => setFormValid(allValid)}
-              />
-            )}
-
-            {currentStep === 2 && (
-              <DocumentUploaderScreen
-                damageData={damageData}
-                onBack={handleBackPress}
-                onContinue={handleDocumentsCompleted}
-                routeState={{
-                  ...routeState,
-                  submissionId: localStorage.getItem("submissionId"),
-                }}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* --- FORMUN TAM DIŞINDA FOOTER --- */}
-        {currentStep === 1 && (
-          <FormFooter
-            onBack={handleBackPress}
-            onNext={() => {
-              const form = document.querySelector("form");
-              if (form) {
-                form.dispatchEvent(
-                  new Event("submit", { cancelable: true, bubbles: true })
-                );
-              }
-            }}
-            disabled={!formValid}
-          />
-        )}
       </div>
+
+      <FormFooter
+        onBack={() => navigate(-1)}
+        onNext={() =>
+          document
+            .querySelector("form")
+            ?.dispatchEvent(new Event("submit", { bubbles: true }))
+        }
+        disabled={!formValid}
+      />
     </div>
   );
-
 };
 
 export default FileDamageInfoStepperScreen;

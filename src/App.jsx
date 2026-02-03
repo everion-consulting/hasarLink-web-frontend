@@ -39,6 +39,7 @@ import CreditCheckout from "./components/pages/CreditCheckout";
 import { listenForegroundMessages } from "./components/webPush/foregroundListener";
 import { ensureWebPushReady } from "./components/webPush/initWebPush";
 import Graphics from "./components/pages/Graphics";
+import DocumentUploaderScreen from "./components/pages/DocumentUploadScreen";
 
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -89,6 +90,10 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/contact" element={isAuth ? <Contact /> : <Navigate to="/auth" replace />} />
         <Route path="/settings" element={isAuth ? <Settings /> : <Navigate to="/auth" replace />} />
         <Route path="/graphics" element={isAuth ? <Graphics /> : <Navigate to="/auth" replace />} />
+        <Route
+          path="/ai-document-upload"
+          element={<DocumentUploaderScreen aiMode={true} />}
+        />
         <Route path="/victim-info" element={isAuth ? <VictimInfoStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-info" element={isAuth ? <DriverInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/driver-victim-stepper" element={isAuth ? <DriverVictimStepperScreen /> : <Navigate to="/auth" replace />} />

@@ -16,8 +16,12 @@ const formatToISO = (value) => {
 };
 
 // victimFields.js
+export const getVictimFields = (
+  isCompany = false,
+  selectedCompany = null,
+  kazaNitelik = null
+) => {
 
-export const getVictimFields = (isCompany = false, selectedCompany = null) => {
   // RAY SİGORTA (id: 72) veya TMTB (id: 76) için IBAN zorunlu
   const isIbanRequired = selectedCompany?.id === 72 || selectedCompany?.id === 76;
 
@@ -60,6 +64,17 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       });
   }
 
+  if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
+    fields.push({
+      name: "policy_no",
+      label: "Poliçe No",
+      placeholder: "Poliçe numarasını giriniz",
+      type: "text",
+      required: true,
+      maxLength: 30,
+    });
+  }
+
   // IBAN alanını doğrudan push ediyoruz
   fields.push(
     {
@@ -73,6 +88,8 @@ export const getVictimFields = (isCompany = false, selectedCompany = null) => {
       maxLength: 32
     }
   );
+
+
 
   return fields;
 };
