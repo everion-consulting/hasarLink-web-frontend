@@ -19,6 +19,9 @@ export default function StepInfoScreen() {
 
   // ✅ Her render'da güncel location.state'i al
   const params = location.state || {};
+  const [documents, setDocuments] = useState({});
+  const [documentCount, setDocumentCount] = useState(0);
+
 
 
   console.log("🔍 StepInfoScreen'e GELEN TÜM parametreler:", params);
@@ -639,15 +642,15 @@ export default function StepInfoScreen() {
                     ? `${damageData.accident_city} / ${damageData.accident_district}`
                     : 'YOK'
                 },
-                { 
-                  label: 'Kaza Tarihi', 
-                  value: damageData.accident_date 
+                {
+                  label: 'Kaza Tarihi',
+                  value: damageData.accident_date
                     ? damageData.accident_date
                     : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[0] : 'YOK')
                 },
-                { 
-                  label: 'Kaza Saati', 
-                  value: damageData.accident_time 
+                {
+                  label: 'Kaza Saati',
+                  value: damageData.accident_time
                     ? damageData.accident_time
                     : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[1] || 'YOK' : 'YOK')
                 },
@@ -800,12 +803,7 @@ export default function StepInfoScreen() {
       const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
 
       // Evrak sayısını hesapla
-      const uploadedDocuments = params?.documents
-        ? Object.values(params.documents)
-          .flat()
-          .filter(item => item && (item.file || item.preview)) // Hem file hem preview kontrolü
-          .length
-        : 0;
+      const uploadedDocuments = documentCount;
 
       console.log("📦 Yüklü evrak sayısı:", uploadedDocuments);
       console.log("🏢 Şirket adı:", selectedCompany?.name);
@@ -817,7 +815,7 @@ export default function StepInfoScreen() {
         state: {
           fileName: randomFileNumber,
           companyName: selectedCompany?.name || 'Bilinmiyor',
-          documentCount: uploadedDocuments,
+          documentCount: params?.documentCount ?? 0, 
           kazaNitelik,
           selectedCompany,
           samePerson,

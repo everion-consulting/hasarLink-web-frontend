@@ -36,6 +36,9 @@ const DocumentUploaderScreen = ({
 
   const karsiSamePerson =
     routeState?.karsiSamePerson ?? location.state?.karsiSamePerson;
+  const [documents, setDocuments] = useState({});
+  const [documentCount, setDocumentCount] = useState(0);
+
 
   const submissionId =
     routeState?.submissionId ||
@@ -43,6 +46,22 @@ const DocumentUploaderScreen = ({
     location.state?.submissionId ||
     location.state?.submission_id ||
     localStorage.getItem("submissionId");
+
+
+  const buildDocumentsMap = (sections) => {
+    const map = {};
+    sections.forEach((sec) => {
+      map[sec.id] = sec.files || [];
+    });
+    return map;
+  };
+
+  const countDocuments = (documents) => {
+    if (!documents) return 0;
+    const all = Object.values(documents).flatMap((v) => (Array.isArray(v) ? v : [v]));
+    return all.filter((x) => x && (x.file || x.preview || x instanceof File)).length;
+  };
+
 
   /* --------------------------------------------------
      🔥 DİNAMİK FILE TYPES
@@ -89,20 +108,20 @@ const DocumentUploaderScreen = ({
       prev.map((sec) =>
         sec.id === sectionId
           ? {
-              ...sec,
-              files: [
-                ...sec.files,
-                ...files.map((f) => ({
-                  id: `${sectionId}-${Date.now()}-${Math.random()}`,
-                  file: f,
-                  preview: f.type.includes("image")
-                    ? URL.createObjectURL(f)
-                    : null,
-                  name: f.name,
-                  type: f.type
-                }))
-              ]
-            }
+            ...sec,
+            files: [
+              ...sec.files,
+              ...files.map((f) => ({
+                id: `${sectionId}-${Date.now()}-${Math.random()}`,
+                file: f,
+                preview: f.type.includes("image")
+                  ? URL.createObjectURL(f)
+                  : null,
+                name: f.name,
+                type: f.type
+              }))
+            ]
+          }
           : sec
       )
     );
@@ -126,19 +145,13 @@ const DocumentUploaderScreen = ({
   -------------------------------------------------- */
   const handleUpload = async () => {
     try {
+      const submissionId = routeState.submissionId;
       if (!submissionId) {
-        alert("Submission ID bulunamadı");
+        alert("Submission ID bulunamadı!");
         return;
       }
 
-      const allFiles = sections.flatMap((s) =>
-        s.files.map((f) => ({
-          ...f,
-          sectionId: s.id,
-          title: s.title
-        }))
-      );
-
+      const allFiles = sections.flatMap((s) => s.files);
       if (allFiles.length === 0) {
         alert("Lütfen en az bir dosya yükleyin");
         return;
@@ -147,58 +160,47 @@ const DocumentUploaderScreen = ({
       setUploading(true);
       setProgress({ current: 0, total: allFiles.length });
 
-      // 🔹 NORMAL BACKEND UPLOAD
-      for (const item of allFiles) {
-        const formData = new FormData();
-        formData.append("submission", submissionId);
-        formData.append("file_type", item.sectionId);
-        formData.append("summary", item.title);
-        formData.append("name", item.name || "Dosya");
-        formData.append("file", item.file);
-        formData.append("_uploaded_as", item.sectionId);
+      let backendTotal = 0;
 
-        const res = await submissionService.uploadFile(formData);
+      for (const section of sections) {
+        for (const item of section.files) {
+          const formData = new FormData();
+          formData.append("submission", submissionId);
+          formData.append("file_type", section.id);
+          formData.append("summary", section.title);
+          formData.append("name", item.name || "Dosya");
+          formData.append("file", item.file);
 
-        if (res?.error) {
-          alert(res.error || "Dosya yüklenemedi");
-          return;
+          const res = await submissionService.uploadFile(formData);
+
+          // 🔥 BURASI KRİTİK
+          if (typeof res?.total === "number") {
+            backendTotal = res.total;
+          }
+
+          if (res?.success === false) {
+            alert("Dosya yüklenemedi");
+            return;
+          }
+
+          setProgress((p) => ({ ...p, current: p.current + 1 }));
         }
-
-        setProgress((p) => ({ ...p, current: p.current + 1 }));
       }
 
-      /* ---------- AI MODE ---------- */
-      if (!isAiMode) {
-        onContinue?.();
-        return;
-      }
+      // ✅ BACKEND TOTAL VARSA ONU KULLAN
+      const documentCount = backendTotal || allFiles.length;
 
-      const aiRes = await uploadToEverionAI(
-        allFiles.map((f) => ({
-          file: f.file,
-          folderName: f.sectionId
-        }))
-      );
+      // 👉 Bir sonraki ekrana TAŞI
+      onContinue?.({ documentCount });
 
-      navigate("/victim-info", {
-        state: {
-          submissionId,
-          startStep: 2,
-          aiDocuments: aiRes?.results || [],
-          kazaNitelik,
-          insuranceSource,
-          selectedCompany,
-          samePerson,
-          karsiSamePerson
-        }
-      });
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
       alert("Yükleme sırasında hata oluştu");
     } finally {
       setUploading(false);
     }
   };
+
 
   /* --------------------------------------------------
      AI UPLOAD (file + folder_name)
@@ -208,7 +210,7 @@ const DocumentUploaderScreen = ({
 
     filesWithMeta.forEach((item) => {
       formData.append("files", item.file);
-      formData.append("folder_names", item.folderName); 
+      formData.append("folder_names", item.folderName);
     });
 
     const res = await fetch(

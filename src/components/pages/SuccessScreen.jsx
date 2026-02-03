@@ -10,11 +10,20 @@ const SuccessScreen = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const {
-        fileName = 'AXA–2025–00123',
-        companyName = location.state?.selectedCompany?.name || '',
-        documentCount = 6
-    } = location.state || {};
+    const state = location.state || {};
+
+    const fileName = state.fileName ?? 'AXA–2025–00123';
+    const companyName =
+        state.companyName ??
+        state.selectedCompany?.name ??
+        state.selectedCompany?.company_name ??
+        '';
+
+    const documentCount =
+        typeof state.documentCount === "number"
+            ? state.documentCount
+            : 0;
+
 
     const handleGoHome = () => navigate('/', { replace: true });
     const handleNewFile = () => {
@@ -31,12 +40,9 @@ const SuccessScreen = () => {
 
                 {/* Bilgi kutuları */}
                 <div className={styles.infoGrid}>
-                    <div className={styles.infoBox}>
-                        <span className={styles.infoLabel}>Dosya No</span>
-                        <span className={styles.infoValue}>{fileName}</span>
-                    </div>
 
-                    <div className={styles.infoBox}>
+                    <div className={`${styles.infoBox} ${styles.fullWidthBox}`}>
+
                         <span className={styles.infoLabel}>Sigorta Şirketi</span>
                         <span className={styles.infoValue}>{companyName}</span>
                     </div>
