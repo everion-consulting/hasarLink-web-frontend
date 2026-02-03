@@ -33,8 +33,7 @@ export default function DriverInfoScreen() {
   const driverLicenseAI = useMemo(() => {
     return aiDocuments.find(
       (doc) =>
-        doc.filename?.toLowerCase().includes("sürücü") &&
-        doc.filename?.toLowerCase().includes("ehliyet")
+        doc.folder_name === "bizim_taraf_surucu_ehliyet"
     );
   }, [aiDocuments]);
 
