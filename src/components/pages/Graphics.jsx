@@ -13,6 +13,8 @@ import {
 import styles from "./../../styles/graphics.module.css";
 import api from "../../services/apiServices";
 import { mapSubmissionStatsToDashboard } from "../../services/mapSubmissionStatsToDashboard";
+import { Cell } from "recharts";
+
 
 const PERIODS = [
     { key: "DAILY", label: "Günlük" },
@@ -20,6 +22,21 @@ const PERIODS = [
     { key: "MONTHLY", label: "Aylık" },
     { key: "YEARLY", label: "Yıllık" },
 ];
+
+const CHART_COLORS = [
+    "#133E87", // ana mavi
+    "#608BC1", // açık mavi
+    "#4CAF50", // yeşil
+    "#FFC107", // sarı
+    "#FF7043", // turuncu
+    "#9C27B0", // mor
+    "#26A69A", // teal
+    "#EF5350", // kırmızı
+];
+
+const trendColors = ["#137f87", "#c16065", "#FFC107", "#4CAF50"];
+
+
 
 export default function Graphics() {
     const [cards, setCards] = useState([]);
@@ -170,7 +187,15 @@ export default function Graphics() {
                                     <XAxis type="number" />
                                     <YAxis dataKey="name" type="category" width={260} />
                                     <Tooltip />
-                                    <Bar dataKey="value" fill="#133E87" />
+                                    <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                                        {companyData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={CHART_COLORS[index % CHART_COLORS.length]}
+                                            />
+                                        ))}
+                                    </Bar>
+
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -237,8 +262,13 @@ export default function Graphics() {
                                         <div className={styles.trendBarWrap}>
                                             <div
                                                 className={styles.trendBar}
-                                                style={{ width: `${percent}%` }}
+                                                style={{
+                                                    width: `${percent}%`,
+                                                    background: `linear-gradient(90deg, ${trendColors[i % trendColors.length]
+                                                        }, #e3ebf9)`
+                                                }}
                                             />
+
                                         </div>
 
                                         <div className={styles.trendValue}>
