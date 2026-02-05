@@ -84,7 +84,7 @@ export default function Profile() {
             // BACKEND’E GİDECEK FORMAT
             setForm(prev => ({
                 ...prev,
-                repair_area_code: `${found.code} - ${found.name}`,
+                repair_area_code: `${found.code}`,
                 repair_area_name: found.name
             }));
         } else {
