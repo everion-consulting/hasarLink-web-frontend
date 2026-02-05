@@ -317,7 +317,7 @@ export default function FormRenderer({
       if (found) {
         setValues(prev => ({
           ...prev,
-          repair_area_code: `${found.code} - ${found.name}`,
+          repair_area_code: `${found.code}`,
         }));
       } else {
         setValues(prev => ({
