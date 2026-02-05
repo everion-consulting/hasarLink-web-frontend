@@ -30,6 +30,55 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [policyScrolledToEnd, setPolicyScrolledToEnd] = useState(false);
   const [policyAccepted, setPolicyAccepted] = useState(false);
 
+  // Sahacı başvuru
+  const [showSahaciPassword, setShowSahaciPassword] = useState(false);
+  const [sahaciPassword, setSahaciPassword] = useState("");
+  const [sahaciError, setSahaciError] = useState("");
+  const [sahaciAuthorized, setSahaciAuthorized] = useState(false);
+
+  // Sahacı form
+  const [sahaciForm, setSahaciForm] = useState({
+    tc: "",
+    fullName: "",
+    phone: "",
+  });
+
+  const SAHACI_PASSWORD = "123456";
+
+  const handleSahaciPasswordSubmit = () => {
+    if (sahaciPassword === SAHACI_PASSWORD) {
+      setSahaciAuthorized(true);
+      setShowSahaciPassword(false);
+      setSahaciError("");
+      setSahaciPassword("");
+    } else {
+      setSahaciError("Şifre hatalı");
+    }
+  };
+
+  const handleSahaciSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("Sahacı Başvuru:", {
+      ...sahaciForm,
+      phone: sahaciForm.phone.replace(/\D/g, "")
+    });
+
+    alert("Başvuru alındı ✅");
+
+    // 🔽 MODAL KAPAT
+    setSahaciAuthorized(false);
+
+    // (isteğe bağlı) formu temizle
+    setSahaciForm({
+      tc: "",
+      fullName: "",
+      phone: "",
+    });
+  };
+
+
+
   const navigate = useNavigate();
 
   // 📌 KVKK AYDINLATMA METNİ - HasarLink
@@ -374,6 +423,38 @@ Adres: [Şirket adresiniz]<br>
 
   return (
     <>
+      {showSahaciPassword && (
+        <div className="modal-overlay">
+          <div className="modal-box" style={{gap: "20px"}}>
+            <div className="modal-header">
+              <h3>Sahacı Alan Kodu</h3>
+              <button
+                className="close-btn"
+                onClick={() => setShowSahaciPassword(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <input
+              type="password"
+              placeholder="Yetkili Şifre"
+              value={sahaciPassword}
+              onChange={(e) => setSahaciPassword(e.target.value)}
+              style={{padding: "10px", borderRadius: "10px", borderColor: 'black'}}
+            />
+
+            {sahaciError && (
+              <p className="error-text">{sahaciError}</p>
+            )}
+
+            <button className="submit-btn" onClick={handleSahaciPasswordSubmit}>
+              Devam Et
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ————————————————  
            🔶 GİZLİLİK POLİTİKASI MODALİ
       ———————————————— */}
@@ -563,8 +644,74 @@ Adres: [Şirket adresiniz]<br>
           <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab(type === "login" ? "register" : "login"); }}>
             {type === "login" ? "Kayıt Ol" : "Giriş Yap"}
           </a>
+          <br/>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowSahaciPassword(true);
+            }}
+          >
+            Sahacı Alan Kodu Başvuru Formu
+          </a>
+
         </p>
       </form>
+      {sahaciAuthorized && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSahaciAuthorized(false)}
+        >
+          <form
+            className="auth-form"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={handleSahaciSubmit}
+          >
+
+            <h3 style={{ textAlign: "center" }}>Sahacı Alan Kodu Başvuru</h3>
+
+            <input
+              type="text"
+              placeholder="T.C. Kimlik No"
+              maxLength={11}
+              value={sahaciForm.tc}
+              onChange={(e) =>
+                setSahaciForm({ ...sahaciForm, tc: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Ad Soyad"
+              value={sahaciForm.fullName}
+              onChange={(e) =>
+                setSahaciForm({ ...sahaciForm, fullName: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="tel"
+              placeholder="Telefon No"
+              value={sahaciForm.phone}
+              onChange={(e) =>
+                setSahaciForm({
+                  ...sahaciForm,
+                  phone: maskPhone(e.target.value),
+                })
+              }
+              required
+            />
+
+            <button type="submit" className="submit-btn">
+              BAŞVUR
+            </button>
+          </form>
+
+        </div>
+      )}
+
     </>
   );
 }
