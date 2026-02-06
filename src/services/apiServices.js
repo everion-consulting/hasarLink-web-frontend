@@ -258,6 +258,38 @@ const apiService = {
     );
   },
 
+  async fieldUserAPI(payload) {
+    console.log("fieldUserAPI çalıştı");
+
+    const response = await fetch(
+      "https://dosya-bildirim-vrosq.ondigitalocean.app/api/field-user/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const contentType = response.headers.get("content-type");
+    const data = contentType?.includes("application/json")
+      ? await response.json()
+      : await response.text();
+
+    return {
+      success: response.ok,
+      status: response.status,
+      data,
+      message:
+        data?.detail ||
+        data?.message ||
+        (typeof data === "string" ? data : response.statusText),
+    };
+  }
+
+
 };
 
 export default apiService;

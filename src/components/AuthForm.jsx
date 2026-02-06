@@ -6,6 +6,7 @@ import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { maskPhone, validatePhone, validateEmail } from "../components/utils/formatter";
+import apiService from "../services/apiServices";
 
 export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [form, setForm] = useState({
@@ -38,9 +39,12 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
 
   // Sahacı form
   const [sahaciForm, setSahaciForm] = useState({
-    tc: "",
-    fullName: "",
-    phone: "",
+    sahaci_tc: "",
+    sahaci_adi: "",
+    sahaci_soyadi: "",
+    sahaci_phone: "",
+    sahaci_mail: "",
+    username: ""
   });
 
   const SAHACI_PASSWORD = "123456";
@@ -56,25 +60,55 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
     }
   };
 
-  const handleSahaciSubmit = (e) => {
+  const handleSahaciSubmit = async (e) => {
+    console.log("SAHACI SUBMIT ÇALIŞTI");
+
     e.preventDefault();
 
-    console.log("Sahacı Başvuru:", {
-      ...sahaciForm,
-      phone: sahaciForm.phone.replace(/\D/g, "")
-    });
+    if (!validateEmail(sahaciForm.sahaci_mail)) {
+      alert("Geçerli bir e-posta adresi giriniz");
+      return;
+    }
 
-    alert("Başvuru alındı ✅");
+    try {
+      setLoading(true);
 
-    // 🔽 MODAL KAPAT
-    setSahaciAuthorized(false);
+      const payload = {
+        sahaci_tc: sahaciForm.sahaci_tc,
+        sahaci_adi: sahaciForm.sahaci_adi,
+        sahaci_soyadi: sahaciForm.sahaci_soyadi,
+        sahaci_phone: sahaciForm.sahaci_phone.replace(/\D/g, ""),
+        sahaci_mail: sahaciForm.sahaci_mail,
+        username: sahaciForm.sahaci_mail,
+      };
 
-    // (isteğe bağlı) formu temizle
-    setSahaciForm({
-      tc: "",
-      fullName: "",
-      phone: "",
-    });
+      const res = await apiService.fieldUserAPI(payload);
+      console.log("API RESPONSE:", res);
+
+
+
+      alert("Başvurunuz başarıyla alındı ✅");
+      setSahaciAuthorized(false);
+      setSahaciForm({
+        sahaci_tc: "",
+        sahaci_adi: "",
+        sahaci_soyadi: "",
+        sahaci_phone: "",
+        sahaci_mail: "",
+        username: ""
+      });
+
+    } catch (err) {
+      console.error("Field User Error:", err);
+
+      if (err.response?.data?.detail) {
+        alert(err.response.data.detail);
+      } else {
+        alert("Başvuru sırasında bir hata oluştu.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -425,7 +459,7 @@ Adres: [Şirket adresiniz]<br>
     <>
       {showSahaciPassword && (
         <div className="modal-overlay">
-          <div className="modal-box" style={{gap: "20px"}}>
+          <div className="modal-box" style={{ gap: "20px" }}>
             <div className="modal-header">
               <h3>Sahacı Alan Kodu</h3>
               <button
@@ -441,7 +475,7 @@ Adres: [Şirket adresiniz]<br>
               placeholder="Yetkili Şifre"
               value={sahaciPassword}
               onChange={(e) => setSahaciPassword(e.target.value)}
-              style={{padding: "10px", borderRadius: "10px", borderColor: 'black'}}
+              style={{ padding: "10px", borderRadius: "10px", borderColor: 'black' }}
             />
 
             {sahaciError && (
@@ -644,7 +678,7 @@ Adres: [Şirket adresiniz]<br>
           <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab(type === "login" ? "register" : "login"); }}>
             {type === "login" ? "Kayıt Ol" : "Giriş Yap"}
           </a>
-          <br/>
+          <br />
           <a
             href="#"
             onClick={(e) => {
@@ -660,7 +694,6 @@ Adres: [Şirket adresiniz]<br>
       {sahaciAuthorized && (
         <div
           className="modal-overlay"
-          onClick={() => setSahaciAuthorized(false)}
         >
           <form
             className="auth-form"
@@ -674,19 +707,29 @@ Adres: [Şirket adresiniz]<br>
               type="text"
               placeholder="T.C. Kimlik No"
               maxLength={11}
-              value={sahaciForm.tc}
+              value={sahaciForm.sahaci_tc}
               onChange={(e) =>
-                setSahaciForm({ ...sahaciForm, tc: e.target.value })
+                setSahaciForm({ ...sahaciForm, sahaci_tc: e.target.value })
               }
               required
             />
 
             <input
               type="text"
-              placeholder="Ad Soyad"
-              value={sahaciForm.fullName}
+              placeholder="Ad"
+              value={sahaciForm.sahaci_adi}
               onChange={(e) =>
-                setSahaciForm({ ...sahaciForm, fullName: e.target.value })
+                setSahaciForm({ ...sahaciForm, sahaci_adi: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Soyad"
+              value={sahaciForm.sahaci_soyadi}
+              onChange={(e) =>
+                setSahaciForm({ ...sahaciForm, sahaci_soyadi: e.target.value })
               }
               required
             />
@@ -694,17 +737,33 @@ Adres: [Şirket adresiniz]<br>
             <input
               type="tel"
               placeholder="Telefon No"
-              value={sahaciForm.phone}
+              value={sahaciForm.sahaci_phone}
               onChange={(e) =>
                 setSahaciForm({
                   ...sahaciForm,
-                  phone: maskPhone(e.target.value),
+                  sahaci_phone: maskPhone(e.target.value),
                 })
               }
               required
             />
 
-            <button type="submit" className="submit-btn">
+            <input
+              type="email"
+              placeholder="Gmail Adresi"
+              value={sahaciForm.sahaci_mail}
+              onChange={(e) =>
+                setSahaciForm({
+                  ...sahaciForm,
+                  sahaci_mail: e.target.value,
+                })
+              }
+              required
+            />
+
+
+
+
+            <button type="submit" className="submit-btn" onClick={(e) => e.stopPropagation()}>
               BAŞVUR
             </button>
           </form>
