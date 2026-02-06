@@ -48,27 +48,80 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   useEffect(() => {
     if (!magdurRuhsat) return;
 
-    const hasTc =
-      magdurRuhsat.tc_vkn &&
-      magdurRuhsat.tc_vkn.length === 11;
+    const isCompanyDetected = magdurRuhsat.tc_vkn?.length === 10;
 
-
+    setIsCompany(isCompanyDetected);
     setIsVictimForeign(false);
 
     setFormValues({
       victim_fullname: magdurRuhsat.ruhsat_sahibi || "",
-      victim_tc: magdurRuhsat.tc_vkn || "",
+
+      // 🔑 KRİTİK NOKTA
+      victim_tc: !isCompanyDetected ? magdurRuhsat.tc_vkn || "" : "",
+      taxId: isCompanyDetected ? magdurRuhsat.tc_vkn || "" : "",
+
       foreign_victim_tc: "",
       victim_birth_date: magdurKimlik?.dogum_tarihi || "",
       victim_phone: magdurKimlik?.telefon || "",
-      isForeign: false
+      isForeign: false,
     });
   }, [magdurRuhsat, magdurKimlik]);
+
+
+
+
 
   console.log(
     "🧩 VICTIM FIELD NAMES:",
     getVictimFields(false, state?.selectedCompany, state?.kazaNitelik).map(f => f.name)
   );
+
+const renderInsuredTypeSwitch = () => (
+  <div className={styles.switchMainContainer}>
+    {/* ŞAHIS */}
+    <div
+      className={`${styles.switchOption} ${
+        !isCompany ? styles.activeOption : ""
+      }`}
+      onClick={() => {
+        setIsCompany(false);
+
+        // 🔁 Vergi No → TC'ye taşı
+        setFormValues((prev) => ({
+          ...prev,
+          victim_tc: prev.taxId || "",
+          taxId: "",
+        }));
+
+        setIsVictimForeign(false);
+      }}
+    >
+      Şahıs
+    </div>
+
+    {/* ŞİRKET */}
+    <div
+      className={`${styles.switchOption} ${
+        isCompany ? styles.activeOption : ""
+      }`}
+      onClick={() => {
+        setIsCompany(true);
+
+        // 🔁 TC → Vergi No'ya taşı
+        setFormValues((prev) => ({
+          ...prev,
+          taxId: prev.victim_tc || "",
+          victim_tc: "",
+        }));
+
+        setIsVictimForeign(false);
+      }}
+    >
+      Şirket
+    </div>
+  </div>
+);
+
 
 
   /* -------------------------------------------------- */
@@ -140,7 +193,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
         <Stepper steps={["Mağdur Bilgileri", "Araç Bilgileri"]} currentStep={1} />
 
         <h2 className={styles.sectionTitle}>Mağdur Bilgileri</h2>
-
+        {renderInsuredTypeSwitch()}
         <div className={styles.formCard}>
           <FormRenderer
             fields={activeVictimFields}
