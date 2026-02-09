@@ -38,6 +38,11 @@
   font-family: "Poppins", sans-serif;
 }
 
+:global(body.dark) .pageTitle {
+  color: #ffffff !important;
+}
+
+
 .pageSubtitle {
   font-size: 20px;
   line-height: 25px;

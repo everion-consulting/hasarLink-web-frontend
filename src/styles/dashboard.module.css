@@ -1,7 +1,7 @@
 :root {
   --blue-dark: #133e87;
   --blue-mid: #214f9b;
-  --blue-light: #e5f0ff;
+  --blue-light: rgb(203, 220, 235);
   --blue-card: #4169a8;
   --gray-bg: #f3f3f3;
   --white: #ffffff;
@@ -51,6 +51,10 @@
   letter-spacing: 0.48px;
 }
 
+:global(body.dark) .cardDashboardHeading {
+  color: white;
+}
+
 .cardDashboardBtn {
   margin-top: auto;
   padding: 10px;
@@ -68,6 +72,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+:global(body.dark) .cardDashboardBtn {
+  background: rgba(96, 139, 193, 0.9);
+}
+
 .cardDashboardBtn:hover {
   background: var(--blue-mid);
   transform: scale(1.02);
@@ -77,6 +85,10 @@
   background: #fff;
   color: var(--blue-dark);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+:global(body.dark) .cardDashboardBtnLight {
+  background: #fff;
 }
 
 .cardDashboardBtnLight:hover {
@@ -105,7 +117,7 @@
 .cardNewFile {
   grid-column: 1 / 2;
   grid-row: 1 / 3;
-  background: #CBDCEB;
+  background-color: rgb(203, 220, 235);
   padding: 40px 24px 24px;
   display: flex;
   flex-direction: column;
@@ -118,11 +130,20 @@
   background-position: -50px -50px;
 }
 
+:global(body.dark) .cardNewFile {
+  background-color: rgba(203, 220, 235, 0.5);
+}
+
 .cardDashboardTitleSm {
   font-size: 28px;
   line-height: 35px;
   letter-spacing: 0.15em;
 }
+
+:global(body.dark) .cardDashboardTitleSm {
+  color: white;
+}
+
 
 .cardDashboardTitleLg {
   font-size: 32px;
@@ -131,6 +152,11 @@
   letter-spacing: 0.08em;
   margin-bottom: 8px;
 }
+
+:global(body.dark) .cardDashboardTitleLg {
+  color: white;
+}
+
 
 .remainingCredits {
   font-size: 14px;
@@ -143,6 +169,7 @@
   border-radius: 6px;
   display: inline-block;
 }
+
 
 .creditNumber {
   font-size: 16px;
@@ -177,6 +204,10 @@
   background-position: -10px -10px;
 }
 
+:global(body.dark) .cardApproved {
+  background-color: rgba(96, 139, 193, 0.9);
+}
+
 .cardDashboardCount {
   font-size: 22px;
   line-height: 28px;
@@ -204,17 +235,25 @@
   background-position: -40px -200px;
 }
 
+:global(body.dark) .cardPending {
+  background-color: rgba(96, 139, 193, 0.9);
+}
+
 /* --- TOTAL AMOUNT --- */
 .cardAmount {
   grid-column: 4 / 5;
   grid-row: 1 / 3;
-  background: #CBDCEB;
+  background-color: #CBDCEB;
   display: flex;
   flex-direction: column;
   background-image: url('../assets/images/ellips-2.svg');
   background-repeat: no-repeat;
   background-size: 380px 380px;
   background-position: -40px 155px;
+}
+
+:global(body.dark) .cardAmount {
+  background-color: rgba(203, 220, 235, 0.5);
 }
 
 .amountMain {
@@ -224,9 +263,17 @@
   margin: 16px 0 8px;
 }
 
+:global(body.dark) .amountMain {
+  color: white;
+}
+
 .amountSub {
   font-size: 20px;
   line-height: 25px;
+}
+
+:global(body.dark) .amountSub {
+  color: white;
 }
 
 /* --- DRAFTS --- */
@@ -240,6 +287,11 @@
   position: relative;
   border-radius: 16px;
 }
+
+:global(body.dark) .cardDrafts {
+  background-color: rgba(203, 220, 235, 0.5);
+}
+
 
 .innerCard {
   display: flex;
@@ -284,6 +336,11 @@
   background-position: 135px -35px;
 }
 
+:global(body.dark) .cardRejected {
+  background-color: rgba(96, 139, 193, 0.9);
+}
+
+
 /* --- ONGOING --- */
 .cardOngoing {
   grid-column: 1 / 2;
@@ -295,6 +352,10 @@
   background-image: url('../assets/images/ellips-4.svg');
   background-repeat: no-repeat;
   background-size: 300px 300px;
+}
+
+:global(body.dark) .cardOngoing {
+  background-color: rgba(96, 139, 193, 0.9);
 }
 
 .ongoingList {
@@ -321,6 +382,9 @@
   flex-direction: column;
 }
 
+:global(body.dark) .cardBottomRight {
+  background-color: rgba(96, 139, 193, 0.9);
+}
 
 .cardBottomRightInner {
   display: flex;

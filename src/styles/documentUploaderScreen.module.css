@@ -14,6 +14,10 @@
   color: rgba(0, 0, 0, 0.7);
 }
 
+:global(body.dark) .topText {
+  color: white;
+}
+
 /* Kart */
 .uploadCard {
   background: white;
@@ -47,8 +51,16 @@
   transition: 0.2s;
 }
 
+:global(body.dark) .uploadButton {
+  background: rgba(96, 139, 193, 0.9);
+}
+
 .uploadButton:hover {
   background: #0e326d;
+}
+
+:global(body.dark) .uploadButton:hover {
+  background: rgba(40, 105, 186, 0.9);
 }
 
 .uploadButton input {
@@ -140,6 +152,10 @@
 .nextBtn {
   background: #133E87;
   color: white;
+}
+
+:global(body.dark) .nextBtn {
+  background: rgba(96, 139, 193, 0.9);
 }
 
 /* Yükleme modal */

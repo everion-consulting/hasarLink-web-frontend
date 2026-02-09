@@ -28,6 +28,10 @@
     margin-bottom: 10px;
 }
 
+:global(body.dark) .successTitle {
+    color: white;
+}
+
 .successSubtitle {
     font-size: 25px;
     line-height: 30px;
@@ -36,6 +40,10 @@
     margin-bottom: 20px;
     text-align: center;
     font-family: "Poppins", sans-serif;
+}
+
+:global(body.dark) .successSubtitle {
+    color: white;
 }
 
 /* Info Box */

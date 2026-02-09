@@ -25,6 +25,11 @@
   text-align: center;
 }
 
+:global(body.dark) .sectionTitle  {
+  color: white;
+}
+
+
 .screenContainerDrive {
   overflow: visible !important;
   /* 🔥 ÖNEMLİ */

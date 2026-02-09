@@ -6,6 +6,7 @@ import damageInforFields from "../../constants/damageInfoFields";
 import apiService from "../../services/apiServices";
 import Stepper from "../stepper/Stepper";
 import FormFooter from "../forms/FormFooter";
+import { findIlIdByName, findIlceIdByName } from "../../constants/ilIlceData";
 
 import styles from "../../styles/fileDamageStepperScreen.module.css";
 
@@ -21,43 +22,16 @@ const FileDamageInfoStepperScreen = () => {
   /* ----------------------------------
      ŞEHİR VERİLERİ
   ---------------------------------- */
+  /** OCR'dan gelen il adını dropdown id'sine çevir */
+  const resolveIlId = (cityName) => {
+    if (!cityName) return "";
+    return findIlIdByName(cityName) || "";
+  };
+
   useEffect(() => {
-    const fetchAllCities = async () => {
-      try {
-        let allCities = [];
-        let nextUrl = null;
-
-        const res = await apiService.getCities();
-        let data = res.data;
-
-        allCities.push(...(data.results || []));
-        nextUrl = data.next;
-
-        while (nextUrl) {
-          const nextRes = await apiService.getCities(nextUrl);
-          data = nextRes.data;
-          allCities.push(...(data.results || []));
-          nextUrl = data.next;
-        }
-
-        setCityOptions(
-          allCities.map(city => ({
-            label: city.name,
-            value: city.name
-          }))
-        );
-      } catch (err) {
-        console.error("❌ Şehir verileri alınamadı:", err);
-      }
-    };
-
-    fetchAllCities();
-  }, []);
-
-   useEffect(() => {
     if (routeState.damageData) {
       const incomingData = { ...routeState.damageData };
-      
+
       // Eğer accident_datetime varsa, accident_date ve accident_time'a ayır
       if (incomingData.accident_datetime && !incomingData.accident_date && !incomingData.accident_time) {
         const [datePart, timePart] = String(incomingData.accident_datetime).split(" ");
@@ -68,10 +42,27 @@ const FileDamageInfoStepperScreen = () => {
           incomingData.accident_time = timePart;
         }
       }
-      
+
       setDamageData(incomingData);
     }
   }, [routeState.damageData]);
+
+  useEffect(() => {
+    if (!tutanakData?.genel_bilgiler) return;
+
+    const g = tutanakData.genel_bilgiler;
+
+    setDamageData(prev => ({
+      ...prev,
+      accident_datetime: toDDMMYYYY_HHMM(g.kaza_tarihi, g.kaza_saati),
+      accident_city: resolveIlId(g.il),
+      accident_district: (() => {
+        const ilId = resolveIlId(g.il);
+        return ilId ? (findIlceIdByName(ilId, g.ilce) || "") : "";
+      })(),
+      accident_address: g.mahalle_cadde || "",
+    }));
+  }, [tutanakData]);
 
   /* ----------------------------------
      TUTANAKTAN OTOMATİK DOLDUR
@@ -103,22 +94,22 @@ const FileDamageInfoStepperScreen = () => {
   ---------------------------------- */
   const handleSubmitDamageInfo = values => {
     const processedValues = { ...values };
-      if (values.accident_date || values.accident_time) {
-        const datePart = values.accident_date || "";
-        const timePart = values.accident_time || "";
-        if (datePart && timePart) {
-          processedValues.accident_datetime = `${datePart} ${timePart}`;
-        } else if (datePart) {
-          // Sadece tarih varsa, saat olmadan kaydetme (backend'e göndermeden önce kontrol edilecek)
-          processedValues.accident_datetime = datePart;
-        }
+    if (values.accident_date || values.accident_time) {
+      const datePart = values.accident_date || "";
+      const timePart = values.accident_time || "";
+      if (datePart && timePart) {
+        processedValues.accident_datetime = `${datePart} ${timePart}`;
+      } else if (datePart) {
+        // Sadece tarih varsa, saat olmadan kaydetme (backend'e göndermeden önce kontrol edilecek)
+        processedValues.accident_datetime = datePart;
       }
-      setDamageData(processedValues);
+    }
+    setDamageData(processedValues);
     navigate("/step-info", {
       state: {
         ...routeState,
         damageData: values,
-        startStep: 4, 
+        startStep: 4,
       },
     });
   };

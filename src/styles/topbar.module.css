@@ -34,6 +34,11 @@
     display: inline-block;
 }
 
+:global(body.dark) .logoText {
+    color: white !important;
+}
+
+
 /* Tabs */
 .tabs {
     background: rgba(255, 255, 255, 0.4);
@@ -44,6 +49,10 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
     position: relative;
     /* indicator için şart */
+}
+
+:global(body.dark) .tabs {
+    background: rgba(255, 255, 255, 0.7) !important;
 }
 
 .tab {
@@ -101,6 +110,10 @@
     font-family: 'Poppins', sans-serif;
 }
 
+:global(body.dark) .contactBtn {
+    background: rgba(96, 139, 193, 0.9) !important;
+}
+
 .contactBtnIcon {
     width: 36px;
     height: 36px;
@@ -146,6 +159,12 @@
     stroke: #1a1a1a;
 }
 
+:global(body.dark) .notificationIconDesktop svg,
+:global(body.dark) .notificationIconMobile svg {
+    stroke: #ffffff !important;
+}
+
+
 /* Bildirim rozeti */
 .notificationBadge {
     position: absolute;
@@ -179,6 +198,11 @@
     cursor: pointer;
     display: none;
 }
+
+:global(body.dark) .hamburger {
+  color: #ffffff !important;
+}
+
 
 /* Mobil bildirim ikonu */
 .mobileRightGroup .notificationIconDesktop svg,

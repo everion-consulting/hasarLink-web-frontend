@@ -21,12 +21,20 @@
     background: none;
 }
 
+:global(body.dark) .paginationButton {
+  color: #ffffff !important;
+}
+
 .paginationInfo {
     font-size: 18px;
     line-height: 20px;
     font-weight: 400;
     color: #374151;
     font-family: 'Poppins', sans-serif;
+}
+
+:global(body.dark) .paginationInfo {
+  color: #ffffff !important;
 }
 
 /* ============================================

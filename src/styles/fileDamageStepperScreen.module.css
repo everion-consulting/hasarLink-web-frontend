@@ -43,6 +43,10 @@
     text-align: center;
 }
 
+:global(body.dark) .sectionTitle  {
+  color: white;
+}
+
 /* KREDİ BİLGİ CONTAINER */
 .creditInfoContainer {
     width: 100%;

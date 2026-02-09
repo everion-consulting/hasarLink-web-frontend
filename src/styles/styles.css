@@ -16,6 +16,15 @@
   background-attachment: fixed;
 }
 
+body.dark .page-bg {
+  background-color: #020617 !important;
+}
+
+body.dark .dashboard {
+  background-color: #020617 !important;
+}
+
+
 input,
 textarea,
 select {

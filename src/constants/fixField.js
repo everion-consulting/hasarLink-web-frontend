@@ -13,6 +13,7 @@
  */
 
 import { maskPhone } from "../utils/formatter";
+import { getIlOptions, getIlceOptions } from '../constants/ilIlceData';
 
 const fixField = [
   // Ad Soyad alanı
@@ -48,7 +49,7 @@ const fixField = [
     name: "repair_city",
     label: "İl",
     type: "dropdown",
-    options: [],
+    options: getIlOptions(),
     required: true
   },
 
@@ -58,7 +59,9 @@ const fixField = [
     label: "İlçe",
     type: "text",
     placeholder: "İlçe yazınız",
-    required: true
+    options: [],
+    required: true,
+    getOptionsFrom: (ilId) => getIlceOptions(ilId),
   },
 
   // Açık Adres (çok satırlı metin)

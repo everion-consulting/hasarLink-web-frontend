@@ -10,6 +10,7 @@ import apiService from '../../services/apiServices';
 import { ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import FormFooter from '../forms/FormFooter';
 import { useProfile } from '../../context/ProfileContext';
+import { getIlName, getIlceName } from "../../constants/ilIlceData";
 
 export default function StepInfoScreen() {
   const navigate = useNavigate();
@@ -275,8 +276,13 @@ export default function StepInfoScreen() {
           service_name: serviceData.service_name || currentProfileData.service_name,
           service_tax_no: serviceData.service_tax_no || currentProfileData.service_tax_no,
           service_phone: serviceData.service_phone || currentProfileData.service_phone,
-          service_state_city_city: serviceData.service_state_city_city || currentProfileData.service_state,
-          service_city: serviceData.service_city || currentProfileData.service_city,
+
+          service_state_city_city: getIlceName(serviceData.service_state_city_city) || currentProfileData.service_state_city_city,
+          service_city: getIlName(serviceData.service_city) || currentProfileData.service_city,
+
+          // service_state_city_city: serviceData.service_state_city_city || currentProfileData.service_state,
+          // service_city: serviceData.service_city || currentProfileData.service_city,
+
           service_address: serviceData.service_address || currentProfileData.service_address,
           service_iban: serviceData.service_iban || currentProfileData.service_iban,
           service_iban_name: serviceData.service_iban_name || currentProfileData.service_iban_name,

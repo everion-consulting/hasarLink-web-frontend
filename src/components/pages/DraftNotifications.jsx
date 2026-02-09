@@ -5,6 +5,7 @@ import styles from '../../styles/DraftNotifications.module.css';
 import apiService from '../../services/apiServices';
 import Pagination from '../pagination/Pagination';
 import FilterSection from '../filter/FilterSection';
+import { findIlIdByName, findIlceIdByName } from '../../constants/ilIlceData';
 
 const DraftNotifications = () => {
     const [drafts, setDrafts] = useState([]);
@@ -245,20 +246,24 @@ const DraftNotifications = () => {
                         repair_address: draftDetail.repair_address,
                     },
 
-                    serviceData: {
-                        repair_fullname: draftDetail.repair_fullname,
-                        repair_birth_date: formatDate(draftDetail.repair_birth_date),
-                        repair_tc: draftDetail.repair_tc,
-                        repair_phone: draftDetail.repair_phone,
-                        service_name: draftDetail.service_name,
-                        service_tax_no: draftDetail.service_tax_no,
-                        service_phone: draftDetail.service_phone,
-                        service_city: draftDetail.service_city,
-                        service_state_city_city: draftDetail.service_state_city_city,
-                        service_address: draftDetail.service_address,
-                        service_iban: draftDetail.service_iban,
-                        service_iban_name: draftDetail.service_iban_name,
-                    },
+                    serviceData: (() => {
+                        const ilId = findIlIdByName(draftDetail.service_city) || draftDetail.service_city || "";
+                        const ilceId = ilId ? (findIlceIdByName(ilId, draftDetail.service_state_city_city) || draftDetail.service_state_city_city || "") : (draftDetail.service_state_city_city || "");
+                        return {
+                            repair_fullname: draftDetail.repair_fullname,
+                            repair_birth_date: formatDate(draftDetail.repair_birth_date),
+                            repair_tc: draftDetail.repair_tc,
+                            repair_phone: draftDetail.repair_phone,
+                            service_name: draftDetail.service_name,
+                            service_tax_no: draftDetail.service_tax_no,
+                            service_phone: draftDetail.service_phone,
+                            service_city: ilId,
+                            service_state_city_city: ilceId,
+                            service_address: draftDetail.service_address,
+                            service_iban: draftDetail.service_iban,
+                            service_iban_name: draftDetail.service_iban_name,
+                        }
+                    })(),
 
                     opposingDriverData: {
                         opposing_driver_fullname: draftDetail.opposing_driver_fullname,

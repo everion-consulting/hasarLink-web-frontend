@@ -51,8 +51,32 @@
   border: 2px solid var(--inactive-border);
 }
 
+:global(body.dark) .stepCircle {
+  --circle-size: 65px;
+  --border-color: rgba(96, 139, 193, 0.9);
+  --inactive-bg: white;
+  --inactive-border: var(--border-color);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background-color: var(--inactive-bg);
+  border: 2px solid var(--inactive-border);
+}
+
+
+
 /* Aktif veya Tamamlanmış Adım Dairesi - stepCircle.active */
 .stepCircle.active {
+  background-color: var(--border-color);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 6px -1px rgba(26, 77, 140, 0.3);
+}
+
+:global(body.dark) .stepCircle.active {
   background-color: var(--border-color);
   border-color: var(--border-color);
   box-shadow: 0 4px 6px -1px rgba(26, 77, 140, 0.3);
@@ -85,6 +109,10 @@
   text-transform: uppercase;
 }
 
+:global(body.dark) .stepLabel {
+  color: white;
+}
+
 /* İki Adım Arasındaki Çizgi - lineBetween */
 .lineBetween {
   height: 2px;
@@ -99,6 +127,11 @@
   position: relative;
   z-index: 1;
 }
+
+:global(body.dark) .lineBetween {
+  background-color: rgba(96, 139, 193, 0.9);
+}
+
 
 .lineBetween.completed {
   background-color: #1a4d8c;

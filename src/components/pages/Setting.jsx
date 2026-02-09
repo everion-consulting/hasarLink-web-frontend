@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../styles/settings.module.css";
+import darkStyles from "../../styles/settingsdark.module.css";
 import { Bell, Sun, Moon, MoreVertical, PlusCircle, ChevronRight, CreditCard, Trash2, X, Edit } from "lucide-react";
 import CustomSwitch from "./CustomSwitch.jsx";
+import { useTheme } from "../tema/theme-context.jsx";
 
 export default function Settings() {
     const [notificationSettings, setNotificationSettings] = useState({
@@ -11,12 +13,13 @@ export default function Settings() {
         emailNotifications: true
     });
 
-    const [isDark, setIsDark] = useState(false);
+    const { isDark, toggleTheme } = useTheme();
     const [savedCards, setSavedCards] = useState([]);
     const [showAddCardModal, setShowAddCardModal] = useState(false);
     const [showCardMenu, setShowCardMenu] = useState(null);
     const [editingCard, setEditingCard] = useState(null);
-    
+    const themeStyles = isDark ? darkStyles : styles;
+
     const [newCard, setNewCard] = useState({
         cardName: "",
         cardNumber: "",
@@ -41,7 +44,7 @@ export default function Settings() {
 
     const handleCardInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         if (name === "cardNumber") {
             const cleaned = value.replace(/\s/g, "");
             if (cleaned.length <= 16) {
@@ -54,7 +57,7 @@ export default function Settings() {
         if (name === "expiryDate") {
             const cleaned = value.replace(/\D/g, "");
             if (cleaned.length <= 4) {
-                const formatted = cleaned.length >= 2 
+                const formatted = cleaned.length >= 2
                     ? `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`
                     : cleaned;
                 setNewCard({ ...newCard, [name]: formatted });
@@ -74,7 +77,7 @@ export default function Settings() {
 
     const handleAddCard = (e) => {
         e.preventDefault();
-        
+
         if (editingCard) {
             // Düzenleme modu
             const cardToUpdate = {
@@ -86,8 +89,8 @@ export default function Settings() {
                 lastFourDigits: newCard.cardNumber.replace(/\s/g, "").slice(-4),
                 maskedNumber: `**** **** **** ${newCard.cardNumber.replace(/\s/g, "").slice(-4)}`
             };
-            
-            const updatedCards = savedCards.map(card => 
+
+            const updatedCards = savedCards.map(card =>
                 card.id === editingCard.id ? cardToUpdate : card
             );
             setSavedCards(updatedCards);
@@ -142,22 +145,22 @@ export default function Settings() {
     };
 
     return (
-        <div className={styles.settingsPage}>
+        <div className={themeStyles.settingsPage}>
 
-            <div className={styles.settingsCardArea}>
+            <div className={themeStyles.settingsCardArea}>
                 {/* ---------- KAPSAYICI CARD ---------- */}
-                <div className={styles.settingsCard}>
+                <div className={themeStyles.settingsCard}>
 
                     {/* ---------- BİLDİRİM TERCİHLERİ ---------- */}
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Bildirim Tercihleri</h2>
-                        <p className={styles.sectionDescription}>
+                    <div className={themeStyles.section}>
+                        <h2 className={themeStyles.sectionTitle}>Bildirim Tercihleri</h2>
+                        <p className={themeStyles.sectionDescription}>
                             Hangi bildirimleri almak istediğinizi buradan seçebilirsiniz.
                         </p>
 
-                        <div className={styles.listCard}>
+                        <div className={themeStyles.listCard}>
 
-                            <div className={styles.listItem}>
+                            <div className={themeStyles.listItem}>
                                 <span>Dosya Durum Güncellemeleri</span>
                                 <CustomSwitch
                                     value={notificationSettings.caseUpdates}
@@ -165,7 +168,7 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.listItem}>
+                            <div className={themeStyles.listItem}>
                                 <span>Kampanya / Duyuru Bildirimleri</span>
                                 <CustomSwitch
                                     value={notificationSettings.campaignAnnouncements}
@@ -173,7 +176,7 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.listItem}>
+                            <div className={themeStyles.listItem}>
                                 <span>SMS Bildirimleri</span>
                                 <CustomSwitch
                                     value={notificationSettings.smsNotifications}
@@ -181,7 +184,7 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.listItem}>
+                            <div className={themeStyles.listItem}>
                                 <span>E-Mail Bildirimleri</span>
                                 <CustomSwitch
                                     value={notificationSettings.emailNotifications}
@@ -195,15 +198,15 @@ export default function Settings() {
                 </div>
 
                 {/* ---------- ÖDEME AYARLARI CARD ---------- */}
-                <div className={styles.settingsCard}>
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Ödeme Ayarları</h2>
-                        <p className={styles.sectionDescription}>
+                <div className={themeStyles.settingsCard}>
+                    <div className={themeStyles.section}>
+                        <h2 className={themeStyles.sectionTitle}>Ödeme Ayarları</h2>
+                        <p className={themeStyles.sectionDescription}>
                             Kayıtlı ödeme yöntemlerini görüntüleyebilir veya yeni kart ekleyebilirsiniz.
                         </p>
 
-                        <button 
-                            className={styles.addCardBtn}
+                        <button
+                            className={themeStyles.addCardBtn}
                             onClick={() => setShowAddCardModal(true)}
                         >
                             <PlusCircle size={20} />
@@ -212,35 +215,35 @@ export default function Settings() {
                         </button>
 
                         {savedCards.length > 0 ? (
-                            <div className={styles.cardList}>
+                            <div className={themeStyles.cardList}>
                                 {savedCards.map(card => (
-                                    <div key={card.id} className={styles.cardItem}>
-                                        <div className={styles.cardIcon}>
+                                    <div key={card.id} className={themeStyles.cardItem}>
+                                        <div className={themeStyles.cardIcon}>
                                             <CreditCard size={24} />
                                         </div>
-                                        <div className={styles.cardInfo}>
-                                            <span className={styles.bankName}>{card.bankName}</span>
-                                            <p className={styles.cardNumber}>{card.maskedNumber}</p>
-                                            <p className={styles.cardHolder}>{card.cardName}</p>
+                                        <div className={themeStyles.cardInfo}>
+                                            <span className={themeStyles.bankName}>{card.bankName}</span>
+                                            <p className={themeStyles.cardNumber}>{card.maskedNumber}</p>
+                                            <p className={themeStyles.cardHolder}>{card.cardName}</p>
                                         </div>
-                                        <button 
-                                            className={styles.cardMenuBtn}
+                                        <button
+                                            className={themeStyles.cardMenuBtn}
                                             onClick={() => setShowCardMenu(showCardMenu === card.id ? null : card.id)}
                                         >
                                             <MoreVertical size={20} />
                                         </button>
-                                        
+
                                         {showCardMenu === card.id && (
-                                            <div className={styles.cardMenu}>
-                                                <button 
-                                                    className={styles.editBtn}
+                                            <div className={themeStyles.cardMenu}>
+                                                <button
+                                                    className={themeStyles.editBtn}
                                                     onClick={() => handleEditCard(card)}
                                                 >
                                                     <Edit size={16} />
                                                     Kartı Düzenle
                                                 </button>
-                                                <button 
-                                                    className={styles.deleteBtn}
+                                                <button
+                                                    className={themeStyles.deleteBtn}
                                                     onClick={() => handleDeleteCard(card.id)}
                                                 >
                                                     <Trash2 size={16} />
@@ -252,28 +255,28 @@ export default function Settings() {
                                 ))}
                             </div>
                         ) : (
-                            <p className={styles.noCards}>Kayıtlı kart bulunmuyor</p>
+                            <p className={themeStyles.noCards}>Kayıtlı kart bulunmuyor</p>
                         )}
                     </div>
 
                 </div>
 
                 {/* ---------- KARANLIK MOD CARD ---------- */}
-                <div className={styles.settingsCard}>
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Karanlık Mod</h2>
-                        <p className={styles.sectionDescription}>
+                <div className={themeStyles.settingsCard}>
+                    <div className={themeStyles.section}>
+                        <h2 className={themeStyles.sectionTitle}>Karanlık Mod</h2>
+                        <p className={themeStyles.sectionDescription}>
                             Uygulama temasını değiştirmek için karanlık modu açıp kapatabilirsiniz.
                         </p>
 
-                        <div className={styles.darkModeCard}>
-                            <div className={styles.darkModeRow}>
+                        <div className={themeStyles.darkModeCard}>
+                            <div className={themeStyles.darkModeRow}>
                                 <Sun size={22} />
                                 <span>Karanlık Mod</span>
                                 <Moon size={22} />
                             </div>
 
-                            <CustomSwitch value={isDark} onChange={() => setIsDark(!isDark)} />
+                            <CustomSwitch value={isDark} onChange={toggleTheme} />
                         </div>
                     </div>
                 </div>
@@ -281,15 +284,15 @@ export default function Settings() {
 
             {/* KART EKLEME MODAL */}
             {showAddCardModal && (
-                <div className={styles.modalOverlay} onClick={() => {
+                <div className={themeStyles.modalOverlay} onClick={() => {
                     setShowAddCardModal(false);
                     setEditingCard(null);
                 }}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        <div className={styles.modalHeader}>
+                    <div className={themeStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <div className={themeStyles.modalHeader}>
                             <h2>{editingCard ? "Kartı Düzenle" : "Yeni Kart Ekle"}</h2>
-                            <button 
-                                className={styles.closeBtn}
+                            <button
+                                className={themeStyles.closeBtn}
                                 onClick={() => {
                                     setShowAddCardModal(false);
                                     setEditingCard(null);
@@ -299,8 +302,8 @@ export default function Settings() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleAddCard} className={styles.cardForm}>
-                            <div className={styles.formGroup}>
+                        <form onSubmit={handleAddCard} className={themeStyles.cardForm}>
+                            <div className={themeStyles.formGroup}>
                                 <label>Banka Adı</label>
                                 <input
                                     type="text"
@@ -312,7 +315,7 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.formGroup}>
+                            <div className={themeStyles.formGroup}>
                                 <label>Kart Üzerindeki İsim</label>
                                 <input
                                     type="text"
@@ -324,7 +327,7 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.formGroup}>
+                            <div className={themeStyles.formGroup}>
                                 <label>Kart Numarası</label>
                                 <input
                                     type="text"
@@ -336,8 +339,8 @@ export default function Settings() {
                                 />
                             </div>
 
-                            <div className={styles.formRow}>
-                                <div className={styles.formGroup}>
+                            <div className={themeStyles.formRow}>
+                                <div className={themeStyles.formGroup}>
                                     <label>Son Kullanma</label>
                                     <input
                                         type="text"
@@ -349,7 +352,7 @@ export default function Settings() {
                                     />
                                 </div>
 
-                                <div className={styles.formGroup}>
+                                <div className={themeStyles.formGroup}>
                                     <label>CVV</label>
                                     <input
                                         type="text"
@@ -362,10 +365,10 @@ export default function Settings() {
                                 </div>
                             </div>
 
-                            <div className={styles.modalButtons}>
-                                <button 
-                                    type="button" 
-                                    className={styles.cancelBtn}
+                            <div className={themeStyles.modalButtons}>
+                                <button
+                                    type="button"
+                                    className={themeStyles.cancelBtn}
                                     onClick={() => {
                                         setShowAddCardModal(false);
                                         setEditingCard(null);
@@ -373,7 +376,7 @@ export default function Settings() {
                                 >
                                     İptal
                                 </button>
-                                <button type="submit" className={styles.saveBtn}>
+                                <button type="submit" className={themeStyles.saveBtn}>
                                     {editingCard ? "Değişiklikleri Kaydet" : "Kartı Kaydet"}
                                 </button>
                             </div>

@@ -97,6 +97,11 @@
     color: #333333;
 }
 
+:global(body.dark) .sectionTitle,
+:global(body.dark) .sectionTitle2 {
+  color: white;
+}
+
 .sectionDescription {
     font-family: 'Poppins', sans-serif;
     font-weight: 500;

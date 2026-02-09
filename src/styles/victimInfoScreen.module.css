@@ -73,6 +73,11 @@ body {
     margin-bottom: 30px;
 }
 
+:global(body.dark) .sectionTitle {
+    color: white;
+}
+
+
 .formCard {
     background-color: white;
     border-radius: 20px;
@@ -133,6 +138,10 @@ body {
     font-size: 12px;
     color: #666;
     white-space: nowrap;
+}
+
+:global(body.dark) .stepLabel {
+    color: white;
 }
 
 .stepLine {

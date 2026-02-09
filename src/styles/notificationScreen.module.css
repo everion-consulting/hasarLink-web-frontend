@@ -1,7 +1,7 @@
 .toast {
   position: fixed;
   right: 20px;
-  top: 20px;  
+  top: 20px;
   z-index: 9999;
 
   display: flex;
@@ -55,6 +55,7 @@
     transform: translateY(10px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0px);
     opacity: 1;
@@ -124,6 +125,10 @@
   font-weight: 600;
   color: #333;
   margin-right: 35%;
+}
+
+:global(body.dark) .pageTitle {
+  color: white;
 }
 
 /* =========================================

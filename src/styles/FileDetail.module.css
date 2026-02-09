@@ -14,6 +14,7 @@
   font-size: 11px;
   color: #888;
 }
+
 .fileTypeSection {
   margin-bottom: 24px;
 }
@@ -124,6 +125,10 @@
   text-align: center;
 }
 
+:global(body.dark) .pageTitle {
+  color: #ffffff !important;
+}
+
 .sectionTitle {
   font-size: clamp(16px, 2.5vw, 20px);
   font-weight: 600;
@@ -131,6 +136,10 @@
   margin-block: 8px;
   position: relative;
   z-index: 1;
+}
+
+:global(body.dark) .sectionTitle  {
+  color: white;
 }
 
 /* ============================= */
@@ -354,16 +363,16 @@
 .fileTypeBlock,
 .fileTypeSection {
   margin-top: 16px;
-  margin-bottom: 32px; 
+  margin-bottom: 32px;
 }
 
 
 .fileTypeHeader,
 .fileTypeTitle {
   font-size: 14px;
-  font-weight: 400;     
+  font-weight: 400;
   color: #444;
-  margin: 0 0 10px 2px; 
+  margin: 0 0 10px 2px;
   letter-spacing: 0.02em;
 }
 
@@ -371,8 +380,8 @@
 .fileImagesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  column-gap: 22px;  
-  row-gap: 22px;    
+  column-gap: 22px;
+  row-gap: 22px;
 }
 
 

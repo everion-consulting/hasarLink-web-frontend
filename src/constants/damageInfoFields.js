@@ -13,6 +13,7 @@ import {
   ClockIcon,
   CalendarIcon
 } from "@heroicons/react/24/outline";
+import { getIlOptions, getIlceOptions } from '../constants/ilIlceData';
 
 const damageFields = [
   {
@@ -49,17 +50,19 @@ const damageFields = [
         placeholder: "İl seçiniz",
         type: "dropdown",
         required: true,
-        options: [],
+        options: getIlOptions(),
         fetchOptions: true,
         icon: MapPinIcon,
       },
       {
         name: "accident_district",
         label: "İlçe",
-        placeholder: "İlçeyi giriniz",
-        type: "text",
+        placeholder: "İlçeyi seçiniz",
+        type: "dropdown",
+        options: [],
         required: true,
         icon: MapPinIcon,
+        getOptionsFrom: (ilId) => getIlceOptions(ilId),
       },
     ],
   },

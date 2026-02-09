@@ -61,8 +61,8 @@ export default function FormRenderer({
 
   // iOS tespiti
   const isIOS = () => {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   };
 
   const todayYMD = () => {
@@ -72,6 +72,14 @@ export default function FormRenderer({
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`; // YYYY-MM-DD
   };
+  const getDropdownOptions = (field) => {
+    if (field.getOptionsFrom && field.dependsOn) {
+      const parentValue = formData[field.dependsOn];
+      return parentValue ? field.getOptionsFrom(parentValue) : [];
+    }
+    return field.options || [];
+  };
+
 
   const isBirthDateField = (field) => {
     const name = String(field?.name || "").toLowerCase();
@@ -132,10 +140,10 @@ export default function FormRenderer({
     const isEmpty = !String(v ?? "").trim();
     const fieldName = f.name || "";
 
-    
+
     if (isEmpty) {
       if (isBirthDateField(f)) {
-       
+
         return null;
       }
 
@@ -143,7 +151,7 @@ export default function FormRenderer({
         return null;
       }
 
-     
+
       if (f.required) {
         return "Bu alan zorunludur";
       }
@@ -334,21 +342,34 @@ export default function FormRenderer({
   }
 
   function handleDropdownSelect(name, value) {
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+    // 🔥 ŞEHİR DEĞİŞTİYSE → İLÇEYİ SIFIRLA
+    if (name === "service_city") {
+      setValues(prev => ({
+        ...prev,
+        service_city: value,
+        service_state_city_city: "", // 👈 KRİTİK SATIR
+      }));
+    } else {
+      setValues(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
 
     setTouchedFields((prev) => ({ ...prev, [name]: true }));
-
     setCurrentDropdown(null);
     setSearchText("");
 
     setTimeout(() => {
-      const { isValid } = validateAllFields({ ...values, [name]: value });
+      const { isValid } = validateAllFields({
+        ...values,
+        [name]: value,
+        ...(name === "service_city" ? { service_state_city_city: "" } : {}),
+      });
       onFormChange?.({ allValid: isValid });
     }, 0);
   }
+
 
 
   useEffect(() => {
@@ -416,6 +437,16 @@ export default function FormRenderer({
   }
 
   const renderDropdown = (field) => {
+    const parentValue =
+      field.getOptionsFrom && field.dependsOn
+        ? values[field.dependsOn]
+        : null;
+
+    const dynamicOptions =
+      field.getOptionsFrom && parentValue
+        ? field.getOptionsFrom(parentValue)
+        : field.options || [];
+
     const currentValue = values[field.name] ?? "";
     const isOpen = currentDropdown === field.name;
     const showError = touchedFields[field.name] && errors[field.name];
@@ -447,7 +478,7 @@ export default function FormRenderer({
               }`}
           >
             {currentValue
-              ? field.options?.find((opt) => opt.value === currentValue)?.label ||
+              ? dynamicOptions?.find((opt) => opt.value === currentValue)?.label ||
               currentValue
               : field.placeholder || "Seçiniz"}
           </span>
@@ -456,7 +487,7 @@ export default function FormRenderer({
 
         {isOpen && (
           <div className={`${styles.dropdownMenu} ${styles.open}`}>
-            {field.options && field.options.length > 0 && (
+            {dynamicOptions && dynamicOptions.length > 0 && (
               <>
                 <input
                   type="text"
@@ -466,7 +497,7 @@ export default function FormRenderer({
                   className={styles.dropdownSearch}
                 />
                 <div className={styles.dropdownOptions}>
-                  {field.options
+                  {dynamicOptions
                     .filter((opt) =>
                       opt.label
                         .toLowerCase()
@@ -608,7 +639,7 @@ export default function FormRenderer({
                   if (childField.type === "time") {
                     const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
                     const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
-                    
+
                     return (
                       <div key={childField.name} className={styles.formField}>
                         <label className={styles.formLabel}>
@@ -927,7 +958,7 @@ export default function FormRenderer({
           if (f.type === "time") {
             const iosClass = isIOS() ? styles.nativeTimeInputIOS : "";
             const triggerIOSClass = isIOS() ? styles.dateTriggerIOS : "";
-            
+
             return (
               <div key={f.name} className={styles.formField}>
                 <label className={styles.formLabel}>

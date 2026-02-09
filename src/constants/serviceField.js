@@ -15,6 +15,7 @@
  */
 
 import { maskPhone } from "../components/utils/formatter";
+import { getIlOptions, getIlceOptions } from '../constants/ilIlceData';
 
 
 const serviceField = [
@@ -53,28 +54,73 @@ const serviceField = [
   { name: "service_iban_name", label: "IBAN Adı", placeholder: "Hesap Sahibinin Adı", type: "text", required: false },
   {
     type: "row",
-    name: "insuredRow1",
+    name: "serviceRowCity",
     children: [
       {
         name: "service_city",
         label: "İl",
         type: "dropdown",
-        options: [],
+        options: getIlOptions(),
         required: true
       },
-      // İlçe seçimi (select/dropdown)
       {
         name: "service_state_city_city",
         label: "İlçe",
-        type: "text",
-        placeholder: "İlçe yazınız",
-        required: true
-      },]
+        type: "dropdown",
+        placeholder: "İlçe seçiniz",
+        options: [],
+        required: true,
+        getOptionsFrom: (ilId) => getIlceOptions(ilId),
+      }
+    ]
   },
   // Açık Adres (çok satırlı metin)
-  { name: "service_address", label: "Açık Adres", type: "textarea", placeholder: "Barbaros Mah., Atpıkız Sk. No:2 D:3", required: true },
+  {
+    name: "service_address",
+    label: "Açık Adres",
+    type: "textarea",
+    placeholder: "Barbaros Mah., Atpıkız Sk. No:2 D:3",
+    required: true,
+    visibleWhen: {
+      field: "insurance_company",
+      notEquals: "AXA SİGORTA A.Ş."
+    }
+  },
+  {
+    name: "service_mah",
+    label: "Servis Mahalle",
+    type: "textarea",
+    placeholder: "Barbaros Mah.",
+    required: true,
+    visibleWhen: {
+      field: "insurance_company",
+      equals: "AXA SİGORTA A.Ş."
+    }
+  },
+  {
+    name: "service_sk",
+    label: "Servis Sokak",
+    type: "textarea",
+    placeholder: "Atpıkız Sk.",
+    required: true,
+    visibleWhen: {
+      field: "insurance_company",
+      equals: "AXA SİGORTA A.Ş."
+    }
+  },
+  {
+    name: "service_bina_no",
+    label: "Servis Bina No",
+    type: "textarea",
+    placeholder: "12",
+    required: true,
+    visibleWhen: {
+      field: "insurance_company",
+      equals: "AXA SİGORTA A.Ş."
+    }
+  },
   { name: "repair_area_code", label: "Bölge Kodu", type: "textarea", placeholder: "Örn:017", required: false, maxLength: 3 },
-  
+
 ];
 
 export default serviceField;

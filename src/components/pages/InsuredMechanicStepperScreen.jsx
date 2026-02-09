@@ -10,6 +10,7 @@ import { useProfile } from '../../context/ProfileContext';
 import apiService from '../../services/apiServices';
 import { toYYYYMMDD } from '../utils/formatter';
 import styles from '../../styles/victimInfoScreen.module.css';
+import { findIlIdByName, findIlceIdByName } from '../../constants/ilIlceData';
 
 const isFilled = (v) => v !== null && v !== undefined && String(v).trim() !== "";
 
@@ -307,34 +308,53 @@ export default function InsuredMechanicStepperScreen() {
         return digits;
     };
 
+    const AXA_COMPANY_ID = 52;
+
+    const isAXA =
+        selectedCompany?.id === AXA_COMPANY_ID ||
+        selectedCompany === AXA_COMPANY_ID;
+
+
+
     const serviceFields = useMemo(() => {
-        return serviceField.map((f) => {
-            if (f.type === "row") {
-                return {
-                    ...f,
-                    children: f.children.map((child) =>
-                        child.name === "service_city"
-                            ? { ...child, options: cityOptions }
-                            : child.name === "repair_area_code"
-                                ? {
-                                    ...child,
-                                    maxLength: 3,
-                                    inputMode: "numeric",
-                                    onChange: (e, value) => handleAreaCodeChange(value),
-                                    onBlur: handleAreaCodeBlur,
-                                }
-                                : child
-                    ),
-                };
-            }
+        return serviceField
+            .map((f) => {
+                if (f.type === "row") {
+                    return {
+                        ...f,
+                        children: f.children.filter((child) => {
+                            if (
+                                ["service_mah", "service_sk", "service_bina_no"].includes(child.name)
+                            ) {
+                                return isAXA; // 🔥 SADECE AXA
+                            }
+                            return true;
+                        }),
+                    };
+                }
 
-            return f.name === "service_city"
-                ? { ...f, options: cityOptions }
-                : f;
-        });
-    }, [cityOptions, serviceData.repair_area_code]);
+                if (
+                    ["service_mah", "service_sk", "service_bina_no"].includes(f.name)
+                ) {
+                    return isAXA ? f : null;
+                }
+
+                return f;
+            })
+            .filter(Boolean);
+    }, [isAXA]);
 
 
+    useEffect(() => {
+        if (!isAXA) {
+            setServiceData((prev) => ({
+                ...prev,
+                service_mah: "",
+                service_sk: "",
+                service_bina_no: "",
+            }));
+        }
+    }, [isAXA]);
 
     const opposingTcFields = useMemo(
         () => opposingDriverFields.filter((f) => f.name !== "opposing_foreign_driver_tc"),
@@ -438,12 +458,33 @@ export default function InsuredMechanicStepperScreen() {
 
         const draftServiceData = location.state?.serviceData || {};
 
+        const resolvedCityId =
+            findIlIdByName(draftServiceData.service_city)
+            || findIlIdByName(profileDetail.service_city)
+            || "";
+
         setServiceData(prev => ({
             ...prev,
+            insurance_company: selectedCompany?.name || selectedCompany || "",
             service_name: draftServiceData.service_name || profileDetail.service_name || "",
             service_phone: draftServiceData.service_phone || profileDetail.service_phone || "",
-            service_city: draftServiceData.service_city || profileDetail.service_city || "",
-            service_state_city_city: draftServiceData.service_state_city_city || profileDetail.service_state || "",
+            service_city: resolvedCityId,
+            // service_city: draftServiceData.service_city || profileDetail.service_city || "",
+            // service_state_city_city: draftServiceData.service_state_city_city || profileDetail.service_state || "",
+            service_state_city_city: (() => {
+                const ilId =
+                    findIlIdByName(draftServiceData.service_city)
+                    || findIlIdByName(profileDetail.service_city);
+
+                return ilId
+                    ? (
+                        findIlceIdByName(ilId, draftServiceData.service_state_city_city)
+                        || findIlceIdByName(ilId, profileDetail.service_state)
+                        || ""
+                    )
+                    : "";
+            })(),
+
             service_address: draftServiceData.service_address || profileDetail.service_address || "",
             service_tax_no: draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
             service_iban: draftServiceData.service_iban || profileDetail.service_iban || "",
@@ -625,6 +666,8 @@ export default function InsuredMechanicStepperScreen() {
 
 
         try {
+            const isAXA =
+                (selectedCompany?.name || selectedCompany) === "AXA";
             const profileUpdateData = {
                 repair_fullname: values.repair_fullname,
                 repair_birth_date: toYYYYMMDD(values.repair_birth_date),
@@ -638,7 +681,20 @@ export default function InsuredMechanicStepperScreen() {
                 service_tax_no: values.service_tax_no,
                 service_iban: values.service_iban,
                 service_iban_name: values.service_iban_name,
-                repair_area_code: values.repair_area_code
+                repair_area_code: values.repair_area_code,
+                ...(isAXA
+                    ? {
+                        service_mah: values.service_mah,
+                        service_sk: values.service_sk,
+                        service_bina_no: values.service_bina_no,
+                        service_address: ""
+                    }
+                    : {
+                        service_address: values.service_address,
+                        service_mah: "",
+                        service_sk: "",
+                        service_bina_no: ""
+                    })
             };
 
             console.log('📤 Profil güncelleniyor:', profileUpdateData);
@@ -690,6 +746,13 @@ export default function InsuredMechanicStepperScreen() {
             serviceData: completeServiceData,
             opposingDriverData: Object.keys(opposingDriverData).length > 0 ? opposingDriverData : location.state?.opposingDriverData || {},
         };
+
+        const mergedValues = {
+            ...values,
+            insurance_company: selectedCompany?.name || selectedCompany || ""
+        };
+
+        setServiceData(mergedValues);
 
         console.log('🚀 handleServiceSubmit - navigation state:', navigationState);
         console.log('🔍 LOCAL insuredData:', Object.keys(insuredData).length, 'keys');

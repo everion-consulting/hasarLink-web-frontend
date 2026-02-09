@@ -12,6 +12,10 @@
     margin-bottom: 20px;
 }
 
+:global(body.dark) .pageTitle {
+    color: #fff;
+}
+
 .searchBox {
     display: flex;
     align-items: center;
@@ -32,6 +36,10 @@
     margin-top: 25px;
     font-size: 18px;
     font-weight: 600;
+}
+
+:global(body.dark) .sectionTitle {
+    color: #fff;
 }
 
 /* GRID */
@@ -85,6 +93,11 @@
     background: #e8f1ff;
 }
 
+:global(body.dark) .selected {
+    border-color: #a1b9ed;
+    background: #deebff;
+}
+
 .companyLogo {
     width: 100%;
     height: 50px;
@@ -103,6 +116,11 @@
     align-items: center;
     gap: 10px;
     z-index: 999;
+}
+
+:global(body.dark) .bottomButtons {
+    background: #000000c3;
+    border-top: 1px solid transparent;
 }
 
 .buttonContainer {
@@ -147,7 +165,7 @@
 }
 
 .continueBtn {
-    background-color: #133E87;
+    background-color: rgba(96, 139, 193, 0.9);
     color: white;
     font-weight: bold;
 }
@@ -192,4 +210,8 @@
     grid-column: 1 / -1;
     text-align: center;
     color: #666;
+}
+
+:global(body.dark) .noResultText {
+  color: white;
 }

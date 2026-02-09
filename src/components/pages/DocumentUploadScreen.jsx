@@ -300,6 +300,7 @@ const DocumentUploaderScreen = ({
         {uploading && (
           <div className={styles.uploadOverlay}>
             <div className={styles.uploadModal}>
+              <p>Yükleniyor, Lütfen Bekleyiniz...</p>
               {progress.current} / {progress.total}
             </div>
           </div>

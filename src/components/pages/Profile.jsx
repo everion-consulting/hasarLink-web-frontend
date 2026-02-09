@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import RightIcon from "../../components/images/rightIcon.svg";
 import areaCodeMap from "../../assets/json/areaCodeMap.json";
+import { getIlOptions, getIlceOptions, getIlName, getIlceName, findIlIdByName, findIlceIdByName } from "../../constants/ilIlceData";
 
 
 
@@ -33,6 +34,13 @@ export default function Profile() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showCityDropdown, setShowCityDropdown] = useState(false);
+    const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
+
+    const [citySearch, setCitySearch] = useState("");
+    const [districtSearch, setDistrictSearch] = useState("");
+
+
 
     const [form, setForm] = useState({
         repair_fullname: "",
@@ -62,8 +70,8 @@ export default function Profile() {
         setForm((prev) => ({
             ...prev,
             repair_area_code: onlyNumbers,
-            repair_area_valid: null,  
-            repair_area_name: ""  
+            repair_area_valid: null,
+            repair_area_name: ""
         }));
     };
 
@@ -103,7 +111,9 @@ export default function Profile() {
     const [loadingStats, setLoadingStats] = useState(true);
     const [fileNotifications, setFileNotifications] = useState([]);
     const navigate = useNavigate();
-    const [cityOptions, setCityOptions] = useState([]);
+    const cityOptions = getIlOptions(); // [{label, value(ilId)}]
+    const districtOptions = form.service_city ? getIlceOptions(form.service_city) : [];
+
 
     const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
@@ -160,42 +170,6 @@ export default function Profile() {
         fetchAllCompanies();
     }, []);
 
-    useEffect(() => {
-        const fetchCities = async () => {
-            try {
-                let allCities = [];
-                let currentUrl = null;
-
-                const res = await apiService.getCities();
-
-                if (res?.data?.results) {
-                    allCities = [...res.data.results];
-                    currentUrl = res.data.next;
-                    while (currentUrl) {
-                        const nextRes = await apiService.getCities(currentUrl);
-                        if (nextRes?.data?.results) {
-                            allCities = [...allCities, ...nextRes.data.results];
-                            currentUrl = nextRes.data.next;
-                        } else {
-                            break;
-                        }
-                    }
-                } else {
-                    allCities = res?.data || [];
-                }
-
-                const options = allCities.map((city) => ({
-                    label: city.name,
-                    value: city.name,
-                }));
-                setCityOptions(options);
-            } catch (err) {
-                console.error('❌ Şehir verileri alınamadı:', err);
-                setCityOptions([]);
-            }
-        };
-        fetchCities();
-    }, []);
 
     useEffect(() => {
         const getStats = async () => {
@@ -249,6 +223,7 @@ export default function Profile() {
                 return <FileText size={24} color="#6b7280" />;
         }
     };
+
 
     if (loading) return <div className={styles.loading}>Yükleniyor...</div>;
 
@@ -314,26 +289,41 @@ export default function Profile() {
                 <div className={styles.card}>
                     <div className={styles.cardTitleRow}>
                         <h3 className={styles.cardTitle}>SERVİS BİLGİLERİ</h3>
-                        <a className={styles.editLink} onClick={() => {
-                            setForm({
-                                repair_fullname: profileDetail?.repair_fullname || "",
-                                repair_phone: profileDetail?.repair_phone || "",
-                                repair_city: profileDetail?.repair_city || "",
-                                repair_state: profileDetail?.repair_state || "",
-                                repair_address: profileDetail?.repair_address || "",
-                                repair_birth_date: profileDetail?.repair_birth_date || "",
-                                repair_tc: profileDetail?.repair_tc || "",
-                                repair_area_code: profileDetail?.repair_area_code || "",
-                                service_name: profileDetail?.service_name || "",
-                                service_city: profileDetail?.service_city || "",
-                                service_state: profileDetail?.service_state || "",
-                                service_address: profileDetail?.service_address || "",
-                                service_tax_no: profileDetail?.service_tax_no || "",
-                            });
-                            setEditModalOpen(true);
-                        }}>
+                        <a
+                            className={styles.editLink}
+                            onClick={() => {
+                                const cityId = findIlIdByName(profileDetail?.service_city) || "";
+                                const districtId = cityId
+                                    ? (findIlceIdByName(cityId, profileDetail?.service_state) || "")
+                                    : "";
+
+                                setForm({
+                                    repair_fullname: profileDetail?.repair_fullname || "",
+                                    repair_phone: profileDetail?.repair_phone || "",
+                                    repair_city: profileDetail?.repair_city || "",
+                                    repair_state: profileDetail?.repair_state || "",
+                                    repair_address: profileDetail?.repair_address || "",
+                                    repair_birth_date: profileDetail?.repair_birth_date || "",
+                                    repair_tc: profileDetail?.repair_tc || "",
+                                    repair_area_code: profileDetail?.repair_area_code || "",
+                                    service_name: profileDetail?.service_name || "",
+                                    service_city: cityId,          // ✅ artık ID
+                                    service_state: districtId,     // ✅ artık ID
+                                    service_address: profileDetail?.service_address || "",
+                                    service_tax_no: profileDetail?.service_tax_no || "",
+                                });
+
+                                setCitySearch("");
+                                setDistrictSearch("");
+                                setShowCityDropdown(false);
+                                setShowDistrictDropdown(false);
+
+                                setEditModalOpen(true);
+                            }}
+                        >
                             Düzenle
                         </a>
+
                     </div>
 
                     <div className={styles.row}><User size={20} /><p>{profileDetail?.repair_fullname}</p></div>
@@ -446,7 +436,7 @@ export default function Profile() {
 
                                 <div>
                                     <label>Bölge Kodu </label>
-                                    
+
                                     <input
                                         type="text"
                                         value={form.repair_area_code}
@@ -488,31 +478,96 @@ export default function Profile() {
                             />
 
                             <div className={styles.formRow2}>
+                                {/* ===================== ŞEHİR ===================== */}
                                 <div>
                                     <label>Servis Şehir</label>
-                                    <select
-                                        value={form.service_city}
-                                        onChange={(e) => setForm({ ...form, service_city: e.target.value })}
-                                        className={styles.selectInput}
-                                    >
-                                        <option value="">Şehir Seçin</option>
-                                        {cityOptions.map((city) => (
-                                            <option key={city.value} value={city.value}>
-                                                {city.label}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                                    <div className={styles.dropdownWrapper}>
+                                        <input
+                                            type="text"
+                                            placeholder="Şehir seçiniz"
+                                            readOnly
+                                            value={getIlName(form.service_city) || ""}
+                                            onMouseDown={(e) => {
+                                                // blur/focus çakışmasını engeller
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setShowCityDropdown(true);
+                                                setShowDistrictDropdown(false);
+                                            }}
+                                            className={styles.dropdownInput}
+                                        />
+
+                                        {showCityDropdown && (
+                                            <div className={styles.dropdownMenu}>
+                                                {cityOptions.map((city) => (
+                                                    <div
+                                                        key={city.value}
+                                                        className={styles.dropdownItem}
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            setForm((prev) => ({
+                                                                ...prev,
+                                                                service_city: city.value, // ✅ il id / value
+                                                                service_state: "",        // ✅ ilçe reset
+                                                            }));
+                                                            setShowCityDropdown(false);
+                                                            setShowDistrictDropdown(false);
+                                                        }}
+                                                    >
+                                                        {city.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
+                                {/* ===================== İLÇE ===================== */}
                                 <div>
                                     <label>Servis İlçe</label>
-                                    <input
-                                        type="text"
-                                        value={form.service_state}
-                                        onChange={(e) => setForm({ ...form, service_state: e.target.value })}
-                                    />
+
+                                    <div className={styles.dropdownWrapper}>
+                                        <input
+                                            type="text"
+                                            placeholder={form.service_city ? "İlçe seçiniz" : "Önce şehir seçiniz"}
+                                            readOnly
+                                            disabled={!form.service_city}
+                                            value={getIlceName(form.service_state) || ""}
+                                            onMouseDown={(e) => {
+                                                if (!form.service_city) return;
+                                                e.preventDefault();
+                                                setShowDistrictDropdown(true);
+                                                setShowCityDropdown(false);
+                                            }}
+                                            className={styles.dropdownInput}
+                                        />
+
+                                        {showDistrictDropdown && form.service_city && (
+                                            <div className={styles.dropdownMenu}>
+                                                {getIlceOptions(form.service_city).map((district) => (
+                                                    <div
+                                                        key={district.value}
+                                                        className={styles.dropdownItem}
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault();
+                                                            setForm((prev) => ({
+                                                                ...prev,
+                                                                service_state: district.value, // ✅ ilçe id / value
+                                                            }));
+                                                            setShowDistrictDropdown(false);
+                                                        }}
+                                                    >
+                                                        {district.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
+
 
                             <label>Servis Adres</label>
                             <textarea
@@ -535,7 +590,13 @@ export default function Profile() {
                                 <button
                                     className={styles.btnSave}
                                     onClick={async () => {
-                                        const res = await apiService.updateProfileDetail(form);
+                                        const payload = {
+                                            ...form,
+                                            service_city: getIlName(form.service_city) || "",
+                                            service_state: getIlceName(form.service_state) || "",
+                                        };
+
+                                        const res = await apiService.updateProfileDetail(payload);
                                         if (res.success) {
                                             await fetchProfile();
                                             setEditModalOpen(false);
@@ -549,7 +610,6 @@ export default function Profile() {
                                     Kaydet
                                 </button>
                             </div>
-
                         </div>
                     </div>
                 </div>

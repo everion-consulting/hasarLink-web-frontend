@@ -150,6 +150,10 @@
   margin-bottom: 12px;
 }
 
+:global(body.dark) .totalCount {
+  color: #ffffff !important;
+}
+
 /* CHIP STİLİ */
 .detailChip {
   display: flex;
@@ -213,6 +217,10 @@
   color: #333;
 }
 
+:global(body.dark) .fileNotifications h1 {
+  color: #ffffff !important;
+}
+
 /* GRID yapısı */
 .fileList {
   list-style: none;
@@ -222,6 +230,11 @@
   grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
   gap: 24px;
 }
+
+:global(body.dark) .fileList {
+  color: #ffffff !important;
+}
+
 
 /* Kart */
 .fileItem {

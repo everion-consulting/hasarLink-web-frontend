@@ -20,6 +20,10 @@
   line-height: 1.2;
 }
 
+:global(body.dark) .pageTitle {
+  color: white;
+}
+
 .rejectedBack {
   width: 44px;
   height: 44px;

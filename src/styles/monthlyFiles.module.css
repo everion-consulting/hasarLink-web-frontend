@@ -314,6 +314,10 @@
   margin-bottom: 24px;
 }
 
+:global(body.dark) .pageTitle {
+  color: white;
+}
+
 /* =========================================
    FILE CARD
 ========================================= */

@@ -14,6 +14,10 @@
     color: #333;
 }
 
+:global(body.dark) .contactHeader {
+    color: white;
+}
+
 .contactHeader h1 {
     font-size: 50px;
     line-height: 60px;
@@ -22,10 +26,19 @@
     margin-bottom: 20px;
 }
 
+:global(body.dark) .contactHeader h1 {
+    color: white;
+}
+
+
 .contactHeader p {
     font-size: 20px;
     line-height: 25px;
     letter-spacing: 1px;
+}
+
+:global(body.dark) .contactHeader p {
+    color: white;
 }
 
 /* Tüm input, textarea, dropdown yazıları */
@@ -104,6 +117,10 @@
     color: #ffffff;
 }
 
+:global(body.dark) .nextBtn {
+    background: rgba(96, 139, 193, 0.9);
+}
+
 .nextBtn:hover {
     background: #0f3470;
 }
@@ -138,7 +155,7 @@
     background: #fff;
     padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -202,7 +219,7 @@
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     z-index: 999;
 }
 
@@ -238,7 +255,7 @@
     border-radius: 10px;
     margin-top: 6px;
     overflow: hidden;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .dropdownMenu div {
@@ -301,6 +318,10 @@
     color: #fff;
     font-weight: 600;
     cursor: pointer;
+}
+
+:global(body.dark) .nextBtn {
+    background: rgba(96, 139, 193, 0.9);
 }
 
 /* Mobile */

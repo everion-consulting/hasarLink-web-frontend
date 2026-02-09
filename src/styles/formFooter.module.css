@@ -54,8 +54,16 @@
   color: #ffffff;
 }
 
+:global(body.dark) .nextBtn {
+    background: rgba(96, 139, 193, 1);
+}
+
 .nextBtn:hover:not(.disabled) {
   background: #0f3470;
+}
+
+:global(body.dark) .nextBtn:hover:not(.disabled) {
+    background: #6189c9;
 }
 
 /* === DISABLED STATE === */
