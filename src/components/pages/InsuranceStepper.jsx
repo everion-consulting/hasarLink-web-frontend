@@ -101,7 +101,7 @@ export default function InsuranceStepper() {
     if (editMode && returnTo) {
       navigate(returnTo, { state: getSafeParams() });
     } else if (currentStep === 1) {
-      navigate(-1);
+      navigate("/step-info", { state: getSafeParams() });
     } else {
       setCurrentStep(1);
     }

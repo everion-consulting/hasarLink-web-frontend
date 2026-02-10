@@ -342,19 +342,24 @@ export default function FormRenderer({
   }
 
   function handleDropdownSelect(name, value) {
-    // 🔥 ŞEHİR DEĞİŞTİYSE → İLÇEYİ SIFIRLA
-    if (name === "service_city") {
-      setValues(prev => ({
-        ...prev,
-        service_city: value,
-        service_state_city_city: "", // 👈 KRİTİK SATIR
-      }));
-    } else {
-      setValues(prev => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    // Bu alana bağımlı (dependsOn) tüm child alanları bul ve sıfırla
+    const dependentResets = {};
+    const findDependents = (fieldList) => {
+      fieldList.forEach((f) => {
+        if (f.type === "row" && Array.isArray(f.children)) {
+          findDependents(f.children);
+        } else if (f.dependsOn === name) {
+          dependentResets[f.name] = "";
+        }
+      });
+    };
+    findDependents(fields);
+
+    setValues(prev => ({
+      ...prev,
+      [name]: value,
+      ...dependentResets,
+    }));
 
     setTouchedFields((prev) => ({ ...prev, [name]: true }));
     setCurrentDropdown(null);
@@ -364,7 +369,7 @@ export default function FormRenderer({
       const { isValid } = validateAllFields({
         ...values,
         [name]: value,
-        ...(name === "service_city" ? { service_state_city_city: "" } : {}),
+        ...dependentResets,
       });
       onFormChange?.({ allValid: isValid });
     }, 0);

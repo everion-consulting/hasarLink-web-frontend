@@ -185,7 +185,16 @@ const DriverVictimStepperScreen = () => {
         </div>
 
         <FormFooter
-          onBack={() => navigate(-1, { state })}
+          onBack={() => {
+            const currentVehicleData = Object.keys(vehicleData).length > 0 ? vehicleData : existingVehicleData;
+            navigate("/step-info", {
+              state: {
+                ...state,
+                vehicleData: currentVehicleData,
+                startStep: 2,
+              },
+            });
+          }}
           onNext={() =>
             document
               .querySelector("form")

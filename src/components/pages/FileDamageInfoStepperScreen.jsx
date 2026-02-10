@@ -12,7 +12,6 @@ import styles from "../../styles/fileDamageStepperScreen.module.css";
 
 const FileDamageInfoStepperScreen = () => {
   const [damageData, setDamageData] = useState({});
-  const [cityOptions, setCityOptions] = useState([]);
   const [formValid, setFormValid] = useState(false);
 
   const navigate = useNavigate();
@@ -47,23 +46,6 @@ const FileDamageInfoStepperScreen = () => {
     }
   }, [routeState.damageData]);
 
-  useEffect(() => {
-    if (!tutanakData?.genel_bilgiler) return;
-
-    const g = tutanakData.genel_bilgiler;
-
-    setDamageData(prev => ({
-      ...prev,
-      accident_datetime: toDDMMYYYY_HHMM(g.kaza_tarihi, g.kaza_saati),
-      accident_city: resolveIlId(g.il),
-      accident_district: (() => {
-        const ilId = resolveIlId(g.il);
-        return ilId ? (findIlceIdByName(ilId, g.ilce) || "") : "";
-      })(),
-      accident_address: g.mahalle_cadde || "",
-    }));
-  }, [tutanakData]);
-
   /* ----------------------------------
      TUTANAKTAN OTOMATİK DOLDUR
   ---------------------------------- */
@@ -73,15 +55,18 @@ const FileDamageInfoStepperScreen = () => {
   )?.data;
 
   useEffect(() => {
-    if (!tutanak) return;
+    if (!tutanak?.genel_bilgiler) return;
+
+    const g = tutanak.genel_bilgiler;
+    const ilId = resolveIlId(g.il);
 
     setDamageData(prev => ({
       ...prev,
-      accident_date: tutanak.genel_bilgiler?.kaza_tarihi || "",
-      accident_time: tutanak.genel_bilgiler?.kaza_saati || "",
-      accident_city: tutanak.genel_bilgiler?.il || "",
-      accident_district: tutanak.genel_bilgiler?.ilce || "",
-      accident_address: tutanak.genel_bilgiler?.mahalle_cadde || "",
+      accident_date: g.kaza_tarihi || "",
+      accident_time: g.kaza_saati || "",
+      accident_city: ilId || g.il || "",
+      accident_district: ilId ? (findIlceIdByName(ilId, g.ilce) || g.ilce || "") : (g.ilce || ""),
+      accident_address: g.mahalle_cadde || "",
       accident_description:
         tutanak.arac_a?.beyan ||
         tutanak.kaza_olus_ve_kroki?.kroki_yorumu ||
@@ -114,20 +99,6 @@ const FileDamageInfoStepperScreen = () => {
     });
   };
 
-  const damageFieldsWithCities = damageInforFields.map(f => {
-    if (f.type === "row" && f.name === "accident_location_row") {
-      return {
-        ...f,
-        children: f.children.map(child =>
-          child.name === "accident_city"
-            ? { ...child, options: cityOptions }
-            : child
-        ),
-      };
-    }
-    return f;
-  });
-
   return (
     <div className={styles.contentArea}>
       <Stepper steps={["Hasar Bilgileri"]} currentStep={1} />
@@ -136,7 +107,7 @@ const FileDamageInfoStepperScreen = () => {
 
       <div className={styles.formCard}>
         <FormRenderer
-          fields={damageFieldsWithCities}
+          fields={damageInforFields}
           values={damageData}
           setValues={setDamageData}
           onSubmit={handleSubmitDamageInfo}
@@ -145,7 +116,16 @@ const FileDamageInfoStepperScreen = () => {
       </div>
 
       <FormFooter
-        onBack={() => navigate(-1)}
+        onBack={() => {
+          const currentDamageData = Object.keys(damageData).length > 0 ? damageData : routeState.damageData;
+          navigate("/step-info", {
+            state: {
+              ...routeState,
+              damageData: currentDamageData,
+              startStep: routeState.returnStep || 3,
+            },
+          });
+        }}
         onNext={() =>
           document
             .querySelector("form")

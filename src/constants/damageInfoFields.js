@@ -62,6 +62,7 @@ const damageFields = [
         options: [],
         required: true,
         icon: MapPinIcon,
+        dependsOn: "accident_city",
         getOptionsFrom: (ilId) => getIlceOptions(ilId),
       },
     ],

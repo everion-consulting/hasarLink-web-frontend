@@ -623,8 +623,8 @@ export default function StepInfoScreen() {
                 { label: 'IBAN', value: (serviceData.service_iban || profileDetail?.service_iban) || 'YOK' },
                 { label: 'IBAN Adı', value: (serviceData.service_iban_name || profileDetail?.service_iban_name) || 'YOK' },
                 { label: 'Servis Adı', value: (serviceData.service_name || profileDetail?.service_name) || 'YOK' },
-                { label: 'İl', value: (serviceData.service_city || profileDetail?.service_city) || 'YOK' },
-                { label: 'İlçe', value: (serviceData.service_state_city_city || profileDetail?.service_state) || 'YOK' },
+                { label: 'İl', value: getIlName(serviceData.service_city) || getIlName(profileDetail?.service_city) || profileDetail?.service_city || 'YOK' },
+                { label: 'İlçe', value: getIlceName(serviceData.service_state_city_city) || getIlceName(profileDetail?.service_state) || profileDetail?.service_state || 'YOK' },
                 { label: 'Adres', value: (serviceData.service_address || profileDetail?.service_address) || 'YOK' },
                 { label: 'Servis No', value: (serviceData.service_tax_no || profileDetail?.service_tax_no) || 'YOK' },
                 { label: 'Bölge Kodu', value: (serviceData.repair_area_code || profileDetail?.repair_area_code) || 'YOK' },
@@ -645,7 +645,7 @@ export default function StepInfoScreen() {
                 {
                   label: 'Kaza Yeri',
                   value: damageData.accident_city && damageData.accident_district
-                    ? `${damageData.accident_city} / ${damageData.accident_district}`
+                    ? `${getIlName(damageData.accident_city) || damageData.accident_city} / ${getIlceName(damageData.accident_district) || damageData.accident_district}`
                     : 'YOK'
                 },
                 {
@@ -768,7 +768,19 @@ export default function StepInfoScreen() {
         }
 
         case 3:
-          navigate("/hasar-bilgileri", { state: { ...params } });
+          navigate("/hasar-bilgileri", {
+            state: {
+              ...params,
+              damageData,
+              driverData,
+              victimData,
+              vehicleData,
+              insuredData,
+              serviceData,
+              opposingDriverData,
+              mechanicData,
+            }
+          });
           return;
 
         case 4:
@@ -1053,7 +1065,9 @@ export default function StepInfoScreen() {
 
   const FormCardComponent = () => (
     <div className={styles.formCard}>
-      {getStepContent().sections.map((section, sectionIndex) => (
+      {getStepContent().sections
+        .filter(section => section.data.some(item => item.value && item.value !== 'YOK'))
+        .map((section, sectionIndex) => (
         <div key={sectionIndex} className={styles.sectionBox}>
           <div className={styles.contentBox}>
             <div className={styles.sectionTitleStep}>{section.title}</div>

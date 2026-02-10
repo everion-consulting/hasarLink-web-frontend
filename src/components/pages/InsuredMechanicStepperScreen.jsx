@@ -10,7 +10,7 @@ import { useProfile } from '../../context/ProfileContext';
 import apiService from '../../services/apiServices';
 import { toYYYYMMDD } from '../utils/formatter';
 import styles from '../../styles/victimInfoScreen.module.css';
-import { findIlIdByName, findIlceIdByName } from '../../constants/ilIlceData';
+import { findIlIdByName, findIlceIdByName, getIlName, getIlceName } from '../../constants/ilIlceData';
 
 const isFilled = (v) => v !== null && v !== undefined && String(v).trim() !== "";
 
@@ -675,8 +675,8 @@ export default function InsuredMechanicStepperScreen() {
                 repair_phone: values.repair_phone,
                 service_name: values.service_name,
                 service_phone: values.service_phone,
-                service_city: values.service_city,
-                service_state: values.service_state_city_city,
+                service_city: getIlName(values.service_city) || values.service_city,
+                service_state: getIlceName(values.service_state_city_city) || values.service_state_city_city,
                 service_address: values.service_address,
                 service_tax_no: values.service_tax_no,
                 service_iban: values.service_iban,
@@ -780,7 +780,15 @@ export default function InsuredMechanicStepperScreen() {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
         } else {
-            navigate(-1);
+            navigate("/step-info", {
+                state: {
+                    ...location.state,
+                    insuredData: Object.keys(insuredData).length > 0 ? insuredData : location.state?.insuredData,
+                    opposingDriverData: Object.keys(opposingDriverData).length > 0 ? opposingDriverData : location.state?.opposingDriverData,
+                    serviceData: Object.keys(serviceData).length > 0 ? serviceData : location.state?.serviceData,
+                    startStep: location.state?.returnStep || 3,
+                },
+            });
         }
     };
 

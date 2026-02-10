@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import submissionService from "../../services/submissionService";
 import FancySelect from "../Dropdowns/FancySelect";
+import { getIlName, getIlceName } from "../../constants/ilIlceData";
 import styles from "../../styles/rejectedFileDetailScreen.module.css";
 
 const FILE_TYPES = [
@@ -324,8 +325,19 @@ const RejectedFileDetailScreen = () => {
     };
 
     // ---------------- Render Field ----------------
+    const CITY_KEYS = ["service_city", "repair_city", "accident_city"];
+    const DISTRICT_KEYS = ["service_state_city_city", "repair_state_city_city", "service_state", "accident_district"];
+
+    const resolveDisplayValue = (key, raw) => {
+        if (!raw) return raw;
+        if (CITY_KEYS.includes(key)) return getIlName(raw) || raw;
+        if (DISTRICT_KEYS.includes(key)) return getIlceName(raw) || raw;
+        return raw;
+    };
+
     const renderField = (label, key, editable) => {
-        const value = fileData?.[key] ?? "";
+        const rawValue = fileData?.[key] ?? "";
+        const value = resolveDisplayValue(key, rawValue);
         const isErr = isErrorField(label, key);
 
         if (

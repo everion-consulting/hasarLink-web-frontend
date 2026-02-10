@@ -328,7 +328,7 @@ export default function Profile() {
 
                     <div className={styles.row}><User size={20} /><p>{profileDetail?.repair_fullname}</p></div>
                     <div className={styles.row}><Phone size={20} /><p>{profileDetail?.repair_phone}</p></div>
-                    <div className={styles.row}><MapPin size={20} /><p>{truncateText(profileDetail?.service_city, 10)} / {truncateText(profileDetail?.service_state, 10)}</p></div>
+                    <div className={styles.row}><MapPin size={20} /><p>{truncateText(getIlName(profileDetail?.service_city) || profileDetail?.service_city, 10)} / {truncateText(getIlceName(profileDetail?.service_state) || profileDetail?.service_state, 10)}</p></div>
                     <div className={styles.row}><Building2 size={20} /><p>{truncateText(profileDetail?.service_address, 17)}</p></div>
                 </div>
 

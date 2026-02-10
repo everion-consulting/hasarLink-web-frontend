@@ -206,7 +206,15 @@ const renderInsuredTypeSwitch = () => (
         </div>
 
         <FormFooter
-          onBack={() => navigate(-1)}
+          onBack={() => {
+            navigate("/step-info", {
+              state: {
+                ...state,
+                victimData: Object.keys(formValues).length > 0 ? formValues : state?.victimData,
+                startStep: 2,
+              },
+            });
+          }}
           onNext={() =>
             document
               .querySelector("form")

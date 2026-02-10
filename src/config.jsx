@@ -1,6 +1,6 @@
 // src/config.jsx
 
-const ROOT = "https://dosya-bildirim-vrosq.ondigitalocean.app";
+const ROOT = import.meta.env.VITE_API_ROOT || "https://dosya-bildirim-vrosq.ondigitalocean.app";
 
 export const API_ROOT = ROOT;
 
@@ -14,7 +14,7 @@ export const API_URL = API_ROOT; // fetchData için uyumluluk
 
 // Google OAuth - Web Client ID
 // ⚠️ Bu ID'yi Firebase Console > Authentication > Sign-in method > Google > Web SDK configuration kısmından alın
-export const GOOGLE_CLIENT_ID = "131263545911-3m8h2edlm0g1qte8qr4b49j55e2hkp46.apps.googleusercontent.com";
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "131263545911-3m8h2edlm0g1qte8qr4b49j55e2hkp46.apps.googleusercontent.com";
 
-export const FIREBASE_WEB_VAPID_KEY = "BNXUR5IcEwWXcklAgC3GLXvEbHX2IIQ6zTLYPjkNaFkfSXi6BYCUkTrURg3wdSKNMSWCQT33vlWxGHoJAsAIFQs";
+export const FIREBASE_WEB_VAPID_KEY = import.meta.env.VITE_FIREBASE_WEB_VAPID_KEY || "BNXUR5IcEwWXcklAgC3GLXvEbHX2IIQ6zTLYPjkNaFkfSXi6BYCUkTrURg3wdSKNMSWCQT33vlWxGHoJAsAIFQs";
 
