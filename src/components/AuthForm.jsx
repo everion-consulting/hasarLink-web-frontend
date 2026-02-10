@@ -461,7 +461,7 @@ Adres: [Şirket adresiniz]<br>
         <div className="modal-overlay">
           <div className="modal-box" style={{ gap: "20px" }}>
             <div className="modal-header">
-              <h3>Sahacı Alan Kodu</h3>
+              <h3>Yönetici Şifre</h3>
               <button
                 className="close-btn"
                 onClick={() => setShowSahaciPassword(false)}
@@ -686,7 +686,7 @@ Adres: [Şirket adresiniz]<br>
               setShowSahaciPassword(true);
             }}
           >
-            Sahacı Alan Kodu Başvuru Formu
+            Yönetici Kodu Başvuru Formu
           </a>
 
         </p>
@@ -701,7 +701,7 @@ Adres: [Şirket adresiniz]<br>
             onSubmit={handleSahaciSubmit}
           >
 
-            <h3 style={{ textAlign: "center" }}>Sahacı Alan Kodu Başvuru</h3>
+            <h3 style={{ textAlign: "center" }}>Yönetici Giriş</h3>
 
             <input
               type="text"
