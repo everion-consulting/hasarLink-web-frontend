@@ -249,6 +249,8 @@ const DocumentUploaderScreen = ({
      AI UPLOAD (file + folder_name)
   -------------------------------------------------- */
   async function uploadToEverionAI(filesWithMeta) {
+    const AI_UPLOAD_TIMEOUT = 180000; // 180 saniye (Gemini analiz suresi icin)
+
     const formData = new FormData();
 
     filesWithMeta.forEach((item) => {
@@ -256,19 +258,35 @@ const DocumentUploaderScreen = ({
       formData.append("folder_names", item.folderName);
     });
 
-    const res = await fetch(
-      "https://doc.everionai.com/api/documents/upload/",
-      {
-        method: "POST",
-        body: formData
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), AI_UPLOAD_TIMEOUT);
+
+    try {
+      const res = await fetch(
+        "https://doc.everionai.com/api/documents/upload/",
+        {
+          method: "POST",
+          body: formData,
+          signal: controller.signal,
+        }
+      );
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData?.error || `Everion AI hata (HTTP ${res.status})`
+        );
       }
-    );
 
-    if (!res.ok) {
-      throw new Error("Everion AI upload failed");
+      return await res.json();
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === "AbortError") {
+        throw new Error("AI analiz suresi doldu. Lutfen tekrar deneyin.");
+      }
+      throw err;
     }
-
-    return await res.json();
   }
 
   /* --------------------------------------------------
