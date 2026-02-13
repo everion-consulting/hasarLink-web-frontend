@@ -61,6 +61,9 @@ const DocumentUploaderScreen = ({
     });
   }, [samePerson, insuranceSource, karsiSamePerson]);
 
+  const AI_EXCLUDED_FILE_TYPES = ["fotograflar", "diger"];
+
+
   /* --------------------------------------------------
      SECTIONS STATE
   -------------------------------------------------- */
@@ -209,11 +212,15 @@ const DocumentUploaderScreen = ({
         return;
       }
 
-      const aiRes = await uploadToEverionAI(
-        allFiles
-          .filter((f) => !failedFiles.some((ff) => ff.name === f.name))
-          .map((f) => ({ file: f.file, folderName: f.sectionId }))
-      );
+      const aiFiles = allFiles
+        .filter((f) => !failedFiles.some((ff) => ff.name === f.name))
+        .filter((f) => !AI_EXCLUDED_FILE_TYPES.includes(f.sectionId))
+        .map((f) => ({
+          file: f.file,
+          folderName: f.sectionId,
+        }));
+
+      const aiRes = await uploadToEverionAI(aiFiles);
 
       const totalCount =
         typeof aiRes?.total === "number" ? aiRes.total : allFiles.length - failedFiles.length;
