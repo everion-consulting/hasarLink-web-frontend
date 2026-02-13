@@ -124,10 +124,26 @@ const DocumentUploaderScreen = ({
   /* --------------------------------------------------
      UPLOAD
   -------------------------------------------------- */
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const CONCURRENT_UPLOADS = 3;
+
+  const uploadSingleFile = async (item) => {
+    const formData = new FormData();
+    formData.append("submission", submissionId);
+    formData.append("file_type", item.sectionId);
+    formData.append("summary", item.title);
+    formData.append("name", item.name || "Dosya");
+    formData.append("file", item.file);
+    formData.append("_uploaded_as", item.sectionId);
+
+    const res = await submissionService.uploadFile(formData);
+    return { item, res };
+  };
+
   const handleUpload = async () => {
     try {
       if (!submissionId) {
-        alert("Submission ID bulunamadı");
+        alert("Submission ID bulunamadi");
         return;
       }
 
@@ -140,31 +156,51 @@ const DocumentUploaderScreen = ({
       );
 
       if (allFiles.length === 0) {
-        alert("Lütfen en az bir dosya yükleyin");
+        alert("Lutfen en az bir dosya yukleyin");
+        return;
+      }
+
+      // Dosya boyutu kontrolu
+      const oversized = allFiles.filter((f) => f.file.size > MAX_FILE_SIZE);
+      if (oversized.length > 0) {
+        const names = oversized.map((f) => f.name).join(", ");
+        alert(`Su dosyalar 10MB limitini asiyor: ${names}`);
         return;
       }
 
       setUploading(true);
       setProgress({ current: 0, total: allFiles.length });
 
-      // 🔹 NORMAL BACKEND UPLOAD
-      for (const item of allFiles) {
-        const formData = new FormData();
-        formData.append("submission", submissionId);
-        formData.append("file_type", item.sectionId);
-        formData.append("summary", item.title);
-        formData.append("name", item.name || "Dosya");
-        formData.append("file", item.file);
-        formData.append("_uploaded_as", item.sectionId);
+      // Paralel yukleme (ayni anda CONCURRENT_UPLOADS kadar)
+      const failedFiles = [];
+      let completed = 0;
 
-        const res = await submissionService.uploadFile(formData);
+      for (let i = 0; i < allFiles.length; i += CONCURRENT_UPLOADS) {
+        const batch = allFiles.slice(i, i + CONCURRENT_UPLOADS);
+        const results = await Promise.allSettled(
+          batch.map((item) => uploadSingleFile(item))
+        );
 
-        if (res?.error) {
-          alert(res.error || "Dosya yüklenemedi");
-          return;
+        for (const result of results) {
+          completed++;
+          setProgress({ current: completed, total: allFiles.length });
+
+          if (result.status === "rejected") {
+            failedFiles.push({ name: batch[results.indexOf(result)]?.name, error: "Baglanti hatasi" });
+          } else if (!result.value.res?.success) {
+            failedFiles.push({ name: result.value.item.name, error: result.value.res?.error || "Yuklenemedi" });
+          }
         }
+      }
 
-        setProgress((p) => ({ ...p, current: p.current + 1 }));
+      if (failedFiles.length > 0) {
+        const summary = failedFiles.map((f) => `${f.name}: ${f.error}`).join("\n");
+        alert(`${failedFiles.length} dosya yuklenemedi:\n${summary}`);
+      }
+
+      // Hic dosya yuklenememisse devam etme
+      if (failedFiles.length === allFiles.length) {
+        return;
       }
 
       /* ---------- AI MODE ---------- */
@@ -174,15 +210,16 @@ const DocumentUploaderScreen = ({
       }
 
       const aiRes = await uploadToEverionAI(
-        allFiles.map((f) => ({ file: f.file, folderName: f.sectionId }))
+        allFiles
+          .filter((f) => !failedFiles.some((ff) => ff.name === f.name))
+          .map((f) => ({ file: f.file, folderName: f.sectionId }))
       );
 
       const totalCount =
-        typeof aiRes?.total === "number" ? aiRes.total : allFiles.length;
+        typeof aiRes?.total === "number" ? aiRes.total : allFiles.length - failedFiles.length;
 
       localStorage.setItem("total", String(totalCount));
 
-      // debug
       console.log("Everion aiRes:", aiRes);
       console.log("Saved total:", localStorage.getItem("total"));
 
@@ -196,13 +233,13 @@ const DocumentUploaderScreen = ({
           selectedCompany,
           samePerson,
           karsiSamePerson,
-          total: totalCount, //  EN ÖNEMLİSİ: state ile taşı
+          total: totalCount,
         },
       });
 
     } catch (err) {
       console.error(err);
-      alert("Yükleme sırasında hata oluştu");
+      alert("Yukleme sirasinda hata olustu");
     } finally {
       setUploading(false);
     }

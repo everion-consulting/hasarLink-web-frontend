@@ -12,37 +12,31 @@ const submissionService = {
         "multipart/form-data"
       );
 
-      // fetchData bazen success'i doğru döndürür
       if (res?.success === true) return res;
 
-      // fetchData bazen data döndürür ama success koymaz
       if (res?.data?.file) {
         return { success: true, data: res.data };
       }
 
-      return res;
+      // Basarisiz durumlarda hatanin acik donmesini sagla
+      return {
+        success: false,
+        error: res?.message || res?.data?.detail || "Dosya yuklenemedi",
+      };
     } catch (err) {
-      console.warn("⚠️ fetchData throw etti ama backend yüklemiş olabilir", err);
+      console.error("uploadFile hata:", err);
 
-      // Axios wrapper response içeriyorsa
       if (err?.response?.data) {
-        return err.response.data;
+        return {
+          success: false,
+          error: err.response.data?.detail || err.response.data?.message || "Sunucu hatasi",
+        };
       }
 
-      // fetchData JSON'u string olarak error.message içine koymuş olabilir
-      if (typeof err?.message === "string") {
-        try {
-          const parsed = JSON.parse(err.message);
-          return parsed;
-        } catch {
-          // 🔥 kritik nokta:
-          // Network’te dosya görünüyor ama fetchData parse edemedi
-          // => bunu SUCCESS say
-          return { success: true };
-        }
-      }
-
-      return { success: true };
+      return {
+        success: false,
+        error: err?.message || "Baglanti hatasi",
+      };
     }
   }
 };

@@ -40,9 +40,17 @@ export async function fetchData(
       ...(body && contentType === "multipart/form-data" && { body }),
     };
 
+    // Dosya yukleme icin 120sn, diger istekler icin 30sn timeout
+    const isUpload = contentType === "multipart/form-data";
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), isUpload ? 120000 : 30000);
+    options.signal = controller.signal;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      console.log("⚠️ API Error:", response.status, `${API_BASE_URL}${endpoint}`);
+      console.log("API Error:", response.status, `${API_BASE_URL}${endpoint}`);
     }
 
 
@@ -60,9 +68,10 @@ export async function fetchData(
     };
   } catch (err) {
     console.error("Fetch hata:", err);
+    const isTimeout = err.name === "AbortError";
     return {
       success: false,
-      message: err.message,
+      message: isTimeout ? "Istek zaman asimina ugradi" : err.message,
       data: null,
     };
   }
