@@ -4,6 +4,7 @@ import submissionService from "../../services/submissionService";
 import styles from "../../styles/documentUploaderScreen.module.css";
 import FormFooter from "../forms/FormFooter";
 import { FILE_TYPES } from "../../constants/filesTypes";
+import toast from "react-hot-toast";
 
 /* --------------------------------------------------
    DOCUMENT UPLOADER
@@ -44,6 +45,11 @@ const DocumentUploaderScreen = ({
     location.state?.submission_id ||
     localStorage.getItem("submissionId");
 
+
+  const AI_EXCLUDED_FILE_TYPES = ["fotograflar", "diger"];
+  const [checkingSections, setCheckingSections] = useState({});
+
+
   /* --------------------------------------------------
      🔥 DİNAMİK FILE TYPES
   -------------------------------------------------- */
@@ -61,7 +67,6 @@ const DocumentUploaderScreen = ({
     });
   }, [samePerson, insuranceSource, karsiSamePerson]);
 
-  const AI_EXCLUDED_FILE_TYPES = ["fotograflar", "diger"];
 
 
   /* --------------------------------------------------
@@ -82,34 +87,79 @@ const DocumentUploaderScreen = ({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
 
+  const EXPECTED_DOC_TYPES = {
+    tutanak: "Kaza Tespit Tutanağı",
+    magdur_arac_ruhsat: "Ruhsat",
+    magdur_arac_ehliyet: "Kimlik",
+    bizim_taraf_surucu_ehliyet: "Kimlik",
+    sigortali_arac_ruhsat: "Ruhsat",
+    sigortali_arac_ehliyet: "Kimlik",
+    karsi_taraf_surucu_ehliyet: "Kimlik",
+  };
+
+
+
   /* --------------------------------------------------
      FILE SELECT
   -------------------------------------------------- */
-  const handleFileSelect = (e, sectionId) => {
+  const handleFileSelect = async (e, sectionId) => {
     const files = Array.from(e.target.files);
 
-    setSections((prev) =>
-      prev.map((sec) =>
+    setCheckingSections(p => ({ ...p, [sectionId]: true }));
+
+    const validatedFiles = [];
+
+    for (const file of files) {
+      // 🧠 Fotograf & Diger hariç AI kontrolü
+      if (!AI_EXCLUDED_FILE_TYPES.includes(sectionId)) {
+        const aiResult = await checkWithAI(file, sectionId);
+
+        if (!aiResult) {
+          setCheckingSections(p => ({ ...p, [sectionId]: false }));
+          e.target.value = "";
+          return; // ❌ yanlış belge → ekleme
+        }
+
+        validatedFiles.push({
+          id: `${sectionId}-${Date.now()}-${Math.random()}`,
+          file,
+          preview: file.type.includes("image")
+            ? URL.createObjectURL(file)
+            : null,
+          name: file.name,
+          type: file.type,
+          aiChecked: true,
+          aiResult, // 🔥 KAYIT
+        });
+      } else {
+        // AI olmayanlar
+        validatedFiles.push({
+          id: `${sectionId}-${Date.now()}-${Math.random()}`,
+          file,
+          preview: file.type.includes("image")
+            ? URL.createObjectURL(file)
+            : null,
+          name: file.name,
+          type: file.type,
+          aiChecked: false,
+          aiResult: null,
+        });
+      }
+    }
+
+    // ✅ STATE’E EKLE
+    setSections(prev =>
+      prev.map(sec =>
         sec.id === sectionId
-          ? {
-            ...sec,
-            files: [
-              ...sec.files,
-              ...files.map((f) => ({
-                id: `${sectionId}-${Date.now()}-${Math.random()}`,
-                file: f,
-                preview: f.type.includes("image")
-                  ? URL.createObjectURL(f)
-                  : null,
-                name: f.name,
-                type: f.type
-              }))
-            ]
-          }
+          ? { ...sec, files: [...sec.files, ...validatedFiles] }
           : sec
       )
     );
+
+    setCheckingSections(p => ({ ...p, [sectionId]: false }));
+    e.target.value = "";
   };
+
 
   /* --------------------------------------------------
      DELETE FILE
@@ -144,113 +194,66 @@ const DocumentUploaderScreen = ({
   };
 
   const handleUpload = async () => {
+    if (!submissionId) {
+      toast.error("Submission bulunamadı");
+      return;
+    }
+
+    const allFiles = sections.flatMap(s =>
+      s.files.map(f => ({
+        ...f,
+        sectionId: s.id,
+        title: s.title,
+      }))
+    );
+
+    if (allFiles.length === 0) {
+      toast.error("Lütfen en az bir belge yükleyin");
+      return;
+    }
+
+    setUploading(true);
+    setProgress({ current: 0, total: allFiles.length });
+
     try {
-      if (!submissionId) {
-        alert("Submission ID bulunamadi");
-        return;
-      }
-
-      const allFiles = sections.flatMap((s) =>
-        s.files.map((f) => ({
-          ...f,
-          sectionId: s.id,
-          title: s.title
-        }))
-      );
-
-      if (allFiles.length === 0) {
-        alert("Lutfen en az bir dosya yukleyin");
-        return;
-      }
-
-      // Dosya boyutu kontrolu
-      const oversized = allFiles.filter((f) => f.file.size > MAX_FILE_SIZE);
-      if (oversized.length > 0) {
-        const names = oversized.map((f) => f.name).join(", ");
-        alert(`Su dosyalar 10MB limitini asiyor: ${names}`);
-        return;
-      }
-
-      setUploading(true);
-      setProgress({ current: 0, total: allFiles.length });
-
-      // Paralel yukleme (ayni anda CONCURRENT_UPLOADS kadar)
-      const failedFiles = [];
       let completed = 0;
 
       for (let i = 0; i < allFiles.length; i += CONCURRENT_UPLOADS) {
         const batch = allFiles.slice(i, i + CONCURRENT_UPLOADS);
-        const results = await Promise.allSettled(
-          batch.map((item) => uploadSingleFile(item))
+
+        await Promise.all(
+          batch.map(async (item) => {
+            await uploadSingleFile(item);
+            completed++;
+            setProgress({ current: completed, total: allFiles.length });
+          })
         );
-
-        for (const result of results) {
-          completed++;
-          setProgress({ current: completed, total: allFiles.length });
-
-          if (result.status === "rejected") {
-            failedFiles.push({ name: batch[results.indexOf(result)]?.name, error: "Baglanti hatasi" });
-          } else if (!result.value.res?.success) {
-            failedFiles.push({ name: result.value.item.name, error: result.value.res?.error || "Yuklenemedi" });
-          }
-        }
       }
 
-      if (failedFiles.length > 0) {
-        const summary = failedFiles.map((f) => `${f.name}: ${f.error}`).join("\n");
-        alert(`${failedFiles.length} dosya yuklenemedi:\n${summary}`);
-      }
-
-      // Hic dosya yuklenememisse devam etme
-      if (failedFiles.length === allFiles.length) {
-        return;
-      }
-
-      /* ---------- AI MODE ---------- */
-      if (!isAiMode) {
-        onContinue?.();
-        return;
-      }
-
-      const aiFiles = allFiles
-        .filter((f) => !failedFiles.some((ff) => ff.name === f.name))
-        .filter((f) => !AI_EXCLUDED_FILE_TYPES.includes(f.sectionId))
-        .map((f) => ({
-          file: f.file,
-          folderName: f.sectionId,
-        }));
-
-      const aiRes = await uploadToEverionAI(aiFiles);
-
-      const totalCount =
-        typeof aiRes?.total === "number" ? aiRes.total : allFiles.length - failedFiles.length;
-
-      localStorage.setItem("total", String(totalCount));
-
-      console.log("Everion aiRes:", aiRes);
-      console.log("Saved total:", localStorage.getItem("total"));
+      // 🔥 AI SONUÇLARI ZATEN ELİNDE
+      const aiDocuments = allFiles
+        .filter(f => f.aiChecked)
+        .map(f => f.aiResult);
 
       navigate("/victim-info", {
         state: {
           submissionId,
-          startStep: 2,
-          aiDocuments: aiRes?.results || [],
+          aiDocuments, // 👈 TEKRAR AI YOK
           kazaNitelik,
           insuranceSource,
           selectedCompany,
           samePerson,
           karsiSamePerson,
-          total: totalCount,
         },
       });
 
     } catch (err) {
-      console.error(err);
-      alert("Yukleme sirasinda hata olustu");
+      toast.error("Yükleme sırasında hata oluştu");
     } finally {
       setUploading(false);
     }
   };
+
 
   /* --------------------------------------------------
      AI UPLOAD (file + folder_name)
@@ -296,6 +299,35 @@ const DocumentUploaderScreen = ({
     }
   }
 
+  const checkWithAI = async (file, sectionId) => {
+    const expectedType = EXPECTED_DOC_TYPES[sectionId];
+    if (!expectedType) return null;
+
+    const formData = new FormData();
+    formData.append("files", file);
+    formData.append("folder_names", sectionId);
+
+    const res = await fetch("https://doc.everionai.com/api/documents/upload/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    const detectedType = data?.results?.[0]?.doc_type;
+
+    if (
+      !detectedType ||
+      !detectedType.toLowerCase().includes(expectedType.toLowerCase())
+    ) {
+      toast.error(
+        `Yanlış belge tipi • Beklenen: ${expectedType} • Algılanan: ${detectedType}`
+      );
+      return null;
+    }
+
+    return data.results[0];
+  };
+
   /* --------------------------------------------------
      UI
   -------------------------------------------------- */
@@ -326,7 +358,11 @@ const DocumentUploaderScreen = ({
 
             <div className={styles.uploadPreviewArea}>
               {section.files.length === 0 && (
-                <div className={styles.uploadEmpty}>Dosya yok</div>
+                <div className={styles.uploadEmpty}>
+                  {checkingSections[section.id]
+                    ? "Belge kontrol ediliyor..."
+                    : "Dosya yok"}
+                </div>
               )}
 
               {section.files.length > 0 && (

@@ -40,6 +40,7 @@ import { listenForegroundMessages } from "./components/webPush/foregroundListene
 import { ensureWebPushReady } from "./components/webPush/initWebPush";
 import Graphics from "./components/pages/Graphics";
 import DocumentUploaderScreen from "./components/pages/DocumentUploadScreen";
+import { Toaster } from "react-hot-toast";
 
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -184,6 +185,28 @@ export default function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Router>
+        <Toaster
+          position="center"
+          gutter={10}
+          toastOptions={{
+            duration: 3500,
+            style: {
+              background: "#ffffff",
+              color: "#111827",
+              borderRadius: "10px",
+              padding: "12px 14px",
+              fontSize: "14px",
+              fontWeight: 500,
+              boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+              border: "1px solid #e5e7eb",
+            },
+
+            error: {
+              icon: null, // ❌ react-hot-toast default ikonunu kapat
+            },
+          }}
+        />
+
         <NotificationProvider>
           <ProfileProvider>
             <AppContent isAuth={isAuth} setIsAuth={setIsAuth} />
