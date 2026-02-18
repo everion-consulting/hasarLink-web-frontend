@@ -4,7 +4,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../assets/icons/google.svg";
 import AppleIcon from "../assets/icons/apple.svg";
 import AuthAPI from "../services/authAPI";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, EyeSlashIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { maskPhone, validatePhone, validateEmail } from "../components/utils/formatter";
 import apiService from "../services/apiServices";
 
@@ -520,6 +520,28 @@ Adres: [Şirket adresiniz]<br>
       <form className="auth-form" onSubmit={handleSubmit}>
         {type === "register" && (
           <>
+            {/* Veri Güvenliği Bilgilendirme Kartı */}
+            <div style={{
+              backgroundColor: '#EFF6FF',
+              borderRadius: '12px',
+              padding: '12px 14px',
+              marginBottom: '16px',
+              border: '1px solid #BFDBFE',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+            }}>
+              <ShieldCheckIcon style={{ width: '22px', height: '22px', color: '#133E87', flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#133E87', marginBottom: '4px' }}>
+                  Verileriniz Güvende
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#475569', lineHeight: '1.5' }}>
+                  Bilgileriniz 256-bit SSL şifreleme ile korunmaktadır. Verileriniz yalnızca hasar bildirim sürecinde kullanılır, üçüncü taraflarla ticari amaçla paylaşılmaz.
+                </div>
+              </div>
+            </div>
+
             <input type="text" name="name" placeholder="Ad Soyad" onChange={handleChange} required />
             <div className="input-wrapper">
               <input
@@ -614,6 +636,24 @@ Adres: [Şirket adresiniz]<br>
 
         {type === "login" && (
           <>
+            {/* Veri Güvenliği Bildirimi */}
+            <div style={{
+              backgroundColor: '#EFF6FF', borderRadius: '12px',
+              padding: '12px 14px', marginBottom: '16px',
+              border: '1px solid #BFDBFE', display: 'flex',
+              alignItems: 'flex-start', gap: '10px',
+            }}>
+              <ShieldCheckIcon style={{ width: '22px', height: '22px', color: '#133E87', flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#133E87', marginBottom: '4px' }}>
+                  Verileriniz Güvende
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#475569', lineHeight: '1.5' }}>
+                  Bilgileriniz 256-bit SSL şifreleme ile korunmaktadır. Verileriniz yalnızca hasar bildirim sürecinde kullanılır, üçüncü taraflarla ticari amaçla paylaşılmaz.
+                </div>
+              </div>
+            </div>
+
             <input
               type="text"
               name="username"
