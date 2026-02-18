@@ -122,12 +122,11 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
 
 <b>Veri Sorumlusu:</b> Everion Consulting<br>
 <b>Uygulama:</b> HasarLink – Araç Kaza Dosya Takip Uygulaması<br>
-<b>E-posta:</b> kvkk@everionconsulting.com<br>
-<b>Telefon:</b> [Telefon numaranız]<br>
+<b>E-posta:</b> bilgi@hasarlink.com<br>
 <b>Adres:</b> [Şirket adresiniz]<br>
 <b>KEP Adresi:</b> [KEP adresiniz - varsa]<br><br>
 
-Everion Consulting ("Şirket") olarak, HasarLink uygulaması aracılığıyla işlediğimiz kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında korumakta ve aşağıda açıklanan şartlarda işlemekteyiz.<br><br>
+Everion Consulting olarak, HasarLink uygulaması aracılığıyla işlediğimiz kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında korumakta ve aşağıda açıklanan şartlarda işlemekteyiz.<br><br>
 
 <b>1. Kişisel Verilerin İşlenme Amaçları</b><br>
 • Araç kaza dosya bildiriminin oluşturulması ve yönetilmesi<br>
@@ -203,7 +202,7 @@ Sadece anonim kullanım verileri toplanır.<br><br>
 • Tazminat talep etme<br><br>
 
 <b>10. Başvuru Yöntemleri</b><br>
-E-posta: kvkk@everionconsulting.com<br>
+E-posta: bilgi@hasarlink.com<br>
 Adres: [Şirket adresiniz]<br>
 KEP: [KEP adresi – varsa]<br>
 Uygulama içi KVKK formu<br><br>
@@ -221,7 +220,7 @@ Güncellemeler uygulama içi bildirim veya e-posta yoluyla duyurulur.<br><br>
 <b>Son Güncelleme Tarihi:</b> 2025<br><br>
 
 <b>İletişim</b><br>
-E-posta: kvkk@everionconsulting.com<br>
+E-posta: bilgi@hasarlink.com<br>
 Adres: [Şirket adresiniz]<br>
 © 2024 Everion Consulting - HasarLink<br>
 `;
