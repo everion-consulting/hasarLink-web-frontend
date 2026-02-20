@@ -37,6 +37,22 @@ export default function AuthForm({ type, setIsAuth, setActiveTab }) {
   const [sahaciError, setSahaciError] = useState("");
   const [sahaciAuthorized, setSahaciAuthorized] = useState(false);
 
+  // -----------------------------
+  // ŞİFREMİ UNUTTUM (Email 3 adım)
+  // -----------------------------
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: email, 2: code, 3: new pass
+
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotCode, setForgotCode] = useState("");
+  const [forgotResetToken, setForgotResetToken] = useState("");
+
+  const [forgotNewPass, setForgotNewPass] = useState("");
+  const [forgotNewPass2, setForgotNewPass2] = useState("");
+
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMsg, setForgotMsg] = useState("");
+
   // Sahacı form
   const [sahaciForm, setSahaciForm] = useState({
     sahaci_tc: "",
@@ -293,6 +309,118 @@ Adres: [Şirket adresiniz]<br>
     if (!policyAccepted) setShowPolicyModal(true);
     else setPolicyAccepted(false);
   };
+  const openForgot = () => {
+    setForgotEmail(form.username || "");
+    setForgotCode("");
+    setForgotResetToken("");
+    setForgotNewPass("");
+    setForgotNewPass2("");
+    setForgotMsg("");
+    setForgotStep(1);
+    setShowForgotModal(true);
+  };
+
+  const closeForgot = () => {
+    setShowForgotModal(false);
+    setForgotLoading(false);
+  };
+
+  const requestResetCode = async () => {
+    if (!validateEmail(forgotEmail)) {
+      setForgotMsg("Geçerli bir e-posta adresi giriniz.");
+      return;
+    }
+
+    try {
+      setForgotLoading(true);
+      setForgotMsg("");
+
+      const res = await AuthAPI.requestPasswordResetEmail(forgotEmail);
+      setForgotMsg(res?.message || "Kod e-posta adresinize gönderildi.");
+      setForgotStep(2);
+    } catch (err) {
+      setForgotMsg(err?.detail || err?.message || "Kod gönderilirken hata oluştu.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const verifyResetCode = async () => {
+    if (!validateEmail(forgotEmail)) {
+      setForgotMsg("Geçerli bir e-posta adresi giriniz.");
+      return;
+    }
+    if (!forgotCode || forgotCode.trim().length < 4) {
+      setForgotMsg("Lütfen doğrulama kodunu girin.");
+      return;
+    }
+
+    try {
+      setForgotLoading(true);
+      setForgotMsg("");
+
+      const res = await AuthAPI.verifyPasswordResetCode(forgotEmail, forgotCode.trim());
+
+      const token =
+        res?.reset_token ||
+        res?.resetToken ||
+        res?.token ||
+        res?.data?.reset_token ||
+        res?.data?.token;
+
+      if (!token) {
+        setForgotMsg("Reset token alınamadı. Lütfen kodu tekrar isteyin.");
+        return;
+      }
+
+      setForgotResetToken(token);
+      setForgotMsg("Kod doğrulandı. Yeni şifrenizi belirleyin.");
+      setForgotStep(3);
+    } catch (err) {
+      setForgotMsg(err?.detail || err?.message || "Kod doğrulanamadı.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const resetPassword = async () => {
+    if (!forgotResetToken) {
+      setForgotMsg("Reset token yok. Lütfen kodu tekrar doğrulayın.");
+      setForgotStep(2);
+      return;
+    }
+    if (!forgotNewPass || forgotNewPass.length < 6) {
+      setForgotMsg("Şifre en az 6 karakter olmalı.");
+      return;
+    }
+    if (forgotNewPass !== forgotNewPass2) {
+      setForgotMsg("Şifreler eşleşmiyor.");
+      return;
+    }
+
+    try {
+      setForgotLoading(true);
+      setForgotMsg("");
+
+      const res = await AuthAPI.resetPasswordWithToken(
+        forgotResetToken,
+        forgotNewPass,
+        forgotNewPass2
+      );
+
+      setForgotMsg(res?.message || "Şifreniz güncellendi. Giriş yapabilirsiniz.");
+      // login ekranına dön + username'i doldur
+      setForm((p) => ({ ...p, username: forgotEmail, password: "" }));
+      setTimeout(() => {
+        closeForgot();
+        setActiveTab?.("login");
+      }, 700);
+    } catch (err) {
+      setForgotMsg(err?.detail || err?.message || "Şifre güncellenemedi.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -513,6 +641,391 @@ Adres: [Şirket adresiniz]<br>
         </div>
       )}
 
+      {showForgotModal && (
+        <div
+          className="modal-overlay"
+          onClick={closeForgot}
+          style={{
+            background: "rgba(15, 23, 42, 0.55)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 18,
+            zIndex: 9999,
+          }}
+        >
+          <div
+            className="modal-box"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "min(520px, 92vw)",
+              borderRadius: 18,
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(255,255,255,0.92)",
+              boxShadow: "0 20px 60px rgba(15,23,42,0.25)",
+              overflow: "hidden",
+            }}
+          >
+            {/* HEADER */}
+            <div
+              style={{
+                padding: "16px 16px 14px",
+                background:
+                  "linear-gradient(135deg, rgba(19,62,135,0.12), rgba(59,130,246,0.10))",
+                borderBottom: "1px solid rgba(15,23,42,0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 12,
+                    background: "rgba(19,62,135,0.12)",
+                    display: "grid",
+                    placeItems: "center",
+                    border: "1px solid rgba(19,62,135,0.18)",
+                  }}
+                >
+                  {/* basit kilit ikonu */}
+                  <span style={{ fontSize: 18 }}>🔒</span>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>
+                    Şifremi Unuttum
+                  </div>
+                  <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>
+                    3 adımda şifreni yenileyelim.
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={closeForgot}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 10,
+                  border: "1px solid rgba(15,23,42,0.10)",
+                  background: "rgba(255,255,255,0.85)",
+                  cursor: "pointer",
+                  fontSize: 18,
+                  lineHeight: "32px",
+                }}
+                aria-label="Kapat"
+                title="Kapat"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* PROGRESS + STEPS */}
+            <div style={{ padding: "14px 16px 0" }}>
+              {/* progress bar */}
+              <div
+                style={{
+                  height: 8,
+                  borderRadius: 999,
+                  background: "rgba(15,23,42,0.08)",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: forgotStep === 1 ? "33%" : forgotStep === 2 ? "66%" : "100%",
+                    background: "linear-gradient(90deg, #133E87, #3B82F6)",
+                    borderRadius: 999,
+                    transition: "width .25s ease",
+                  }}
+                />
+              </div>
+
+              {/* step chips */}
+              <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                {[
+                  { n: 1, t: "E-posta" },
+                  { n: 2, t: "Kod" },
+                  { n: 3, t: "Yeni Şifre" },
+                ].map((s) => {
+                  const active = forgotStep === s.n;
+                  const done = forgotStep > s.n;
+                  return (
+                    <div
+                      key={s.n}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "7px 10px",
+                        borderRadius: 999,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: active || done ? "#133E87" : "#64748b",
+                        background: active
+                          ? "rgba(19,62,135,0.10)"
+                          : done
+                            ? "rgba(34,197,94,0.12)"
+                            : "rgba(15,23,42,0.06)",
+                        border: "1px solid rgba(15,23,42,0.08)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 18,
+                          height: 18,
+                          borderRadius: 999,
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: 11,
+                          background: active
+                            ? "rgba(19,62,135,0.14)"
+                            : done
+                              ? "rgba(34,197,94,0.18)"
+                              : "rgba(15,23,42,0.08)",
+                        }}
+                      >
+                        {done ? "✓" : s.n}
+                      </span>
+                      {s.t}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* BODY */}
+            <div style={{ padding: "14px 16px 16px", display: "grid", gap: 12 }}>
+              {/* STEP 1 */}
+              {forgotStep === 1 && (
+                <>
+                  <div style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>
+                    E-posta adresini gir, sana doğrulama kodu göndereceğiz.
+                  </div>
+
+                  <input
+                    type="email"
+                    placeholder="E-posta adresiniz"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      padding: "0 12px",
+                      outline: "none",
+                      background: "white",
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={requestResetCode}
+                    disabled={forgotLoading}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "none",
+                      cursor: forgotLoading ? "not-allowed" : "pointer",
+                      fontWeight: 800,
+                      color: "white",
+                      background: forgotLoading
+                        ? "rgba(59,130,246,0.60)"
+                        : "linear-gradient(90deg, #133E87, #3B82F6)",
+                      boxShadow: "0 10px 24px rgba(59,130,246,0.18)",
+                    }}
+                  >
+                    {forgotLoading ? "Gönderiliyor..." : "Kodu Gönder"}
+                  </button>
+                </>
+              )}
+
+              {/* STEP 2 */}
+              {forgotStep === 2 && (
+                <>
+                  <div style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>
+                    E-postana gelen doğrulama kodunu gir.
+                  </div>
+
+                  <input
+                    type="email"
+                    placeholder="E-posta adresiniz"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      padding: "0 12px",
+                      outline: "none",
+                      background: "white",
+                    }}
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Doğrulama Kodu"
+                    value={forgotCode}
+                    onChange={(e) => setForgotCode(e.target.value)}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      padding: "0 12px",
+                      outline: "none",
+                      background: "white",
+                      letterSpacing: 3,
+                      fontWeight: 800,
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={verifyResetCode}
+                    disabled={forgotLoading}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "none",
+                      cursor: forgotLoading ? "not-allowed" : "pointer",
+                      fontWeight: 800,
+                      color: "white",
+                      background: forgotLoading
+                        ? "rgba(19,62,135,0.55)"
+                        : "linear-gradient(90deg, #133E87, #1D4ED8)",
+                      boxShadow: "0 10px 24px rgba(19,62,135,0.18)",
+                    }}
+                  >
+                    {forgotLoading ? "Doğrulanıyor..." : "Kodu Doğrula"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={requestResetCode}
+                    disabled={forgotLoading}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      background: "white",
+                      cursor: forgotLoading ? "not-allowed" : "pointer",
+                      fontWeight: 800,
+                      color: "#0f172a",
+                    }}
+                  >
+                    Kodu Tekrar Gönder
+                  </button>
+                </>
+              )}
+
+              {/* STEP 3 */}
+              {forgotStep === 3 && (
+                <>
+                  <div style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>
+                    Yeni şifreni belirle ve onayla.
+                  </div>
+
+                  <input
+                    type="password"
+                    placeholder="Yeni Şifre"
+                    value={forgotNewPass}
+                    onChange={(e) => setForgotNewPass(e.target.value)}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      padding: "0 12px",
+                      outline: "none",
+                      background: "white",
+                    }}
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="Yeni Şifre Tekrar"
+                    value={forgotNewPass2}
+                    onChange={(e) => setForgotNewPass2(e.target.value)}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      padding: "0 12px",
+                      outline: "none",
+                      background: "white",
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={resetPassword}
+                    disabled={forgotLoading}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "none",
+                      cursor: forgotLoading ? "not-allowed" : "pointer",
+                      fontWeight: 800,
+                      color: "white",
+                      background: forgotLoading
+                        ? "rgba(34,197,94,0.60)"
+                        : "linear-gradient(90deg, #16A34A, #22C55E)",
+                      boxShadow: "0 10px 24px rgba(34,197,94,0.18)",
+                    }}
+                  >
+                    {forgotLoading ? "Kaydediliyor..." : "Şifreyi Güncelle"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(2)}
+                    disabled={forgotLoading}
+                    style={{
+                      height: 44,
+                      borderRadius: 12,
+                      border: "1px solid rgba(15,23,42,0.12)",
+                      background: "white",
+                      cursor: forgotLoading ? "not-allowed" : "pointer",
+                      fontWeight: 800,
+                      color: "#0f172a",
+                    }}
+                  >
+                    Koda Geri Dön
+                  </button>
+                </>
+              )}
+
+              {/* MESSAGE */}
+              {forgotMsg && (
+                <div
+                  style={{
+                    marginTop: 4,
+                    padding: "10px 12px",
+                    borderRadius: 12,
+                    border: "1px solid rgba(15,23,42,0.10)",
+                    background: forgotMsg.includes("✅")
+                      ? "rgba(34,197,94,0.10)"
+                      : "rgba(239,68,68,0.10)",
+                    color: forgotMsg.includes("✅") ? "#166534" : "#991b1b",
+                    fontSize: 12.5,
+                    lineHeight: 1.45,
+                    fontWeight: 700,
+                  }}
+                >
+                  {forgotMsg}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ————————————————  
            🧩 ANA FORM
       ———————————————— */}
@@ -726,6 +1239,17 @@ Adres: [Şirket adresiniz]<br>
             }}
           >
             Yönetici Kodu Başvuru Formu
+          </a>
+          <br />
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              openForgot();
+            }}
+            style={{ display: "inline-block", marginTop: 8 }}
+          >
+            Şifremi Unuttum
           </a>
 
         </p>

@@ -277,13 +277,24 @@ const AuthAPI = {
       const data = await response.json();
       if (!response.ok) throw data;
 
-      return { success: true, reset_token: data.reset_token };
+      const token =
+        data?.reset_token ||
+        data?.resetToken ||
+        data?.token ||
+        data?.data?.reset_token ||
+        data?.data?.resetToken ||
+        data?.data?.token;
+
+      if (!token) {
+        throw { detail: "Backend reset token göndermedi (verify response içinde bulunamadı)." };
+      }
+
+      return { success: true, reset_token: token };
     } catch (error) {
       console.error("Code Verify Error:", error);
       throw error;
     }
   },
-
   resetPasswordWithToken: async (reset_token, new_password, confirm_password) => {
     try {
       const response = await fetch(`${ACCOUNTS_BASE}/password-reset-code/reset-password/`, {
