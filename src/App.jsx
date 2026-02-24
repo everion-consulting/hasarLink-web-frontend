@@ -41,6 +41,7 @@ import { ensureWebPushReady } from "./components/webPush/initWebPush";
 import Graphics from "./components/pages/Graphics";
 import DocumentUploaderScreen from "./components/pages/DocumentUploadScreen";
 import { Toaster } from "react-hot-toast";
+import GizlilikPolitikasi from "./components/pages/GizlilikPolitikasi";
 
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -101,6 +102,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/step-info" element={isAuth ? <StepInfoScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/insurance-select" element={isAuth ? <InsuranceSelect /> : <Navigate to="/auth" replace />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/gizlilik-politikasi" element={<GizlilikPolitikasi />} />
         <Route path="/edit-favorites" element={isAuth ? <EditFavoritesScreen /> : <Navigate to="/auth" replace />} />
         <Route path="/insurance-stepper" element={isAuth ? <InsuranceStepper /> : <Navigate to="/auth" replace />} />
         <Route path="/insured-mechanic-stepper" element={isAuth ? <InsuredMechanicStepperScreen /> : <Navigate to="/auth" replace />} />
