@@ -105,7 +105,7 @@ export default function TopBar() {
 
     return (
         <header className={styles.topBar}>
-            <div className={styles.logo}>
+            <div className={styles.logo} onClick={() => navigate("/")}>
                 <img src={HasarLinkLogo} alt="HasarLink" className={styles.logoIcon} />
                 <span className={styles.logoText}>HASARLİNK</span>
             </div>

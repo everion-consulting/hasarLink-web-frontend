@@ -914,14 +914,6 @@ export default function StepInfoScreen() {
         });
         break;
 
-        navigate('/accident-type', {
-          state: {
-            ...baseParams,
-            kazaNitelik: kazaNitelik || null,
-            preSelectedAccidentType: kazaNitelik,
-          }
-        });
-        break;
       case 'insurance_company':
         navigate('/insurance-select', {
           state: {
@@ -932,17 +924,17 @@ export default function StepInfoScreen() {
           }
         });
         break;
-      case 'same_person':
       case 'insurance_source':
         if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
           alert("Düzenleme Yapılamaz: Tekli kaza seçtiğiniz için sigorta kaynağı otomatik olarak 'Bizim Kasko' olarak belirlenmiştir ve değiştirilemez.");
           return;
         }
+
         navigate('/insurance-stepper', {
           state: {
             ...baseParams,
             editMode: true,
-            focusStep: 2,
+            focusStep: 1,
             preSelectedStep1: samePerson ? 'yes' : 'no',
             preSelectedStep2: insuranceSource,
             returnTo: '/step-info',
@@ -950,13 +942,28 @@ export default function StepInfoScreen() {
           }
         });
         break;
+
+
+      case 'same_person':
+        navigate('/insurance-stepper', {
+          state: {
+            ...baseParams,
+            editMode: true,
+            focusStep: 1,
+            preSelectedStep1: samePerson ? 'yes' : 'no',
+            returnTo: '/step-info',
+            returnStep: currentStep
+          }
+        });
+        break;
+
       case 'is_insured_opposing_driver_same':
         navigate('/insurance-stepper', {
           state: {
             ...baseParams,
             editMode: true,
-            focusStep: 3,
-            preSelectedStep3:
+            focusStep: 2,
+            preSelectedStep2:
               karsiSamePerson === true ? 'yes' :
                 karsiSamePerson === false ? 'no' :
                   null,
@@ -1068,54 +1075,54 @@ export default function StepInfoScreen() {
       {getStepContent().sections
         .filter(section => section.data.some(item => item.value && item.value !== 'YOK'))
         .map((section, sectionIndex) => (
-        <div key={sectionIndex} className={styles.sectionBox}>
-          <div className={styles.contentBox}>
-            <div className={styles.sectionTitleStep}>{section.title}</div>
+          <div key={sectionIndex} className={styles.sectionBox}>
+            <div className={styles.contentBox}>
+              <div className={styles.sectionTitleStep}>{section.title}</div>
 
-            <div className={styles.dataContainer}>
-              {section.data.map((item, itemIndex) => (
-                (item.value !== undefined && item.value !== null) && (
-                  <div key={itemIndex} className={styles.dataRow}>
-                    <div className={styles.labelValuePair}>
-                      {item.label ? (
-                        <div className={styles.dataLabel}>
-                          {item.label}
-                          {item.label === 'Mağdur Araç Plaka' && isCokluKarsiKasko && (
-                            <span className={styles.requiredIndicator}> *</span>
-                          )}:
+              <div className={styles.dataContainer}>
+                {section.data.map((item, itemIndex) => (
+                  (item.value !== undefined && item.value !== null) && (
+                    <div key={itemIndex} className={styles.dataRow}>
+                      <div className={styles.labelValuePair}>
+                        {item.label ? (
+                          <div className={styles.dataLabel}>
+                            {item.label}
+                            {item.label === 'Mağdur Araç Plaka' && isCokluKarsiKasko && (
+                              <span className={styles.requiredIndicator}> *</span>
+                            )}:
+                          </div>
+                        ) : (
+                          <div className={styles.dataLabel}>{'\u00A0'}</div>
+                        )}
+                        <div
+                          className={styles.dataValue}
+                          style={item.label === 'Mağdur Araç Plaka' ? { color: 'red' } : {}}
+                        >
+                          {item.value}
                         </div>
-                      ) : (
-                        <div className={styles.dataLabel}>{'\u00A0'}</div>
-                      )}
-                      <div
-                        className={styles.dataValue}
-                        style={item.label === 'Mağdur Araç Plaka' ? { color: 'red' } : {}}
-                      >
-                        {item.value}
                       </div>
                     </div>
-                  </div>
-                )
-              ))}
-            </div>
+                  )
+                ))}
+              </div>
 
-            <div className={styles.editButtonContainer}>
-              {kazaNitelik === "TEKLİ KAZA (BEYANLI)" && section.editKey === "insurance_source" ? (
-                <div className={styles.disabledEditInfo}>
-                  Tekli kaza seçtiğiniz için bu alan düzenlenemez.
-                </div>
-              ) : (
-                <button
-                  className={styles.editButton}
-                  onClick={() => handleEditPress(section)}
-                >
-                  <span className={styles.editButtonText}>Düzenle</span>
-                </button>
-              )}
+              <div className={styles.editButtonContainer}>
+                {kazaNitelik === "TEKLİ KAZA (BEYANLI)" && section.editKey === "insurance_source" ? (
+                  <div className={styles.disabledEditInfo}>
+                    Tekli kaza seçtiğiniz için bu alan düzenlenemez.
+                  </div>
+                ) : (
+                  <button
+                    className={styles.editButton}
+                    onClick={() => handleEditPress(section)}
+                  >
+                    <span className={styles.editButtonText}>Düzenle</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
 
       <div className={styles.approveSection}>
         <button
