@@ -26,7 +26,6 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   const isBizimKasko = insuranceSource === "bizim kasko";
 
 
-
   /* --------------------------------------------------
      3️⃣ MAĞDUR KİMLİK = TC / AD SOYAD EŞLEŞMESİ
   -------------------------------------------------- */
@@ -76,51 +75,49 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     getVictimFields(false, state?.selectedCompany, state?.kazaNitelik).map(f => f.name)
   );
 
-const renderInsuredTypeSwitch = () => (
-  <div className={styles.switchMainContainer}>
-    {/* ŞAHIS */}
-    <div
-      className={`${styles.switchOption} ${
-        !isCompany ? styles.activeOption : ""
-      }`}
-      onClick={() => {
-        setIsCompany(false);
+  const renderInsuredTypeSwitch = () => (
+    <div className={styles.switchMainContainer}>
+      {/* ŞAHIS */}
+      <div
+        className={`${styles.switchOption} ${!isCompany ? styles.activeOption : ""
+          }`}
+        onClick={() => {
+          setIsCompany(false);
 
-        // 🔁 Vergi No → TC'ye taşı
-        setFormValues((prev) => ({
-          ...prev,
-          victim_tc: prev.taxId || "",
-          taxId: "",
-        }));
+          // 🔁 Vergi No → TC'ye taşı
+          setFormValues((prev) => ({
+            ...prev,
+            victim_tc: prev.taxId || "",
+            taxId: "",
+          }));
 
-        setIsVictimForeign(false);
-      }}
-    >
-      Şahıs
+          setIsVictimForeign(false);
+        }}
+      >
+        Şahıs
+      </div>
+
+      {/* ŞİRKET */}
+      <div
+        className={`${styles.switchOption} ${isCompany ? styles.activeOption : ""
+          }`}
+        onClick={() => {
+          setIsCompany(true);
+
+          // 🔁 TC → Vergi No'ya taşı
+          setFormValues((prev) => ({
+            ...prev,
+            taxId: prev.victim_tc || "",
+            victim_tc: "",
+          }));
+
+          setIsVictimForeign(false);
+        }}
+      >
+        Şirket
+      </div>
     </div>
-
-    {/* ŞİRKET */}
-    <div
-      className={`${styles.switchOption} ${
-        isCompany ? styles.activeOption : ""
-      }`}
-      onClick={() => {
-        setIsCompany(true);
-
-        // 🔁 TC → Vergi No'ya taşı
-        setFormValues((prev) => ({
-          ...prev,
-          taxId: prev.victim_tc || "",
-          victim_tc: "",
-        }));
-
-        setIsVictimForeign(false);
-      }}
-    >
-      Şirket
-    </div>
-  </div>
-);
+  );
 
 
 
@@ -148,6 +145,9 @@ const renderInsuredTypeSwitch = () => (
         // ✅ bizim kasko ise poliçe no zorunlu
         if (f.name === "policy_no")
           return { ...f, required: isBizimKasko };
+
+        if (f.name === "victim_birth_date")
+          return { ...f, required: state?.samePerson };
 
         return f;
       });

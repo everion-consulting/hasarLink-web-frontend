@@ -131,8 +131,6 @@ export const getInsuredFields = (isCompany = false) => {
         if (v.length < 5) return "Poliçe no en az 5 karakter olmalı";
         // En az 1 rakam içermeli
         if (!/\d/.test(v)) return "Poliçe no en az 1 rakam içermeli";
-        // En az 1 harf içermeli
-        if (!/[a-zA-Z]/.test(v)) return "Poliçe no en az 1 harf içermeli";
         return null;
       }
     }
