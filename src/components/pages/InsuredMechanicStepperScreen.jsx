@@ -54,14 +54,14 @@ export default function InsuredMechanicStepperScreen() {
     // ================= AI DOCUMENT =================
     const aiDocuments = routeState?.aiDocuments || [];
 
-    // --- FIND SIGORTALI EHLİYET ---
-    const insuredLicenseAI = useMemo(() => {
-        if (!Array.isArray(aiDocuments)) return null;
+    // // --- FIND SIGORTALI EHLİYET ---
+    // const insuredLicenseAI = useMemo(() => {
+    //     if (!Array.isArray(aiDocuments)) return null;
 
-        return aiDocuments.find(
-            d => d.folder_name === "sigortali_arac_ehliyet"
-        ) || null;
-    }, [aiDocuments]);
+    //     return aiDocuments.find(
+    //         d => d.folder_name === "sigortali_arac_ehliyet"
+    //     ) || null;
+    // }, [aiDocuments]);
 
     // --- FIND SIGORTALI RUHSAT ---
     const insuredLicensePlateAI = useMemo(() => {
@@ -114,9 +114,31 @@ export default function InsuredMechanicStepperScreen() {
             d.plate ||
             "";
 
-        return {
+        const tcVkn = (d.tc_vkn || "").replace(/\D/g, "");
+
+        const mapped = {
             insured_plate: plate.toUpperCase().replace(/\s+/g, " ").trim()
         };
+
+        // 🔥 11 hane → Şahıs
+        if (tcVkn.length === 11) {
+            return {
+                ...mapped,
+                insured_tc: tcVkn,
+                insured_fullname: d.ruhsat_sahibi || ""
+            };
+        }
+
+        // 🔥 10 hane → Şirket
+        if (tcVkn.length === 10) {
+            return {
+                ...mapped,
+                company_tax_number: tcVkn,
+                company_name: d.ruhsat_sahibi || ""
+            };
+        }
+
+        return mapped;
     };
 
     const mapOpposingFromLicense = (doc) => {
@@ -145,30 +167,43 @@ export default function InsuredMechanicStepperScreen() {
 
 
 
-    // --- APPLY ---
-    useEffect(() => {
-        if (!insuredLicenseAI) return;
+    // // --- APPLY ---
+    // useEffect(() => {
+    //     if (!insuredLicenseAI) return;
 
-        console.log("🧠 SIGORTALI EHLİYET AI:", insuredLicenseAI);
+    //     console.log("🧠 SIGORTALI EHLİYET AI:", insuredLicenseAI);
 
-        const mapped = mapInsuredFromLicense(insuredLicenseAI);
+    //     const mapped = mapInsuredFromLicense(insuredLicenseAI);
 
-        console.log("🧩 MAPPED INSURED:", mapped);
+    //     console.log("🧩 MAPPED INSURED:", mapped);
 
-        setInsuredData(prev => fillEmptyFrom(prev, mapped));
-        setIsInsuredForeign(false);
-    }, [insuredLicenseAI]);
+    //     setInsuredData(prev => fillEmptyFrom(prev, mapped));
+    //     setIsInsuredForeign(false);
+    // }, [insuredLicenseAI]);
 
     useEffect(() => {
         if (!insuredLicensePlateAI) return;
 
         console.log("🧠 SIGORTALI RUHSAT AI:", insuredLicensePlateAI);
 
-        const mappedPlate = mapPlateFromRuhsat(insuredLicensePlateAI);
+        const mapped = mapPlateFromRuhsat(insuredLicensePlateAI);
+        const tcVkn = insuredLicensePlateAI?.data?.tc_vkn?.replace(/\D/g, "") || "";
 
-        console.log("🧩 MAPPED PLATE:", mappedPlate);
+        // 🔥 SWITCH OTOMATİK SEÇİM
+        if (tcVkn.length === 11) {
+            setIsCompany(false);
+            setIsInsuredForeign(false);
+        }
 
-        setInsuredData(prev => fillEmptyFrom(prev, mappedPlate));
+        if (tcVkn.length === 10) {
+            setIsCompany(true);
+            setIsInsuredForeign(false);
+        }
+
+        console.log("🧩 RUHSAT MAPPED:", mapped);
+
+        setInsuredData(prev => fillEmptyFrom(prev, mapped));
+
     }, [insuredLicensePlateAI]);
 
     useEffect(() => {
