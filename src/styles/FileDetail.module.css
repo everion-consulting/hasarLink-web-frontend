@@ -31,6 +31,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
+  height: -webkit-fill-available;
 }
 
 /* 🔹 Her dosya kartı */
@@ -138,7 +139,7 @@
   z-index: 1;
 }
 
-:global(body.dark) .sectionTitle  {
+:global(body.dark) .sectionTitle {
   color: white;
 }
 
@@ -364,6 +365,7 @@
 .fileTypeSection {
   margin-top: 16px;
   margin-bottom: 32px;
+  justify-content: center;
 }
 
 
@@ -384,6 +386,12 @@
   row-gap: 22px;
 }
 
+.imagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
 
 .fileCard {
   padding: 12px;

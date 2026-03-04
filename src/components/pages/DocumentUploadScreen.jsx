@@ -49,6 +49,10 @@ const DocumentUploaderScreen = ({
   const AI_EXCLUDED_FILE_TYPES = ["fotograflar", "diger"];
   const [checkingSections, setCheckingSections] = useState({});
 
+  const isAnyChecking = useMemo(() => {
+    return Object.values(checkingSections).some(Boolean);
+  }, [checkingSections]);
+
 
   /* --------------------------------------------------
      🔥 DİNAMİK FILE TYPES
@@ -97,7 +101,7 @@ const DocumentUploaderScreen = ({
     karsi_taraf_surucu_ehliyet: "Kimlik",
   };
 
-
+  const isNextDisabled = uploading || isAnyChecking;
 
   /* --------------------------------------------------
      FILE SELECT
@@ -253,8 +257,6 @@ const DocumentUploaderScreen = ({
       setUploading(false);
     }
   };
-
-
   /* --------------------------------------------------
      AI UPLOAD (file + folder_name)
   -------------------------------------------------- */
@@ -408,8 +410,15 @@ const DocumentUploaderScreen = ({
       <FormFooter
         onBack={onBack}
         onNext={handleUpload}
-        nextLabel="DEVAM ET"
+        nextLabel={
+          isAnyChecking
+            ? "Kontrol Ediliyor..."
+            : uploading
+              ? "Yükleniyor..."
+              : "DEVAM ET"
+        }
         backLabel="GERİ DÖN"
+        disabled={isNextDisabled}
       />
     </div>
   );

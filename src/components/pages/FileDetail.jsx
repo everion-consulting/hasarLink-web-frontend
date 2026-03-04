@@ -25,52 +25,46 @@ const FileDetail = () => {
   };
 
   useEffect(() => {
-    const fetchSubmissionFiles = async () => {
+    const fetchFileDetail = async () => {
       try {
-        if (!fileId) return;
-
-        const res = await submissionService.getSubmissionFiles(fileId);
+        const res = await apiService.getSubmissionDetail(fileId);
 
         if (!res.success) {
-          console.error("❌ Dosya görselleri alınamadı:", res.message);
-          window.alert(res.message || "Dosya görselleri alınırken hata oluştu.");
+          window.alert(res.message || "Dosya detayı alınırken hata oluştu.");
           return;
         }
 
-        console.log("📸 Dosya görselleri:", res.data);
+        const data = res?.data;
+        setFileData(data);
 
-        // 🔹 API'den gelen asıl payload
-        // fetchData -> res.data
-        // viewset -> { success: true, data: { files: [...] } }
-        const payload = res.data?.data || res.data;
+        // 🔥 BURASI YENİ
+        if (Array.isArray(data?.files)) {
+          const grouped = {};
 
-        const filesArray = Array.isArray(payload?.files)
-          ? payload.files
-          : Array.isArray(payload?.results)
-            ? payload.results
-            : [];
+          data.files.forEach((f) => {
+            if (!grouped[f.file_type]) grouped[f.file_type] = [];
 
-        console.log("📂 Çözümlenmiş filesArray:", filesArray);
-
-        // 🔹 Görselleri file_type'a göre grupla
-        const grouped = {};
-        filesArray.forEach((f) => {
-          if (!grouped[f.file_type]) grouped[f.file_type] = [];
-          grouped[f.file_type].push({
-            id: f.id,
-            url: f.file_url,
-            name: f.name,
-            uploaded_at: f.uploaded_at,
+            grouped[f.file_type].push({
+              id: f.id,
+              url: f.file_url,
+              name: f.name,
+              uploaded_at: f.uploaded_at,
+            });
           });
-        });
 
-        setFileImages(grouped);
+          setFileImages(grouped);
+        }
+
       } catch (err) {
-        console.error("❌ Görsel fetch hatası:", err);
+        console.error("❌ Hata:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchSubmissionFiles();
+    if (fileId) {
+      fetchFileDetail();
+    }
   }, [fileId]);
 
 
@@ -111,10 +105,10 @@ const FileDetail = () => {
   // Tarihi DD.MM.YYYY formatına çevir
   const formatDate = (dateString) => {
     if (!dateString) return null;
-    
+
     // ISO 8601 formatı: "2026-01-03T10:00:00+03:00" veya "2026-01-03"
     let datePart = dateString.toString().trim();
-    
+
     // T varsa T'den önceki kısmı al
     if (datePart.includes('T')) {
       datePart = datePart.split('T')[0];
@@ -123,18 +117,18 @@ const FileDetail = () => {
     else if (datePart.includes(' ')) {
       datePart = datePart.split(' ')[0];
     }
-    
+
     // YYYY-MM-DD formatını DD.MM.YYYY'ye çevir
     if (datePart.length >= 10 && datePart.includes('-')) {
       const [year, month, day] = datePart.split('-');
       return `${day}.${month}.${year}`;
     }
-    
+
     // Zaten DD.MM.YYYY formatındaysa olduğu gibi dön
     if (datePart.includes('.')) {
       return datePart;
     }
-    
+
     return datePart;
   };
 
@@ -146,6 +140,28 @@ const FileDetail = () => {
         <span className={styles.infoValue}>{value}</span>
       </div>
     );
+  };
+
+  const turkishFixMap = {
+    sigortali: "sigortalı",
+    surucu: "sürücü",
+    karsi: "karşı",
+    magdur: "mağdur",
+    ehliyet: "ehliyeti",
+    ruhsat: "ruhsat",
+    taraf: "taraf",
+    arac: "araç",
+  };
+
+  const formatFileTypeLabel = (typeKey) => {
+    return typeKey
+      .split("_")
+      .map((word) => {
+        const lower = word.toLowerCase();
+        const fixed = turkishFixMap[lower] || lower;
+        return fixed.charAt(0).toUpperCase() + fixed.slice(1);
+      })
+      .join(" ");
   };
 
   if (loading) {
@@ -196,7 +212,6 @@ const FileDetail = () => {
         {renderInfoRow("Oluşturulma Tarihi", formatDate(fileData.created_at))}
         {renderInfoRow("İşlenme Tarihi", formatDate(fileData.processed_at))}
         {renderInfoRow("Tamamlanma Tarihi", formatDate(fileData.completed_at))}
-        {renderInfoRow("Atanan Memur", fileData.assigned_officer)}
         {renderInfoRow("Dosya No:", fileData.folder_no)}
         {renderInfoRow("Eksper Bilgisi:", fileData.exper_informations)}
 
@@ -241,10 +256,10 @@ const FileDetail = () => {
           const accidentDateTime = fileData.accident_date;
           let accidentDate = null;
           let accidentTime = null;
-          
+
           if (accidentDateTime) {
             const dateStr = accidentDateTime.toString().trim();
-            
+
             // ISO 8601 formatı: "YYYY-MM-DDTHH:MM:SS+03:00" veya "YYYY-MM-DDTHH:MM:SSZ"
             if (dateStr.includes('T')) {
               const parts = dateStr.split('T');
@@ -270,7 +285,7 @@ const FileDetail = () => {
               accidentDate = formatDate(dateStr.slice(0, 10));
             }
           }
-          
+
           return (
             <>
               {renderInfoRow("Kaza Tarihi", accidentDate)}
@@ -284,92 +299,96 @@ const FileDetail = () => {
 
         <h2 className={styles.sectionTitle}>Yüklenen Dosyalar</h2>
 
-        {(() => {
-          // Hiç dosya yoksa
-          const hasAnyFile = Object.values(fileImages).some(
-            (arr) => Array.isArray(arr) && arr.length > 0
-          );
-
-          if (!hasAnyFile) {
-            return (
-              <p className={styles.noFiles}>
-                Henüz yüklenmiş dosya bulunmuyor.
-              </p>
+        <div className={styles.imagesGrid}>
+          {(() => {
+            // Hiç dosya yoksa
+            const hasAnyFile = Object.values(fileImages).some(
+              (arr) => Array.isArray(arr) && arr.length > 0
             );
-          }
 
-          // FILE_TYPES sırasına göre kategorileri gezelim
-          // (constants/fileTypes içinde tanımlı olduğunu varsayıyorum)
-          const TYPE_KEYS_IN_ORDER = Object.keys(FILE_TYPE_LABEL_MAP);
-          // Eğer FILE_TYPES array’in varsa:
-          // import { FILE_TYPES, FILE_TYPE_LABEL_MAP } ...
-          // const TYPE_KEYS_IN_ORDER = FILE_TYPES.map((t) => t.id);
+            if (!hasAnyFile) {
+              return (
+                <p className={styles.noFiles}>
+                  Henüz yüklenmiş dosya bulunmuyor.
+                </p>
+              );
+            }
 
-          return (
-            <>
-              {TYPE_KEYS_IN_ORDER.map((typeKey) => {
-                const files = fileImages[typeKey] || [];
-                if (!files.length) return null;
+            // FILE_TYPES sırasına göre kategorileri gezelim
+            // (constants/fileTypes içinde tanımlı olduğunu varsayıyorum)
+            const TYPE_KEYS_IN_ORDER = Object.keys(fileImages);
+            // Eğer FILE_TYPES array’in varsa:
+            // import { FILE_TYPES, FILE_TYPE_LABEL_MAP } ...
+            // const TYPE_KEYS_IN_ORDER = FILE_TYPES.map((t) => t.id);
 
-                const typeLabel =
-                  FILE_TYPE_LABEL_MAP[typeKey.toLowerCase()] ||
-                  FILE_TYPE_LABEL_MAP[typeKey] ||
-                  typeKey;
+            return (
+              <>
+                {TYPE_KEYS_IN_ORDER.map((typeKey) => {
+                  const files = fileImages[typeKey] || [];
+                  if (!files.length) return null;
 
-                return (
-                  <div key={typeKey} className={styles.fileTypeBlock}>
-                    <h3 className={styles.fileTypeHeader}>{typeLabel}</h3>
+                  const typeLabel =
+                    FILE_TYPE_LABEL_MAP[typeKey.toLowerCase()] ||
+                    FILE_TYPE_LABEL_MAP[typeKey] ||
+                    typeKey;
 
-                    <div className={styles.fileImagesGrid}>
-                      {files.map((f) => {
-                        const isPdf =
-                          (f.name && f.name.toLowerCase().endsWith(".pdf")) ||
-                          (f.url && f.url.toLowerCase().includes(".pdf"));
+                  return (
+                    <div key={typeKey} className={styles.fileTypeBlock}>
 
-                        const handleClick = () => {
-                          if (isPdf) {
-                            window.open(f.url, "_blank");
-                          } else {
-                            setSelectedImage(f.url);
-                          }
-                        };
+                      <div className={styles.fileImagesGrid}>
 
-                        return (
-                          <button
-                            key={f.id}
-                            type="button"
-                            className={styles.fileCard}
-                            onClick={handleClick}
-                          >
-                            {isPdf ? (
-                              <div className={styles.pdfThumb}>📄</div>
-                            ) : (
-                              <img
-                                src={f.url}
-                                alt={f.name}
-                                className={styles.fileThumbnail}
-                              />
-                            )}
+                        {files.map((f) => {
+                          const isPdf =
+                            (f.name && f.name.toLowerCase().endsWith(".pdf")) ||
+                            (f.url && f.url.toLowerCase().includes(".pdf"));
 
-                            <span className={styles.fileName}>
-                              {f.name || (isPdf ? "PDF Dosya" : "Dosya")}
-                            </span>
+                          const handleClick = () => {
+                            if (isPdf) {
+                              window.open(f.url, "_blank");
+                            } else {
+                              setSelectedImage(f.url);
+                            }
+                          };
 
-                            {isPdf && (
-                              <span className={styles.fileHint}>
-                                Tıkla, yeni sekmede aç
+                          return (
+                            <button
+                              key={f.id}
+                              type="button"
+                              className={styles.fileCard}
+                              onClick={handleClick}
+                            >
+                              <h3 className={styles.fileTypeHeader}>{formatFileTypeLabel(typeLabel)}</h3>
+
+                              {isPdf ? (
+                                <div className={styles.pdfThumb}>📄</div>
+                              ) : (
+                                <img
+                                  src={f.url}
+                                  alt={f.name}
+                                  className={styles.fileThumbnail}
+                                />
+                              )}
+
+                              <span className={styles.fileName}>
+                                {f.name || (isPdf ? "PDF Dosya" : "Dosya")}
                               </span>
-                            )}
-                          </button>
-                        );
-                      })}
+
+                              {isPdf && (
+                                <span className={styles.fileHint}>
+                                  Tıkla, yeni sekmede aç
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </>
-          );
-        })()}
+                  );
+                })}
+              </>
+            );
+          })()}
+        </div>
 
 
 
