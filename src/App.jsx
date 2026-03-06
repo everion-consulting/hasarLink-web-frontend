@@ -42,6 +42,7 @@ import Graphics from "./components/pages/Graphics";
 import DocumentUploaderScreen from "./components/pages/DocumentUploadScreen";
 import { Toaster } from "react-hot-toast";
 import GizlilikPolitikasi from "./components/pages/GizlilikPolitikasi";
+import PartnerServices from "./components/pages/PartnerServices";
 
 
 function AppContent({ isAuth, setIsAuth }) {
@@ -91,6 +92,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/profile" element={isAuth ? <Profile /> : <Navigate to="/auth" replace />} />
         <Route path="/contact" element={isAuth ? <Contact /> : <Navigate to="/auth" replace />} />
         <Route path="/settings" element={isAuth ? <Settings /> : <Navigate to="/auth" replace />} />
+        <Route path="/partner-services" element={isAuth ? <PartnerServices /> : <Navigate to="/auth" replace />} />
         <Route path="/graphics" element={isAuth ? <Graphics /> : <Navigate to="/auth" replace />} />
         <Route
           path="/ai-document-upload"

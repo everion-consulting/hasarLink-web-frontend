@@ -179,6 +179,31 @@ const apiService = {
     return await fetchData(`${PATH}/insurance-companies/`, 'GET');
   },
 
+  // 🔹 Anlaşmalı servis bilgilerini getir
+  async getInsuranceCredentials() {
+    return await fetchData(`${PATH}/insurance-credentials/`, "GET");
+  },
+
+  // 🔹 Yeni kayıt oluştur
+  async createInsuranceCredential(body) {
+    return await fetchData(
+      `${PATH}/insurance-credentials/`,
+      "POST",
+      body,
+      "application/json"
+    );
+  },
+
+  // 🔹 Güncelle
+  async updateInsuranceCredential(companyId, body) {
+    return await fetchData(
+      `${PATH}/insurance-credentials/${companyId}/`,
+      "PUT",
+      body,
+      "application/json"
+    );
+  },
+
   async getPaginationInsuranceCompanies() {
     let allCompanies = [];
     let nextUrl = `${PATH}/insurance-companies/`;
