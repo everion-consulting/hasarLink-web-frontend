@@ -124,21 +124,23 @@ const FileNotifications = () => {
         <div className={styles.fileDetails}>
           {/* ÜST SATIR: Plaka solda, chip sağda */}
           <div className={styles.fileTopRow}>
-            {data.folder_no && (
-              <p>
-                <strong>Dosya No:</strong> {data.folder_no}
-              </p>
-            )}
+            <div className={styles.fileMainInfo}>
+              {data.folder_no && (
+                <p>
+                  <strong>Dosya No:</strong> {data.folder_no}
+                </p>
+              )}
 
-            {data.exper_informations && (
-              <p>
-                <strong>Exper Bilgisi:</strong> {data.exper_informations}
-              </p>
-            )}
+              {data.exper_informations && (
+                <p>
+                  <strong>Exper Bilgisi:</strong> {data.exper_informations}
+                </p>
+              )}
 
-            <p>
-              <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
-            </p>
+              <p>
+                <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
+              </p>
+            </div>
 
             <button
               className={styles.detailChip}
