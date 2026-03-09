@@ -70,7 +70,6 @@ const serviceField = [
         placeholder: "İlçe seçiniz",
         options: [],
         required: true,
-        dependsOn: "service_city",
         getOptionsFrom: (ilId) => getIlceOptions(ilId),
       }
     ]

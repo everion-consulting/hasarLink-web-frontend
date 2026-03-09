@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../styles/partnerServices.module.css";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Pencil, Check, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import CustomSwitch from "./CustomSwitch";
@@ -11,6 +11,12 @@ export default function PartnerServices() {
     const [companies, setCompanies] = useState([]);
     const [credentials, setCredentials] = useState({});
     const [loading, setLoading] = useState(true);
+    const [showPassword, setShowPassword] = useState({});
+    const [noteOpen, setNoteOpen] = useState({});
+    const [savingNote, setSavingNote] = useState({});
+    const [noteSaved, setNoteSaved] = useState({});
+    const [editingNote, setEditingNote] = useState({});
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         loadData();
@@ -37,6 +43,13 @@ export default function PartnerServices() {
         } finally {
             setLoading(false);
         }
+        const openMap = {};
+        credRes?.data?.data?.forEach(c => {
+            if (c.note && c.note.trim()) {
+                openMap[c.insurance_company] = true;
+            }
+        });
+        setNoteOpen(openMap);
     };
 
     const handleToggle = (companyId) => {
@@ -47,6 +60,13 @@ export default function PartnerServices() {
                 insurance_company: companyId,
                 is_partner_service: !prev[companyId]?.is_partner_service
             }
+        }));
+    };
+
+    const togglePassword = (companyId) => {
+        setShowPassword(prev => ({
+            ...prev,
+            [companyId]: !prev[companyId]
         }));
     };
 
@@ -63,17 +83,82 @@ export default function PartnerServices() {
 
     const handleSave = async (companyId) => {
         const data = credentials[companyId];
-
+        if (!data?.is_partner_service) return;
         if (!data) return;
 
-        if (data.id) {
-            await apiService.updateInsuranceCredential(companyId, data);
-        } else {
-            await apiService.createInsuranceCredential(data);
-        }
+        try {
+            let res;
 
-        alert("Kaydedildi");
+            if (data.id) {
+                res = await apiService.updateInsuranceCredential(data.id, data);
+            } else {
+                res = await apiService.createInsuranceCredential(data);
+            }
+
+            const saved = res?.data;
+
+            // ✅ MERGE ET — state’i ezme
+            setCredentials(prev => ({
+                ...prev,
+                [companyId]: {
+                    ...prev[companyId],  // mevcut state
+                    ...saved,            // backend’den gelenler
+                    is_partner_service: true // 🔒 garanti
+                }
+            }));
+
+            alert("Kaydedildi");
+        } catch (e) {
+            console.error(e);
+            alert("Kaydedilemedi");
+        }
     };
+    const toggleNote = (companyId) => {
+        setNoteOpen(prev => ({
+            ...prev,
+            [companyId]: !prev[companyId]
+        }));
+
+        // Açılıyorsa düzenleme moduna gir
+        setEditingNote(prev => ({
+            ...prev,
+            [companyId]: true
+        }));
+    };
+
+    const handleSaveNote = async (companyId) => {
+        const data = credentials[companyId];
+        if (!data) return;
+
+        try {
+            setSavingNote(p => ({ ...p, [companyId]: true }));
+
+            if (data.id) {
+                await apiService.updateInsuranceCredential(companyId, {
+                    note: data.note
+                });
+            } else {
+                await apiService.createInsuranceCredential(data);
+            }
+
+            // ✨ görsel feedback
+            setNoteSaved(p => ({ ...p, [companyId]: true }));
+            setTimeout(() => {
+                setNoteSaved(p => ({ ...p, [companyId]: false }));
+            }, 1500);
+
+        } catch (e) {
+            console.error(e);
+            alert("Not kaydedilemedi");
+        } finally {
+            setSavingNote(p => ({ ...p, [companyId]: false }));
+            setEditingNote(p => ({ ...p, [companyId]: false }));
+        }
+    };
+
+    const filteredCompanies = companies.filter(c =>
+        c.name.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div className={styles.page}>
@@ -89,11 +174,21 @@ export default function PartnerServices() {
                 kaydedebilirsiniz. Bu bilgiler dosya bildirimi sırasında otomatik kullanılır.
             </div>
 
+            <div className={styles.searchBox}>
+                <Search size={20} />
+                <input
+                    type="text"
+                    placeholder="Sigorta şirketi ara..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
+
             {loading ? (
                 <p>Yükleniyor...</p>
             ) : (
                 <div className={styles.list}>
-                    {companies.map(company => {
+                    {filteredCompanies.map(company => {
                         const cred = credentials[company.id] || {};
 
                         return (
@@ -103,11 +198,28 @@ export default function PartnerServices() {
                                         <img src={company.photo} alt="" />
                                         <span>{company.name}</span>
                                     </div>
-
-                                    <CustomSwitch
-                                        value={cred.is_partner_service || false}
-                                        onChange={() => handleToggle(company.id)}
-                                    />
+                                    <div className="iconBox">
+                                        <button
+                                            type="button"
+                                            className={`${styles.noteIconBtn} ${!cred.is_partner_service ? styles.disabledIcon : ""
+                                                }`}
+                                            onClick={() => {
+                                                if (!cred.is_partner_service) return;
+                                                toggleNote(company.id);
+                                            }}
+                                            title={
+                                                cred.is_partner_service
+                                                    ? "Not ekle"
+                                                    : "Not eklemek için anlaşmalı servis açılmalı"
+                                            }
+                                        >
+                                            <Pencil size={18} />
+                                        </button>
+                                        <CustomSwitch
+                                            value={cred.is_partner_service || false}
+                                            onChange={() => handleToggle(company.id)}
+                                        />
+                                    </div>
                                 </div>
 
                                 {cred.is_partner_service && (
@@ -119,17 +231,45 @@ export default function PartnerServices() {
                                                 handleChange(company.id, "service_username", e.target.value)
                                             }
                                         />
-                                        <input
-                                            type="password"
-                                            placeholder="Şifre"
-                                            value={cred.service_password || ""}
-                                            onChange={(e) =>
-                                                handleChange(company.id, "service_password", e.target.value)
-                                            }
-                                        />
-                                        <button onClick={() => handleSave(company.id)}>
+                                        <div className={styles.passwordField}>
+                                            <input
+                                                type={showPassword[company.id] ? "text" : "password"}
+                                                placeholder="Şifre"
+                                                value={cred.service_password || ""}
+                                                onChange={(e) =>
+                                                    handleChange(company.id, "service_password", e.target.value)
+                                                }
+                                            />
+
+                                            <button
+                                                type="button"
+                                                className={styles.eyeBtn}
+                                                onClick={() => togglePassword(company.id)}
+                                            >
+                                                {showPassword[company.id] ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
+                                        <button className={styles.saveBtn} onClick={() => handleSave(company.id)}>
                                             Kaydet
                                         </button>
+                                    </div>
+                                )}
+                                {cred.is_partner_service && noteOpen[company.id] && (
+                                    <div
+                                        className={`${styles.noteBox}
+        ${noteSaved[company.id] ? styles.noteSaved : ""}
+        ${!editingNote[company.id] ? styles.noteReadonly : ""}
+    `}
+                                    >
+                                        <textarea
+                                            rows={2}
+                                            placeholder="Not ekleyin..."
+                                            value={cred.note || ""}
+                                            readOnly={!editingNote[company.id]}
+                                            onChange={(e) =>
+                                                handleChange(company.id, "note", e.target.value)
+                                            }
+                                        />
                                     </div>
                                 )}
                             </div>

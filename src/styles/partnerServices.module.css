@@ -1,79 +1,243 @@
 .page {
-  padding: 24px;
-  max-width: 900px;
-  margin: auto;
+    padding: 24px;
+    max-width: 900px;
+    margin: auto;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .backBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 .infoBox {
-  background: #eef2ff;
-  padding: 14px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  font-size: 14px;
+    background: #eef2ff;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .card {
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 16px;
-  background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    background: white;
 }
 
 .topRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .companyInfo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .companyInfo img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
 .form {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
 }
 
 .form input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
 }
 
-.form button {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
+.saveBtn {
+    background: #133E87;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.passwordField {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordField input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.noteIconBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.noteIconBtn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.noteBox {
+    margin-top: 10px;
+}
+
+.noteBox textarea {
+    width: 100%;
+    min-height: 48px;
+    resize: vertical;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.noteBox {
+    position: relative;
+    margin-top: 10px;
+    transition: all 0.25s ease;
+}
+
+.noteBox textarea {
+    width: 100%;
+    min-height: 48px;
+    resize: vertical;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px 38px 10px 10px;
+    /* sağ boşluk ikon için */
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.noteSaveBtn {
+    position: absolute;
+    right: 8px;
+    bottom: 12px;
+    background: #133E87;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noteSaveBtn:hover {
+    background: #16479b;
+}
+
+/* ✨ Kaydedildi feedback */
+.noteSaved textarea {
+    border-color: #133E87;
+    box-shadow: 0 0 0 2px rgba(26, 43, 127, 0.15);
+    background: #f6f9ff;
+}
+
+.disabledIcon {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* ✨ Kaydedildi animasyonu (kısa süreli) */
+.noteSaved textarea {
+    border-color: #cfcfcf;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+}
+
+/* 🧊 Readonly gri görünüm */
+.noteReadonly textarea {
+    background: #f5f5f5;
+    color: #8a8a8a;
+    border-color: #ddd;
+}
+
+/* Placeholder da soluk */
+.noteReadonly textarea::placeholder {
+    color: #b5b5b5;
+}
+
+/* 🔍 Arama Kutusu */
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 16px 0 20px 0;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchBox:focus-within {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.12);
+}
+
+.searchBox svg {
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.searchBox input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    font-family: inherit;
+    color: #111827;
+    background: transparent;
+}
+
+.searchBox input::placeholder {
+    color: #9ca3af;
 }

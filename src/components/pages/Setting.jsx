@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../styles/settings.module.css";
 import darkStyles from "../../styles/settingsdark.module.css";
 import { Bell, Sun, Moon, MoreVertical, PlusCircle, ChevronRight, CreditCard, Trash2, X, Edit } from "lucide-react";
@@ -19,6 +20,7 @@ export default function Settings() {
     const [showCardMenu, setShowCardMenu] = useState(null);
     const [editingCard, setEditingCard] = useState(null);
     const themeStyles = isDark ? darkStyles : styles;
+    const navigate = useNavigate();
 
     const [newCard, setNewCard] = useState({
         cardName: "",
@@ -198,7 +200,7 @@ export default function Settings() {
                 </div>
 
                 {/* ---------- ÖDEME AYARLARI CARD ---------- */}
-                <div className={themeStyles.settingsCard}>
+                {/* <div className={themeStyles.settingsCard}>
                     <div className={themeStyles.section}>
                         <h2 className={themeStyles.sectionTitle}>Ödeme Ayarları</h2>
                         <p className={themeStyles.sectionDescription}>
@@ -259,8 +261,39 @@ export default function Settings() {
                         )}
                     </div>
 
-                </div>
+                </div> */}
 
+                {/* ---------- ANLAŞMALI SERVİS CARD ---------- */}
+                <div
+                    className={themeStyles.settingsCard}
+                    onClick={() => navigate("/partner-services")}
+                    style={{ cursor: "pointer" }}
+                >
+                    <div className={themeStyles.section}>
+                        <h2 className={themeStyles.sectionTitle}>Anlaşmalı Servis Ayarları</h2>
+                        <p className={themeStyles.sectionDescription}>
+                            Sigorta şirketleri için anlaşmalı servis giriş bilgilerinizi yönetin.
+                        </p>
+
+                        <div className={themeStyles.linkCard}>
+                            <div className={themeStyles.linkLeft}>
+                                <div className={themeStyles.linkIcon}>
+                                    🛠️
+                                </div>
+                                <div>
+                                    <span className={themeStyles.linkTitle}>
+                                        Servis Giriş Bilgileri
+                                    </span>
+                                    <p className={themeStyles.linkSubtitle}>
+                                        Kullanıcı adı ve şifre bilgilerini ekleyin
+                                    </p>
+                                </div>
+                            </div>
+
+                            <ChevronRight size={20} />
+                        </div>
+                    </div>
+                </div>
                 {/* ---------- KARANLIK MOD CARD ---------- */}
                 <div className={themeStyles.settingsCard}>
                     <div className={themeStyles.section}>

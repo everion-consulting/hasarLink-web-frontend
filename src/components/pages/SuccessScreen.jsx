@@ -9,6 +9,7 @@ import ContinueIcon from "../../components/images/continue.svg";
 const SuccessScreen = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    console.log("SuccessScreen location.state:", location.state);
 
     const state = location.state || {};
 
