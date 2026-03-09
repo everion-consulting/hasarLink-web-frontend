@@ -283,6 +283,64 @@ const apiService = {
     );
   },
 
+  // -------------------- İŞ AKIŞI -------------------- //
+
+  async assignExpert(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/expert-assignment/`,
+      'POST', payload, 'application/json'
+    );
+  },
+
+  async getRepairStages(submissionId) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/repair-stages/`,
+      'GET'
+    );
+  },
+
+  async addRepairStage(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/repair-stages/`,
+      'POST', payload, 'application/json'
+    );
+  },
+
+  async createExpertReport(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/expert-report/`,
+      'POST', payload, 'application/json'
+    );
+  },
+
+  async updateExpertReport(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/expert-report/`,
+      'PATCH', payload, 'application/json'
+    );
+  },
+
+  async createInsurancePayment(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/insurance-payment/`,
+      'POST', payload, 'application/json'
+    );
+  },
+
+  async updateInsurancePayment(submissionId, payload) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/insurance-payment/`,
+      'PATCH', payload, 'application/json'
+    );
+  },
+
+  async advanceWorkflow(submissionId, workflowStage) {
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/advance-workflow/`,
+      'POST', { workflow_stage: workflowStage }, 'application/json'
+    );
+  },
+
   async fieldUserAPI(payload) {
     console.log("fieldUserAPI çalıştı");
 

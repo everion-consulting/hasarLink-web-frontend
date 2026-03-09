@@ -5,6 +5,10 @@ import submissionService from "../../services/submissionService";
 import styles from "../../styles/FileDetail.module.css";
 import LeftIconBlack from "../../assets/images/leftIconBlack.svg";
 import { FILE_TYPE_LABEL_MAP } from "../../constants/filesTypes";
+import WorkflowTimeline from "../workflow/WorkflowTimeline";
+import ExpertAssignmentPanel from "../workflow/ExpertAssignmentPanel";
+import RepairTrackingPanel from "../workflow/RepairTrackingPanel";
+import InsurancePaymentPanel from "../workflow/InsurancePaymentPanel";
 
 
 const FileDetail = () => {
@@ -69,31 +73,6 @@ const FileDetail = () => {
 
 
 
-  useEffect(() => {
-    const fetchFileDetail = async () => {
-      try {
-        const res = await apiService.getSubmissionDetail(fileId);
-
-        if (!res.success) {
-          console.error("❌ Dosya detayı alınamadı:", res.message);
-          // web'te Alert yok, window.alert kullan
-          window.alert(res.message || "Dosya detayı alınırken hata oluştu.");
-          return;
-        }
-
-        console.log("✅ Dosya Detayı:", res?.data);
-        setFileData(res?.data);   // 🔥 asıl eksik olan satır buydu
-      } catch (err) {
-        console.error("❌ Hata:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (fileId) {
-      fetchFileDetail();
-    }
-  }, [fileId]);
 
   const normalizeUrl = (url) => {
     if (!url) return "";
@@ -214,6 +193,44 @@ const FileDetail = () => {
         {renderInfoRow("Tamamlanma Tarihi", formatDate(fileData.completed_at))}
         {renderInfoRow("Dosya No:", fileData.folder_no)}
         {renderInfoRow("Eksper Bilgisi:", fileData.exper_informations)}
+
+        <div className={styles.separator}></div>
+
+        <h2 className={styles.sectionTitle}>İş Akışı Takibi</h2>
+        <WorkflowTimeline currentStage={fileData.workflow_stage || "DOSYA_ACILDI"} />
+
+        <div className={styles.separator}></div>
+
+        <h2 className={styles.sectionTitle}>Eksper Ataması</h2>
+        <ExpertAssignmentPanel
+          submissionId={fileId}
+          assignment={fileData.expert_assignment}
+          onUpdate={(data) =>
+            setFileData((prev) => ({ ...prev, expert_assignment: data }))
+          }
+        />
+
+        <div className={styles.separator}></div>
+
+        <h2 className={styles.sectionTitle}>Onarım Takibi</h2>
+        <RepairTrackingPanel
+          submissionId={fileId}
+          stages={fileData.repair_stages || []}
+          onUpdate={(data) =>
+            setFileData((prev) => ({ ...prev, repair_stages: data }))
+          }
+        />
+
+        <div className={styles.separator}></div>
+
+        <h2 className={styles.sectionTitle}>Sigorta Ödemesi</h2>
+        <InsurancePaymentPanel
+          submissionId={fileId}
+          payment={fileData.insurance_payment}
+          onUpdate={(data) =>
+            setFileData((prev) => ({ ...prev, insurance_payment: data }))
+          }
+        />
 
         <div className={styles.separator}></div>
 
