@@ -83,34 +83,30 @@ export default function PartnerServices() {
 
     const handleSave = async (companyId) => {
         const data = credentials[companyId];
-        if (!data?.is_partner_service) return;
         if (!data) return;
 
         try {
             let res;
 
             if (data.id) {
-                res = await apiService.updateInsuranceCredential(data.id, data);
+                res = await apiService.updateInsuranceCredential(companyId, data);
             } else {
                 res = await apiService.createInsuranceCredential(data);
             }
 
-            const saved = res?.data;
+            const savedData = res?.data?.data;
 
-            // ✅ MERGE ET — state’i ezme
-            setCredentials(prev => ({
-                ...prev,
-                [companyId]: {
-                    ...prev[companyId],  // mevcut state
-                    ...saved,            // backend’den gelenler
-                    is_partner_service: true // 🔒 garanti
-                }
-            }));
+            if (savedData) {
+                setCredentials(prev => ({
+                    ...prev,
+                    [savedData.insurance_company]: savedData
+                }));
+            }
 
             alert("Kaydedildi");
         } catch (e) {
-            console.error(e);
-            alert("Kaydedilemedi");
+            console.error("SAVE ERROR:", e?.response?.data || e);
+            alert(e?.response?.data?.detail || "Kaydetme sırasında hata oluştu");
         }
     };
     const toggleNote = (companyId) => {
