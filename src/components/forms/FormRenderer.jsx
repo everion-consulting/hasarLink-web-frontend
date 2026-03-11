@@ -483,7 +483,7 @@ export default function FormRenderer({
               }`}
           >
             {currentValue
-              ? dynamicOptions?.find((opt) => opt.value === currentValue)?.label ||
+              ? dynamicOptions?.find((opt) => String(opt.value) === String(currentValue))?.label ||
               currentValue
               : field.placeholder || "Seçiniz"}
           </span>
