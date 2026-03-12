@@ -721,7 +721,7 @@ const RejectedFileDetailScreen = () => {
                     </div>
 
                     <div className={styles.frdFooterButtons}>
-                        {editMode && (
+
                             <button
                                 type="button"
                                 className={`${styles.frdBtn} ${styles.frdBtnPrimary} ${styles.frdBtnFull}`}
@@ -730,7 +730,7 @@ const RejectedFileDetailScreen = () => {
                             >
                                 {updating ? "Güncelleniyor..." : "GÜNCELLE"}
                             </button>
-                        )}
+
 
                         <button
                             type="button"
