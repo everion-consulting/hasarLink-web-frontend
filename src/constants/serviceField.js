@@ -45,8 +45,6 @@ const serviceField = [
 
   // Servis Adı alanı
   { name: "service_name", label: "Servis Adı", placeholder: "Servis Adı", type: "text", required: true },
-  // Telefon alanı
-  { name: "service_phone", label: "Telefon", placeholder: "5xxxxxxxxx", type: "phone", required: true, maxLength: 19 },
   // Servis Vergi No alanı
   { name: "service_tax_no", label: "Servis Vergi No", placeholder: "0123456789", type: "numeric", required: true },
   // İl seçimi (select/dropdown)

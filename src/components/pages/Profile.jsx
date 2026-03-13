@@ -104,7 +104,21 @@ export default function Profile() {
         }
     };
 
+    const maskPhone = (value) => {
+        let numbers = value.replace(/\D/g, ""); // sadece rakam
 
+        if (numbers.startsWith("0")) {
+            numbers = numbers.substring(1);
+        }
+
+        numbers = numbers.substring(0, 10); // max 10 hane
+
+        if (numbers.length <= 3) return `0 (${numbers}`;
+        if (numbers.length <= 6) return `0 (${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+        if (numbers.length <= 8) return `0 (${numbers.slice(0, 3)}) ${numbers.slice(3, 6)} ${numbers.slice(6)}`;
+
+        return `0 (${numbers.slice(0, 3)}) ${numbers.slice(3, 6)} ${numbers.slice(6, 8)} ${numbers.slice(8)}`;
+    };
 
 
     const [statistics, setStatistics] = useState(null);
@@ -430,7 +444,12 @@ export default function Profile() {
                                     <input
                                         type="text"
                                         value={form.repair_phone}
-                                        onChange={(e) => setForm({ ...form, repair_phone: e.target.value })}
+                                        onChange={(e) =>
+                                            setForm({
+                                                ...form,
+                                                repair_phone: maskPhone(e.target.value)
+                                            })
+                                        }
                                     />
                                 </div>
 
