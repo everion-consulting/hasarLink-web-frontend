@@ -3,6 +3,8 @@
   display: flex;
   justify-content: center;
   padding: 16px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .frdContentArea {
@@ -36,11 +38,15 @@
 .frdPageTitle {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin: 8px 0 12px;
+  color: #111827;
 }
 
 /* Kart */
 .frdCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   margin-top: 8px;
   border-radius: 16px;
   padding: 18px 16px;

@@ -2,7 +2,7 @@
 .fileTopRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-bottom: 8px;
 }
@@ -162,18 +162,17 @@
   background: #ffffff;
   border: 1.5px solid #d7dce2;
   border-radius: 40px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
-  max-width: 44px;
-  overflow: hidden;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  max-width: 100%;
+  overflow: visible;
   white-space: nowrap;
   position: relative;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
 }
 
 .detailChip:hover {
-  max-width: 190px;
   background: #f0f3f9;
   border-color: #b7bfd0;
 }
@@ -185,18 +184,34 @@
 
 /* Yazı – başlangıçta gizli */
 .detailText {
-  opacity: 0;
-  transform: translateX(20px);
+  opacity: 1;
+  transform: none;
   font-size: 14px;
   font-weight: 600;
   color: #133E87;
-  transition: all 0.35s ease;
+  transition: color 0.2s ease;
 }
 
-/* Hover’da yazı görünür + sola akar */
-.detailChip:hover .detailText {
-  opacity: 1;
-  transform: translateX(0);
+.fileActionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rejectedEditChip {
+  border-color: #f0c6c6;
+  background: #fff4f4;
+}
+
+.rejectedEditChip .detailText {
+  color: #9f1d1d;
+}
+
+.rejectedEditChip:hover {
+  background: #ffeaea;
+  border-color: #e8a8a8;
 }
 
 .fileNotifications {
@@ -269,6 +284,19 @@
   color: #222;
   min-width: 120px;
   display: inline-block;
+}
+
+.rejectionReason {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff1f1;
+  border: 1px solid #f4c7c7;
+  color: #9f1d1d;
+}
+
+.rejectionReason strong {
+  color: #7f1d1d;
 }
 
 /* Status + Buton alanı */
@@ -350,6 +378,16 @@
 
   .fileDetails p {
     font-size: 14px;
+  }
+
+  .fileTopRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fileActionGroup {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .fileStatusRow {

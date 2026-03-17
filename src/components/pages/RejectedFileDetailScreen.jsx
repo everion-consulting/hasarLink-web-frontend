@@ -421,7 +421,7 @@ const RejectedFileDetailScreen = () => {
     // ---------------- LOADING ----------------
     if (loading) {
         return (
-            <div className={`screen-container-drive ${styles.frdLoadingScreen}`}>
+            <div className={styles.frdLoadingScreen}>
                 <div className={styles.frdLoadingSpinner} />
                 <p>Veriler yükleniyor...</p>
             </div>
@@ -430,7 +430,7 @@ const RejectedFileDetailScreen = () => {
 
     if (!fileData) {
         return (
-            <div className={`screen-container-drive ${styles.frdLoadingScreen}`}>
+            <div className={styles.frdLoadingScreen}>
                 <p>Veri bulunamadı.</p>
                 <button
                     type="button"
@@ -445,8 +445,8 @@ const RejectedFileDetailScreen = () => {
 
     // ---------------- UI ----------------
     return (
-        <div className={`screen-container-drive ${styles.frdScreen}`}>
-            <div className={`content-area ${styles.frdContentArea}`}>
+        <div className={styles.frdScreen}>
+            <div className={styles.frdContentArea}>
 
                 <button
                     type="button"
@@ -456,11 +456,11 @@ const RejectedFileDetailScreen = () => {
                     ←
                 </button>
 
-                <h1 className={`page-title ${styles.frdPageTitle}`}>
+                <h1 className={styles.frdPageTitle}>
                     Dosya Detayı
                 </h1>
 
-                <div className={`vehicle-form-card ${styles.frdCard}`}>
+                <div className={styles.frdCard}>
 
                     {errorFields.length > 0 && (
                         <div className={styles.frdErrorBox}>
