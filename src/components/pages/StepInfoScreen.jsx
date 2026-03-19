@@ -803,8 +803,7 @@ export default function StepInfoScreen() {
 
       // ✅ KREDİ KONTROLÜ - Dosya bildirme anında kredi olmalı
       if (remainingCredits <= 0) {
-        alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
-        navigate("/kredi-satin-al");
+        alert("Krediniz bitti.");
         return;
       }
 
@@ -813,8 +812,8 @@ export default function StepInfoScreen() {
 
       // Backend'den kredi hatası gelirse kontrol et
       if (!updateResult) {
-        console.log('❌ Update başarısız, kredi satın almaya yönlendiriliyor');
-        navigate("/kredi-satin-al");
+        console.log('❌ Update başarısız, kredi bitti uyarısı gösteriliyor');
+        alert("Krediniz bitti.");
         return;
       }
 
@@ -869,8 +868,7 @@ export default function StepInfoScreen() {
 
       // Hata mesajında kredi ile ilgili bir şey varsa kredi sayfasına yönlendir
       if (error.message && (error.message.includes('kredi') || error.message.includes('credit'))) {
-        alert('Krediniz bitti! Dosya bildirmek için kredi satın alın.');
-        navigate("/kredi-satin-al");
+        alert('Krediniz bitti.');
       } else {
         alert('Son onaylama sırasında hata: ' + error.message);
       }
