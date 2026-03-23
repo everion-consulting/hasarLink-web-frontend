@@ -193,7 +193,7 @@ export default function FormRenderer({
     if (f.type === "chassisNo" && v) {
       const vin = String(v).toUpperCase().replace(/\s+/g, "");
       const invalidLength = vin.length !== 17;
-      const invalidChars = /[^A-HJ-NPR-Z0-9]/.test(vin);
+      const invalidChars = /[^A-Z0-9]/.test(vin);
       const hasLetter = /[A-Z]/.test(vin);
       const hasNumber = /\d/.test(vin);
 
