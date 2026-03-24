@@ -356,16 +356,23 @@ export default function StepInfoScreen() {
       console.log("📡 UPDATE yanıtı:", res);
 
       if (!res.success) {
-        console.error("❌ UPDATE başarısız:", res.message);
+        console.error("❌ UPDATE başarısız:", res.status, res.message);
+
+        const message = res.message || "";
 
         // Kredi hatası kontrolü
-        const message = res.message || "";
         if (message.includes('kredi') || message.includes('credit') || message.toLowerCase().includes('insufficient')) {
           alert("Krediniz bitti! Dosya taslak olarak kaydedildi.");
-          return null; // null döndür ki handleFinalApprove durdursun
+          return null;
         }
 
-        alert(res.message || "Submission güncellenemedi.");
+        // Sunucu hatası (500) için kullanıcıya anlamlı mesaj
+        if (res.status >= 500) {
+          alert("Sunucuda bir hata oluştu. Lütfen tekrar deneyin veya destek ile iletişime geçin.");
+          return null;
+        }
+
+        alert(message || "Dosya güncellenemedi.");
         return null;
       }
 
@@ -387,22 +394,29 @@ export default function StepInfoScreen() {
 
     const existingId = submissionId || localStorage.getItem("submissionId");
 
+    let result;
     if (currentStep === 1) {
       if (existingId) {
         console.log("🟡 Mevcut submission bulundu, güncelleme yapılıyor:", existingId);
-        await updateSubmission();
+        result = await updateSubmission();
       } else {
         console.log("🆕 Yeni submission oluşturuluyor...");
         const newId = await createSubmission();
-        if (newId) setSubmissionId(newId);
+        if (newId) {
+          setSubmissionId(newId);
+          result = newId;
+        }
       }
     } else {
       // ✅ DİĞER TÜM ADIMLARDA UPDATE ÇAĞIR
       console.log(`📤 Step ${currentStep}: updateSubmission çağrılıyor...`);
-      await updateSubmission();
+      result = await updateSubmission();
     }
 
-    setIsStepApproved(true);
+    // Sadece başarılı olursa adımı onayla
+    if (result) {
+      setIsStepApproved(true);
+    }
   };
 
   const renderStepIcon = () => {
@@ -884,11 +898,11 @@ export default function StepInfoScreen() {
     } catch (error) {
       console.error('❌ Final approve error:', error);
 
-      // Hata mesajında kredi ile ilgili bir şey varsa kredi sayfasına yönlendir
       if (error.message && (error.message.includes('kredi') || error.message.includes('credit'))) {
-        alert('Krediniz bitti.');
+        alert('Krediniz bitti! Dosya bildirmek için kredi satın alın.');
+        navigate("/kredi-satin-al");
       } else {
-        alert('Son onaylama sırasında hata: ' + error.message);
+        alert('Dosya tamamlanırken bir hata oluştu. Lütfen tekrar deneyin.');
       }
     }
   };
