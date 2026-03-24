@@ -38,7 +38,7 @@ export const getInsuredFields = (isCompany = false) => {
       required: false,
       validate: isCompany
         ? (v) => /^\d{10}$/.test(v) ? null : "Vergi kimlik numarası 10 haneli olmalı"
-        : (v) => /^\d{11}$/.test(v) ? null : "Kimlik numarası 11 haneli olmalı"
+        : null
     },
   ];
 
@@ -46,13 +46,11 @@ export const getInsuredFields = (isCompany = false) => {
     fields.push({
       name: "foreign_insured_tc",
       label: "Yabancı Kimlik No",
-      type: "text",
+      type: "tckn",
       placeholder: "Kimlik numaranızı giriniz",
       required: false,
       maxLength: 11,
       keyboardType: "numeric",
-      validate: (value) =>
-        /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı",
     });
   }
 

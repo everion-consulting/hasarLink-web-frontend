@@ -82,6 +82,20 @@ export const validateTCKNSoft = (s = "") => {
   return validateTCKN(t);
 };
 
+export const getTCKNValidationError = (s = "") => {
+  const digits = onlyDigits(String(s));
+
+  if (digits.length > 0 && digits.length < 11) {
+    return "TCKN 11 haneli olmalıdır";
+  }
+
+  if (digits.length === 11 && !validateTCKN(digits)) {
+    return "Geçerli bir TC kimlik numarası giriniz";
+  }
+
+  return null;
+};
+
 export const validateIBAN = (s = "") => /^TR\d{24}$/i.test(s.replace(/\s/g, ""));
 
 // -------------------

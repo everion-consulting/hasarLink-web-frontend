@@ -8,6 +8,7 @@ import {
   validatePhone,
   validateTCKN,
   validateTCKNSoft,
+  getTCKNValidationError,
   validateIBAN,
   validateDateYMD,
   validatePlate,
@@ -164,9 +165,7 @@ export default function FormRenderer({
     if (f.type === "phone" && v && !validatePhone(v))
       return "Telefon 0 (5xx) xxx xx xx olmalı";
     if (f.type === "tckn" && v) {
-      const digits = onlyDigits(v);
-      if (digits.length > 0 && digits.length < 11) return "TCKN 11 hane olmalı";
-      if (digits.length === 11 && !validateTCKN(digits)) return "Geçerli bir TCKN giriniz";
+      return getTCKNValidationError(v);
     }
 
     if (f.type === "iban" && v && !validateIBAN(v))

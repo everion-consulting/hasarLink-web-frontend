@@ -28,9 +28,6 @@ const serviceField = [
     placeholder: "Kimlik numaranızı giriniz",
     required: true,
     maxLength: 11,
-    validate: (value) => {
-      return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
-    }
   },
   {
     name: "repair_phone",

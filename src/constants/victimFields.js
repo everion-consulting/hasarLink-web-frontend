@@ -28,7 +28,7 @@ export const getVictimFields = (
       name: isCompany ? "taxId" : "victim_tc",
       label: isCompany ? "Vergi Kimlik No" : "Kimlik No",
       placeholder: isCompany ? "10 haneli vergi no" : "11 haneli TC",
-      type: "text",
+      type: isCompany ? "text" : "tckn",
       required: true,
       maxLength: isCompany ? 10 : 11,
     },

@@ -22,14 +22,11 @@ const fixField = [
   {
     name: "repair_tc",
     label: "Kimlik No",
-    type: "text",
+    type: "tckn",
     placeholder: "Kimlik numaranızı giriniz",
     required: true,
     maxLength: 11,
     keyboardType: "numeric",
-    validate: (value) => {
-      return /^\d{11}$/.test(value) ? null : "Kimlik numarası 11 haneli olmalı";
-    }
   },
   {
     name: "repair_phone",
