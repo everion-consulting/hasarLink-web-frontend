@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/dashboard.module.css";
 import apiService from "../../services/apiServices";
+import { useProfile } from "../../context/ProfileContext";
 import dosyaBildirIcon from "../../assets/images/dosyaBildir.svg";
 import TaslakBildirimlerIcon from "../../assets/images/taslakBildirimler.svg";
 import TalepEdilenIcon from "../../assets/images/talepEdilen.svg";
@@ -13,6 +14,7 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { fetchProfile: refreshProfileContext } = useProfile();
   const [dashboardData, setDashboardData] = useState({
     counts: {
       not_completed: 0,
@@ -132,6 +134,7 @@ export default function Dashboard() {
     fetchCounts();
     fetchDraftCount();
     fetchProfile();
+    refreshProfileContext(); // Context'teki krediyi de güncelle
   }, []);
 
   // 🔥 YENİ: Bildir butonuna tıklanınca submissionId'yi sil
