@@ -80,19 +80,14 @@ export default [
             return "Şasi No 17 karakter olmalı";
           }
           
-          // I, O, Q harfleri kontrolü
-          if (/[IOQ]/.test(vin)) {
-            return "Şasi No I, O, Q harfleri içeremez";
-          }
-          
-          // Sadece A-H J-N P R-Z ve 0-9 kontrolü
-          if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) {
+          // Sadece harf ve rakam kontrolü
+          if (!/^[A-Z0-9]{17}$/.test(vin)) {
             return "Şasi No sadece geçerli karakterler içerebilir";
           }
           
           // Tamamen sayı veya tamamen harf kontrolü
           const isAllNumbers = /^[0-9]{17}$/.test(vin);
-          const isAllLetters = /^[A-HJ-NPR-Z]{17}$/.test(vin);
+          const isAllLetters = /^[A-Z]{17}$/.test(vin);
           
           if (isAllNumbers || isAllLetters) {
             return "Şasi No hem harf hem rakam içermelidir";

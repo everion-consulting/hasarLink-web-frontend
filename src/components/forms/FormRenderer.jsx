@@ -193,7 +193,7 @@ export default function FormRenderer({
     if (f.type === "chassisNo" && v) {
       const vin = String(v).toUpperCase().replace(/\s+/g, "");
       const invalidLength = vin.length !== 17;
-      const invalidChars = /[^A-HJ-NPR-Z0-9]/.test(vin);
+      const invalidChars = /[^A-Z0-9]/.test(vin);
       const hasLetter = /[A-Z]/.test(vin);
       const hasNumber = /\d/.test(vin);
 
@@ -483,7 +483,7 @@ export default function FormRenderer({
               }`}
           >
             {currentValue
-              ? dynamicOptions?.find((opt) => opt.value === currentValue)?.label ||
+              ? dynamicOptions?.find((opt) => String(opt.value) === String(currentValue))?.label ||
               currentValue
               : field.placeholder || "Seçiniz"}
           </span>

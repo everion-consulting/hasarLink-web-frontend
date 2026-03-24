@@ -9,6 +9,9 @@ import FilterSection from "../filter/FilterSection.jsx";
 const FileNotifications = () => {
   const [fileNotifications, setFileNotifications] = useState([]);   // tüm kayıtlar
   const [displayedFiles, setDisplayedFiles] = useState([]);         // filtre + sayfalama sonucu
+  const [rejectionReasonsById, setRejectionReasonsById] = useState({});
+  const [rejectedSubmissionIdById, setRejectedSubmissionIdById] = useState({});
+  const [rejectedFieldsById, setRejectedFieldsById] = useState({});
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -36,15 +39,76 @@ const FileNotifications = () => {
   useEffect(() => {
     const fetchFileNotifications = async () => {
       try {
-        const res = await apiService.getAllSubmissions();
+        const [submissionsRes, rejectedRes] = await Promise.all([
+          apiService.getAllSubmissions(),
+          apiService.getRejectedSubmissions(),
+        ]);
 
-        if (!res.success) {
-          console.error("Dosya bildirimleri alınırken hata oluştu:", res.message);
+        if (!submissionsRes.success) {
+          console.error("Dosya bildirimleri alınırken hata oluştu:", submissionsRes.message);
           return;
         }
 
-        const raw = res?.data?.results || res?.data || [];
+        const raw = submissionsRes?.data?.results || submissionsRes?.data || [];
         setFileNotifications(Array.isArray(raw) ? raw : []);
+
+        if (rejectedRes?.success) {
+          const rejectedRaw = Array.isArray(rejectedRes?.data)
+            ? rejectedRes.data
+            : rejectedRes?.data?.rejected_files || [];
+
+          const nextReasons = {};
+          const nextSubmissionIds = {};
+          const nextRejectedFields = {};
+
+          rejectedRaw.forEach((item) => {
+            const reason =
+              item?.rejection_reason ||
+              item?.reject_reason ||
+              item?.rejected_reason ||
+              item?.rejectionReason ||
+              item?.message ||
+              item?.rejected_message ||
+              item?.reason;
+
+            if (!reason || typeof reason !== "string" || !reason.trim()) {
+              return;
+            }
+
+            const keys = [
+              item?.submission_id,
+              item?.id,
+              item?.submission,
+              item?.file_submission_id,
+            ].filter(Boolean);
+
+            const canonicalSubmissionId =
+              item?.submission_id ||
+              item?.submission ||
+              item?.file_submission_id ||
+              item?.id;
+
+            const normalizedFields = Array.isArray(item?.fields) ? item.fields : [];
+
+            keys.forEach((key) => {
+              const normalizedKey = String(key);
+
+              if (typeof reason === "string" && reason.trim()) {
+                nextReasons[normalizedKey] = reason.trim();
+              }
+
+              if (canonicalSubmissionId) {
+                nextSubmissionIds[normalizedKey] = String(canonicalSubmissionId);
+              }
+
+              nextRejectedFields[normalizedKey] = normalizedFields;
+            });
+          });
+
+          setRejectionReasonsById(nextReasons);
+          setRejectedSubmissionIdById(nextSubmissionIds);
+          setRejectedFieldsById(nextRejectedFields);
+        }
       } catch (error) {
         console.error("Dosya bildirimleri alınırken hata oluştu:", error);
       }
@@ -105,6 +169,62 @@ const FileNotifications = () => {
     navigate(`/file-detail/${fileId}`);
   };
 
+  const handleRejectedFileEdit = (data) => {
+    const submissionId =
+      rejectedSubmissionIdById[String(data?.id)] ||
+      rejectedSubmissionIdById[String(data?.submission_id)] ||
+      rejectedSubmissionIdById[String(data?.submission)] ||
+      rejectedSubmissionIdById[String(data?.file_submission_id)] ||
+      data?.submission_id ||
+      data?.id ||
+      data?.submission ||
+      data?.file_submission_id;
+
+    if (!submissionId) {
+      return;
+    }
+
+    const rejectedFields =
+      rejectedFieldsById[String(data?.id)] ||
+      rejectedFieldsById[String(data?.submission_id)] ||
+      rejectedFieldsById[String(data?.submission)] ||
+      rejectedFieldsById[String(data?.file_submission_id)] ||
+      data?.fields ||
+      data?.rejected_fields ||
+      [];
+
+    navigate(`/reddedilen-dosyalar-detay/${submissionId}`, {
+      state: {
+        from: "reddedilen-dosyalar",
+        rejectedFields,
+      },
+    });
+  };
+
+  const getRejectionReason = (data) => {
+    const candidate =
+      data?.rejection_reason ||
+      data?.reject_reason ||
+      data?.rejected_reason ||
+      data?.rejectionReason ||
+      data?.message ||
+      data?.rejected_message ||
+      data?.reason;
+
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+
+    const linkedReason =
+      rejectionReasonsById[String(data?.id)] ||
+      rejectionReasonsById[String(data?.submission_id)] ||
+      rejectionReasonsById[String(data?.submission)] ||
+      rejectionReasonsById[String(data?.file_submission_id)] ||
+      "";
+
+    return linkedReason;
+  };
+
   const renderFileItem = (data) => {
     const statusMap = {
       PENDING: { text: "Başvurunuz Beklemede", className: styles.statusPending },
@@ -124,29 +244,42 @@ const FileNotifications = () => {
         <div className={styles.fileDetails}>
           {/* ÜST SATIR: Plaka solda, chip sağda */}
           <div className={styles.fileTopRow}>
-            {data.folder_no && (
+            <div className={styles.fileMainInfo}>
+              {data.folder_no && (
+                <p>
+                  <strong>Dosya No:</strong> {data.folder_no}
+                </p>
+              )}
+
+              {data.exper_informations && (
+                <p>
+                  <strong>Exper Bilgisi:</strong> {data.exper_informations}
+                </p>
+              )}
+
               <p>
-                <strong>Dosya No:</strong> {data.folder_no}
+                <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
               </p>
-            )}
+            </div>
 
-            {data.exper_informations && (
-              <p>
-                <strong>Exper Bilgisi:</strong> {data.exper_informations}
-              </p>
-            )}
+            <div className={styles.fileActionGroup}>
+              <button
+                className={styles.detailChip}
+                onClick={() => handleFileDetail(data.id)}
+              >
+                <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
+                <span className={styles.detailText}>Dosya Detayı Gör</span>
+              </button>
 
-            <p>
-              <strong>Araç Plaka:</strong> {data.vehicle_plate || "-"}
-            </p>
-
-            <button
-              className={styles.detailChip}
-              onClick={() => handleFileDetail(data.id)}
-            >
-              <Eye className={styles.eyeIcon} size={18} strokeWidth={2.2} />
-              <span className={styles.detailText}>Dosya Detayı Gör</span>
-            </button>
+              {data.status === "REJECTED" && (
+                <button
+                  className={`${styles.detailChip} ${styles.rejectedEditChip}`}
+                  onClick={() => handleRejectedFileEdit(data)}
+                >
+                  <span className={styles.detailText}>Reddedilen Dosyayı Duzenle</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Diğer bilgiler altta */}
@@ -160,6 +293,12 @@ const FileNotifications = () => {
             <strong>{data.insurance_company_name || "-"}</strong>{" "}
             - {(data.created_at || data.accident_date || "").slice(0, 10)}
           </p>
+
+          {data.status === "REJECTED" && (
+            <p className={styles.rejectionReason}>
+              <strong>Red Nedeni:</strong> {getRejectionReason(data) || "Belirtilmedi"}
+            </p>
+          )}
         </div>
 
         <div className={styles.fileStatusRow}>

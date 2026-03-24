@@ -94,14 +94,14 @@ export function validateChassisNo(value) {
   // Boşlukları kaldır, büyük harfe çevir
   const vin = String(value).toUpperCase().replace(/\s+/g, "");
 
-  // 17 karakter, I O Q yok, sadece A-H J-N P R-Z ve 0-9
-  const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/;
+  // 17 karakter, sadece harf ve rakam
+  const vinRegex = /^[A-Z0-9]{17}$/;
 
   if (!vinRegex.test(vin)) return false;
 
   // Tamamen sayı veya tamamen harf kontrolü
   const isAllNumbers = /^[0-9]{17}$/.test(vin);
-  const isAllLetters = /^[A-HJ-NPR-Z]{17}$/.test(vin);
+  const isAllLetters = /^[A-Z]{17}$/.test(vin);
 
   // Tamamen sayı veya tamamen harf ise geçersiz
   if (isAllNumbers || isAllLetters) return false;
