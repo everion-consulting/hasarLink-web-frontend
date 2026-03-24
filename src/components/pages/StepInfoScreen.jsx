@@ -372,6 +372,7 @@ export default function StepInfoScreen() {
       return res?.data;
     } catch (err) {
       console.error("❌ UPDATE Error:", err.message);
+      return null;
     }
   };
 
@@ -801,11 +802,20 @@ export default function StepInfoScreen() {
     try {
       console.log('🎯 Final approve process started');
 
-      // ✅ KREDİ KONTROLÜ - Dosya bildirme anında kredi olmalı
-      if (remainingCredits <= 0) {
-        alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
-        navigate("/kredi-satin-al");
-        return;
+      // ✅ KREDİ KONTROLÜ - Güncel krediyi backend'den çek
+      try {
+        const creditRes = await apiService.getProfileDetail();
+        if (creditRes?.success) {
+          const currentCredits = creditRes?.data?.credits ?? creditRes?.data?.data?.credits ?? 0;
+          setRemainingCredits(currentCredits);
+          if (currentCredits <= 0) {
+            alert("Krediniz bitti! Dosya bildirmek için kredi satın alın.");
+            navigate("/kredi-satin-al");
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Kredi kontrolü başarısız:", e);
       }
 
       const updateResult = await updateSubmission(true);
@@ -817,6 +827,13 @@ export default function StepInfoScreen() {
         navigate("/kredi-satin-al");
         return;
       }
+
+      // Güncel kredi bilgisini güncelle (backend response'tan veya profil yeniden çekerek)
+      if (updateResult.remaining_credits !== undefined) {
+        setRemainingCredits(updateResult.remaining_credits);
+      }
+      // ProfileContext'i de güncelle ki diğer sayfalarda da güncel gözüksün
+      await fetchProfile();
 
       const randomFileNumber = `AXA-2025-${Math.floor(10000 + Math.random() * 90000)}`;
 
