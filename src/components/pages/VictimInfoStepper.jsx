@@ -33,6 +33,13 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     return aiDocuments.find(d => d.doc_type === "Kimlik")?.data || null;
   }, [aiDocuments]);
 
+  /* --------------------------------------------------
+     3️⃣ MAĞDUR SÜRÜCÜ EHLİYETİ = DOĞUM TARİHİ ÇEKMELİ
+  -------------------------------------------------- */
+  const magdurSurucu = useMemo(() => {
+    return aiDocuments.find(d => d.doc_type === "Ehliyeti" || d.doc_type === "Ehliyet")?.data || null;
+  }, [aiDocuments]);
+
 
   /* -------------------------------------------------- */
 
@@ -45,26 +52,32 @@ const VictimInfoStepper = ({ samePerson = false }) => {
      4️⃣ FORMU DOLDUR
   -------------------------------------------------- */
   useEffect(() => {
-    if (!magdurRuhsat) return;
+    // 👤 Aynı kişi: ehliyetten çek | Farklı kişi: ruhsattan çek
+    const dataSource = state?.samePerson ? magdurSurucu : magdurRuhsat;
+    
+    if (!dataSource) return;
 
-    const isCompanyDetected = magdurRuhsat.tc_vkn?.length === 10;
+    const isCompanyDetected = dataSource.tc_vkn?.length === 10;
 
     setIsCompany(isCompanyDetected);
     setIsVictimForeign(false);
 
+    // 🔑 Aynı kişi ise sürücü ehliyetinden doğum tarihini al
+    const birthDateSource = state?.samePerson ? magdurSurucu?.dogum_tarihi : magdurKimlik?.dogum_tarihi;
+
     setFormValues({
-      victim_fullname: magdurRuhsat.ruhsat_sahibi || "",
+      victim_fullname: dataSource.ruhsat_sahibi || dataSource.adi_soyadi || "",
 
       // 🔑 KRİTİK NOKTA
-      victim_tc: !isCompanyDetected ? magdurRuhsat.tc_vkn || "" : "",
-      taxId: isCompanyDetected ? magdurRuhsat.tc_vkn || "" : "",
+      victim_tc: !isCompanyDetected ? dataSource.tc_vkn || "" : "",
+      taxId: isCompanyDetected ? dataSource.tc_vkn || "" : "",
 
       foreign_victim_tc: "",
-      victim_birth_date: magdurKimlik?.dogum_tarihi || "",
+      victim_birth_date: birthDateSource || "",
       victim_phone: magdurKimlik?.telefon || "",
       isForeign: false,
     });
-  }, [magdurRuhsat, magdurKimlik]);
+  }, [magdurRuhsat, magdurKimlik, magdurSurucu, state?.samePerson]);
 
 
 
@@ -146,8 +159,9 @@ const VictimInfoStepper = ({ samePerson = false }) => {
         if (f.name === "policy_no")
           return { ...f, required: isBizimKasko };
 
+        // ✅ farklı kişi ise doğum tarihi zorunlu
         if (f.name === "victim_birth_date")
-          return { ...f, required: state?.samePerson };
+          return { ...f, required: state?.samePerson === false };
 
         return f;
       });

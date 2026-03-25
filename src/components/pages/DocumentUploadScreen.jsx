@@ -169,8 +169,25 @@ const DocumentUploaderScreen = ({
   -------------------------------------------------- */
   const activeFileTypes = useMemo(() => {
     return FILE_TYPES.filter((f) => {
+      // � Tekli kaza: karşı taraf alanları gizle
+      if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
+        if (["sigortali_arac_ruhsat", "sigortali_arac_ehliyet", "karsi_taraf_surucu_ehliyet"].includes(f.id)) {
+          return false;
+        }
+      }
+
+      // 👤 Aynı kişi: mağdur sürücü ehliyeti göster, bizim sürücü ehliyeti gizle
+      if (f.id === "magdur_surucu_ehliyet") {
+        return samePerson === true;
+      }
+
       if (f.id === "bizim_taraf_surucu_ehliyet") {
         return samePerson === false;
+      }
+
+      // 🚗 Farklı kişi: mağdur araç ehliyeti gizle
+      if (f.id === "magdur_arac_ehliyet") {
+        return samePerson === true;
       }
 
       if (f.id === "karsi_taraf_surucu_ehliyet") {
@@ -179,7 +196,7 @@ const DocumentUploaderScreen = ({
 
       return true;
     });
-  }, [samePerson, insuranceSource, karsiSamePerson]);
+  }, [samePerson, insuranceSource, karsiSamePerson, kazaNitelik]);
 
 
 
