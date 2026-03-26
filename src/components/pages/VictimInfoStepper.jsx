@@ -34,10 +34,16 @@ const VictimInfoStepper = ({ samePerson = false }) => {
   }, [aiDocuments]);
 
   /* --------------------------------------------------
-     3️⃣ MAĞDUR SÜRÜCÜ EHLİYETİ = DOĞUM TARİHİ ÇEKMELİ
+     3️⃣ MAĞDUR ARAÇ EHLİYETİ = AYNI KİŞİ AKIŞI
   -------------------------------------------------- */
-  const magdurSurucu = useMemo(() => {
-    return aiDocuments.find(d => d.doc_type === "Ehliyeti" || d.doc_type === "Ehliyet")?.data || null;
+  const magdurAracEhliyet = useMemo(() => {
+    const byFolder = aiDocuments.find(
+      d => d.folder_name === "magdur_arac_ehliyet"
+    )?.data;
+
+    if (byFolder) return byFolder;
+
+    return aiDocuments.find(d => d.doc_type === "Kimlik")?.data || null;
   }, [aiDocuments]);
 
 
@@ -52,8 +58,8 @@ const VictimInfoStepper = ({ samePerson = false }) => {
      4️⃣ FORMU DOLDUR
   -------------------------------------------------- */
   useEffect(() => {
-    // 👤 Aynı kişi: ehliyetten çek | Farklı kişi: ruhsattan çek
-    const dataSource = state?.samePerson ? magdurSurucu : magdurRuhsat;
+    // Ayni kisi: magdur arac ehliyetinden cek | Farkli kisi: ruhsattan cek
+    const dataSource = state?.samePerson ? magdurAracEhliyet : magdurRuhsat;
     
     if (!dataSource) return;
 
@@ -62,22 +68,24 @@ const VictimInfoStepper = ({ samePerson = false }) => {
     setIsCompany(isCompanyDetected);
     setIsVictimForeign(false);
 
-    // 🔑 Aynı kişi ise sürücü ehliyetinden doğum tarihini al
-    const birthDateSource = state?.samePerson ? magdurSurucu?.dogum_tarihi : magdurKimlik?.dogum_tarihi;
+    // Ayni kisi ise dogum tarihini magdur arac ehliyetinden al
+    const birthDateSource = state?.samePerson
+      ? magdurAracEhliyet?.dogum_tarihi
+      : magdurKimlik?.dogum_tarihi;
 
     setFormValues({
-      victim_fullname: dataSource.ruhsat_sahibi || dataSource.adi_soyadi || "",
+      victim_fullname: dataSource.ruhsat_sahibi || dataSource.adi_soyadi || dataSource.ad_soyad || "",
 
       // 🔑 KRİTİK NOKTA
-      victim_tc: !isCompanyDetected ? dataSource.tc_vkn || "" : "",
-      taxId: isCompanyDetected ? dataSource.tc_vkn || "" : "",
+      victim_tc: !isCompanyDetected ? (dataSource.tc_vkn || dataSource.tc_no || "") : "",
+      taxId: isCompanyDetected ? (dataSource.tc_vkn || "") : "",
 
       foreign_victim_tc: "",
       victim_birth_date: birthDateSource || "",
       victim_phone: magdurKimlik?.telefon || "",
       isForeign: false,
     });
-  }, [magdurRuhsat, magdurKimlik, magdurSurucu, state?.samePerson]);
+  }, [magdurRuhsat, magdurKimlik, magdurAracEhliyet, state?.samePerson]);
 
 
 

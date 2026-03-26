@@ -3,7 +3,6 @@ export const FILE_TYPES = [
   { id: "tutanak", title: "Tutanak" },
   { id: "magdur_arac_ruhsat", title: "Mağdur Araç Ruhsatı" },
   { id: "magdur_arac_ehliyet", title: "Mağdur Araç Ehliyeti" },
-  { id: "magdur_surucu_ehliyet", title: "Mağdur Sürücü Ehliyeti" },
   {
     id: "bizim_taraf_surucu_ehliyet",
     title: "Bizim Taraf Sürücü Ehliyeti"

@@ -169,16 +169,11 @@ const DocumentUploaderScreen = ({
   -------------------------------------------------- */
   const activeFileTypes = useMemo(() => {
     return FILE_TYPES.filter((f) => {
-      // � Tekli kaza: karşı taraf alanları gizle
+      // Tekli kaza: karsi taraf alanlari gizle
       if (kazaNitelik === "TEKLİ KAZA (BEYANLI)") {
         if (["sigortali_arac_ruhsat", "sigortali_arac_ehliyet", "karsi_taraf_surucu_ehliyet"].includes(f.id)) {
           return false;
         }
-      }
-
-      // 👤 Aynı kişi: mağdur sürücü ehliyeti göster, bizim sürücü ehliyeti gizle
-      if (f.id === "magdur_surucu_ehliyet") {
-        return samePerson === true;
       }
 
       if (f.id === "bizim_taraf_surucu_ehliyet") {
