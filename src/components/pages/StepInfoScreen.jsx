@@ -218,26 +218,33 @@ export default function StepInfoScreen() {
           is_completed: markAsCompleted,
         };
       } else if (currentStep === 2) {
+        // Mağdur bilgisi — isForeign durumuna göre TC alanlarını temizle
+        const isVictimForeign = !!victimData?.isForeign;
+
         payload = {
           victim_fullname: victimData.victim_fullname,
-          victim_tc: victimData.victim_tc,
-          foreign_victim_tc: victimData.foreign_victim_tc,
+          victim_tc: isVictimForeign ? "" : (victimData.victim_tc || ""),
+          foreign_victim_tc: isVictimForeign ? (victimData.foreign_victim_tc || "") : "",
           victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
           victim_mail: victimData.victim_mail,
           victim_phone: victimData.victim_phone,
           victim_iban: victimData.victim_iban,
+          // Bizim kasko poliçe no (victim step'inde giriliyor)
+          ...(victimData.policy_no ? { policy_no: victimData.policy_no } : {}),
           is_completed: markAsCompleted,
         };
 
         if (!samePerson) {
+          const isForeignDriver = !!driverData?.isForeign;
+
           payload = {
             ...payload,
             driver_fullname: driverData.driver_fullname,
-            driver_tc: driverData.driver_tc,
+            driver_tc: isForeignDriver ? "" : (driverData.driver_tc || ""),
             driver_mail: driverData.driver_mail,
             driver_phone: driverData.driver_phone,
             driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
-            foreign_driver_tc: driverData.foreign_driver_tc,
+            foreign_driver_tc: isForeignDriver ? (driverData.foreign_driver_tc || "") : "",
           };
         }
 
@@ -256,14 +263,16 @@ export default function StepInfoScreen() {
         };
       } else if (currentStep === 3) {
         const currentProfileData = profileDetail || {};
+        const isInsuredCompany = !!insuredData.isCompany;
+        const isInsuredForeign = !!insuredData.isForeign;
 
         payload = {
-          insured_fullname: insuredData.isCompany ? "" : insuredData.insured_fullname,
-          insured_tc: insuredData.isCompany ? "" : insuredData.insured_tc,
-          foreign_insured_tc: insuredData.isCompany ? "" : insuredData.foreign_insured_tc,
-          company_name: insuredData.isCompany ? insuredData.company_name : "",
-          company_tax_number: insuredData.isCompany ? insuredData.company_tax_number : "",
-          insured_birth_date: insuredData.isCompany ? null : toYYYYMMDD(insuredData.insured_birth_date),
+          insured_fullname: isInsuredCompany ? "" : (insuredData.insured_fullname || ""),
+          insured_tc: isInsuredCompany ? "" : (isInsuredForeign ? "" : (insuredData.insured_tc || "")),
+          foreign_insured_tc: isInsuredCompany ? "" : (isInsuredForeign ? (insuredData.foreign_insured_tc || "") : ""),
+          company_name: isInsuredCompany ? (insuredData.company_name || "") : "",
+          company_tax_number: isInsuredCompany ? (insuredData.company_tax_number || "") : "",
+          insured_birth_date: isInsuredCompany ? null : toYYYYMMDD(insuredData.insured_birth_date),
           insured_phone: insuredData.insured_phone,
           insured_mail: insuredData.insured_mail,
           insured_plate: insuredData.insured_plate,
@@ -298,14 +307,16 @@ export default function StepInfoScreen() {
         });
 
         if ((insuranceSource === "karsi trafik" || insuranceSource === "karsi kasko") && karsiSamePerson === false) {
+          const isForeignOpp = !!opposingDriverData?.isForeign;
+
           payload = {
             ...payload,
             opposing_driver_fullname: opposingDriverData.opposing_driver_fullname || "",
-            opposing_driver_tc: opposingDriverData.opposing_driver_tc || "",
+            opposing_driver_tc: isForeignOpp ? "" : (opposingDriverData.opposing_driver_tc || ""),
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
             opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
-            opposing_foreign_driver_tc: opposingDriverData.opposing_foreign_driver_tc || "",
+            opposing_foreign_driver_tc: isForeignOpp ? (opposingDriverData.opposing_foreign_driver_tc || "") : "",
           };
         }
       } else if (currentStep === 4) {

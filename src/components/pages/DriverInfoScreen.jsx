@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FormRenderer from "../forms/FormRenderer";
 import driverFields from "../../constants/driverFields";
@@ -57,6 +57,8 @@ export default function DriverInfoScreen() {
   -------------------------------------------------- */
   const [formValid, setFormValid] = useState(false);
   const [isForeign, setIsForeign] = useState(false);
+  const prevDriverTcRef = useRef(driverData?.driver_tc || "");
+  const prevForeignDriverTcRef = useRef(driverData?.foreign_driver_tc || "");
   const [formValues, setFormValues] = useState({
     ...driverData,
     isForeign: false
@@ -103,21 +105,26 @@ export default function DriverInfoScreen() {
   const switchTab = (nextIsForeign) => {
     setIsForeign(nextIsForeign);
 
-    setFormValues((prev) =>
-      nextIsForeign
-        ? {
-            ...prev,
-            isForeign: true,
-            driver_tc: "",
-            foreign_driver_tc: prev.foreign_driver_tc || ""
-          }
-        : {
-            ...prev,
-            isForeign: false,
-            foreign_driver_tc: "",
-            driver_tc: prev.driver_tc || ""
-          }
-    );
+    setFormValues((prev) => {
+      if (nextIsForeign) {
+        // TC -> Yabancı: mevcut TC'yi sakla, yabancı TC'yi restore et
+        prevDriverTcRef.current = prev.driver_tc || "";
+        return {
+          ...prev,
+          isForeign: true,
+          driver_tc: "",
+          foreign_driver_tc: prevForeignDriverTcRef.current || prev.foreign_driver_tc || "",
+        };
+      }
+      // Yabancı -> TC: mevcut yabancı TC'yi sakla, TC'yi restore et
+      prevForeignDriverTcRef.current = prev.foreign_driver_tc || "";
+      return {
+        ...prev,
+        isForeign: false,
+        foreign_driver_tc: "",
+        driver_tc: prevDriverTcRef.current || prev.driver_tc || "",
+      };
+    });
   };
 
   const renderDriverTypeSwitch = () => (
