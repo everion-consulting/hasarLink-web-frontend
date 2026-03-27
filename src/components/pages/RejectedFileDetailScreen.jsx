@@ -34,6 +34,9 @@ const EDITABLE_KEYS = [
     "official_report_type","estimated_damage_amount","policy_no"
 ];
 
+const TC_KEYS = ["driver_tc", "victim_tc", "insured_tc", "repair_tc"];
+const DATE_KEYS = ["driver_birth_date", "victim_birth_date", "insured_birth_date", "repair_birth_date", "accident_date"];
+
 
 const toBoolean = (v) => {
     if (v === true || v === false) return v;
@@ -43,7 +46,32 @@ const toBoolean = (v) => {
     return !!v;
 };
 
-const norm = (s) => String(s || "").toLowerCase().trim();
+const norm = (s) => {
+    const normalized = String(s || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[\s_-]/g, "") // space, underscore, dash kaldır
+        .normalize("NFD") // Türkçe karakterleri ayır
+        .replace(/[\u0300-\u036f]/g, "") // Diakritik işaretleri kaldır
+        .replace(/ı/g, "i")
+        .replace(/ğ/g, "g")
+        .replace(/ü/g, "u")
+        .replace(/ş/g, "s")
+        .replace(/ö/g, "o")
+        .replace(/ç/g, "c");
+    return normalized;
+};
+
+const toDateInputValue = (value) => {
+    const raw = String(value || "").trim();
+    if (!raw) return "";
+    if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0, 10);
+    if (/^\d{2}\.\d{2}\.\d{4}/.test(raw)) {
+        const [dd, mm, yyyy] = raw.slice(0, 10).split(".");
+        return `${yyyy}-${mm}-${dd}`;
+    }
+    return raw;
+};
 
 const RejectedFileDetailScreen = () => {
     const navigate = useNavigate();
@@ -101,8 +129,48 @@ const RejectedFileDetailScreen = () => {
                 if (!isNaN(num)) out[k] = num;
                 continue;
             }
+
+            if (TC_KEYS.includes(k)) {
+                const cleanedTc = String(v).replace(/\D/g, "").slice(0, 11);
+                if (!cleanedTc) continue;
+                out[k] = cleanedTc;
+
+                // Bazi backend surumleri tc alanlarini *_tckn olarak bekleyebiliyor.
+                if (k === "driver_tc") out.driver_tckn = cleanedTc;
+                if (k === "victim_tc") out.victim_tckn = cleanedTc;
+                if (k === "insured_tc") out.insured_tckn = cleanedTc;
+                if (k === "repair_tc") out.repair_tckn = cleanedTc;
+                continue;
+            }
+
+            if (DATE_KEYS.includes(k)) {
+                const normalizedDate = toDateInputValue(v);
+                if (!normalizedDate) continue;
+                out[k] = normalizedDate;
+                continue;
+            }
+
             out[k] = v;
         }
+
+        // Is kurali: Surucu ve magdur ayni ise iki taraf alanlarini senkron gonder.
+        const samePerson = out.is_driver_victim_same ?? data?.is_driver_victim_same;
+        if (samePerson === true) {
+            if (out.victim_fullname && !out.driver_fullname) out.driver_fullname = out.victim_fullname;
+            if (out.victim_tc && !out.driver_tc) out.driver_tc = out.victim_tc;
+            if (out.victim_tckn && !out.driver_tckn) out.driver_tckn = out.victim_tckn;
+            if (out.victim_phone && !out.driver_phone) out.driver_phone = out.victim_phone;
+            if (out.victim_mail && !out.driver_mail) out.driver_mail = out.victim_mail;
+            if (out.victim_birth_date && !out.driver_birth_date) out.driver_birth_date = out.victim_birth_date;
+
+            if (out.driver_fullname && !out.victim_fullname) out.victim_fullname = out.driver_fullname;
+            if (out.driver_tc && !out.victim_tc) out.victim_tc = out.driver_tc;
+            if (out.driver_tckn && !out.victim_tckn) out.victim_tckn = out.driver_tckn;
+            if (out.driver_phone && !out.victim_phone) out.victim_phone = out.driver_phone;
+            if (out.driver_mail && !out.victim_mail) out.victim_mail = out.driver_mail;
+            if (out.driver_birth_date && !out.victim_birth_date) out.victim_birth_date = out.driver_birth_date;
+        }
+
         return out;
     };
 
@@ -189,7 +257,10 @@ const RejectedFileDetailScreen = () => {
 
     // ---------------- Error Fields ----------------
     useEffect(() => {
-        const fields = routeFields ?? fileData?.rejected_fields ?? [];
+        // routeFields boş array ise fallback'e git; null/undefined ise de fallback'e git
+        const fields = (routeFields && routeFields.length > 0) 
+            ? routeFields 
+            : (fileData?.rejected_fields ?? []);
         const names = (fields || []).map((f) => {
             if (typeof f === "string") return { key: f, label: f };
             return {
@@ -227,7 +298,17 @@ const RejectedFileDetailScreen = () => {
 
     // ---------------- Handle Change ----------------
     const handleChange = (key, value) => {
-        setFileData((prev) => ({ ...prev, [key]: value }));
+        let nextValue = value;
+
+        if (TC_KEYS.includes(key)) {
+            nextValue = String(value || "").replace(/\D/g, "").slice(0, 11);
+        }
+
+        if (DATE_KEYS.includes(key)) {
+            nextValue = toDateInputValue(value);
+        }
+
+        setFileData((prev) => ({ ...prev, [key]: nextValue }));
     };
 
     // ---------------- Update ----------------
@@ -379,8 +460,9 @@ const RejectedFileDetailScreen = () => {
 
                 {editMode && editable ? (
                     <input
+                        type={DATE_KEYS.includes(key) ? "date" : "text"}
                         className={`${styles.frdInput} ${isErr ? styles.frdInputError : ""}`}
-                        value={value}
+                        value={DATE_KEYS.includes(key) ? toDateInputValue(value) : value}
                         onChange={(e)=>handleChange(key,e.target.value)}
                     />
                 ) : (

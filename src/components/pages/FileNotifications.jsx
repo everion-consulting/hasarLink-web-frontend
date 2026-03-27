@@ -196,7 +196,8 @@ const FileNotifications = () => {
     navigate(`/reddedilen-dosyalar-detay/${submissionId}`, {
       state: {
         from: "reddedilen-dosyalar",
-        rejectedFields,
+        // Fields sadece dolu ise gönder, boş ise fallback'e git
+        ...(rejectedFields && rejectedFields.length > 0 && { rejectedFields }),
       },
     });
   };

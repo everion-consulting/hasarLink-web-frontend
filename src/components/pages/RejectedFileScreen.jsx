@@ -162,7 +162,8 @@ const RejectedFilesScreen = () => {
     navigate(`/reddedilen-dosyalar-detay/${item.submission_id}`, {
       state: {
         from: "reddedilen-dosyalar",
-        rejectedFields: item.fields || [],
+        // Fields sadece dolu ise gönder, boş ise fallback'e git
+        ...(item.fields && item.fields.length > 0 && { rejectedFields: item.fields }),
       },
     });
   };
