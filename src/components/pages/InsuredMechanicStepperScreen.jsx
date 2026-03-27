@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Stepper from '../stepper/Stepper';
 import FormRenderer from '../forms/FormRenderer';
@@ -44,6 +44,13 @@ export default function InsuredMechanicStepperScreen() {
     const [isInsuredForeign, setIsInsuredForeign] = useState(!!location.state?.insuredData?.isForeign);
     const [insuredData, setInsuredData] = useState({});
     const [serviceData, setServiceData] = useState({});
+
+    // Toggle geçişlerinde önceki değerleri sakla (geri dönüşte restore etmek için)
+    const prevInsuredTcRef = useRef(location.state?.insuredData?.insured_tc || "");
+    const prevForeignInsuredTcRef = useRef(location.state?.insuredData?.foreign_insured_tc || "");
+    const prevOpposingTcRef = useRef("");
+    const prevForeignOpposingTcRef = useRef("");
+    const prevInsuredFieldsBeforeCompanyRef = useRef({});
     const [cityOptions, setCityOptions] = useState([]);
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
@@ -406,12 +413,26 @@ export default function InsuredMechanicStepperScreen() {
     const switchInsuredTab = (nextIsForeign) => {
         setIsInsuredForeign(nextIsForeign);
 
-        setInsuredData((prev) => ({
-            ...prev,
-            isForeign: nextIsForeign,
-            insured_tc: nextIsForeign ? "" : (prev.insured_tc || ""),
-            foreign_insured_tc: nextIsForeign ? (prev.foreign_insured_tc || "") : "",
-        }));
+        setInsuredData((prev) => {
+            if (nextIsForeign) {
+                // TC -> Yabancı: mevcut TC'yi sakla, yabancı TC'yi restore et
+                prevInsuredTcRef.current = prev.insured_tc || "";
+                return {
+                    ...prev,
+                    isForeign: true,
+                    insured_tc: "",
+                    foreign_insured_tc: prevForeignInsuredTcRef.current || prev.foreign_insured_tc || "",
+                };
+            }
+            // Yabancı -> TC: mevcut yabancı TC'yi sakla, TC'yi restore et
+            prevForeignInsuredTcRef.current = prev.foreign_insured_tc || "";
+            return {
+                ...prev,
+                isForeign: false,
+                foreign_insured_tc: "",
+                insured_tc: prevInsuredTcRef.current || prev.insured_tc || "",
+            };
+        });
     };
 
 
@@ -439,19 +460,22 @@ export default function InsuredMechanicStepperScreen() {
 
         setOpposingDriverData((prev) => {
             if (nextIsForeign) {
+                // TC -> Yabancı: mevcut TC'yi sakla
+                prevOpposingTcRef.current = prev.opposing_driver_tc || "";
                 return {
                     ...prev,
                     isForeign: true,
                     opposing_driver_tc: "",
-                    opposing_foreign_driver_tc: prev.opposing_foreign_driver_tc || "",
+                    opposing_foreign_driver_tc: prevForeignOpposingTcRef.current || prev.opposing_foreign_driver_tc || "",
                 };
             }
-
+            // Yabancı -> TC: mevcut yabancı TC'yi sakla
+            prevForeignOpposingTcRef.current = prev.opposing_foreign_driver_tc || "";
             return {
                 ...prev,
                 isForeign: false,
                 opposing_foreign_driver_tc: "",
-                opposing_driver_tc: prev.opposing_driver_tc || "",
+                opposing_driver_tc: prevOpposingTcRef.current || prev.opposing_driver_tc || "",
             };
         });
     };
@@ -501,12 +525,11 @@ export default function InsuredMechanicStepperScreen() {
         setServiceData(prev => ({
             ...prev,
             insurance_company: selectedCompany?.name || selectedCompany || "",
-            service_name: draftServiceData.service_name || profileDetail.service_name || "",
-            service_phone: draftServiceData.service_phone || profileDetail.service_phone || "",
-            service_city: resolvedCityId,
-            // service_city: draftServiceData.service_city || profileDetail.service_city || "",
-            // service_state_city_city: draftServiceData.service_state_city_city || profileDetail.service_state || "",
-            service_state_city_city: (() => {
+            // Draft'ta (prev veya draftServiceData) zaten değer varsa dokunma, yoksa profil'den al
+            service_name: prev.service_name || draftServiceData.service_name || profileDetail.service_name || "",
+            service_phone: prev.service_phone || draftServiceData.service_phone || profileDetail.service_phone || "",
+            service_city: prev.service_city || resolvedCityId,
+            service_state_city_city: prev.service_state_city_city || (() => {
                 const ilId =
                     findIlIdByName(draftServiceData.service_city)
                     || findIlIdByName(profileDetail.service_city);
@@ -520,15 +543,15 @@ export default function InsuredMechanicStepperScreen() {
                     : "";
             })(),
 
-            service_address: draftServiceData.service_address || profileDetail.service_address || "",
-            service_tax_no: draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
-            service_iban: draftServiceData.service_iban || profileDetail.service_iban || "",
-            service_iban_name: draftServiceData.service_iban_name || profileDetail.service_iban_name || "",
-            repair_fullname: profileDetail.repair_fullname || "",
-            repair_birth_date: formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
-            repair_tc: profileDetail.repair_tc || "",
-            repair_phone: profileDetail.repair_phone || "",
-            repair_area_code: profileDetail.repair_area_code || ""
+            service_address: prev.service_address || draftServiceData.service_address || profileDetail.service_address || "",
+            service_tax_no: prev.service_tax_no || draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
+            service_iban: prev.service_iban || draftServiceData.service_iban || profileDetail.service_iban || "",
+            service_iban_name: prev.service_iban_name || draftServiceData.service_iban_name || profileDetail.service_iban_name || "",
+            repair_fullname: prev.repair_fullname || profileDetail.repair_fullname || "",
+            repair_birth_date: prev.repair_birth_date || formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
+            repair_tc: prev.repair_tc || profileDetail.repair_tc || "",
+            repair_phone: prev.repair_phone || profileDetail.repair_phone || "",
+            repair_area_code: prev.repair_area_code || profileDetail.repair_area_code || ""
         }));
 
         console.log('📋 Profil bilgileri güncellendi:', {
@@ -923,7 +946,14 @@ export default function InsuredMechanicStepperScreen() {
         <div className={styles.switchMainContainer}>
             <div
                 className={`${styles.switchOption} ${!isCompany ? styles.activeOption : ''}`}
-                onClick={() => setIsCompany(false)}
+                onClick={() => {
+                    setIsCompany(false);
+                    // Şahıs'a geri dönüldü: önceki şahıs alanlarını restore et
+                    setInsuredData((prev) => ({
+                        ...prev,
+                        ...prevInsuredFieldsBeforeCompanyRef.current,
+                    }));
+                }}
             >
                 Şahıs
             </div>
@@ -932,13 +962,21 @@ export default function InsuredMechanicStepperScreen() {
                 onClick={() => {
                     setIsCompany(true);
 
-                    // ✅ şirket seçildiyse TC/Yabancı switch kapansın + alan temizlensin
+                    // Şirket seçildi: şahıs alanlarını sakla, TC/Yabancı switch kapansın
+                    setInsuredData((prev) => {
+                        prevInsuredFieldsBeforeCompanyRef.current = {
+                            insured_tc: prev.insured_tc || "",
+                            insured_fullname: prev.insured_fullname || "",
+                            foreign_insured_tc: prev.foreign_insured_tc || "",
+                            insured_birth_date: prev.insured_birth_date || "",
+                        };
+                        return {
+                            ...prev,
+                            isForeign: false,
+                            foreign_insured_tc: "",
+                        };
+                    });
                     setIsInsuredForeign(false);
-                    setInsuredData((prev) => ({
-                        ...prev,
-                        isForeign: false,
-                        foreign_insured_tc: "",
-                    }));
                 }}
 
             >
