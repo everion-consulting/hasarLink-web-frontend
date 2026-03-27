@@ -266,12 +266,12 @@ const DraftNotifications = () => {
                     })(),
 
                     opposingDriverData: {
-                        opposing_driver_fullname: draftDetail.opposing_driver_fullname,
-                        opposing_driver_tc: draftDetail.opposing_driver_tc,
-                        opposing_driver_phone: draftDetail.opposing_driver_phone,
-                        opposing_driver_mail: draftDetail.opposing_driver_mail,
-                        opposing_driver_birth_date: formatDate(draftDetail.opposing_driver_birth_date),
-                        opposing_foreign_driver_tc: draftDetail.opposing_foreign_driver_tc,
+                        opposing_driver_fullname: draftDetail.opposing_driver_fullname || "",
+                        opposing_driver_tc: draftDetail.opposing_driver_tc || "",
+                        opposing_driver_phone: draftDetail.opposing_driver_phone || "",
+                        opposing_driver_mail: draftDetail.opposing_driver_mail || "",
+                        opposing_driver_birth_date: formatDate(draftDetail.opposing_driver_birth_date) || "",
+                        opposing_foreign_driver_tc: draftDetail.opposing_foreign_driver_tc || "",
                     },
 
                     damageData: {
