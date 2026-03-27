@@ -358,13 +358,6 @@ export default function StepInfoScreen() {
         };
       }
 
-      if ((insuranceSource === "karsi trafik" || insuranceSource === "karsi kasko") && payload.opposing_driver_mail == null) {
-        payload = {
-          ...payload,
-          opposing_driver_mail: opposingDriverData?.opposing_driver_mail || "",
-        };
-      }
-
       console.log(`📤 UPDATE Submission ${savedId} Payload:`, payload);
       console.log("🚀 UPDATE payload JSON:", JSON.stringify(payload, null, 2));
       console.log("🚀 CHECK foreign_victim_tc:", payload?.foreign_victim_tc);

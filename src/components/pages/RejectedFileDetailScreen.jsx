@@ -5,7 +5,23 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import apiService from "../../services/apiServices";
 import submissionService from "../../services/submissionService";
 import FancySelect from "../Dropdowns/FancySelect";
-import { getIlName, getIlceName } from "../../constants/ilIlceData";
+import {
+    maskPhone,
+    maskTCKN,
+    normalizeIBAN,
+    validateEmail,
+    validatePhone,
+    getTCKNValidationError,
+    validateIBAN,
+} from "../utils/formatter";
+import {
+    getIlName,
+    getIlceName,
+    getIlOptions,
+    getIlceOptions,
+    findIlIdByName,
+    findIlceIdByName,
+} from "../../constants/ilIlceData";
 import styles from "../../styles/rejectedFileDetailScreen.module.css";
 
 const FILE_TYPES = [
@@ -36,6 +52,41 @@ const EDITABLE_KEYS = [
 
 const TC_KEYS = ["driver_tc", "victim_tc", "insured_tc", "repair_tc"];
 const DATE_KEYS = ["driver_birth_date", "victim_birth_date", "insured_birth_date", "repair_birth_date", "accident_date"];
+const PHONE_KEYS = ["driver_phone", "victim_phone", "insured_phone", "repair_phone", "service_phone"];
+const IBAN_KEYS = ["victim_iban", "service_iban"];
+const EMAIL_KEYS = ["driver_mail", "victim_mail", "insured_mail"];
+const CITY_KEYS = ["service_city", "repair_city", "accident_city"];
+const DISTRICT_KEYS = ["service_state_city_city", "repair_state_city_city", "service_state", "accident_district"];
+
+const DISTRICT_PARENT_CITY_KEY = {
+    service_state_city_city: "service_city",
+    service_state: "service_city",
+    repair_state_city_city: "repair_city",
+    accident_district: "accident_city",
+};
+
+const ERROR_FIELD_ALIASES = {
+    serviceadi: "service_name",
+    servisadi: "service_name",
+    servicename: "service_name",
+    servicetelefonu: "service_phone",
+    servistelefonu: "service_phone",
+    servicephone: "service_phone",
+    serviceiban: "service_iban",
+    servisiban: "service_iban",
+    serviceibanadi: "service_iban_name",
+    servisibanadi: "service_iban_name",
+    servicevergino: "service_tax_no",
+    servisvergino: "service_tax_no",
+    serviceadres: "service_address",
+    servisadres: "service_address",
+    serviceil: "service_city",
+    servisil: "service_city",
+    serviceililce: "service_state_city_city",
+    servisililce: "service_state_city_city",
+    serviceilce: "service_state_city_city",
+    servisilce: "service_state_city_city",
+};
 
 
 const toBoolean = (v) => {
@@ -62,6 +113,49 @@ const norm = (s) => {
     return normalized;
 };
 
+const resolveRejectedFieldKey = (candidate) => {
+    const n = norm(candidate);
+    if (!n) return "";
+    if (ERROR_FIELD_ALIASES[n]) return ERROR_FIELD_ALIASES[n];
+    return n;
+};
+
+const isBlankValue = (value) => {
+    if (value === null || value === undefined) return true;
+    if (typeof value === "string") return value.trim() === "";
+    return false;
+};
+
+const sanitizeInputValue = (key, value) => {
+    const raw = String(value ?? "");
+
+    if (TC_KEYS.includes(key)) {
+        return maskTCKN(raw);
+    }
+
+    if (PHONE_KEYS.includes(key)) {
+        return maskPhone(raw);
+    }
+
+    if (IBAN_KEYS.includes(key)) {
+        return normalizeIBAN(raw);
+    }
+
+    if (EMAIL_KEYS.includes(key)) {
+        return raw.trim();
+    }
+
+    if (key === "service_tax_no") {
+        return raw.replace(/\D/g, "");
+    }
+
+    if (CITY_KEYS.includes(key) || DISTRICT_KEYS.includes(key)) {
+        return String(value ?? "").trim();
+    }
+
+    return raw;
+};
+
 const toDateInputValue = (value) => {
     const raw = String(value || "").trim();
     if (!raw) return "";
@@ -71,6 +165,20 @@ const toDateInputValue = (value) => {
         return `${yyyy}-${mm}-${dd}`;
     }
     return raw;
+};
+
+const resolveCityId = (raw) => {
+    if (raw === null || raw === undefined || raw === "") return "";
+    const direct = getIlName(raw) ? String(raw) : "";
+    if (direct) return direct;
+    return String(findIlIdByName(raw) || "");
+};
+
+const resolveDistrictId = (cityId, raw) => {
+    if (!cityId || raw === null || raw === undefined || raw === "") return "";
+    const direct = getIlceName(raw) ? String(raw) : "";
+    if (direct) return direct;
+    return String(findIlceIdByName(cityId, raw) || "");
 };
 
 const RejectedFileDetailScreen = () => {
@@ -100,6 +208,70 @@ const RejectedFileDetailScreen = () => {
 
     const fileInputRef = useRef(null);
     const [uploadContext, setUploadContext] = useState(null);
+
+    const getSelectedRejectedKeys = () => {
+        const resolved = errorFields
+            .map((f) => resolveRejectedFieldKey(f.key || f.label))
+            .filter((k) => EDITABLE_KEYS.includes(k));
+
+        return [...new Set(resolved)];
+    };
+
+    const getFieldLabelByKey = (key) => {
+        const hit = errorFields.find((f) => resolveRejectedFieldKey(f.key || f.label) === key);
+        if (hit?.label) return hit.label;
+        if (hit?.key) return hit.key;
+        return key;
+    };
+
+    const validateSelectedRejectedFields = () => {
+        const selectedKeys = getSelectedRejectedKeys();
+        if (selectedKeys.length === 0) return { ok: true };
+
+        const missing = [];
+        const invalid = [];
+
+        selectedKeys.forEach((key) => {
+            const value = fileData?.[key];
+
+            if (isBlankValue(value)) {
+                missing.push(key);
+                return;
+            }
+
+            if (TC_KEYS.includes(key)) {
+                if (getTCKNValidationError(value)) invalid.push(key);
+            }
+
+            if (PHONE_KEYS.includes(key) && !validatePhone(value)) {
+                invalid.push(key);
+            }
+
+            if (IBAN_KEYS.includes(key) && !validateIBAN(value)) {
+                invalid.push(key);
+            }
+
+            if (EMAIL_KEYS.includes(key) && !validateEmail(value)) {
+                invalid.push(key);
+            }
+        });
+
+        if (missing.length > 0 || invalid.length > 0) {
+            const missingText = missing.map(getFieldLabelByKey).join(", ");
+            const invalidText = [...new Set(invalid)].map(getFieldLabelByKey).join(", ");
+
+            let message = "Reddedilen alanlar eksik veya hatalı.\n";
+            if (missingText) message += `\nBoş bırakılamaz: ${missingText}`;
+            if (invalidText) {
+                message += `\nGeçersiz format: ${invalidText}`;
+                message += "\nKurallar form ekranları ile aynıdır: TC geçerli olmalı, telefon 0 (5xx) xxx xx xx formatında olmalı, IBAN TR + 24 hane olmalı, e-posta geçerli olmalı.";
+            }
+
+            return { ok: false, message };
+        }
+
+        return { ok: true };
+    };
 
     // ---------------- NORMALIZE ----------------
     const normalizeForApi = (data) => {
@@ -178,12 +350,23 @@ const RejectedFileDetailScreen = () => {
     const getFileName = (f) => f?.name || f?.filename || getFileUrl(f)?.split("/").pop() || "Dosya";
     const getUploadedAt = (f) => (f?.uploaded_at || "").slice(0, 16).replace("T", " ");
 
-    const isErrorField = (label, key) =>
-        errorFields.some(
-            (f) =>
-                norm(f.key) === norm(key) ||
-                norm(f.label) === norm(label)
-        );
+    const isErrorField = (label, key) => {
+        const normalizedKey = norm(key);
+        const normalizedLabel = norm(label);
+
+        return errorFields.some((f) => {
+            const rawKey = norm(f.key);
+            const rawLabel = norm(f.label);
+            const resolvedKey = resolveRejectedFieldKey(f.key || f.label);
+
+            // Sadece dogrudan secilmis/etiketlenmis alanlari eslestir.
+            return (
+                resolvedKey === normalizedKey ||
+                rawKey === normalizedKey ||
+                rawLabel === normalizedLabel
+            );
+        });
+    };
 
     const groupHasAnyVisible = (pairs) =>
         pairs.some(
@@ -298,11 +481,7 @@ const RejectedFileDetailScreen = () => {
 
     // ---------------- Handle Change ----------------
     const handleChange = (key, value) => {
-        let nextValue = value;
-
-        if (TC_KEYS.includes(key)) {
-            nextValue = String(value || "").replace(/\D/g, "").slice(0, 11);
-        }
+        let nextValue = sanitizeInputValue(key, value);
 
         if (DATE_KEYS.includes(key)) {
             nextValue = toDateInputValue(value);
@@ -315,6 +494,12 @@ const RejectedFileDetailScreen = () => {
     const handleUpdate = async () => {
         if (!fileData) return;
         try {
+            const validation = validateSelectedRejectedFields();
+            if (!validation.ok) {
+                alert(validation.message || "Reddedilen alanları kontrol edin.");
+                return;
+            }
+
             setUpdating(true);
             const payload = normalizeForApi(fileData);
             const res = await apiService.updateSubmission(id,payload);
@@ -406,9 +591,6 @@ const RejectedFileDetailScreen = () => {
     };
 
     // ---------------- Render Field ----------------
-    const CITY_KEYS = ["service_city", "repair_city", "accident_city"];
-    const DISTRICT_KEYS = ["service_state_city_city", "repair_state_city_city", "service_state", "accident_district"];
-
     const resolveDisplayValue = (key, raw) => {
         if (!raw) return raw;
         if (CITY_KEYS.includes(key)) return getIlName(raw) || raw;
@@ -420,6 +602,18 @@ const RejectedFileDetailScreen = () => {
         const rawValue = fileData?.[key] ?? "";
         const value = resolveDisplayValue(key, rawValue);
         const isErr = isErrorField(label, key);
+        const inputMode = TC_KEYS.includes(key) || key === "service_tax_no"
+            ? "numeric"
+            : undefined;
+        const maxLength = TC_KEYS.includes(key)
+            ? 11
+            : PHONE_KEYS.includes(key)
+            ? 17
+            : IBAN_KEYS.includes(key)
+            ? 32
+            : key === "service_tax_no"
+            ? 20
+            : undefined;
 
         if (
             editMode &&
@@ -451,6 +645,71 @@ const RejectedFileDetailScreen = () => {
             );
         }
 
+        if (editMode && editable && CITY_KEYS.includes(key)) {
+            const cityOptions = getIlOptions();
+            const selectedCityId = resolveCityId(rawValue);
+
+            return (
+                <div
+                    key={key}
+                    className={`${styles.frdInfoRow} ${isErr ? styles.frdInfoRowError : ""}`}
+                >
+                    <div className={styles.frdInfoLabel}>{label}:</div>
+                    <div style={{ flex: 1 }}>
+                        <FancySelect
+                            options={cityOptions}
+                            value={selectedCityId}
+                            onChange={(val) => {
+                                setFileData((prev) => {
+                                    const next = { ...prev, [key]: val };
+                                    if (key === "service_city") {
+                                        next.service_state_city_city = "";
+                                        next.service_state = "";
+                                    }
+                                    if (key === "repair_city") {
+                                        next.repair_state_city_city = "";
+                                    }
+                                    if (key === "accident_city") {
+                                        next.accident_district = "";
+                                    }
+                                    return next;
+                                });
+                            }}
+                            placeholder="Seçiniz"
+                            maxW="100%"
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        if (editMode && editable && DISTRICT_KEYS.includes(key)) {
+            const parentCityKey = DISTRICT_PARENT_CITY_KEY[key];
+            const parentRaw = parentCityKey ? fileData?.[parentCityKey] : "";
+            const cityId = resolveCityId(parentRaw);
+            const districtOptions = cityId ? getIlceOptions(cityId) : [];
+            const selectedDistrictId = resolveDistrictId(cityId, rawValue);
+
+            return (
+                <div
+                    key={key}
+                    className={`${styles.frdInfoRow} ${isErr ? styles.frdInfoRowError : ""}`}
+                >
+                    <div className={styles.frdInfoLabel}>{label}:</div>
+                    <div style={{ flex: 1 }}>
+                        <FancySelect
+                            options={districtOptions}
+                            value={selectedDistrictId}
+                            onChange={(val) => handleChange(key, val)}
+                            placeholder={cityId ? "Seçiniz" : "Önce il seçiniz"}
+                            maxW="100%"
+                            isDisabled={!cityId}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div
                 key={key}
@@ -463,6 +722,8 @@ const RejectedFileDetailScreen = () => {
                         type={DATE_KEYS.includes(key) ? "date" : "text"}
                         className={`${styles.frdInput} ${isErr ? styles.frdInputError : ""}`}
                         value={DATE_KEYS.includes(key) ? toDateInputValue(value) : value}
+                        inputMode={inputMode}
+                        maxLength={maxLength}
                         onChange={(e)=>handleChange(key,e.target.value)}
                     />
                 ) : (
