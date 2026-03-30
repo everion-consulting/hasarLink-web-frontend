@@ -222,13 +222,13 @@ export default function StepInfoScreen() {
         const isVictimForeign = !!victimData?.isForeign;
 
         payload = {
-          victim_fullname: victimData.victim_fullname,
+          victim_fullname: victimData.victim_fullname || "",
           victim_tc: isVictimForeign ? "" : (victimData.victim_tc || ""),
           foreign_victim_tc: isVictimForeign ? (victimData.foreign_victim_tc || "") : "",
           victim_birth_date: toYYYYMMDD(victimData.victim_birth_date),
-          victim_mail: victimData.victim_mail,
-          victim_phone: victimData.victim_phone,
-          victim_iban: victimData.victim_iban,
+          victim_mail: victimData.victim_mail || "",
+          victim_phone: victimData.victim_phone || "",
+          victim_iban: victimData.victim_iban || "",
           // Bizim kasko poliçe no (victim step'inde giriliyor)
           ...(victimData.policy_no ? { policy_no: victimData.policy_no } : {}),
           is_completed: markAsCompleted,
@@ -239,10 +239,10 @@ export default function StepInfoScreen() {
 
           payload = {
             ...payload,
-            driver_fullname: driverData.driver_fullname,
+            driver_fullname: driverData.driver_fullname || "",
             driver_tc: isForeignDriver ? "" : (driverData.driver_tc || ""),
             driver_mail: driverData.driver_mail || "",
-            driver_phone: driverData.driver_phone,
+            driver_phone: driverData.driver_phone || "",
             driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
             foreign_driver_tc: isForeignDriver ? (driverData.foreign_driver_tc || "") : "",
           };
@@ -273,11 +273,11 @@ export default function StepInfoScreen() {
           company_name: isInsuredCompany ? (insuredData.company_name || "") : "",
           company_tax_number: isInsuredCompany ? (insuredData.company_tax_number || "") : "",
           insured_birth_date: isInsuredCompany ? null : toYYYYMMDD(insuredData.insured_birth_date),
-          insured_phone: insuredData.insured_phone,
-          insured_mail: insuredData.insured_mail,
-          insured_plate: insuredData.insured_plate,
-          insured_policy_no: insuredData.insured_policy_no,
-          insured_file_no: insuredData.insured_file_no,
+          insured_phone: insuredData.insured_phone || "",
+          insured_mail: insuredData.insured_mail || "",
+          insured_plate: insuredData.insured_plate || "",
+          insured_policy_no: insuredData.insured_policy_no || "",
+          insured_file_no: insuredData.insured_file_no || "",
           repair_fullname: currentProfileData.repair_fullname || serviceData.repair_fullname,
           repair_birth_date: toYYYYMMDD(currentProfileData.repair_birth_date) || toYYYYMMDD(serviceData.repair_birth_date),
           repair_tc: currentProfileData.repair_tc || serviceData.repair_tc,
