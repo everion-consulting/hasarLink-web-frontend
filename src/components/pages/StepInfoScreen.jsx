@@ -241,7 +241,7 @@ export default function StepInfoScreen() {
             ...payload,
             driver_fullname: driverData.driver_fullname,
             driver_tc: isForeignDriver ? "" : (driverData.driver_tc || ""),
-            driver_mail: driverData.driver_mail,
+            driver_mail: driverData.driver_mail || "",
             driver_phone: driverData.driver_phone,
             driver_birth_date: toYYYYMMDD(driverData.driver_birth_date),
             foreign_driver_tc: isForeignDriver ? (driverData.foreign_driver_tc || "") : "",
