@@ -315,7 +315,7 @@ export default function StepInfoScreen() {
             opposing_driver_tc: isForeignOpp ? "" : (opposingDriverData.opposing_driver_tc || ""),
             opposing_driver_phone: opposingDriverData.opposing_driver_phone || "",
             opposing_driver_mail: opposingDriverData.opposing_driver_mail || "",
-            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || "",
+            opposing_driver_birth_date: toYYYYMMDD(opposingDriverData.opposing_driver_birth_date) || null,
             opposing_foreign_driver_tc: isForeignOpp ? (opposingDriverData.opposing_foreign_driver_tc || "") : "",
           };
         }
