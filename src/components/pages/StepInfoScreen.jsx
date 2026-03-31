@@ -328,10 +328,10 @@ export default function StepInfoScreen() {
           // DD.MM.YYYY formatındaki tarihi YYYY-MM-DD'ye çevir
           if (datePart.includes(".")) {
             const [dd, mm, yyyy] = datePart.split(".");
-            accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+            accidentDate = `${yyyy}-${mm}-${dd}T${timePart}`;
           } else {
             // Zaten YYYY-MM-DD formatındaysa
-            accidentDate = `${datePart} ${timePart}`;
+            accidentDate = `${datePart}T${timePart}`;
           }
         } else if (damageData.accident_datetime) {
           // Eski format (accident_datetime) - geriye dönük uyumluluk için
@@ -339,9 +339,9 @@ export default function StepInfoScreen() {
           if (datePart && timePart) {
             if (datePart.includes(".")) {
               const [dd, mm, yyyy] = datePart.split(".");
-              accidentDate = `${yyyy}-${mm}-${dd} ${timePart}`;
+              accidentDate = `${yyyy}-${mm}-${dd}T${timePart}`;
             } else {
-              accidentDate = `${datePart} ${timePart}`;
+              accidentDate = `${datePart}T${timePart}`;
             }
           }
         }
