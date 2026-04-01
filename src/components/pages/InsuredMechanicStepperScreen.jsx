@@ -499,6 +499,30 @@ export default function InsuredMechanicStepperScreen() {
         return dateStr;
     };
 
+    const resolveCityId = (...candidates) => {
+        for (const candidate of candidates) {
+            if (!isFilled(candidate)) continue;
+            if (getIlName(candidate)) return String(candidate);
+
+            const byName = findIlIdByName(candidate);
+            if (byName) return byName;
+        }
+        return "";
+    };
+
+    const resolveDistrictId = (cityId, ...candidates) => {
+        if (!cityId) return "";
+
+        for (const candidate of candidates) {
+            if (!isFilled(candidate)) continue;
+            if (getIlceName(candidate)) return String(candidate);
+
+            const byName = findIlceIdByName(cityId, candidate);
+            if (byName) return byName;
+        }
+        return "";
+    };
+
 
 
 
@@ -517,42 +541,44 @@ export default function InsuredMechanicStepperScreen() {
 
         const draftServiceData = location.state?.serviceData || {};
 
-        const resolvedCityId =
-            findIlIdByName(draftServiceData.service_city)
-            || findIlIdByName(profileDetail.service_city)
-            || "";
+        setServiceData(prev => {
+            const resolvedCityId = resolveCityId(
+                prev.service_city,
+                draftServiceData.service_city,
+                profileDetail.service_city
+            );
 
-        setServiceData(prev => ({
-            ...prev,
-            insurance_company: selectedCompany?.name || selectedCompany || "",
-            // Draft'ta (prev veya draftServiceData) zaten değer varsa dokunma, yoksa profil'den al
-            service_name: prev.service_name || draftServiceData.service_name || profileDetail.service_name || "",
-            service_phone: prev.service_phone || draftServiceData.service_phone || profileDetail.service_phone || "",
-            service_city: prev.service_city || resolvedCityId,
-            service_state_city_city: prev.service_state_city_city || (() => {
-                const ilId =
-                    findIlIdByName(draftServiceData.service_city)
-                    || findIlIdByName(profileDetail.service_city);
+            const resolvedDistrictId = resolveDistrictId(
+                resolvedCityId,
+                prev.service_state_city_city,
+                draftServiceData.service_state_city_city,
+                draftServiceData.service_state,
+                profileDetail.service_state_city_city,
+                profileDetail.service_state
+            );
 
-                return ilId
-                    ? (
-                        findIlceIdByName(ilId, draftServiceData.service_state_city_city)
-                        || findIlceIdByName(ilId, profileDetail.service_state)
-                        || ""
-                    )
-                    : "";
-            })(),
-
-            service_address: prev.service_address || draftServiceData.service_address || profileDetail.service_address || "",
-            service_tax_no: prev.service_tax_no || draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
-            service_iban: prev.service_iban || draftServiceData.service_iban || profileDetail.service_iban || "",
-            service_iban_name: prev.service_iban_name || draftServiceData.service_iban_name || profileDetail.service_iban_name || "",
-            repair_fullname: prev.repair_fullname || profileDetail.repair_fullname || "",
-            repair_birth_date: prev.repair_birth_date || formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
-            repair_tc: prev.repair_tc || profileDetail.repair_tc || "",
-            repair_phone: prev.repair_phone || profileDetail.repair_phone || "",
-            repair_area_code: prev.repair_area_code || profileDetail.repair_area_code || ""
-        }));
+            return {
+                ...prev,
+                insurance_company: selectedCompany?.name || selectedCompany || "",
+                // Draft'ta (prev veya draftServiceData) zaten değer varsa dokunma, yoksa profil'den al
+                service_name: prev.service_name || draftServiceData.service_name || profileDetail.service_name || "",
+                service_phone: prev.service_phone || draftServiceData.service_phone || profileDetail.service_phone || "",
+                service_city: prev.service_city || resolvedCityId,
+                service_state_city_city: prev.service_state_city_city || resolvedDistrictId,
+                service_address: prev.service_address || draftServiceData.service_address || profileDetail.service_address || "",
+                service_tax_no: prev.service_tax_no || draftServiceData.service_tax_no || profileDetail.service_tax_no || "",
+                service_iban: prev.service_iban || draftServiceData.service_iban || profileDetail.service_iban || "",
+                service_iban_name: prev.service_iban_name || draftServiceData.service_iban_name || profileDetail.service_iban_name || "",
+                service_mah: prev.service_mah || draftServiceData.service_mah || profileDetail.service_mah || "",
+                service_sk: prev.service_sk || draftServiceData.service_sk || profileDetail.service_sk || "",
+                service_bina_no: prev.service_bina_no || draftServiceData.service_bina_no || profileDetail.service_bina_no || "",
+                repair_fullname: prev.repair_fullname || draftServiceData.repair_fullname || profileDetail.repair_fullname || "",
+                repair_birth_date: prev.repair_birth_date || formatDateToDDMMYYYY(draftServiceData.repair_birth_date) || formatDateToDDMMYYYY(profileDetail.repair_birth_date) || "",
+                repair_tc: prev.repair_tc || draftServiceData.repair_tc || profileDetail.repair_tc || "",
+                repair_phone: prev.repair_phone || draftServiceData.repair_phone || profileDetail.repair_phone || "",
+                repair_area_code: prev.repair_area_code || draftServiceData.repair_area_code || profileDetail.repair_area_code || ""
+            };
+        });
 
         console.log('📋 Profil bilgileri güncellendi:', {
             repair_fullname: profileDetail.repair_fullname,
@@ -780,7 +806,11 @@ export default function InsuredMechanicStepperScreen() {
             service_address: values.service_address,
             service_iban: values.service_iban,
             service_iban_name: values.service_iban_name,
-            repair_area_code: values.repair_area_code
+            service_mah: values.service_mah,
+            service_sk: values.service_sk,
+            service_bina_no: values.service_bina_no,
+            repair_area_code: values.repair_area_code,
+            insurance_company: selectedCompany?.name || selectedCompany || ""
         };
 
         const navigationState = {

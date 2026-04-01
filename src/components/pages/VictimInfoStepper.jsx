@@ -74,7 +74,7 @@ const VictimInfoStepper = ({ samePerson = false }) => {
       : magdurKimlik?.dogum_tarihi;
 
     setFormValues({
-      victim_fullname: dataSource.ruhsat_sahibi || dataSource.adi_soyadi || dataSource.ad_soyad || "",
+      victim_fullname: dataSource.ruhsat_sahibi ||   `${dataSource.ad || ""} ${dataSource.soyad || ""}`.trim(),
 
       // 🔑 KRİTİK NOKTA
       victim_tc: !isCompanyDetected ? (dataSource.tc_vkn || dataSource.tc_no || "") : "",
