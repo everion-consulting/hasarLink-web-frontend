@@ -12,6 +12,7 @@ import {
   validateIBAN,
   validateDateYMD,
   validatePlate,
+  validateChassisNo,
   validateLicenseSerialNo,
   toDDMMYYYY,
   toYYYYMMDD,
@@ -59,6 +60,7 @@ export default function FormRenderer({
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
+  const lastValueChangeSourceRef = useRef("external");
 
   // iOS tespiti
   const isIOS = () => {
@@ -111,13 +113,44 @@ export default function FormRenderer({
     }
 
     if (type === "licenseSerialNo") {
-      return String(v).toUpperCase().replace(/\s+/g, "");
+      return String(v);
     }
     if (type === "vehicle_plate") {
       return String(v).toUpperCase().replace(/\s+/g, "");
     }
 
     return v;
+  }
+
+  function normalizeChassisValue(v) {
+    return String(v)
+      .toUpperCase()
+      .replace(/[ÇĞİÖŞÜ]/g, (char) => ({
+        Ç: "C",
+        Ğ: "G",
+        İ: "I",
+        Ö: "O",
+        Ş: "S",
+        Ü: "U",
+      }[char] || char))
+      .replace(/\s+/g, "");
+  }
+
+  function autoCompleteLegacyChassis(chassisValue, modelYearValue) {
+    const modelYear = Number(modelYearValue);
+    if (!Number.isInteger(modelYear) || modelYear >= 1990) {
+      return chassisValue;
+    }
+
+    let vin = normalizeChassisValue(chassisValue);
+    if (!vin || vin.length >= 17) {
+      return vin;
+    }
+
+    const missingCount = 17 - vin.length;
+    const prefix = `0${"A".repeat(Math.max(0, missingCount - 1))}`;
+
+    return `${prefix}${vin}`;
   }
 
   function getInputType(type) {
@@ -190,18 +223,12 @@ export default function FormRenderer({
     }
 
     if (f.type === "chassisNo" && v) {
-      const vin = String(v).toUpperCase().replace(/\s+/g, "");
-      const invalidLength = vin.length !== 17;
-      const invalidChars = /[^A-Z0-9]/.test(vin);
-      const hasLetter = /[A-Z]/.test(vin);
-      const hasNumber = /\d/.test(vin);
-
-      if (invalidLength || invalidChars || !hasLetter || !hasNumber) {
-        return "Rakam ve Harf karışık 17 hane olmalı";
+      if (!validateChassisNo(v)) {
+        return "Rakam ve Harf karışık 17 veya 18 hane olmalı";
       }
     }
 
-    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Lütfen ruhsat seri no 2 büyük harf + 6 rakam giriniz (ör: AB123456)";
+    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Lütfen ruhsat seri no 2-3 büyük harf + 4-5 rakam giriniz (ör: AB1234 veya ABC12345)";
 
     if (f.type === "vehicle_plate" && v) {
       if (!validatePlate(v)) {
@@ -267,6 +294,7 @@ export default function FormRenderer({
     }
 
     // ✅ BURADA finalValue TANIMLI
+    lastValueChangeSourceRef.current = "manual";
     setValues((prevValues) => ({
       ...prevValues,
       [name]: finalValue,
@@ -309,6 +337,31 @@ export default function FormRenderer({
         [name]: error || undefined
       }));
     }
+
+    if (name === "vehicle_chassis_no" || name === "vehicle_year") {
+      const currentYear = name === "vehicle_year" ? (values[name] ?? "") : (values.vehicle_year ?? "");
+      const currentChassis = values.vehicle_chassis_no ?? "";
+      const completedChassis = autoCompleteLegacyChassis(currentChassis, currentYear);
+
+      if (completedChassis !== currentChassis) {
+        const chassisField = findFieldByName("vehicle_chassis_no");
+        const nextValues = {
+          ...values,
+          vehicle_chassis_no: completedChassis,
+        };
+
+        setValues(nextValues);
+
+        if (chassisField) {
+          const chassisError = validateField(chassisField, completedChassis, nextValues);
+          setErrors((prev) => ({
+            ...prev,
+            vehicle_chassis_no: chassisError || undefined,
+          }));
+        }
+      }
+    }
+
     if (name === "repair_area_code") {
       setAreaCodeFocused(false); //  blur oldu
 
@@ -354,6 +407,7 @@ export default function FormRenderer({
     };
     findDependents(fields);
 
+    lastValueChangeSourceRef.current = "manual";
     setValues(prev => ({
       ...prev,
       [name]: value,
@@ -377,8 +431,30 @@ export default function FormRenderer({
 
 
   useEffect(() => {
-    const { isValid } = validateAllFields(values);
+    const { errors: nextErrors, isValid } = validateAllFields(values);
+    setErrors(nextErrors);
+
+    if (lastValueChangeSourceRef.current !== "manual") {
+      const hasAnyPrefilledValue = Object.values(values || {}).some((value) =>
+        String(value ?? "").trim()
+      );
+
+      if (hasAnyPrefilledValue) {
+        const autoTouched = {};
+
+        Object.entries(nextErrors).forEach(([fieldName, error]) => {
+          if (!error) return;
+          autoTouched[fieldName] = true;
+        });
+
+        if (Object.keys(autoTouched).length > 0) {
+          setTouchedFields((prev) => ({ ...prev, ...autoTouched }));
+        }
+      }
+    }
+
     onFormChange?.({ allValid: isValid });
+    lastValueChangeSourceRef.current = "external";
   }, [values, fields]);
 
   useEffect(() => {

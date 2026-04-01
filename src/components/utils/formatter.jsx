@@ -105,17 +105,27 @@ export const validateIBAN = (s = "") => /^TR\d{24}$/i.test(s.replace(/\s/g, ""))
 export function validateChassisNo(value) {
   if (!value) return false;
 
-  // Boşlukları kaldır, büyük harfe çevir
-  const vin = String(value).toUpperCase().replace(/\s+/g, "");
+  // Boşlukları kaldır, büyük harfe çevir ve Türkçe karakterleri normalize et
+  const vin = String(value)
+    .toUpperCase()
+    .replace(/[ÇĞİÖŞÜ]/g, (char) => ({
+      Ç: "C",
+      Ğ: "G",
+      İ: "I",
+      Ö: "O",
+      Ş: "S",
+      Ü: "U",
+    }[char] || char))
+    .replace(/\s+/g, "");
 
-  // 17 karakter, sadece harf ve rakam
-  const vinRegex = /^[A-Z0-9]{17}$/;
+  // Eski ruhsatlardaki bazı 18 karakterli şasi numaraları da kabul edilir
+  const vinRegex = /^[A-Z0-9]{17,18}$/;
 
   if (!vinRegex.test(vin)) return false;
 
   // Tamamen sayı veya tamamen harf kontrolü
-  const isAllNumbers = /^[0-9]{17}$/.test(vin);
-  const isAllLetters = /^[A-Z]{17}$/.test(vin);
+  const isAllNumbers = /^[0-9]+$/.test(vin);
+  const isAllLetters = /^[A-Z]+$/.test(vin);
 
   // Tamamen sayı veya tamamen harf ise geçersiz
   if (isAllNumbers || isAllLetters) return false;
@@ -124,7 +134,7 @@ export function validateChassisNo(value) {
 }
 
 export const validateLicenseSerialNo = (s = "") => {
-  return /^[A-Z]{2}\d{6}$/.test(String(s).toUpperCase());
+  return /^[A-Z]{2,3}\d{4,5}$/.test(String(s));
 };
 
 // -------------------

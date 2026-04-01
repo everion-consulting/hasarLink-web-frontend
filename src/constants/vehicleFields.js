@@ -56,16 +56,15 @@ export default [
         label: "Ruhsat Seri No",
         type: "licenseSerialNo",
         maxLength: 8,
-        placeholder: "AB123456",
+        placeholder: "AB1234",
         required: true,
         icon: IdentificationIcon,
-        transform: (value) => value?.toUpperCase(),
       },
       {
         name: "vehicle_chassis_no",
         label: "Şasi No",
         type: "chassisNo",
-        maxLength: 17,
+        maxLength: 18,
         placeholder: "Şasi no giriniz",
         required: true,
         icon: QrCodeIcon,
@@ -73,21 +72,31 @@ export default [
         validate: (value) => {
           if (!value) return null;
           
-          const vin = String(value).toUpperCase().replace(/\s+/g, "");
+          const vin = String(value)
+            .toUpperCase()
+            .replace(/[ÇĞİÖŞÜ]/g, (char) => ({
+              Ç: "C",
+              Ğ: "G",
+              İ: "I",
+              Ö: "O",
+              Ş: "S",
+              Ü: "U",
+            }[char] || char))
+            .replace(/\s+/g, "");
           
-          // 17 karakter kontrolü
-          if (vin.length !== 17) {
-            return "Şasi No 17 karakter olmalı";
+          // Eski ruhsatlarda görülen 18 karakterli şasi numaraları da kabul edilir
+          if (vin.length < 17 || vin.length > 18) {
+            return "Şasi No 17 veya 18 karakter olmalı";
           }
           
           // Sadece harf ve rakam kontrolü
-          if (!/^[A-Z0-9]{17}$/.test(vin)) {
+          if (!/^[A-Z0-9]{17,18}$/.test(vin)) {
             return "Şasi No sadece geçerli karakterler içerebilir";
           }
           
           // Tamamen sayı veya tamamen harf kontrolü
-          const isAllNumbers = /^[0-9]{17}$/.test(vin);
-          const isAllLetters = /^[A-Z]{17}$/.test(vin);
+          const isAllNumbers = /^[0-9]+$/.test(vin);
+          const isAllLetters = /^[A-Z]+$/.test(vin);
           
           if (isAllNumbers || isAllLetters) {
             return "Şasi No hem harf hem rakam içermelidir";
