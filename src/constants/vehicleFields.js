@@ -56,10 +56,9 @@ export default [
         label: "Ruhsat Seri No",
         type: "licenseSerialNo",
         maxLength: 8,
-        placeholder: "AB123456",
+        placeholder: "AB1234",
         required: true,
         icon: IdentificationIcon,
-        transform: (value) => value?.toUpperCase(),
       },
       {
         name: "vehicle_chassis_no",
