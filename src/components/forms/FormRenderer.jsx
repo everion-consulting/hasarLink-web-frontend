@@ -60,6 +60,7 @@ export default function FormRenderer({
   const dateRefs = useRef({});
   const dropdownRef = useRef(null);
   const timeRefs = useRef({});
+  const lastValueChangeSourceRef = useRef("external");
 
   // iOS tespiti
   const isIOS = () => {
@@ -293,6 +294,7 @@ export default function FormRenderer({
     }
 
     // ✅ BURADA finalValue TANIMLI
+    lastValueChangeSourceRef.current = "manual";
     setValues((prevValues) => ({
       ...prevValues,
       [name]: finalValue,
@@ -405,6 +407,7 @@ export default function FormRenderer({
     };
     findDependents(fields);
 
+    lastValueChangeSourceRef.current = "manual";
     setValues(prev => ({
       ...prev,
       [name]: value,
@@ -428,8 +431,30 @@ export default function FormRenderer({
 
 
   useEffect(() => {
-    const { isValid } = validateAllFields(values);
+    const { errors: nextErrors, isValid } = validateAllFields(values);
+    setErrors(nextErrors);
+
+    if (lastValueChangeSourceRef.current !== "manual") {
+      const hasAnyPrefilledValue = Object.values(values || {}).some((value) =>
+        String(value ?? "").trim()
+      );
+
+      if (hasAnyPrefilledValue) {
+        const autoTouched = {};
+
+        Object.entries(nextErrors).forEach(([fieldName, error]) => {
+          if (!error) return;
+          autoTouched[fieldName] = true;
+        });
+
+        if (Object.keys(autoTouched).length > 0) {
+          setTouchedFields((prev) => ({ ...prev, ...autoTouched }));
+        }
+      }
+    }
+
     onFormChange?.({ allValid: isValid });
+    lastValueChangeSourceRef.current = "external";
   }, [values, fields]);
 
   useEffect(() => {
