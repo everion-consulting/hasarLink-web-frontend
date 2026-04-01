@@ -228,7 +228,7 @@ export default function FormRenderer({
       }
     }
 
-    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Lütfen ruhsat seri no 2-3 büyük harf + 4-5 rakam giriniz (ör: AB1234 veya ABC12345)";
+    if (f.type === "licenseSerialNo" && v && !validateLicenseSerialNo(v)) return "Lütfen ruhsat seri no 2-3 büyük harf + 4-6 rakam giriniz (ör: AB1234 veya ABC12345)";
 
     if (f.type === "vehicle_plate" && v) {
       if (!validatePlate(v)) {

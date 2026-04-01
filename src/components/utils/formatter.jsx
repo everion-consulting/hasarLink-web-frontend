@@ -134,7 +134,7 @@ export function validateChassisNo(value) {
 }
 
 export const validateLicenseSerialNo = (s = "") => {
-  return /^[A-Z]{2,3}\d{4,5}$/.test(String(s));
+  return /^[A-Z]{2,3}\d{4,6}$/.test(String(s));
 };
 
 // -------------------

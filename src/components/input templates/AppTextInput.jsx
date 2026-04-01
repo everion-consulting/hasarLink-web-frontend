@@ -32,12 +32,17 @@ export default function AppTextInput({
   };
 
   const handleLicenseSerialChange = (e) => {
-    let text = e.target.value;
-    let filtered = text.replace(/[^a-zA-Z0-9]/g, "");
-    let first2 = filtered.slice(0, 2).replace(/[^A-Za-z]/g, "").toUpperCase();
-    let last6 = filtered.slice(2, 8).replace(/[^0-9]/g, "");
-    let result = (first2 + last6).slice(0, 8);
-    onChange?.({ target: { value: result } });
+    let text = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+    // İlk karakterlerden harfleri al (2-3 harf)
+    let letters = "";
+    let i = 0;
+    while (i < text.length && i < 3 && /[a-zA-Z]/.test(text[i])) {
+      letters += text[i].toUpperCase();
+      i++;
+    }
+    // Kalan karakterlerden rakamları al (4-6 rakam)
+    let digits = text.slice(i).replace(/[^0-9]/g, "").slice(0, 6);
+    onChange?.({ target: { value: letters + digits } });
   };
 
   const handleTCKNChange = (e) => {
@@ -46,14 +51,14 @@ export default function AppTextInput({
     onChange?.({ target: { value: filtered } });
   };
 
-  let inputProps = { value, placeholder, ...rest };
+  let inputProps = { value: value ?? "", placeholder, ...rest };
 
   if (type === "chassisNo") {
     inputProps.onChange = handleChassisChange;
     inputProps.maxLength = 17;
   } else if (type === "licenseSerialNo") {
     inputProps.onChange = handleLicenseSerialChange;
-    inputProps.maxLength = 8;
+    inputProps.maxLength = 9;
   } else if (type === "tckn") {
     inputProps.onChange = handleTCKNChange;
     inputProps.maxLength = 11;

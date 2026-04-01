@@ -55,7 +55,7 @@ export default [
         name: "vehicle_license_no",
         label: "Ruhsat Seri No",
         type: "licenseSerialNo",
-        maxLength: 8,
+        maxLength: 9,
         placeholder: "AB1234",
         required: true,
         icon: IdentificationIcon,
