@@ -250,16 +250,16 @@ export default function StepInfoScreen() {
 
         payload = {
           ...payload,
-          vehicle_brand: vehicleData.vehicle_brand,
-          vehicle_model: vehicleData.vehicle_model,
-          vehicle_type: vehicleData.vehicle_type,
-          vehicle_usage_type: vehicleData.vehicle_usage_type,
-          vehicle_plate: vehicleData.vehicle_plate,
-          vehicle_year: vehicleData.vehicle_year,
-          vehicle_sub_model: vehicleData.vehicle_sub_model,
-          vehicle_license_no: vehicleData.vehicle_license_no,
-          vehicle_chassis_no: vehicleData.vehicle_chassis_no,
-          vehicle_engine_no: vehicleData.vehicle_engine_no,
+          vehicle_brand: vehicleData.vehicle_brand || "",
+          vehicle_model: vehicleData.vehicle_model || "",
+          vehicle_type: vehicleData.vehicle_type || "",
+          vehicle_usage_type: vehicleData.vehicle_usage_type || "",
+          vehicle_plate: vehicleData.vehicle_plate || "",
+          vehicle_year: vehicleData.vehicle_year || "",
+          vehicle_sub_model: vehicleData.vehicle_sub_model || "",
+          vehicle_license_no: vehicleData.vehicle_license_no || "",
+          vehicle_chassis_no: vehicleData.vehicle_chassis_no || "",
+          vehicle_engine_no: vehicleData.vehicle_engine_no || "",
         };
       } else if (currentStep === 3) {
         const currentProfileData = profileDetail || {};
@@ -346,14 +346,14 @@ export default function StepInfoScreen() {
           }
         }
         payload = {
-          damage_type: damageData.damage_type,
-          damage_description: damageData.damage_description,
-          accident_city: damageData.accident_city,
-          accident_district: damageData.accident_district,
-          accident_date: accidentDate,
-          policy_no: damageData.policy_no,
-          estimated_damage_amount: damageData.estimated_damage_amount,
-          official_report_type: damageData.official_report_type,
+          damage_type: damageData.damage_type || "",
+          damage_description: damageData.damage_description || "",
+          accident_city: damageData.accident_city || "",
+          accident_district: damageData.accident_district || "",
+          accident_date: accidentDate || "",
+          policy_no: damageData.policy_no || "",
+          estimated_damage_amount: damageData.estimated_damage_amount || "",
+          official_report_type: damageData.official_report_type || "",
           is_completed: markAsCompleted,
         };
       }
