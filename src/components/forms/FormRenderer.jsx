@@ -12,6 +12,7 @@ import {
   validateIBAN,
   validateDateYMD,
   validatePlate,
+  validateChassisNo,
   validateLicenseSerialNo,
   toDDMMYYYY,
   toYYYYMMDD,
@@ -120,6 +121,37 @@ export default function FormRenderer({
     return v;
   }
 
+  function normalizeChassisValue(v) {
+    return String(v)
+      .toUpperCase()
+      .replace(/[ÇĞİÖŞÜ]/g, (char) => ({
+        Ç: "C",
+        Ğ: "G",
+        İ: "I",
+        Ö: "O",
+        Ş: "S",
+        Ü: "U",
+      }[char] || char))
+      .replace(/\s+/g, "");
+  }
+
+  function autoCompleteLegacyChassis(chassisValue, modelYearValue) {
+    const modelYear = Number(modelYearValue);
+    if (!Number.isInteger(modelYear) || modelYear >= 1990) {
+      return chassisValue;
+    }
+
+    let vin = normalizeChassisValue(chassisValue);
+    if (!vin || vin.length >= 17) {
+      return vin;
+    }
+
+    const missingCount = 17 - vin.length;
+    const prefix = `0${"A".repeat(Math.max(0, missingCount - 1))}`;
+
+    return `${prefix}${vin}`;
+  }
+
   function getInputType(type) {
     if (type === "email") return "email";
     if (type === "phone") return "tel";
@@ -190,14 +222,8 @@ export default function FormRenderer({
     }
 
     if (f.type === "chassisNo" && v) {
-      const vin = String(v).toUpperCase().replace(/\s+/g, "");
-      const invalidLength = vin.length !== 17;
-      const invalidChars = /[^A-Z0-9]/.test(vin);
-      const hasLetter = /[A-Z]/.test(vin);
-      const hasNumber = /\d/.test(vin);
-
-      if (invalidLength || invalidChars || !hasLetter || !hasNumber) {
-        return "Rakam ve Harf karışık 17 hane olmalı";
+      if (!validateChassisNo(v)) {
+        return "Rakam ve Harf karışık 17 veya 18 hane olmalı";
       }
     }
 
@@ -309,6 +335,31 @@ export default function FormRenderer({
         [name]: error || undefined
       }));
     }
+
+    if (name === "vehicle_chassis_no" || name === "vehicle_year") {
+      const currentYear = name === "vehicle_year" ? (values[name] ?? "") : (values.vehicle_year ?? "");
+      const currentChassis = values.vehicle_chassis_no ?? "";
+      const completedChassis = autoCompleteLegacyChassis(currentChassis, currentYear);
+
+      if (completedChassis !== currentChassis) {
+        const chassisField = findFieldByName("vehicle_chassis_no");
+        const nextValues = {
+          ...values,
+          vehicle_chassis_no: completedChassis,
+        };
+
+        setValues(nextValues);
+
+        if (chassisField) {
+          const chassisError = validateField(chassisField, completedChassis, nextValues);
+          setErrors((prev) => ({
+            ...prev,
+            vehicle_chassis_no: chassisError || undefined,
+          }));
+        }
+      }
+    }
+
     if (name === "repair_area_code") {
       setAreaCodeFocused(false); //  blur oldu
 
