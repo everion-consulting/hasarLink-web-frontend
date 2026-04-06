@@ -747,8 +747,8 @@ export default function StepInfoScreen() {
                 {
                   label: 'Kaza Tarihi',
                   value: damageData.accident_date
-                    ? damageData.accident_date
-                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[0] : 'YOK')
+                    ? damageData.accident_date.replace(/[./\-]/g, '.').replace(/\.+/g, '.')
+                    : (damageData.accident_datetime ? damageData.accident_datetime.split(" ")[0].replace(/[./\-]/g, '.').replace(/\.+/g, '.') : 'YOK')
                 },
                 {
                   label: 'Kaza Saati',
