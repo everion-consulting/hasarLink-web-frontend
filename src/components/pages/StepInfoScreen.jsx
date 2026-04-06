@@ -143,6 +143,40 @@ export default function StepInfoScreen() {
     kazaNitelik === "ÇOKLU KAZA" &&
     insuranceSource === "karsi kasko";
 
+  const getSubmissionErrorText = (response) => {
+    const traceText = Array.isArray(response?.data?.debug_trace)
+      ? response.data.debug_trace.join(" ")
+      : "";
+
+    return [
+      response?.message,
+      response?.data?.detail,
+      response?.data?.message,
+      response?.data?.debug_detail,
+      traceText,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  };
+
+  const isSubmissionCreditError = (response) => {
+    const errorText = getSubmissionErrorText(response);
+    return /kredi|credit|insufficient/.test(errorText);
+  };
+
+  const getSubmissionErrorMessage = (response) => {
+    if (isSubmissionCreditError(response)) {
+      return "Krediniz bitti! Dosya bildirmek için kredi satın alın.";
+    }
+
+    if (response?.status >= 500) {
+      return response?.message || "Sunucuda bir hata oluştu. Lütfen tekrar deneyin veya destek ile iletişime geçin.";
+    }
+
+    return response?.message || "Dosya güncellenemedi.";
+  };
+
   const createSubmission = async () => {
     try {
 
@@ -197,7 +231,8 @@ export default function StepInfoScreen() {
     }
   }, [submissionId]);
 
-  const updateSubmission = async (markAsCompleted = false) => {
+  const updateSubmission = async (markAsCompleted = false, options = {}) => {
+    const { suppressAlerts = false, returnErrorMeta = false } = options;
     const savedId = submissionId || localStorage.getItem("submissionId");
 
 
@@ -369,27 +404,53 @@ export default function StepInfoScreen() {
       if (!res.success) {
         console.error("❌ UPDATE başarısız:", res.status, res.message);
 
-        const message = res.message || "";
+        const errorMessage = getSubmissionErrorMessage(res);
+        const errorType = isSubmissionCreditError(res)
+          ? "credit"
+          : res.status >= 500
+            ? "server"
+            : "request";
 
-        // Kredi hatası kontrolü
-        if (message.includes('kredi') || message.includes('credit') || message.toLowerCase().includes('insufficient')) {
-          alert("Krediniz bitti! Dosya taslak olarak kaydedildi.");
-          return null;
+        if (!suppressAlerts) {
+          alert(errorMessage);
         }
 
-        // Sunucu hatası (500) için kullanıcıya anlamlı mesaj
-        if (res.status >= 500) {
-          alert("Sunucuda bir hata oluştu. Lütfen tekrar deneyin veya destek ile iletişime geçin.");
-          return null;
+        if (returnErrorMeta) {
+          return {
+            ok: false,
+            errorType,
+            message: errorMessage,
+            response: res,
+          };
         }
 
-        alert(message || "Dosya güncellenemedi.");
         return null;
+      }
+
+      if (returnErrorMeta) {
+        return {
+          ok: true,
+          data: res?.data,
+        };
       }
 
       return res?.data;
     } catch (err) {
       console.error("❌ UPDATE Error:", err.message);
+
+      if (!suppressAlerts) {
+        alert("Submission güncellenirken hata: " + err.message);
+      }
+
+      if (returnErrorMeta) {
+        return {
+          ok: false,
+          errorType: "unexpected",
+          message: err.message,
+          response: null,
+        };
+      }
+
       return null;
     }
   };
@@ -843,19 +904,30 @@ export default function StepInfoScreen() {
         console.error("Kredi kontrolü başarısız:", e);
       }
 
-      const updateResult = await updateSubmission(true);
+      const updateResult = await updateSubmission(true, {
+        suppressAlerts: true,
+        returnErrorMeta: true,
+      });
       console.log('📝 Update result:', updateResult);
 
-      // Backend'den kredi hatası gelirse kontrol et
-      if (!updateResult) {
-        console.log('❌ Update başarısız, kredi bitti uyarısı gösteriliyor');
-        alert("Krediniz bitti.");
+      if (!updateResult?.ok) {
+        console.log('❌ Update başarısız:', updateResult?.errorType, updateResult?.message);
+
+        if (updateResult?.errorType === "credit") {
+          alert(updateResult.message);
+          navigate("/kredi-satin-al");
+          return;
+        }
+
+        alert(updateResult?.message || "Dosya tamamlanırken bir hata oluştu. Lütfen tekrar deneyin.");
         return;
       }
 
+      const updatedSubmission = updateResult.data;
+
       // Güncel kredi bilgisini güncelle (backend response'tan veya profil yeniden çekerek)
-      if (updateResult.remaining_credits !== undefined) {
-        setRemainingCredits(updateResult.remaining_credits);
+      if (updatedSubmission?.remaining_credits !== undefined) {
+        setRemainingCredits(updatedSubmission.remaining_credits);
       }
       // ProfileContext'i de güncelle ki diğer sayfalarda da güncel gözüksün
       await fetchProfile();
