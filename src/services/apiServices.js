@@ -4,12 +4,65 @@ import { fetchData } from ".";
 
 const PATH = '/api';
 
+const sanitizeSubmissionDateTime = (value) => {
+  const raw = String(value ?? '').trim();
+  if (!raw) return value;
+
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/.test(raw)) {
+    return raw;
+  }
+
+  const dateMatch = raw.match(/(\d{4}[-\/.]\d{2}[-\/.]\d{2}|\d{2}[-\/.]\d{2}[-\/.]\d{4})/);
+  const timeMatch = raw.match(/(\d{1,2}[:.]\d{1,2}(?:[:.]\d{1,2})?|\b\d{4,6}\b)/);
+
+  if (!dateMatch || !timeMatch) {
+    return value;
+  }
+
+  const dateRaw = dateMatch[1].replace(/\//g, '.');
+  let normalizedDate = '';
+
+  if (/^\d{4}[-\.]\d{2}[-\.]\d{2}$/.test(dateRaw)) {
+    normalizedDate = dateRaw.replace(/\./g, '-');
+  } else if (/^\d{2}[.-]\d{2}[.-]\d{4}$/.test(dateRaw)) {
+    const [day, month, year] = dateRaw.split(/[.-]/);
+    normalizedDate = `${year}-${month}-${day}`;
+  }
+
+  const timeDigits = timeMatch[1].replace(/[^\d]/g, '');
+  const timeParts = timeDigits.match(/^(\d{2})(\d{2})(\d{2})?$/);
+
+  if (!normalizedDate || !timeParts) {
+    return value;
+  }
+
+  const [, hours, minutes, seconds = '00'] = timeParts;
+  if (Number(hours) > 23 || Number(minutes) > 59 || Number(seconds) > 59) {
+    return value;
+  }
+
+  return `${normalizedDate}T${hours}:${minutes}:${seconds}`;
+};
+
+const sanitizeSubmissionPayload = (payload) => {
+  if (!payload || typeof payload !== 'object') return payload;
+
+  if (!Object.prototype.hasOwnProperty.call(payload, 'accident_date')) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    accident_date: sanitizeSubmissionDateTime(payload.accident_date),
+  };
+};
+
 const apiService = {
   async createSubmission(payload) {
     return await fetchData(
       `${PATH}/submissions/`,
       'POST',
-      payload,
+      sanitizeSubmissionPayload(payload),
       'application/json',
     );
   },
@@ -18,7 +71,7 @@ const apiService = {
     return await fetchData(
       `${PATH}/submissions/${id}/`,
       'PATCH',
-      payload,
+      sanitizeSubmissionPayload(payload),
       'application/json',
     );
   },

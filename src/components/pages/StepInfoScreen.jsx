@@ -177,6 +177,75 @@ export default function StepInfoScreen() {
     return response?.message || "Dosya güncellenemedi.";
   };
 
+  const normalizeAccidentTime = (value) => {
+    const raw = String(value || "").trim();
+    if (!raw) return "";
+
+    const compactRaw = raw.replace(/[^\d]/g, "");
+    const compactMatch = compactRaw.match(/^(\d{2})(\d{2})(\d{2})?$/);
+    if (compactMatch) {
+      const [, hours, minutes, seconds = "00"] = compactMatch;
+      if (Number(hours) <= 23 && Number(minutes) <= 59 && Number(seconds) <= 59) {
+        return `${hours}:${minutes}:${seconds}`;
+      }
+    }
+
+    const match = raw.match(/^(\d{1,2})[:.](\d{1,2})(?:[:.](\d{1,2}))?$/);
+    if (!match) return "";
+
+    const hours = match[1].padStart(2, "0");
+    const minutes = match[2].padStart(2, "0");
+    const seconds = (match[3] || "00").padStart(2, "0");
+
+    if (Number(hours) > 23 || Number(minutes) > 59 || Number(seconds) > 59) {
+      return "";
+    }
+
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
+  const normalizeAccidentDate = (value) => {
+    const raw = String(value || "").trim();
+    if (!raw) return null;
+
+    const direct = toYYYYMMDD(raw.replace(/\//g, "."));
+    if (direct) return direct;
+
+    const match = raw.match(/(\d{4}[-\/.]\d{2}[-\/.]\d{2}|\d{2}[-\/.]\d{2}[-\/.]\d{4})/);
+    return match ? toYYYYMMDD(match[1].replace(/\//g, ".")) : null;
+  };
+
+  const buildAccidentDateTime = (damage) => {
+    const dateOnly = normalizeAccidentDate(damage?.accident_date);
+    const timeOnly = normalizeAccidentTime(damage?.accident_time);
+
+    if (dateOnly && timeOnly) {
+      return `${dateOnly}T${timeOnly}`;
+    }
+
+    const rawDateTime = String(damage?.accident_datetime || "").trim();
+    if (!rawDateTime) return null;
+
+    const parts = rawDateTime.split(/[T\s]+/).filter(Boolean);
+    const fallbackDate = normalizeAccidentDate(parts[0]);
+    const fallbackTime = normalizeAccidentTime(parts[1]);
+
+    if (fallbackDate && fallbackTime) {
+      return `${fallbackDate}T${fallbackTime}`;
+    }
+
+    const dateMatch = rawDateTime.match(/(\d{4}[-\/.]\d{2}[-\/.]\d{2}|\d{2}[-\/.]\d{2}[-\/.]\d{4})/);
+    const timeMatch = rawDateTime.match(/(\d{1,2}[:.]\d{1,2}(?:[:.]\d{1,2})?|\b\d{4,6}\b)/);
+    const extractedDate = normalizeAccidentDate(dateMatch?.[1]);
+    const extractedTime = normalizeAccidentTime(timeMatch?.[1]);
+
+    if (extractedDate && extractedTime) {
+      return `${extractedDate}T${extractedTime}`;
+    }
+
+    return null;
+  };
+
   const createSubmission = async () => {
     try {
 
@@ -355,45 +424,12 @@ export default function StepInfoScreen() {
           };
         }
       } else if (currentStep === 4) {
-        let accidentDate = null;
-
-        // Saati HH:mm -> HH:mm:ss formatına normalize et
-        const normalizeTime = (t) => {
-          if (!t) return "00:00:00";
-          const parts = t.split(":");
-          if (parts.length === 2) return `${t}:00`;
-          return t;
-        };
-
-        // Tarihi YYYY-MM-DD formatına normalize et
-        const normalizeDate = (d) => {
-          if (!d) return null;
-          if (d.includes(".")) {
-            const [dd, mm, yyyy] = d.split(".");
-            return `${yyyy}-${mm}-${dd}`;
-          }
-          return d;
-        };
-
-        // Önce accident_date ve accident_time'ı kontrol et (yeni format)
-        if (damageData.accident_date && damageData.accident_time) {
-          const dateStr = normalizeDate(damageData.accident_date);
-          const timeStr = normalizeTime(damageData.accident_time);
-          if (dateStr) accidentDate = `${dateStr}T${timeStr}`;
-        } else if (damageData.accident_datetime) {
-          // Eski format (accident_datetime) - geriye dönük uyumluluk için
-          const [datePart, timePart] = damageData.accident_datetime.split(" ");
-          if (datePart && timePart) {
-            const dateStr = normalizeDate(datePart);
-            const timeStr = normalizeTime(timePart);
-            if (dateStr) accidentDate = `${dateStr}T${timeStr}`;
-          }
-        }
+        const accidentDate = buildAccidentDateTime(damageData);
         payload = {
           damage_type: damageData.damage_type || "",
           damage_description: damageData.damage_description || "",
-          accident_city: damageData.accident_city || "",
-          accident_district: damageData.accident_district || "",
+          accident_city: getIlName(damageData.accident_city) || damageData.accident_city || "",
+          accident_district: getIlceName(damageData.accident_district) || damageData.accident_district || "",
           accident_date: accidentDate || null,
           policy_no: damageData.policy_no || "",
           estimated_damage_amount: damageData.estimated_damage_amount || "",
@@ -947,6 +983,15 @@ export default function StepInfoScreen() {
       // ✅ Evrak sayısını doğru hesapla: önce route state'ten (params.total), yoksa localStorage'dan
       const uploadedDocuments = (() => {
         if (typeof params?.total === "number") return params.total;
+        if (typeof params?.total === "string") {
+          const parsed = parseInt(params.total, 10);
+          if (Number.isFinite(parsed)) return parsed;
+        }
+        if (typeof params?.documentCount === "number") return params.documentCount;
+        if (typeof params?.documentCount === "string") {
+          const parsed = parseInt(params.documentCount, 10);
+          if (Number.isFinite(parsed)) return parsed;
+        }
 
         const stored = localStorage.getItem("total");
         const n = stored ? parseInt(stored, 10) : 0;

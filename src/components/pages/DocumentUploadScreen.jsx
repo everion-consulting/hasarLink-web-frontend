@@ -518,11 +518,16 @@ const DocumentUploaderScreen = ({
         .filter(f => f.aiChecked)
         .map(f => f.aiResult);
 
+      localStorage.setItem("total", String(allFiles.length));
+
       await deleteDraftByKey(draftStorageKey).catch(() => {});
 
       navigate("/victim-info", {
         state: {
+          ...location.state,
           submissionId,
+          total: allFiles.length,
+          documentCount: allFiles.length,
           aiDocuments, // 👈 TEKRAR AI YOK
           kazaNitelik,
           insuranceSource,

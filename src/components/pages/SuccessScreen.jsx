@@ -20,14 +20,23 @@ const SuccessScreen = () => {
         state.selectedCompany?.company_name ??
         '';
 
-   const documentCount = (() => {
-  if (typeof state.documentCount === "number") return state.documentCount;
+     const documentCount = (() => {
+    if (typeof state.documentCount === "number") return state.documentCount;
+    if (typeof state.documentCount === "string") {
+        const parsed = parseInt(state.documentCount, 10);
+        if (Number.isFinite(parsed)) return parsed;
+    }
+    if (typeof state.total === "number") return state.total;
+    if (typeof state.total === "string") {
+        const parsed = parseInt(state.total, 10);
+        if (Number.isFinite(parsed)) return parsed;
+    }
 
-  const stored = localStorage.getItem("total");
-  const n = stored ? parseInt(stored, 10) : 0;
-  console.log("SuccessScreen stored total:", localStorage.getItem("total"));
+    const stored = localStorage.getItem("total");
+    const n = stored ? parseInt(stored, 10) : 0;
+    console.log("SuccessScreen stored total:", localStorage.getItem("total"));
 
-  return Number.isFinite(n) ? n : 0;
+    return Number.isFinite(n) ? n : 0;
 })();
 
     const handleGoHome = () => {
