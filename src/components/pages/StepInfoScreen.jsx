@@ -356,28 +356,37 @@ export default function StepInfoScreen() {
         }
       } else if (currentStep === 4) {
         let accidentDate = null;
+
+        // Saati HH:mm -> HH:mm:ss formatına normalize et
+        const normalizeTime = (t) => {
+          if (!t) return "00:00:00";
+          const parts = t.split(":");
+          if (parts.length === 2) return `${t}:00`;
+          return t;
+        };
+
+        // Tarihi YYYY-MM-DD formatına normalize et
+        const normalizeDate = (d) => {
+          if (!d) return null;
+          if (d.includes(".")) {
+            const [dd, mm, yyyy] = d.split(".");
+            return `${yyyy}-${mm}-${dd}`;
+          }
+          return d;
+        };
+
         // Önce accident_date ve accident_time'ı kontrol et (yeni format)
         if (damageData.accident_date && damageData.accident_time) {
-          const datePart = damageData.accident_date;
-          const timePart = damageData.accident_time;
-          // DD.MM.YYYY formatındaki tarihi YYYY-MM-DD'ye çevir
-          if (datePart.includes(".")) {
-            const [dd, mm, yyyy] = datePart.split(".");
-            accidentDate = `${yyyy}-${mm}-${dd}T${timePart}`;
-          } else {
-            // Zaten YYYY-MM-DD formatındaysa
-            accidentDate = `${datePart}T${timePart}`;
-          }
+          const dateStr = normalizeDate(damageData.accident_date);
+          const timeStr = normalizeTime(damageData.accident_time);
+          if (dateStr) accidentDate = `${dateStr}T${timeStr}`;
         } else if (damageData.accident_datetime) {
           // Eski format (accident_datetime) - geriye dönük uyumluluk için
           const [datePart, timePart] = damageData.accident_datetime.split(" ");
           if (datePart && timePart) {
-            if (datePart.includes(".")) {
-              const [dd, mm, yyyy] = datePart.split(".");
-              accidentDate = `${yyyy}-${mm}-${dd}T${timePart}`;
-            } else {
-              accidentDate = `${datePart}T${timePart}`;
-            }
+            const dateStr = normalizeDate(datePart);
+            const timeStr = normalizeTime(timePart);
+            if (dateStr) accidentDate = `${dateStr}T${timeStr}`;
           }
         }
         payload = {
@@ -385,7 +394,7 @@ export default function StepInfoScreen() {
           damage_description: damageData.damage_description || "",
           accident_city: damageData.accident_city || "",
           accident_district: damageData.accident_district || "",
-          accident_date: accidentDate || "",
+          accident_date: accidentDate || null,
           policy_no: damageData.policy_no || "",
           estimated_damage_amount: damageData.estimated_damage_amount || "",
           official_report_type: damageData.official_report_type || "",
