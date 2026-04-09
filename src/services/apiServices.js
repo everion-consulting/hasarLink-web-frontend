@@ -394,6 +394,12 @@ const apiService = {
     );
   },
 
+  async getManagementDashboard(period = "WEEKLY", date = null) {
+    let url = `${PATH}/management-dashboard/?period=${period}`;
+    if (date) url += `&date=${date}`;
+    return await fetchData(url, 'GET');
+  },
+
   async fieldUserAPI(payload) {
     console.log("fieldUserAPI çalıştı");
 
