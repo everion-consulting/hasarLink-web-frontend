@@ -21,6 +21,35 @@ import styles from "../../styles/managementDashboard.module.css";
 import api from "../../services/apiServices";
 import { useProfile } from "../../context/ProfileContext";
 
+// Basit Markdown → HTML donusturucusu
+function markdownToHtml(md) {
+  if (!md) return "";
+  let html = md
+    // Code blocks
+    .replace(/```[\s\S]*?```/g, (m) => `<pre>${m.slice(3, -3)}</pre>`)
+    // Headers
+    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+    // Bold & italic
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // Unordered list
+    .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
+    // Ordered list
+    .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
+    // Paragraphs (double newline)
+    .replace(/\n\n/g, "</p><p>")
+    // Single newlines within content
+    .replace(/\n/g, "<br/>");
+
+  // Wrap consecutive <li> in <ul>
+  html = html.replace(/(<li>.*?<\/li>)(\s*<br\/>)*\s*(<li>)/g, "$1$3");
+  html = html.replace(/(<li>.*?<\/li>(?:\s*<li>.*?<\/li>)*)/g, "<ul>$1</ul>");
+
+  return `<p>${html}</p>`;
+}
+
 const PERIODS = [
   { key: "DAILY", label: "Gunluk" },
   { key: "WEEKLY", label: "Haftalik" },
@@ -92,6 +121,11 @@ export default function ManagementDashboard() {
   const [refSort, setRefSort] = useState({ key: "notification_count", dir: "desc" });
   const [userSort, setUserSort] = useState({ key: "notification_count", dir: "desc" });
 
+  // AI Analiz
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
   useEffect(() => {
     loadDashboard();
   }, [period]);
@@ -110,6 +144,25 @@ export default function ManagementDashboard() {
       setError(true);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function requestAIAnalysis() {
+    if (!data) return;
+    try {
+      setAiLoading(true);
+      setAiError(null);
+      setAiAnalysis(null);
+      const res = await api.getDashboardAIAnalysis(data);
+      if (res.success && res.data?.analysis) {
+        setAiAnalysis(res.data.analysis);
+      } else {
+        setAiError(res.data?.error || res.message || "Analiz alinamadi.");
+      }
+    } catch {
+      setAiError("AI analiz istegi basarisiz oldu.");
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -521,6 +574,44 @@ export default function ManagementDashboard() {
             </>
           )}
         </div>
+      </div>
+
+      {/* AI ANALIZ */}
+      <div className={styles.aiSection}>
+        {!aiAnalysis && !aiLoading && (
+          <button className={styles.aiButton} onClick={requestAIAnalysis} disabled={aiLoading}>
+            <span className={styles.aiButtonIcon}>{"\u2728"}</span>
+            AI ile Analiz Et ve Oneri Al
+          </button>
+        )}
+
+        {aiLoading && (
+          <div className={styles.aiLoading}>
+            <div className={styles.spinner} />
+            Gemini AI verileri analiz ediyor...
+          </div>
+        )}
+
+        {aiError && (
+          <div className={styles.aiError}>{aiError}</div>
+        )}
+
+        {aiAnalysis && (
+          <div className={styles.aiCard}>
+            <div className={styles.aiHeader}>
+              <h2>
+                <span>{"\u2728"}</span> AI Yonetim Analizi
+              </h2>
+              <button className={styles.aiRefresh} onClick={requestAIAnalysis} disabled={aiLoading}>
+                {aiLoading ? "Analiz ediliyor..." : "Yeniden Analiz Et"}
+              </button>
+            </div>
+            <div
+              className={styles.aiContent}
+              dangerouslySetInnerHTML={{ __html: markdownToHtml(aiAnalysis) }}
+            />
+          </div>
+        )}
       </div>
 
       {/* MODAL */}

@@ -400,6 +400,15 @@ const apiService = {
     return await fetchData(url, 'GET');
   },
 
+  async getDashboardAIAnalysis(dashboardData) {
+    return await fetchData(
+      `${PATH}/management-dashboard/ai-analysis/`,
+      'POST',
+      { dashboard_data: dashboardData },
+      'application/json'
+    );
+  },
+
   async fieldUserAPI(payload) {
     console.log("fieldUserAPI çalıştı");
 

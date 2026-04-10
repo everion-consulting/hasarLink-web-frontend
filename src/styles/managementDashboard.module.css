@@ -440,7 +440,169 @@
   font-size: 14px;
 }
 
+/* AI ANALYSIS */
+.aiSection {
+  margin-top: 36px;
+  margin-bottom: 36px;
+}
+
+.aiButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #133E87, #608BC1);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(19, 62, 135, 0.25);
+}
+
+.aiButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(19, 62, 135, 0.35);
+}
+
+.aiButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.aiButtonIcon {
+  font-size: 20px;
+}
+
+.aiLoading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  color: #133E87;
+  font-weight: 600;
+}
+
+.aiCard {
+  background: white;
+  border-radius: 22px;
+  padding: 32px;
+  margin-top: 20px;
+  box-shadow: 0 12px 30px rgba(19, 62, 135, 0.1);
+  border-left: 5px solid #133E87;
+  position: relative;
+  overflow: hidden;
+}
+
+.aiCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(19, 62, 135, 0.04), transparent 70%);
+  pointer-events: none;
+}
+
+.aiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.aiHeader h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #133E87;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aiContent {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.aiContent h1,
+.aiContent h2,
+.aiContent h3 {
+  color: #133E87;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.aiContent h1 { font-size: 20px; }
+.aiContent h2 { font-size: 17px; }
+.aiContent h3 { font-size: 15px; }
+
+.aiContent ul,
+.aiContent ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.aiContent li {
+  margin-bottom: 6px;
+}
+
+.aiContent strong {
+  color: #133E87;
+}
+
+.aiContent p {
+  margin-bottom: 10px;
+}
+
+.aiRefresh {
+  background: #f4f7fb;
+  border: 1px solid #dbe4f3;
+  color: #133E87;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.aiRefresh:hover {
+  background: #eaf0fb;
+}
+
+.aiError {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 14px 20px;
+  border-radius: 12px;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
 /* DARK MODE */
+:global(body.dark) .aiCard {
+  background: #1e1e2e;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  border-left-color: #608BC1;
+}
+
+:global(body.dark) .aiContent {
+  color: #ccc;
+}
+
+:global(body.dark) .aiContent h1,
+:global(body.dark) .aiContent h2,
+:global(body.dark) .aiContent h3,
+:global(body.dark) .aiContent strong {
+  color: #e0e0e0;
+}
+
 :global(body.dark) .kpiCard,
 :global(body.dark) .chartBox,
 :global(body.dark) .tableContainer,
