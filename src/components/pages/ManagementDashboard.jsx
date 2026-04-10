@@ -153,24 +153,36 @@ export default function ManagementDashboard() {
       setAiLoading(true);
       setAiError(null);
       setAiAnalysis(null);
-      // sahaci_users ve user_trends buyuk veri, AI'ya gondermeye gerek yok
       const { sahaci_users: _su, user_trends: _ut, ...compactData } = data;
-      const res = await api.getDashboardAIAnalysis(compactData);
-      if (res.success && res.data?.analysis) {
-        // HTML yanıt geldiyse reddet
-        const text = res.data.analysis;
-        if (text.includes("<!DOCTYPE") || text.includes("<html")) {
-          setAiError("AI servisi gecici olarak kullanilamiyor. Lutfen tekrar deneyin.");
-        } else {
-          setAiAnalysis(text);
+
+      const fullText = await api.getDashboardAIAnalysisStream(
+        compactData,
+        (partialText) => {
+          // Her chunk geldiginde canli guncelle
+          if (!partialText.includes('"error"') && !partialText.includes("<!DOCTYPE")) {
+            setAiAnalysis(partialText);
+            setAiLoading(false);
+          }
         }
+      );
+
+      if (fullText.includes('"error"')) {
+        try {
+          const err = JSON.parse(fullText);
+          setAiError(err.error || "Analiz alinamadi.");
+        } catch {
+          setAiError("Analiz alinamadi.");
+        }
+        setAiAnalysis(null);
+      } else if (fullText.includes("<!DOCTYPE") || fullText.includes("<html")) {
+        setAiError("AI servisi gecici olarak kullanilamiyor.");
+        setAiAnalysis(null);
       } else {
-        const errMsg = res.data?.error || res.message || "Analiz alinamadi.";
-        // HTML icerigi temizle
-        setAiError(errMsg.includes("<html") ? "AI servisi gecici olarak kullanilamiyor." : errMsg);
+        setAiAnalysis(fullText);
       }
-    } catch {
+    } catch (e) {
       setAiError("AI analiz istegi basarisiz oldu.");
+      setAiAnalysis(null);
     } finally {
       setAiLoading(false);
     }

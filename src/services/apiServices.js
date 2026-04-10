@@ -400,13 +400,35 @@ const apiService = {
     return await fetchData(url, 'GET');
   },
 
-  async getDashboardAIAnalysis(dashboardData) {
-    return await fetchData(
-      `${PATH}/management-dashboard/ai-analysis/`,
-      'POST',
-      { dashboard_data: dashboardData },
-      'application/json'
-    );
+  async getDashboardAIAnalysisStream(dashboardData, onChunk) {
+    const token = localStorage.getItem("authToken");
+    const baseUrl = import.meta.env.VITE_API_BASE || "https://dosya-bildirim-vrosq.ondigitalocean.app";
+    const resp = await fetch(`${baseUrl}${PATH}/management-dashboard/ai-analysis/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Token ${token}` } : {}),
+      },
+      body: JSON.stringify({ dashboard_data: dashboardData }),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let full = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      full += chunk;
+      if (onChunk) onChunk(full);
+    }
+
+    return full;
   },
 
   async fieldUserAPI(payload) {
