@@ -26,6 +26,7 @@ const PERIODS = [
   { key: "DAILY", label: "Gunluk" },
   { key: "WEEKLY", label: "Haftalik" },
   { key: "MONTHLY", label: "Aylik" },
+  { key: "ALL_TIME", label: "Tum Zamanlar" },
 ];
 
 const CHART_COLORS = [
