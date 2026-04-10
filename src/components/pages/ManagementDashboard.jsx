@@ -1,5 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -30,16 +29,8 @@ const PERIODS = [
 ];
 
 const CHART_COLORS = [
-  "#133E87",
-  "#608BC1",
-  "#4CAF50",
-  "#FF7043",
-  "#9C27B0",
-  "#26A69A",
-  "#FFC107",
-  "#EF5350",
-  "#5C6BC0",
-  "#00897B",
+  "#133E87", "#608BC1", "#4CAF50", "#FF7043", "#9C27B0",
+  "#26A69A", "#FFC107", "#EF5350", "#5C6BC0", "#00897B",
 ];
 
 function TrendArrow({ current, previous }) {
@@ -69,9 +60,7 @@ function formatDate(dateStr) {
   if (!dateStr) return "-";
   try {
     return new Date(dateStr).toLocaleDateString("tr-TR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+      day: "numeric", month: "short", year: "numeric",
     });
   } catch {
     return dateStr;
@@ -82,8 +71,7 @@ function formatTrendLabel(dateStr) {
   if (!dateStr) return "";
   try {
     return new Date(dateStr).toLocaleDateString("tr-TR", {
-      day: "numeric",
-      month: "short",
+      day: "numeric", month: "short",
     });
   } catch {
     return dateStr;
@@ -97,14 +85,10 @@ export default function ManagementDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Tablo sekmesi
   const [activeTab, setActiveTab] = useState("reference");
-
-  // Modal
-  const [modalType, setModalType] = useState(null); // "reference" | "user"
+  const [modalType, setModalType] = useState(null);
   const [modalData, setModalData] = useState(null);
 
-  // Siralama
   const [refSort, setRefSort] = useState({ key: "notification_count", dir: "desc" });
   const [userSort, setUserSort] = useState({ key: "notification_count", dir: "desc" });
 
@@ -156,25 +140,22 @@ export default function ManagementDashboard() {
     );
   }
 
-  const { kpi, trends, by_reference_code, by_user, date_range } = data;
+  const { kpi, trends, by_reference_code, by_user, user_trends, date_range } = data;
 
-  // Siralama
+  // ── Siralama ──
   function sortData(arr, sortState) {
-    const sorted = [...arr].sort((a, b) => {
+    return [...arr].sort((a, b) => {
       const aVal = a[sortState.key] ?? 0;
       const bVal = b[sortState.key] ?? 0;
       if (typeof aVal === "string") return sortState.dir === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       return sortState.dir === "asc" ? aVal - bVal : bVal - aVal;
     });
-    return sorted;
   }
 
   function toggleSort(current, setCurrent, key) {
-    if (current.key === key) {
-      setCurrent({ key, dir: current.dir === "asc" ? "desc" : "asc" });
-    } else {
-      setCurrent({ key, dir: "desc" });
-    }
+    setCurrent(current.key === key
+      ? { key, dir: current.dir === "asc" ? "desc" : "asc" }
+      : { key, dir: "desc" });
   }
 
   function sortIcon(sortState, key) {
@@ -185,23 +166,42 @@ export default function ManagementDashboard() {
   const sortedRefData = sortData(by_reference_code || [], refSort);
   const sortedUserData = sortData(by_user || [], userSort);
 
-  // Grafik icin referans kodu data (top 10)
-  const refChartData = (by_reference_code || [])
+  // ── Grafik Verileri ──
+  const refChartData = [...(by_reference_code || [])]
+    .sort((a, b) => b.notification_count - a.notification_count)
     .slice(0, 10)
     .map((x) => ({
-      name: x.sahaci_adi !== "-" ? x.sahaci_adi : x.repair_area_code,
+      name: x.sahaci_adi !== x.repair_area_code ? x.sahaci_adi : x.repair_area_code,
       bildirim: x.notification_count,
-      kullanici: x.user_count,
+      uye: x.user_count,
+      donem_uye: x.period_user_count || 0,
     }));
 
-  // Pie chart icin referans dagilimi
   const pieData = (by_reference_code || [])
     .filter((x) => x.notification_count > 0)
     .slice(0, 8)
     .map((x) => ({
-      name: x.sahaci_adi !== "-" ? x.sahaci_adi : x.repair_area_code,
+      name: x.sahaci_adi !== x.repair_area_code ? x.sahaci_adi : x.repair_area_code,
       value: x.notification_count,
     }));
+
+  // ── Kullanici Trend Grafigi ──
+  // Tum kullanicilari ayni chart'ta gostermek icin veriyi donustur
+  const userTrendChartData = (() => {
+    if (!user_trends || user_trends.length === 0) return [];
+    // Tum tarihleri topla
+    const dateSet = new Set();
+    user_trends.forEach((u) => u.data.forEach((d) => dateSet.add(d.date)));
+    const dates = [...dateSet].sort();
+    return dates.map((date) => {
+      const point = { date, label: formatTrendLabel(date) };
+      user_trends.forEach((u) => {
+        const found = u.data.find((d) => d.date === date);
+        point[u.full_name] = found ? found.count : 0;
+      });
+      return point;
+    });
+  })();
 
   return (
     <div className={styles.page}>
@@ -240,33 +240,23 @@ export default function ManagementDashboard() {
           <div className={styles.kpiValue}>{kpi.new_users_period}</div>
           <TrendArrow current={kpi.new_users_period} previous={kpi.prev_period_users} />
         </div>
-
         <div className={styles.kpiCard}>
           <div className={styles.kpiLabel}>Toplam Uye</div>
           <div className={styles.kpiValue}>{kpi.total_users?.toLocaleString("tr-TR")}</div>
         </div>
-
         <div className={styles.kpiCard}>
           <div className={styles.kpiLabel}>Donem Bildirimleri</div>
           <div className={styles.kpiValue}>{kpi.notifications_period}</div>
-          <TrendArrow
-            current={kpi.notifications_period}
-            previous={kpi.prev_period_notifications}
-          />
+          <TrendArrow current={kpi.notifications_period} previous={kpi.prev_period_notifications} />
         </div>
-
         <div className={styles.kpiCard}>
           <div className={styles.kpiLabel}>Toplam Bildirimler</div>
-          <div className={styles.kpiValue}>
-            {kpi.total_notifications?.toLocaleString("tr-TR")}
-          </div>
+          <div className={styles.kpiValue}>{kpi.total_notifications?.toLocaleString("tr-TR")}</div>
         </div>
-
         <div className={styles.kpiCard}>
           <div className={styles.kpiLabel}>Aktif Sahaci</div>
           <div className={styles.kpiValue}>{kpi.active_field_users}</div>
         </div>
-
         <div className={styles.kpiCard}>
           <div className={styles.kpiLabel}>Donusum Orani</div>
           <div className={styles.kpiValue}>%{kpi.conversion_rate}</div>
@@ -286,18 +276,8 @@ export default function ManagementDashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="#eef3fb" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="count"
-                name="Kayit"
-                stroke="#133E87"
-                strokeWidth={3}
-                dot={{ r: 4, fill: "#133E87" }}
-                activeDot={{ r: 6 }}
-              />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }} />
+              <Line type="monotone" dataKey="count" name="Kayit" stroke="#133E87" strokeWidth={3} dot={{ r: 4, fill: "#133E87" }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -316,36 +296,26 @@ export default function ManagementDashboard() {
               <CartesianGrid strokeDasharray="3 3" stroke="#eef3fb" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
-              />
-              <Area
-                type="monotone"
-                dataKey="count"
-                name="Bildirim"
-                stroke="#4CAF50"
-                strokeWidth={3}
-                fill="url(#colorNotif)"
-              />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }} />
+              <Area type="monotone" dataKey="count" name="Bildirim" stroke="#4CAF50" strokeWidth={3} fill="url(#colorNotif)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Referans Kodu Bazli Bildirimler */}
+        {/* Sahaci Performans - Bildirim + Uye Yaptirma */}
         <div className={styles.chartBox}>
-          <h2>Referans Kodu Bazli Performans</h2>
+          <h2>Sahaci Performansi (Bildirim & Uye Yaptirma)</h2>
           {refChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={340}>
               <BarChart data={refChartData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#eef3fb" />
                 <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
-                />
+                <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }} />
                 <Legend />
-                <Bar dataKey="bildirim" name="Bildirimler" fill="#133E87" radius={[0, 6, 6, 0]} />
-                <Bar dataKey="kullanici" name="Kullanicilar" fill="#608BC1" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="bildirim" name="Bildirim Yaptirma" fill="#133E87" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="uye" name="Toplam Uye" fill="#608BC1" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="donem_uye" name="Donem Uye Yaptirma" fill="#4CAF50" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -353,20 +323,16 @@ export default function ManagementDashboard() {
           )}
         </div>
 
-        {/* Pie Chart: Bildirim Dagilimi */}
+        {/* Pie Chart */}
         <div className={styles.chartBox}>
-          <h2>Bildirim Dagilimi (Referans Kodu)</h2>
+          <h2>Bildirim Dagilimi (Sahaci Bazli)</h2>
           {pieData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={340}>
               <PieChart>
                 <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={110}
-                  paddingAngle={3}
-                  dataKey="value"
+                  data={pieData} cx="50%" cy="50%"
+                  innerRadius={60} outerRadius={110}
+                  paddingAngle={3} dataKey="value"
                   label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   labelLine={{ strokeWidth: 1 }}
                 >
@@ -383,6 +349,33 @@ export default function ManagementDashboard() {
         </div>
       </div>
 
+      {/* KULLANICI TREND GRAFIGI */}
+      {user_trends && user_trends.length > 0 && (
+        <div className={styles.chartBox} style={{ marginBottom: 36 }}>
+          <h2>Kullanici Bazli Bildirim Trendi (Top 10)</h2>
+          <ResponsiveContainer width="100%" height={360}>
+            <LineChart data={userTrendChartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eef3fb" />
+              <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }} />
+              <Legend />
+              {user_trends.map((u, i) => (
+                <Line
+                  key={u.user_id}
+                  type="monotone"
+                  dataKey={u.full_name}
+                  stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
       {/* TABLES SECTION */}
       <div className={styles.tablesSection}>
         <div className={styles.tabBar}>
@@ -390,7 +383,7 @@ export default function ManagementDashboard() {
             className={`${styles.tabButton} ${activeTab === "reference" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("reference")}
           >
-            Referans Kodu Performansi
+            Sahaci Performansi
           </button>
           <button
             className={`${styles.tabButton} ${activeTab === "users" ? styles.activeTab : ""}`}
@@ -401,6 +394,7 @@ export default function ManagementDashboard() {
         </div>
 
         <div className={styles.tableContainer}>
+          {/* ── SAHACI PERFORMANS TABLOSU ── */}
           {activeTab === "reference" && (
             <>
               {sortedRefData.length > 0 ? (
@@ -414,16 +408,13 @@ export default function ManagementDashboard() {
                         Sahaci Adi{sortIcon(refSort, "sahaci_adi")}
                       </th>
                       <th onClick={() => toggleSort(refSort, setRefSort, "user_count")} style={{ cursor: "pointer" }}>
-                        Kullanici Sayisi{sortIcon(refSort, "user_count")}
+                        Toplam Uye{sortIcon(refSort, "user_count")}
+                      </th>
+                      <th onClick={() => toggleSort(refSort, setRefSort, "period_user_count")} style={{ cursor: "pointer" }}>
+                        Donem Uye Yaptirma{sortIcon(refSort, "period_user_count")}
                       </th>
                       <th onClick={() => toggleSort(refSort, setRefSort, "notification_count")} style={{ cursor: "pointer" }}>
-                        Bildirim Sayisi{sortIcon(refSort, "notification_count")}
-                      </th>
-                      <th onClick={() => toggleSort(refSort, setRefSort, "total_submissions")} style={{ cursor: "pointer" }}>
-                        Toplam Basvuru{sortIcon(refSort, "total_submissions")}
-                      </th>
-                      <th onClick={() => toggleSort(refSort, setRefSort, "draft_count")} style={{ cursor: "pointer" }}>
-                        Taslak{sortIcon(refSort, "draft_count")}
+                        Bildirim Yaptirma{sortIcon(refSort, "notification_count")}
                       </th>
                       <th onClick={() => toggleSort(refSort, setRefSort, "conversion_rate")} style={{ cursor: "pointer" }}>
                         Donusum %{sortIcon(refSort, "conversion_rate")}
@@ -432,41 +423,24 @@ export default function ManagementDashboard() {
                   </thead>
                   <tbody>
                     {sortedRefData.map((row, i) => (
-                      <tr
-                        key={i}
-                        onClick={() => {
-                          setModalType("reference");
-                          setModalData(row);
-                        }}
-                      >
+                      <tr key={i} onClick={() => { setModalType("reference"); setModalData(row); }}>
                         <td>
-                          <span className={`${styles.badge} ${styles.badgeBlue}`}>
-                            {row.repair_area_code}
-                          </span>
+                          <span className={`${styles.badge} ${styles.badgeBlue}`}>{row.repair_area_code}</span>
                         </td>
-                        <td>{row.sahaci_adi}</td>
+                        <td style={{ fontWeight: 600 }}>{row.sahaci_adi}</td>
                         <td>{row.user_count}</td>
                         <td>
-                          <span className={`${styles.badge} ${styles.badgeGreen}`}>
-                            {row.notification_count}
-                          </span>
-                        </td>
-                        <td>{row.total_submissions}</td>
-                        <td>
-                          <span className={`${styles.badge} ${styles.badgeGray}`}>
-                            {row.draft_count}
-                          </span>
+                          <span className={`${styles.badge} ${styles.badgeGreen}`}>{row.period_user_count || 0}</span>
                         </td>
                         <td>
-                          <span
-                            className={`${styles.badge} ${
-                              row.conversion_rate >= 100
-                                ? styles.badgeGreen
-                                : row.conversion_rate >= 50
-                                ? styles.badgeOrange
-                                : styles.badgeGray
-                            }`}
-                          >
+                          <span className={`${styles.badge} ${styles.badgeGreen}`}>{row.notification_count}</span>
+                        </td>
+                        <td>
+                          <span className={`${styles.badge} ${
+                            row.conversion_rate >= 100 ? styles.badgeGreen
+                              : row.conversion_rate >= 50 ? styles.badgeOrange
+                              : styles.badgeGray
+                          }`}>
                             %{row.conversion_rate}
                           </span>
                         </td>
@@ -475,11 +449,12 @@ export default function ManagementDashboard() {
                   </tbody>
                 </table>
               ) : (
-                <div className={styles.emptyState}>Bu donem icin referans kodu verisi bulunamadi</div>
+                <div className={styles.emptyState}>Bu donem icin sahaci verisi bulunamadi</div>
               )}
             </>
           )}
 
+          {/* ── KULLANICI PERFORMANS TABLOSU ── */}
           {activeTab === "users" && (
             <>
               {sortedUserData.length > 0 ? (
@@ -492,17 +467,14 @@ export default function ManagementDashboard() {
                       <th onClick={() => toggleSort(userSort, setUserSort, "email")} style={{ cursor: "pointer" }}>
                         Email{sortIcon(userSort, "email")}
                       </th>
+                      <th onClick={() => toggleSort(userSort, setUserSort, "sahaci_adi")} style={{ cursor: "pointer" }}>
+                        Sahaci{sortIcon(userSort, "sahaci_adi")}
+                      </th>
                       <th onClick={() => toggleSort(userSort, setUserSort, "registration_date")} style={{ cursor: "pointer" }}>
                         Kayit Tarihi{sortIcon(userSort, "registration_date")}
                       </th>
                       <th onClick={() => toggleSort(userSort, setUserSort, "notification_count")} style={{ cursor: "pointer" }}>
-                        Bildirim{sortIcon(userSort, "notification_count")}
-                      </th>
-                      <th onClick={() => toggleSort(userSort, setUserSort, "total_submissions")} style={{ cursor: "pointer" }}>
-                        Toplam Basvuru{sortIcon(userSort, "total_submissions")}
-                      </th>
-                      <th onClick={() => toggleSort(userSort, setUserSort, "draft_count")} style={{ cursor: "pointer" }}>
-                        Taslak{sortIcon(userSort, "draft_count")}
+                        Bildirim Sayisi{sortIcon(userSort, "notification_count")}
                       </th>
                       <th onClick={() => toggleSort(userSort, setUserSort, "repair_area_code")} style={{ cursor: "pointer" }}>
                         Bolge Kodu{sortIcon(userSort, "repair_area_code")}
@@ -511,31 +483,16 @@ export default function ManagementDashboard() {
                   </thead>
                   <tbody>
                     {sortedUserData.map((row, i) => (
-                      <tr
-                        key={i}
-                        onClick={() => {
-                          setModalType("user");
-                          setModalData(row);
-                        }}
-                      >
+                      <tr key={i} onClick={() => { setModalType("user"); setModalData(row); }}>
                         <td style={{ fontWeight: 600 }}>{row.full_name}</td>
                         <td>{row.email}</td>
+                        <td>{row.sahaci_adi || "-"}</td>
                         <td>{formatDate(row.registration_date)}</td>
                         <td>
-                          <span className={`${styles.badge} ${styles.badgeGreen}`}>
-                            {row.notification_count}
-                          </span>
-                        </td>
-                        <td>{row.total_submissions}</td>
-                        <td>
-                          <span className={`${styles.badge} ${styles.badgeGray}`}>
-                            {row.draft_count}
-                          </span>
+                          <span className={`${styles.badge} ${styles.badgeGreen}`}>{row.notification_count}</span>
                         </td>
                         <td>
-                          <span className={`${styles.badge} ${styles.badgeBlue}`}>
-                            {row.repair_area_code}
-                          </span>
+                          <span className={`${styles.badge} ${styles.badgeBlue}`}>{row.repair_area_code}</span>
                         </td>
                       </tr>
                     ))}
@@ -559,72 +516,36 @@ export default function ManagementDashboard() {
 
             {modalType === "reference" && (
               <>
-                <h2>Referans Kodu Detayi: {modalData.repair_area_code}</h2>
+                <h2>{modalData.sahaci_adi} ({modalData.repair_area_code})</h2>
                 <table className={styles.modalTable}>
                   <tbody>
-                    <tr>
-                      <th>Sahaci Adi</th>
-                      <td>{modalData.sahaci_adi}</td>
-                    </tr>
-                    <tr>
-                      <th>Bolge Kodu</th>
-                      <td>
-                        <span className={`${styles.badge} ${styles.badgeBlue}`}>
-                          {modalData.repair_area_code}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Kullanici Sayisi</th>
-                      <td>{modalData.user_count}</td>
-                    </tr>
-                    <tr>
-                      <th>Bildirim Sayisi</th>
-                      <td>
-                        <span className={`${styles.badge} ${styles.badgeGreen}`}>
-                          {modalData.notification_count}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Toplam Basvuru</th>
-                      <td>{modalData.total_submissions}</td>
-                    </tr>
-                    <tr>
-                      <th>Taslak Sayisi</th>
-                      <td>{modalData.draft_count}</td>
-                    </tr>
+                    <tr><th>Sahaci Adi</th><td style={{ fontWeight: 600 }}>{modalData.sahaci_adi}</td></tr>
+                    <tr><th>Bolge Kodu</th><td><span className={`${styles.badge} ${styles.badgeBlue}`}>{modalData.repair_area_code}</span></td></tr>
+                    <tr><th>Toplam Uye Sayisi</th><td>{modalData.user_count}</td></tr>
+                    <tr><th>Donemde Uye Yaptirma</th><td><span className={`${styles.badge} ${styles.badgeGreen}`}>{modalData.period_user_count || 0}</span></td></tr>
+                    <tr><th>Bildirim Yaptirma</th><td><span className={`${styles.badge} ${styles.badgeGreen}`}>{modalData.notification_count}</span></td></tr>
                     <tr>
                       <th>Donusum Orani</th>
                       <td>
-                        <span
-                          className={`${styles.badge} ${
-                            modalData.conversion_rate >= 100
-                              ? styles.badgeGreen
-                              : modalData.conversion_rate >= 50
-                              ? styles.badgeOrange
-                              : styles.badgeGray
-                          }`}
-                        >
-                          %{modalData.conversion_rate}
-                        </span>
+                        <span className={`${styles.badge} ${
+                          modalData.conversion_rate >= 100 ? styles.badgeGreen
+                            : modalData.conversion_rate >= 50 ? styles.badgeOrange : styles.badgeGray
+                        }`}>%{modalData.conversion_rate}</span>
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
-                {/* Bu referans koduna ait kullanicilar */}
+                {/* Bu sahaciya ait kullanicilar */}
                 {by_user && by_user.filter((u) => u.repair_area_code === modalData.repair_area_code).length > 0 && (
                   <>
-                    <h2 style={{ marginTop: 24, fontSize: 16 }}>
-                      Bu Koda Ait Kullanicilar
-                    </h2>
+                    <h2 style={{ marginTop: 24, fontSize: 16 }}>Bu Sahacinin Kullanicilari</h2>
                     <table className={styles.modalTable}>
                       <thead>
                         <tr>
                           <th>Ad Soyad</th>
+                          <th>Email</th>
                           <th>Bildirim</th>
-                          <th>Toplam</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -633,8 +554,8 @@ export default function ManagementDashboard() {
                           .map((u, i) => (
                             <tr key={i}>
                               <td>{u.full_name}</td>
-                              <td>{u.notification_count}</td>
-                              <td>{u.total_submissions}</td>
+                              <td>{u.email}</td>
+                              <td><span className={`${styles.badge} ${styles.badgeGreen}`}>{u.notification_count}</span></td>
                             </tr>
                           ))}
                       </tbody>
@@ -644,61 +565,47 @@ export default function ManagementDashboard() {
               </>
             )}
 
-            {modalType === "user" && (
-              <>
-                <h2>Kullanici Detayi: {modalData.full_name}</h2>
-                <table className={styles.modalTable}>
-                  <tbody>
-                    <tr>
-                      <th>Ad Soyad</th>
-                      <td>{modalData.full_name}</td>
-                    </tr>
-                    <tr>
-                      <th>Email</th>
-                      <td>{modalData.email}</td>
-                    </tr>
-                    <tr>
-                      <th>Kayit Tarihi</th>
-                      <td>{formatDate(modalData.registration_date)}</td>
-                    </tr>
-                    <tr>
-                      <th>Bolge Kodu</th>
-                      <td>
-                        <span className={`${styles.badge} ${styles.badgeBlue}`}>
-                          {modalData.repair_area_code}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Bildirim Sayisi</th>
-                      <td>
-                        <span className={`${styles.badge} ${styles.badgeGreen}`}>
-                          {modalData.notification_count}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Toplam Basvuru</th>
-                      <td>{modalData.total_submissions}</td>
-                    </tr>
-                    <tr>
-                      <th>Taslak Sayisi</th>
-                      <td>{modalData.draft_count}</td>
-                    </tr>
-                    <tr>
-                      <th>Etkinlik Orani</th>
-                      <td>
-                        {modalData.total_submissions > 0
-                          ? `%${Math.round(
-                              (modalData.notification_count / modalData.total_submissions) * 100
-                            )}`
-                          : "%0"}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </>
-            )}
+            {modalType === "user" && (() => {
+              // Bu kullanicinin trend verisini bul
+              const userTrend = (user_trends || []).find((t) => t.user_id === modalData.user_id);
+              return (
+                <>
+                  <h2>{modalData.full_name}</h2>
+                  <table className={styles.modalTable}>
+                    <tbody>
+                      <tr><th>Ad Soyad</th><td style={{ fontWeight: 600 }}>{modalData.full_name}</td></tr>
+                      <tr><th>Email</th><td>{modalData.email}</td></tr>
+                      <tr><th>Sahaci</th><td>{modalData.sahaci_adi || "-"}</td></tr>
+                      <tr><th>Bolge Kodu</th><td><span className={`${styles.badge} ${styles.badgeBlue}`}>{modalData.repair_area_code}</span></td></tr>
+                      <tr><th>Kayit Tarihi</th><td>{formatDate(modalData.registration_date)}</td></tr>
+                      <tr><th>Bildirim Sayisi</th><td><span className={`${styles.badge} ${styles.badgeGreen}`}>{modalData.notification_count}</span></td></tr>
+                    </tbody>
+                  </table>
+
+                  {/* Kullanici bireysel trend grafigi */}
+                  {userTrend && userTrend.data.length > 1 && (
+                    <>
+                      <h2 style={{ marginTop: 24, fontSize: 16 }}>Aylik Bildirim Trendi</h2>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <AreaChart data={userTrend.data.map((d) => ({ ...d, label: formatTrendLabel(d.date) }))}>
+                          <defs>
+                            <linearGradient id="colorUserTrend" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#133E87" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#133E87" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#eef3fb" />
+                          <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                          <YAxis tick={{ fontSize: 11 }} />
+                          <Tooltip contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
+                          <Area type="monotone" dataKey="count" name="Bildirim" stroke="#133E87" strokeWidth={2} fill="url(#colorUserTrend)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
