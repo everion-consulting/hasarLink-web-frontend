@@ -153,11 +153,21 @@ export default function ManagementDashboard() {
       setAiLoading(true);
       setAiError(null);
       setAiAnalysis(null);
-      const res = await api.getDashboardAIAnalysis(data);
+      // sahaci_users ve user_trends buyuk veri, AI'ya gondermeye gerek yok
+      const { sahaci_users: _su, user_trends: _ut, ...compactData } = data;
+      const res = await api.getDashboardAIAnalysis(compactData);
       if (res.success && res.data?.analysis) {
-        setAiAnalysis(res.data.analysis);
+        // HTML yanıt geldiyse reddet
+        const text = res.data.analysis;
+        if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+          setAiError("AI servisi gecici olarak kullanilamiyor. Lutfen tekrar deneyin.");
+        } else {
+          setAiAnalysis(text);
+        }
       } else {
-        setAiError(res.data?.error || res.message || "Analiz alinamadi.");
+        const errMsg = res.data?.error || res.message || "Analiz alinamadi.";
+        // HTML icerigi temizle
+        setAiError(errMsg.includes("<html") ? "AI servisi gecici olarak kullanilamiyor." : errMsg);
       }
     } catch {
       setAiError("AI analiz istegi basarisiz oldu.");
