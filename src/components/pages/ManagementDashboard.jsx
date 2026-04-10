@@ -140,7 +140,7 @@ export default function ManagementDashboard() {
     );
   }
 
-  const { kpi, trends, by_reference_code, by_user, user_trends, date_range } = data;
+  const { kpi, trends, by_reference_code, by_user, user_trends, sahaci_users, date_range } = data;
 
   // ── Siralama ──
   function sortData(arr, sortState) {
@@ -175,6 +175,7 @@ export default function ManagementDashboard() {
       bildirim: x.notification_count,
       uye: x.user_count,
       donem_uye: x.period_user_count || 0,
+      aktif: x.active_user_count || 0,
     }));
 
   const pieData = (by_reference_code || [])
@@ -416,8 +417,14 @@ export default function ManagementDashboard() {
                       <th onClick={() => toggleSort(refSort, setRefSort, "notification_count")} style={{ cursor: "pointer" }}>
                         Bildirim Yaptirma{sortIcon(refSort, "notification_count")}
                       </th>
-                      <th onClick={() => toggleSort(refSort, setRefSort, "conversion_rate")} style={{ cursor: "pointer" }}>
-                        Donusum %{sortIcon(refSort, "conversion_rate")}
+                      <th onClick={() => toggleSort(refSort, setRefSort, "active_user_count")} style={{ cursor: "pointer" }}>
+                        Aktif Kullanici{sortIcon(refSort, "active_user_count")}
+                      </th>
+                      <th onClick={() => toggleSort(refSort, setRefSort, "aktivasyon_orani")} style={{ cursor: "pointer" }}>
+                        Aktivasyon %{sortIcon(refSort, "aktivasyon_orani")}
+                      </th>
+                      <th onClick={() => toggleSort(refSort, setRefSort, "pazarlama_etkinligi")} style={{ cursor: "pointer" }}>
+                        Pazarlama %{sortIcon(refSort, "pazarlama_etkinligi")}
                       </th>
                     </tr>
                   </thead>
@@ -435,13 +442,23 @@ export default function ManagementDashboard() {
                         <td>
                           <span className={`${styles.badge} ${styles.badgeGreen}`}>{row.notification_count}</span>
                         </td>
+                        <td>{row.active_user_count || 0}</td>
                         <td>
                           <span className={`${styles.badge} ${
-                            row.conversion_rate >= 100 ? styles.badgeGreen
-                              : row.conversion_rate >= 50 ? styles.badgeOrange
+                            row.aktivasyon_orani >= 70 ? styles.badgeGreen
+                              : row.aktivasyon_orani >= 30 ? styles.badgeOrange
                               : styles.badgeGray
                           }`}>
-                            %{row.conversion_rate}
+                            %{row.aktivasyon_orani || 0}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`${styles.badge} ${
+                            row.pazarlama_etkinligi >= 100 ? styles.badgeGreen
+                              : row.pazarlama_etkinligi >= 50 ? styles.badgeOrange
+                              : styles.badgeGray
+                          }`}>
+                            %{row.pazarlama_etkinligi || 0}
                           </span>
                         </td>
                       </tr>
@@ -524,44 +541,81 @@ export default function ManagementDashboard() {
                     <tr><th>Toplam Uye Sayisi</th><td>{modalData.user_count}</td></tr>
                     <tr><th>Donemde Uye Yaptirma</th><td><span className={`${styles.badge} ${styles.badgeGreen}`}>{modalData.period_user_count || 0}</span></td></tr>
                     <tr><th>Bildirim Yaptirma</th><td><span className={`${styles.badge} ${styles.badgeGreen}`}>{modalData.notification_count}</span></td></tr>
+                    <tr><th>Aktif Kullanici (en az 1 bildirim)</th><td>{modalData.active_user_count || 0}</td></tr>
                     <tr>
-                      <th>Donusum Orani</th>
+                      <th>Aktivasyon Orani</th>
                       <td>
                         <span className={`${styles.badge} ${
-                          modalData.conversion_rate >= 100 ? styles.badgeGreen
-                            : modalData.conversion_rate >= 50 ? styles.badgeOrange : styles.badgeGray
-                        }`}>%{modalData.conversion_rate}</span>
+                          modalData.aktivasyon_orani >= 70 ? styles.badgeGreen
+                            : modalData.aktivasyon_orani >= 30 ? styles.badgeOrange : styles.badgeGray
+                        }`}>%{modalData.aktivasyon_orani || 0}</span>
+                        <div style={{ fontSize: 11, color: "#6b7c93", marginTop: 4 }}>Uyelerin kaci bildirim yapti?</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Bildirim / Uye Orani</th>
+                      <td>
+                        <span className={`${styles.badge} ${styles.badgeBlue}`}>%{modalData.bildirim_per_uye || 0}</span>
+                        <div style={{ fontSize: 11, color: "#6b7c93", marginTop: 4 }}>Uye basina dusen bildirim</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Pazarlama Etkinligi</th>
+                      <td>
+                        <span className={`${styles.badge} ${
+                          modalData.pazarlama_etkinligi >= 100 ? styles.badgeGreen
+                            : modalData.pazarlama_etkinligi >= 50 ? styles.badgeOrange : styles.badgeGray
+                        }`}>%{modalData.pazarlama_etkinligi || 0}</span>
+                        <div style={{ fontSize: 11, color: "#6b7c93", marginTop: 4 }}>Donem yeni uye basina bildirim</div>
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
-                {/* Bu sahaciya ait kullanicilar */}
-                {by_user && by_user.filter((u) => u.repair_area_code === modalData.repair_area_code).length > 0 && (
-                  <>
-                    <h2 style={{ marginTop: 24, fontSize: 16 }}>Bu Sahacinin Kullanicilari</h2>
-                    <table className={styles.modalTable}>
-                      <thead>
-                        <tr>
-                          <th>Ad Soyad</th>
-                          <th>Email</th>
-                          <th>Bildirim</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {by_user
-                          .filter((u) => u.repair_area_code === modalData.repair_area_code)
-                          .map((u, i) => (
+                {/* Bu sahaciya ait tum kullanicilar (bildirim yapmamislar dahil) */}
+                {(() => {
+                  const users = (sahaci_users && sahaci_users[modalData.repair_area_code]) || [];
+                  if (users.length === 0) return null;
+                  const activeCount = users.filter((u) => u.notification_count > 0).length;
+                  const passiveCount = users.length - activeCount;
+                  return (
+                    <>
+                      <h2 style={{ marginTop: 24, fontSize: 16 }}>
+                        Tum Uyeler ({users.length} uye — {activeCount} aktif, {passiveCount} pasif)
+                      </h2>
+                      <table className={styles.modalTable}>
+                        <thead>
+                          <tr>
+                            <th>Ad Soyad</th>
+                            <th>Email</th>
+                            <th>Kayit Tarihi</th>
+                            <th>Bildirim</th>
+                            <th>Durum</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {users.map((u, i) => (
                             <tr key={i}>
-                              <td>{u.full_name}</td>
+                              <td style={{ fontWeight: 600 }}>{u.full_name}</td>
                               <td>{u.email}</td>
-                              <td><span className={`${styles.badge} ${styles.badgeGreen}`}>{u.notification_count}</span></td>
+                              <td>{formatDate(u.registration_date)}</td>
+                              <td>
+                                <span className={`${styles.badge} ${u.notification_count > 0 ? styles.badgeGreen : styles.badgeGray}`}>
+                                  {u.notification_count}
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`${styles.badge} ${u.notification_count > 0 ? styles.badgeGreen : styles.badgeOrange}`}>
+                                  {u.notification_count > 0 ? "Aktif" : "Pasif"}
+                                </span>
+                              </td>
                             </tr>
                           ))}
-                      </tbody>
-                    </table>
-                  </>
-                )}
+                        </tbody>
+                      </table>
+                    </>
+                  );
+                })()}
               </>
             )}
 
