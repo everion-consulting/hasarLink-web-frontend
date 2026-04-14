@@ -394,6 +394,43 @@ const apiService = {
     );
   },
 
+  async getManagementDashboard(period = "WEEKLY", date = null) {
+    let url = `${PATH}/management-dashboard/?period=${period}`;
+    if (date) url += `&date=${date}`;
+    return await fetchData(url, 'GET');
+  },
+
+  async getDashboardAIAnalysisStream(dashboardData, onChunk) {
+    const token = localStorage.getItem("authToken");
+    const baseUrl = import.meta.env.VITE_API_BASE || "https://dosya-bildirim-vrosq.ondigitalocean.app";
+    const resp = await fetch(`${baseUrl}${PATH}/management-dashboard/ai-analysis/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Token ${token}` } : {}),
+      },
+      body: JSON.stringify({ dashboard_data: dashboardData }),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let full = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      full += chunk;
+      if (onChunk) onChunk(full);
+    }
+
+    return full;
+  },
+
   async fieldUserAPI(payload) {
     console.log("fieldUserAPI çalıştı");
 

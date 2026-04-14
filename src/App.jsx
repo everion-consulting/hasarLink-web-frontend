@@ -39,6 +39,7 @@ import CreditCheckout from "./components/pages/CreditCheckout";
 import { listenForegroundMessages } from "./components/webPush/foregroundListener";
 import { ensureWebPushReady } from "./components/webPush/initWebPush";
 import Graphics from "./components/pages/Graphics";
+import ManagementDashboard from "./components/pages/ManagementDashboard";
 import DocumentUploaderScreen from "./components/pages/DocumentUploadScreen";
 import { Toaster } from "react-hot-toast";
 import GizlilikPolitikasi from "./components/pages/GizlilikPolitikasi";
@@ -94,6 +95,7 @@ function AppContent({ isAuth, setIsAuth }) {
         <Route path="/settings" element={isAuth ? <Settings /> : <Navigate to="/auth" replace />} />
         <Route path="/partner-services" element={isAuth ? <PartnerServices /> : <Navigate to="/auth" replace />} />
         <Route path="/graphics" element={isAuth ? <Graphics /> : <Navigate to="/auth" replace />} />
+        <Route path="/management-dashboard" element={isAuth ? <ManagementDashboard /> : <Navigate to="/auth" replace />} />
         <Route
           path="/ai-document-upload"
           element={<DocumentUploaderScreen aiMode={true} />}
