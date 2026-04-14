@@ -431,7 +431,6 @@ export default function StepInfoScreen() {
           accident_city: getIlName(damageData.accident_city) || damageData.accident_city || "",
           accident_district: getIlceName(damageData.accident_district) || damageData.accident_district || "",
           accident_date: accidentDate || null,
-          policy_no: damageData.policy_no || "",
           estimated_damage_amount: damageData.estimated_damage_amount || "",
           official_report_type: damageData.official_report_type || "",
           is_completed: markAsCompleted,
