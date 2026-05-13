@@ -353,9 +353,25 @@ const apiService = {
   },
 
   async addRepairStage(submissionId, payload) {
+    const isFormData = payload instanceof FormData;
     return await fetchData(
       `${PATH}/submissions/${submissionId}/repair-stages/`,
-      'POST', payload, 'application/json'
+      'POST', payload, isFormData ? 'multipart/form-data' : 'application/json'
+    );
+  },
+
+  async updateRepairStage(submissionId, stageId, payload) {
+    const isFormData = payload instanceof FormData;
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/repair-stages/${stageId}/`,
+      'PATCH', payload, isFormData ? 'multipart/form-data' : 'application/json'
+    );
+  },
+
+  async deleteRepairStageImage(imageId) {
+    return await fetchData(
+      `${PATH}/repair-stage-images/${imageId}/`,
+      'DELETE'
     );
   },
 
@@ -391,6 +407,14 @@ const apiService = {
     return await fetchData(
       `${PATH}/submissions/${submissionId}/advance-workflow/`,
       'POST', { workflow_stage: workflowStage }, 'application/json'
+    );
+  },
+
+  async paymentConfirmation(submissionId, received, amount = null) {
+    const body = received ? { received: true, amount } : { received: false };
+    return await fetchData(
+      `${PATH}/submissions/${submissionId}/payment-confirmation/`,
+      'POST', body, 'application/json'
     );
   },
 

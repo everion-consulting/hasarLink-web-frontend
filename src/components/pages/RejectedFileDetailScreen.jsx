@@ -796,11 +796,11 @@ const RejectedFileDetailScreen = () => {
                     className={styles.rejectedBack}
                     onClick={()=>navigate(-1)}
                 >
-                    ←
+                    ← Geri Dön
                 </button>
 
                 <h1 className={styles.frdPageTitle}>
-                    Dosya Detayı
+                    Reddedilen Dosya Detayı
                 </h1>
 
                 <div className={styles.frdCard}>
@@ -810,7 +810,7 @@ const RejectedFileDetailScreen = () => {
                             <div className={styles.frdErrorTitle}>Eksik / Hatalı Alanlar:</div>
                             <ul className={styles.frdErrorList}>
                                 {errorFields.map((f, idx)=>(
-                                    <li key={idx}>• {f.label || f.key}</li>
+                                    <li key={idx}>{f.label || f.key}</li>
                                 ))}
                             </ul>
                         </div>

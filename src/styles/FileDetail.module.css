@@ -36,19 +36,139 @@
 
 /* 🔹 Her dosya kartı */
 .fileCard {
+  background: white;
   border-radius: 12px;
-  padding: 10px;
-  background: #f7f8fb;
-  border: 1px solid #e2e5f0;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+  text-align: left;
+}
+
+.fileCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  border-color: #133e87;
+  background: #f0f4ff;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.summaryCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.cardDivider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconBox {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #e8f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.company {
+  margin-top: 5px;
+  color: #133E87;
+  font-family: Poppins;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  line-height: 18px;
+  letter-spacing: 0px;
+}
+
+.statusBadge {
+  background: #608BC180;
+  color: #133E87;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #133E87;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.infoItem {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    border-color 0.15s ease,
-    background-color 0.15s ease;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.label {
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.link {
+  font-family: Poppins;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  line-height: 16px;
+  letter-spacing: 0px;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 0%;
+  text-decoration-skip-ink: auto;
+  color: #133E87;
+}
+
+.divider {
+  width: 1px;
+  background: #e5e7eb;
 }
 
 .fileCard:hover {
@@ -349,11 +469,198 @@
   background-color: rgba(255, 255, 255, 0.45);
 }
 
-/* MOBİL GÖRÜNÜM*/
-@media (max-width: 480px) {
+/* MOBİL GÖRÜNÜM */
+
+/* ── Tablet (≤768px) ────────────────────────────────── */
+@media (max-width: 768px) {
+  .fileDetailContainer {
+    padding: 12px;
+  }
+
   .pageTitle {
-    font-size: 30px;
-    line-height: 35px;
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 1px;
+  }
+
+  .summaryCard {
+    padding: 16px;
+  }
+
+  .cardContent {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .infoItem {
+    min-width: 120px;
+  }
+
+  .partyGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kazaBoxGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .uploadedFilesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .fileImagesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .backBtn {
+    font-size: 16px;
+    padding: 12px 16px;
+  }
+}
+
+/* ── Küçük telefon (≤480px) ─────────────────────────── */
+@media (max-width: 480px) {
+  .fileDetailContainer {
+    padding: 10px 10px 32px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+    line-height: 30px;
+    letter-spacing: 0px;
+    margin-bottom: 14px;
+  }
+
+  .summaryCard {
+    padding: 14px 12px;
+  }
+
+  .leftSection {
+    gap: 10px;
+  }
+
+  .iconBox {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .company {
+    font-size: 13px;
+  }
+
+  .statusBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .cardContent {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .infoItem {
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-bottom: 8px;
+  }
+
+  .infoLabel {
+    min-width: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-right: 0;
+  }
+
+  .infoValue {
+    font-size: 14px;
+  }
+
+  .partyGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .partyCard {
+    padding: 14px;
+  }
+
+  .partyIconBox {
+    width: 36px;
+    height: 36px;
+  }
+
+  .partyCardTitle {
+    font-size: 14px;
+  }
+
+  .kazaBoxGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .kazaBox {
+    padding: 10px 12px;
+  }
+
+  .kazaBoxValue {
+    font-size: 14px;
+  }
+
+  .uploadedFilesGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .fileImagesGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .detailCard {
+    padding: 14px 12px;
+    margin-bottom: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 15px;
+  }
+
+  .backBtn {
+    font-size: 14px;
+    padding: 10px 14px;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bottomButtons {
+    padding: 0 0 16px;
   }
 }
 
@@ -395,4 +702,163 @@
 
 .fileCard {
   padding: 12px;
+}
+
+/* ============================= */
+/* TARAF BİLGİLERİ GRID         */
+/* ============================= */
+.partyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+  .partyGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partyCard {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8edf3;
+  padding: 18px 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.partyCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.partyIconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.partyCardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.partyCardSub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.partyDivider {
+  height: 1px;
+  background: #f0f4f8;
+  margin: 12px 0;
+}
+
+/* ============================= */
+/* KAZA BİLGİLERİ KUTUCUKLAR    */
+/* ============================= */
+.kazaBoxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.kazaBox {
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kazaBoxLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kazaBoxValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ============================= */
+/* YÜKLENEN DOSYALAR GRİD       */
+/* ============================= */
+.uploadedFilesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.uploadedFileItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  gap: 6px;
+  text-align: left;
+}
+
+.uploadedThumb {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #e2e8f0;
+  border: 1px solid #e8edf3;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.uploadedThumb:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+.uploadedPdfThumb {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid #e8edf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+}
+
+.uploadedFileName {
+  font-size: 11px;
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.uploadedFileType {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+  width: 100%;
 }

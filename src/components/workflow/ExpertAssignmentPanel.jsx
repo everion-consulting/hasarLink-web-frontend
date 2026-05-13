@@ -46,7 +46,7 @@ const ExpertAssignmentPanel = ({ submissionId, assignment, onUpdate }) => {
 
   if (!isEditing && assignment) {
     return (
-      <div className={styles.panelCard}>
+      <div>
         <div className={styles.panelRow}>
           <span className={styles.panelLabel}>Eksper Adı:</span>
           <span className={styles.panelValue}>{assignment.expert_name}</span>
@@ -85,7 +85,7 @@ const ExpertAssignmentPanel = ({ submissionId, assignment, onUpdate }) => {
   }
 
   return (
-    <div className={styles.panelCard}>
+    <div>
       <div className={styles.formGroup}>
         <label className={styles.formLabel}>Eksper Adı Soyadı *</label>
         <input

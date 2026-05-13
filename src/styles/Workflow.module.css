@@ -1,96 +1,258 @@
-/* ============================= */
-/* WORKFLOW TIMELINE             */
-/* ============================= */
 .timeline {
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding: 20px 0 12px;
 }
 
-.timelineStep {
+/* Reddedildi banner */
+.rejectedBanner {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
 }
 
-.stepIndicator {
+.rejectedIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rejectedContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.rejectedTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.rejectedReason {
+  font-size: 13px;
+  color: #dc2626;
+  line-height: 1.4;
+}
+
+.timelineTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0 0 24px 4px;
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each row = icon-column + card */
+.timelineRow {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  min-height: 72px;
+}
+
+/* Left column: circle + vertical connector */
+.timelineLeft {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 36px;
+  flex-shrink: 0;
+  width: 48px;
 }
 
+/* Circle icon */
 .stepCircle {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
+  flex-shrink: 0;
   z-index: 1;
   transition: all 0.2s ease;
 }
 
-.stepLine {
+.circleDone {
+  background-color: #133E87;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(19, 62, 135, 0.3);
+}
+
+.circleActive {
+  background-color: #0f2d5e;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 45, 94, 0.4);
+}
+
+.circlePending {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1.5px solid #e2e8f0;
+}
+
+.circleWarning {
+  background-color: #fef3c7;
+  color: #d97706;
+  border: 1.5px solid #fcd34d;
+}
+
+/* Vertical connector line between circles */
+.stepConnector {
+  flex: 1;
   width: 2px;
-  height: 28px;
-  background-color: #ddd;
-  transition: background-color 0.2s ease;
+  background: #e2e8f0;
+  margin: 4px 0;
+  min-height: 20px;
 }
 
-.completed .stepCircle {
-  background-color: #133E87;
-  color: white;
+/* Right column: card */
+.timelineCard {
+  flex: 1;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border: 1px solid #e8edf3;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: border-color 0.2s;
 }
 
-.completed .stepLine {
-  background-color: #133E87;
+.card_done {
+  background: #ffffff;
+  border-color: #e8edf3;
 }
 
-.active .stepCircle {
-  background-color: #CBDCEB;
-  color: #133E87;
-  border: 2px solid #133E87;
+.card_active {
+  background: #ffffff;
+  border-color: #133E87;
+  border-width: 2px;
+  box-shadow: 0 4px 14px rgba(19, 62, 135, 0.1);
 }
 
-.pending .stepCircle {
-  background-color: #f0f0f0;
-  color: #999;
-  border: 1px solid #ddd;
+.card_pending {
+  background: #ffffff;
+  border-color: #e8edf3;
+  opacity: 0.85;
 }
 
-.stepContent {
-  padding: 6px 0 16px;
+.card_warning {
+  background: #fffbeb;
+  border-color: #fcd34d;
 }
 
-.stepLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+.cardRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.completed .stepLabel {
-  color: #133E87;
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.35;
+}
+
+.card_pending .cardTitle {
+  color: #94a3b8;
+}
+
+.cardSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Status badges on right side of card */
+.statusBadgeTl {
+  font-size: 12px;
   font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.pending .stepLabel {
-  color: #999;
+.badge_done {
+  background: #dcfce7;
+  color: #166534;
 }
 
-:global(body.dark) .stepLabel {
-  color: #ccc;
+.badge_active {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
-:global(body.dark) .completed .stepLabel {
-  color: #7eb0f0;
+.badge_pending {
+  background: #f1f5f9;
+  color: #94a3b8;
 }
 
-:global(body.dark) .pending .stepLabel {
-  color: #666;
+.badge_repair {
+  background: #dbeafe;
+  color: #133E87;
 }
+
+.badge_warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.toggleChevron {
+  font-size: 10px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* Pulse on the payment date row */
+.paymentRowPulse .timelineCard {
+  animation: paymentDatePulse 1.6s ease-in-out infinite;
+}
+
+:global(body.dark) .timeline { background: transparent; }
+:global(body.dark) .timelineTitle { color: #475569; }
+:global(body.dark) .timelineCard { background: #1e293b; border-color: #334155; }
+:global(body.dark) .card_done { background: #1e2d44; border-color: #2d4a7a; }
+:global(body.dark) .card_active { background: #1e293b; border-color: #3b82f6; }
+:global(body.dark) .card_pending { background: #1e293b; border-color: #334155; }
+:global(body.dark) .cardTitle { color: #e2e8f0; }
+:global(body.dark) .card_pending .cardTitle { color: #475569; }
+:global(body.dark) .cardSubtitle { color: #94a3b8; }
+:global(body.dark) .circlePending { background: #1e293b; border-color: #334155; color: #475569; }
+:global(body.dark) .circleDone { background: #1d4ed8; }
+:global(body.dark) .circleActive { background: #1e40af; }
+:global(body.dark) .stepConnector { background: #334155; }
 
 /* ============================= */
 /* WORKFLOW PANELS               */
@@ -283,10 +445,104 @@
   color: white;
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 12px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
+
+/* Aktif/yapılacak adım — sarı */
+.stageBadgeActive {
+  background-color: #F5C842;
+  color: #5a3e00;
+}
+
+/* Bekleyen adım — gri */
+.stageBadgePending {
+  background-color: #e0e4ee;
+  color: #888;
+}
+
+/* Ödeme tarihi — turuncu */
+.stageBadgePayDate {
+  background-color: #E67E22;
+  color: #fff;
+}
+
+/* Ödeme alındı — yeşil */
+.stageBadgePaid {
+  background-color: #27AE60;
+  color: #fff;
+}
+
+/* Ödeme sorunu — kırmızı */
+.stageBadgeIssue {
+  background-color: #E74C3C;
+  color: #fff;
+}
+
+/* Ödeme sorusu satırı arka planı */
+.stageItemPayment {
+  background: #fff6f6;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 2px 0;
+}
+
+.stageItemPaid {
+  background: #f0fbf4;
+}
+
+.stageItemIssue {
+  background: #fff2f1;
+}
+
+@keyframes stageItemPulseAnim {
+  0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+.stageItemPulse {
+  animation: stageItemPulseAnim 1.6s ease-in-out infinite;
+  cursor: pointer;
+  border: 1px solid #E74C3C;
+}
+
+/* EVET / HAYIR butonları */
+.wfPayYesBtn {
+  background: #27AE60;
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.wfPayYesBtn:hover   { opacity: 0.85; }
+.wfPayYesBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.wfPayNoBtn {
+  background: #E74C3C;
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.wfPayNoBtn:hover    { opacity: 0.85; }
+.wfPayNoBtn:disabled  { opacity: 0.45; cursor: not-allowed; }
+
+:global(body.dark) .stageItemPayment { background: #2b1010; }
+:global(body.dark) .stageItemPaid    { background: #0d2b14; }
+:global(body.dark) .stageItemIssue   { background: #2b1010; }
+:global(body.dark) .stageBadgeActive { background-color: #a08000; color: #fff; }
+:global(body.dark) .stageBadgePending { background-color: #2a2a3a; color: #888; }
 
 .stageInfo {
   flex: 1;
@@ -343,6 +599,437 @@
 }
 
 /* ============================= */
+/* WORKFLOW MODALS               */
+/* ============================= */
+.wfModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
+.wfModalBox {
+  background: #fff;
+  border-radius: 14px;
+  padding: 26px 24px 22px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.wfModalClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #f0f0f0;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+}
+.wfModalClose:hover { background: #e0e0e0; }
+
+.wfModalTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #133E87;
+  margin: 0 0 10px;
+  padding-right: 28px;
+}
+
+.wfModalDesc {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* Dark mode */
+:global(body.dark) .wfModalBox      { background: #1e1e2e; }
+:global(body.dark) .wfModalTitle    { color: #7eb0f0; }
+:global(body.dark) .wfModalDesc     { color: #999; }
+:global(body.dark) .wfModalClose    { background: #2a2a3a; color: #aaa; }
+
+/* ============================= */
+/* PAYMENT TRACKING PANEL        */
+/* ============================= */
+.paymentAdminSection {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e5f0;
+}
+
+.paymentUstaSection {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e5f0;
+}
+
+.paymentQuestionBox {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f4f8ff;
+  border: 1px solid #d7e5ff;
+  animation: paymentBlink 2s infinite;
+  max-width: 420px;
+}
+
+
+.paymentQuestionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #174f9a;
+  margin-bottom: 14px;
+}
+.paymentButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.yesButton,
+.noButton {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: none;
+  background: #174f9a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.yesButton:hover,
+.noButton:hover {
+  background: #123d79;
+}
+
+.paymentSuccess {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #edf5ff;
+  border: 1px solid #cfe0ff;
+  color: #174f9a;
+  font-size: 14px;
+}
+
+.paymentIssue {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f5f7fb;
+  border: 1px solid #dbe4f0;
+  color: #5f6b7a;
+  font-size: 14px;
+}
+
+.clickableCircle {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.clickableCircle:hover {
+  transform: scale(1.05);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal {
+  width: 430px;
+  max-width: calc(100% - 32px);
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+}
+
+.modal h3 {
+  margin: 0 0 12px;
+  color: #174f9a;
+  font-size: 20px;
+}
+
+.modal p {
+  color: #5f6b7a;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+  color: #7b8794;
+}
+
+.confirmButton {
+  margin-top: 18px;
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #174f9a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.confirmButton:hover {
+  background: #123d79;
+}
+
+.paymentInput {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #d6dfeb;
+  padding: 0 14px;
+  margin-top: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.paymentInput:focus {
+  border-color: #174f9a;
+}
+
+@keyframes paymentBlink {
+  0% {
+    border-color: #d7e5ff;
+    box-shadow: 0 0 0 rgba(23, 79, 154, 0);
+  }
+
+  50% {
+    border-color: #9ec2ff;
+    box-shadow: 0 0 0 4px rgba(23, 79, 154, 0.08);
+  }
+
+  100% {
+    border-color: #d7e5ff;
+    box-shadow: 0 0 0 rgba(23, 79, 154, 0);
+  }
+}
+
+.paymentWarningBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #856404;
+}
+
+.paymentWarningIcon {
+  font-size: 16px;
+}
+
+.paymentReasonCurrent {
+  font-size: 12px;
+  color: #666;
+  margin: 6px 0 0 0;
+}
+
+.paymentSuccessBox {
+  background: #d4edda;
+  border: 1px solid #28a745;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #155724;
+}
+
+.paymentNotPaidBox {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #721c24;
+}
+
+.paymentDateBox {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eef4ff;
+  border: 1px solid #c9dafc;
+  color: #174f9a;
+  font-size: 14px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+:global(body.dark) .paymentAdminSection,
+:global(body.dark) .paymentUstaSection {
+  border-top-color: #333;
+}
+
+:global(body.dark) .paymentQuestionBox {
+  background: #1a2540;
+  border-color: #2a4a8a;
+}
+
+:global(body.dark) .paymentQuestion {
+  color: #7eb0f0;
+}
+
+:global(body.dark) .paymentWarningBox {
+  background: #3a2e00;
+  border-color: #856404;
+  color: #ffc107;
+}
+
+:global(body.dark) .paymentSuccessBox {
+  background: #0d2b14;
+  border-color: #28a745;
+  color: #75c98c;
+}
+
+:global(body.dark) .paymentNotPaidBox {
+  background: #2b0d10;
+  border-color: #721c24;
+  color: #f5a0aa;
+}
+
+/* ============================= */
+/* REPAIR IMAGE UPLOAD           */
+/* ============================= */
+.uploadTriggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #CBDCEB;
+  color: #133E87;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  margin-top: 2px;
+}
+
+.uploadTriggerBtn:hover {
+  opacity: 0.8;
+}
+
+.imagePreviewGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.imagePreviewItem {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.imagePreviewThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imageRemoveBtn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.imageRemoveBtn:hover {
+  background: rgba(200, 0, 0, 0.8);
+}
+
+.stageImageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.stageImageThumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.stageImageThumb:hover {
+  opacity: 0.8;
+}
+
+:global(body.dark) .uploadTriggerBtn {
+  background-color: #2a3a55;
+  color: #7eb0f0;
+}
+
+:global(body.dark) .imagePreviewItem {
+  border-color: #444;
+}
+
+:global(body.dark) .stageImageThumb {
+  border-color: #444;
+}
+
+/* ============================= */
 /* EMPTY STATE                   */
 /* ============================= */
 .emptyState {
@@ -353,8 +1040,548 @@
 }
 
 /* ============================= */
-/* RESPONSIVE                    */
+/* REPAIR SUB-STEPS              */
 /* ============================= */
+.repairSubStepList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.subStepToggle {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #174f9a;
+  background: #fff;
+  color: #174f9a;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+
+.subStepToggle:hover {
+  background: #174f9a;
+  color: #fff;
+}
+
+:global(body.dark) .subStepToggle {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #1e293b;
+}
+:global(body.dark) .subStepToggle:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.repairSubStep {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.repairSubStep:hover {
+  background: #f0f4ff;
+  border-color: #174f9a;
+}
+
+.addRepairStageBtn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1.5px solid #133E87;
+  border-radius: 12px;
+  color: #133E87;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.addRepairStageBtn:hover {
+  background: #133E87;
+  color: #fff;
+}
+
+.repairSubStepBadge {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.repairSubStepMeta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.repairSubStepDate {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.repairSubStepNotes {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:global(body.dark) .repairSubStep {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+:global(body.dark) .repairSubStep:hover {
+  background: #1e3a5f;
+  border-color: #3b82f6;
+}
+:global(body.dark) .repairSubStepBadge {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+:global(body.dark) .repairSubStepDate {
+  color: #94a3b8;
+}
+:global(body.dark) .repairSubStepNotes {
+  color: #cbd5e1;
+}
+
+/* ============================= */
+/* WORKFLOW STEP NUMBER & LINE   */
+/* ============================= */
+.wfStepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #133E87;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.wfStepLine {
+  width: 2px;
+  height: 14px;
+  background-color: #d0d7e8;
+  margin-left: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-radius: 2px;
+}
+
+:global(body.dark) .wfStepNum {
+  background-color: #2a4a8a;
+}
+
+:global(body.dark) .wfStepLine {
+  background-color: #2a2a3a;
+}
+
+/* ============================= */
+/* CONFIRM CHECKBOX              */
+/* ============================= */
+.wfCheckboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+  cursor: pointer;
+  margin-bottom: 14px;
+  user-select: none;
+}
+
+.wfCheckbox {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: #133E87;
+  cursor: pointer;
+}
+
+:global(body.dark) .wfCheckboxLabel {
+  color: #ccc;
+}
+
+
+
+.workflowBoard {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 28px;
+  overflow-x: auto;
+}
+
+.flowColumn {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flowBox {
+  width: 350px;
+  min-height: 70px;
+  border-radius: 15px;
+  border: 1px solid #cdddf5;
+  background: #f8fbff;
+  color: #174f9a;
+  font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-direction: column;
+  box-shadow: 0 6px 14px rgba(23, 79, 154, 0.06);
+}
+
+.flowBox[type="button"] {
+  cursor: pointer;
+}
+
+.doneBox {
+  background: #eef5ff;
+  border-color: #bcd4f7;
+  color: #174f9a;
+}
+
+.activeBox {
+  background: #174f9a;
+  border-color: #174f9a;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(23, 79, 154, 0.18);
+}
+
+.pendingBox {
+  background: #ffffff;
+  border-color: #dce4ef;
+  color: #8b97a6;
+}
+
+.flowArrow {
+  color: #174f9a;
+  font-size: 24px;
+  line-height: 28px;
+  margin: 2px 0;
+}
+
+.inlineAction {
+  margin-top: 6px;
+}
+
+.smallActionButton {
+  border: 1px solid #174f9a;
+  background: #eef5ff;
+  color: #174f9a;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paymentDateText {
+  font-size: 13px;
+  color: inherit;
+}
+
+.paymentQuestionCard {
+  width: 300px;
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f4f8ff;
+  border: 1px solid #bcd4f7;
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(23, 79, 154, 0.08);
+  animation: hasarlinkPulse 1.8s infinite;
+}
+
+.paymentQuestionCard p {
+  margin: 0 0 12px;
+  color: #174f9a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.paymentActionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.paymentActionButtons button {
+  border: none;
+  border-radius: 9px;
+  background: #174f9a;
+  color: white;
+  padding: 8px 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resultBox {
+  width: 300px;
+  min-height: 88px;
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.successResultBox {
+  background: #eef5ff;
+  border: 1px solid #bcd4f7;
+  color: #174f9a;
+}
+
+.warningResultBox {
+  background: #f6f8fb;
+  border: 1px solid #d9e1ec;
+  color: #5f6b7a;
+}
+
+.sideModalCard {
+  position: absolute;
+  top: 210px;
+  right: 80px;
+  width: 270px;
+  min-height: 120px;
+  border-radius: 18px;
+  background: #eef5ff;
+  border: 1px solid #bcd4f7;
+  box-shadow: 0 16px 30px rgba(23, 79, 154, 0.14);
+  padding: 22px;
+  text-align: center;
+}
+
+.sideModalCard h4 {
+  margin: 0 0 16px;
+  color: #174f9a;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.closeSideCard {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #174f9a;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.circleConfirmButton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #174f9a;
+  background: #ffffff;
+  color: #174f9a;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.paymentModal {
+  width: 360px;
+  max-width: calc(100% - 32px);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.2);
+}
+
+.paymentModal h3 {
+  margin: 0 0 14px;
+  color: #174f9a;
+  font-size: 18px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  color: #7b8794;
+  cursor: pointer;
+}
+
+.paymentInput {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d6dfeb;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+}
+
+.paymentInput:focus {
+  border-color: #174f9a;
+}
+
+.modalInfoText {
+  margin: 12px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.confirmButton {
+  margin-top: 16px;
+  width: 100%;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  background: #174f9a;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes hasarlinkPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(23, 79, 154, 0.08);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(23, 79, 154, 0.12);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(23, 79, 154, 0.08);
+  }
+}
+
+@keyframes paymentAlertPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); border-color: #e74c3c; }
+  70%  { box-shadow: 0 0 0 12px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); border-color: #e74c3c; }
+}
+
+.paymentQuestionCardPulse {
+  animation: paymentAlertPulse 1.6s ease-in-out infinite;
+  border-color: #e74c3c !important;
+  background: #fff6f6 !important;
+}
+
+/* Ödeme tarihi adımı için — arka planı ve yazı rengini bozmaz, sadece glow */
+@keyframes paymentDateStepPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6); border-color: #e74c3c; }
+  70%  { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); border-color: #e74c3c; }
+}
+
+.paymentDateStepPulse {
+  animation: paymentDateStepPulse 1.6s ease-in-out infinite;
+  border-color: #e74c3c !important;
+}
+
+/* Ödeme tarihi yaklaştığında hem border hem arka plan kırmızı pulse atar */
+@keyframes paymentDatePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); border-color: #e74c3c; background: #fef2f2; color: #b91c1c; }
+  50%  { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); border-color: #e74c3c; background: #fee2e2; color: #b91c1c; }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); border-color: #e74c3c; background: #fef2f2; color: #b91c1c; }
+}
+
+.paymentDatePulse {
+  animation: paymentDatePulse 1.6s ease-in-out infinite;
+  border-color: #e74c3c !important;
+  border-width: 2px !important;
+  color: #b91c1c !important;
+}
+
+/* ============================= */
+/* RESPONSIVE - TIMELINE        */
+/* ============================= */
+
+/* Tablet (≤768px) */
+@media (max-width: 768px) {
+  .timeline {
+    padding: 16px 0 8px;
+  }
+
+  .timelineCard {
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .cardTitle {
+    font-size: 14px;
+  }
+
+  .stepCircle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .timelineLeft {
+    width: 40px;
+  }
+
+  .timelineRow {
+    gap: 12px;
+  }
+}
+
+/* Mobil (≤480px) */
 @media (max-width: 480px) {
   .panelRow {
     flex-direction: column;
@@ -364,5 +1591,83 @@
   .panelLabel {
     min-width: auto;
     margin-bottom: 2px;
+  }
+
+  .timeline {
+    padding: 12px 0 6px;
+  }
+
+  .timelineRow {
+    gap: 10px;
+    min-height: 60px;
+  }
+
+  .timelineLeft {
+    width: 36px;
+  }
+
+  .stepCircle {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .timelineCard {
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  .cardTitle {
+    font-size: 13px;
+  }
+
+  .cardSubtitle {
+    font-size: 12px;
+  }
+
+  .cardRow {
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .statusBadgeTl {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .repairSubStep {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .repairSubStepBadge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .addRepairStageBtn {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .rejectedBanner {
+    padding: 14px 16px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+
+  .rejectedIcon {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .rejectedTitle {
+    font-size: 14px;
+  }
+
+  .rejectedReason {
+    font-size: 12px;
   }
 }
