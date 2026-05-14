@@ -434,9 +434,9 @@ const WorkflowTimeline = ({
               <div className={styles.cardRow}>
                 <div className={styles.cardContent}>
                   <span className={styles.cardTitle}>Eksper Atandı</span>
-                  {expertAssigned && fileData?.expert_assignment?.expert_name && (
+                  {expertAssigned && (fileData?.expert_assignment?.expert_informations || fileData?.expert_assignment?.expert_name) && (
                     <span className={styles.cardSubtitle}>
-                      {fileData.expert_assignment.expert_name}
+                      {fileData.expert_assignment.expert_name || fileData.expert_assignment.expert_informations}
                       {fileData.expert_assignment.assigned_at && (
                         <> · {formatDateTime(fileData.expert_assignment.assigned_at)}</>
                       )}
