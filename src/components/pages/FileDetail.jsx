@@ -333,7 +333,6 @@ const FileDetail = () => {
                   <ExpertAssignmentPanel
                     submissionId={fileId}
                     assignment={fileData.expert_assignment}
-                    experInformations={fileData.exper_informations}
                     onUpdate={() => handleRefresh()}
                   />
                 </div>

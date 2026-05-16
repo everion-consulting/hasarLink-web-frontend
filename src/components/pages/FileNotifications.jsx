@@ -232,6 +232,7 @@ const FileNotifications = () => {
       IN_PROGRESS: { text: "Başvurunuz İşleme Alındı", className: styles.statusInProgress },
       REJECTED: { text: "Başvurunuz Reddedildi", className: styles.statusRejected },
       COMPLETED: { text: "Başvurunuz Tamamlandı", className: styles.statusCompleted },
+      DEGERLENDIRME: { text: "Dosyanız Değerlendiriliyor", className: styles.statusInProgress },
       ERROR: { text: "Sigorta Şirketi Bakımda", className: styles.statusError },
     };
 
